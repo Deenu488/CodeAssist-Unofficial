@@ -242,7 +242,7 @@ public class EditorContainerFragment extends Fragment implements FileListener,
                 });
         mMainViewModel.getBottomSheetState()
                 .observe(getViewLifecycleOwner(), state -> {
-                    mBehavior.setState(state);
+               //     mBehavior.setState(state);
                     mOnBackPressedCallback.setEnabled(state == BottomSheetBehavior.STATE_EXPANDED);
                 });
 

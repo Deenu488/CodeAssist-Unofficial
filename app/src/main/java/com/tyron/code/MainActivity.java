@@ -2,12 +2,10 @@ package com.tyron.code;
 
 import android.os.Bundle;
 import android.view.KeyEvent;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
-
-import com.tyron.code.ui.project.ProjectManagerFragment;
+import com.tyron.code.ui.main.HomeFragment;
 
 public class MainActivity extends AppCompatActivity {
     @Override
@@ -16,10 +14,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
-        if (getSupportFragmentManager().findFragmentByTag(ProjectManagerFragment.TAG) == null) {
+        if (getSupportFragmentManager().findFragmentByTag(HomeFragment.TAG) == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new ProjectManagerFragment(),
-                             ProjectManagerFragment.TAG)
+                    .replace(R.id.fragment_container, new HomeFragment(),
+                             HomeFragment.TAG)
                     .commit();
         }
     }

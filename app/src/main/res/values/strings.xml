@@ -15,9 +15,14 @@
     <item name="replacement" type="string">Replacement</item>
     <item name="cancel" type="string">Cancel</item>
     <item name="text_to_search" type="string">Text to search</item>
-
+	<string name="create_new_project">Create new project</string>
+    <string name="project_manager">Project Manager</string>
+	<string name="configure_settings">Configure Settings</string>
+	<string name="welcome_message">Welcome to CodeAssist</string>
     <item name="more" type="string">More</item>
-
+	<item name="rename" type="string">Rename</item>
+	<item name="new_name" type="string">New name</item>
+	<item name="rename_success" type="string">Rename success</item>
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>
@@ -235,4 +240,13 @@
     <string name="tab_app_logs_title">App Logs</string>
     <string name="tab_ide_logs_title">IDE Logs</string>
     <string name="tab_diagnostics_title">Diagnostics</string>
+	
+	<!-- GIT -->
+	<string name="git_clone">Clone</string>
+	<string name="git_clone_repo">Clone git repository</string>
+	<string name="git_clone_repo_url">Repository URL</string>
+	<string name="git_clone_in_progress">Cloning repository</string>
+	<string name="git_clone_success">Git clone successful</string>
+	<string name="git_clone_failed">Failed to clone git repository</string>
+	
 </resources>

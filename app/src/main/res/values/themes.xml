@@ -69,5 +69,5 @@
         <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowLightStatusBar">true</item>
-    </style>
+    </style>	
 </resources>

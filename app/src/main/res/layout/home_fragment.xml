@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<com.google.android.material.appbar.AppBarLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:fitsSystemWindows="true"
+		app:liftOnScroll="true">
+
+		<com.google.android.material.appbar.MaterialToolbar
+			android:id="@+id/toolbar"
+			android:layout_width="match_parent"
+			android:layout_height="?attr/actionBarSize"
+			app:title="@string/app_name"/>
+
+	</com.google.android.material.appbar.AppBarLayout>
+
+	<androidx.core.widget.NestedScrollView
+		android:id="@+id/scrolling_view"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+		<androidx.constraintlayout.widget.ConstraintLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent">
+
+			<com.google.android.material.imageview.ShapeableImageView
+				android:id="@+id/app_icon"
+				android:layout_width="50dp"
+				android:layout_height="50dp"
+				android:layout_marginTop="10dp"
+				app:layout_constraintLeft_toLeftOf="parent"
+				app:layout_constraintRight_toRightOf="parent"
+				app:layout_constraintTop_toTopOf="parent"
+				android:src="@drawable/ic_launcher"
+				app:shapeAppearance="@style/RoundedCorners"/>
+
+			<TextView
+				android:id="@+id/app_title"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="10dp"
+				app:layout_constraintLeft_toLeftOf="parent"
+				app:layout_constraintRight_toRightOf="parent"
+				app:layout_constraintTop_toBottomOf="@+id/app_icon"
+				android:text="@string/app_name"
+				android:textAppearance="@style/TextAppearance.Material3.TitleLarge"/>
+
+			<TextView
+				android:id="@+id/app_version"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="6dp"
+				app:layout_constraintLeft_toLeftOf="parent"
+				app:layout_constraintRight_toRightOf="parent"
+				app:layout_constraintTop_toBottomOf="@+id/app_title"
+				android:text="Version 0.2.9"
+				android:textAppearance="@style/TextAppearance.Material3.TitleSmall"/>
+
+			<com.google.android.material.card.MaterialCardView
+				android:id="@+id/header"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="16dp"
+				app:layout_constraintLeft_toLeftOf="parent"
+				app:layout_constraintRight_toRightOf="parent"
+				app:layout_constraintTop_toBottomOf="@+id/app_version"
+				app:cardCornerRadius="32dp"
+				app:cardUseCompatPadding="true"
+				app:cardElevation="2dp">
+
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:orientation="vertical">
+
+					<com.google.android.material.button.MaterialButton
+						android:id="@+id/createNewProject"
+						android:layout_width="match_parent"
+						android:layout_height="50dp"
+						app:iconPadding="16dp"
+						app:iconGravity="start"
+						app:icon="@drawable/ic_baseline_add_24"
+						android:layout_marginLeft="32dp"
+						android:layout_marginRight="32dp"
+						android:layout_marginTop="10dp"
+						android:layout_marginBottom="10dp"
+						android:text="@string/create_new_project"/>
+
+					<com.google.android.material.button.MaterialButton
+						android:id="@+id/gitCloneRepo"
+						android:layout_width="match_parent"
+						android:layout_height="50dp"
+						app:iconPadding="16dp"
+						app:iconGravity="start"
+						app:icon="@drawable/ic_git"
+						android:layout_marginLeft="32dp"
+						android:layout_marginRight="32dp"
+						android:layout_marginBottom="10dp"
+						android:text="@string/git_clone_repo"/>
+
+					<com.google.android.material.button.MaterialButton
+						android:id="@+id/projectManager"
+						android:layout_width="match_parent"
+						android:layout_height="50dp"
+						app:iconPadding="16dp"
+						app:iconGravity="start"
+						app:icon="@drawable/round_folder_20"
+						android:layout_marginLeft="32dp"
+						android:layout_marginRight="32dp"
+						android:layout_marginBottom="10dp"
+						android:text="@string/project_manager"/>
+
+					<com.google.android.material.button.MaterialButton
+						android:id="@+id/configureSettings"
+						android:layout_width="match_parent"
+						android:layout_height="50dp"
+						app:iconPadding="16dp"
+						app:iconGravity="start"
+						app:icon="@drawable/ic_settings"
+						android:layout_marginLeft="32dp"
+						android:layout_marginRight="32dp"
+						android:layout_marginBottom="10dp"
+						android:text="@string/configure_settings"/>
+
+				</LinearLayout>
+
+			</com.google.android.material.card.MaterialCardView>
+
+		</androidx.constraintlayout.widget.ConstraintLayout>
+
+	</androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
