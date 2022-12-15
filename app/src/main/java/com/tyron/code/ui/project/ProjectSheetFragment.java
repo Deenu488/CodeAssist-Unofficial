@@ -215,10 +215,11 @@ public class ProjectSheetFragment extends BottomSheetDialogFragment {
 				break;	
 				
 					case 2:
-								   
+						 				
 						ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE); 
-						ClipData clip = ClipData.newPlainText(project.getRootFile().toString());
-						clipboard.setPrimaryClip(clip);
+					    clipboard.setText(project.getRootFile().toString());		
+						Toast toast = Toast.makeText(requireContext(), R.string.copied_to_clipboard, Toast.LENGTH_LONG); 
+						toast.show();
 						break;	
 				}
 				}

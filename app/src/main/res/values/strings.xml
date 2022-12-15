@@ -23,6 +23,7 @@
 	<item name="rename" type="string">Rename</item>
 	<item name="new_name" type="string">New name</item>
 	<item name="rename_success" type="string">Rename success</item>
+	<item name="copied_to_clipboard" type="string">Copied to clipboard</item>
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>
