@@ -67,7 +67,7 @@ public class EditorContainerFragment extends Fragment implements FileListener,
     private final OnBackPressedCallback mOnBackPressedCallback = new OnBackPressedCallback(false) {
         @Override
         public void handleOnBackPressed() {
-            mMainViewModel.setBottomSheetState(BottomSheetBehavior.STATE_COLLAPSED);
+            mBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         }
     };
 
