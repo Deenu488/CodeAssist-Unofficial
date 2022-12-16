@@ -172,9 +172,12 @@ public class ProjectSheetFragment extends BottomSheetDialogFragment {
 										
 										File oldDir = project.getRootFile();
 										File newDir = new File(path + "/" + rename);
+										if (newDir.exists()) {
+											throw new IllegalArgumentException();
+										}else{
 											oldDir.renameTo(newDir);
-										
-								
+										}
+											
 										
 										if (getActivity() != null) {
 											requireActivity().runOnUiThread(() -> {

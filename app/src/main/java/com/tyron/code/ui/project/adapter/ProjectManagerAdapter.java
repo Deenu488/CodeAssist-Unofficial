@@ -18,6 +18,18 @@ import com.tyron.code.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.tyron.code.util.ProjectUtils;
+import java.io.File;
+import android.content.ClipboardManager;
+import android.content.Context;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import org.w3c.dom.Document;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
+import java.io.IOException;
+import java.util.concurrent.Executors;
+import com.tyron.code.ApplicationLoader;
 
 public class ProjectManagerAdapter extends RecyclerView.Adapter<ProjectManagerAdapter.ViewHolder> {
 
@@ -92,7 +104,7 @@ public class ProjectManagerAdapter extends RecyclerView.Adapter<ProjectManagerAd
            if (mListener != null) {
                int position = holder.getBindingAdapterPosition();
                if (position != RecyclerView.NO_POSITION) {
-                   mListener.onProjectSelect(mProjects.get(position));
+                   mListener.onProjectSelect(mProjects.get(position));				   
                }
            }
         });
@@ -136,23 +148,41 @@ public class ProjectManagerAdapter extends RecyclerView.Adapter<ProjectManagerAd
     }
 
     private static class ItemViewHolder extends ViewHolder {
-
+		private Context context;
         public ShapeableImageView icon;
         public TextView title;
-
+		public TextView pkg;
         public ItemViewHolder(FrameLayout view) {
             super(view);
             LayoutInflater.from(view.getContext())
                     .inflate(R.layout.project_item, view);
             icon = view.findViewById(R.id.icon);
             title = view.findViewById(R.id.title);
+			pkg = view.findViewById(R.id.pkg);
         }
 
         public void bind(Project module) {
             title.setText(module.getRootFile().getName());
-        }
-    }
-
+			String manifest = module.getRootFile() + "/app/src/main/AndroidManifest.xml";
+		
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();	
+						try {
+					DocumentBuilder db = dbf.newDocumentBuilder();
+					Document doc = db.parse(new File(manifest));
+					doc.getDocumentElement().normalize();
+					
+					String packageName = doc.getDocumentElement().getAttribute("package");					
+			
+					if  (packageName.isEmpty()) {
+					pkg.setText("package error");
+							}else {
+					pkg.setText(packageName);		
+						}
+						
+					} catch (ParserConfigurationException | SAXException |   IOException e) {
+						}
+				}
+		}
     private static class EmptyViewHolder extends ViewHolder {
 
         public final TextView text;
