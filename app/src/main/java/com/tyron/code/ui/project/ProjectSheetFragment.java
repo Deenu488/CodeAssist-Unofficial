@@ -291,8 +291,8 @@ public class ProjectSheetFragment extends BottomSheetDialogFragment {
 			.replace(R.id.fragment_container, fragment)
 			.addToBackStack(null)
 			.commit();
-		((BottomSheetBehavior) behavior).setState(BottomSheetBehavior.STATE_HIDDEN);
-				
+	    	dismiss();
+					
     }
 
     private void loadProjects() {
