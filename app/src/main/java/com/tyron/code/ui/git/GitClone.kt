@@ -16,6 +16,7 @@ import com.tyron.code.util.executeAsyncProvideError
 import android.widget.TextView
 import com.blankj.utilcode.util.ThreadUtils
 import com.google.android.material.progressindicator.LinearProgressIndicator
+import org.eclipse.jgit.api.CloneCommand
 
 object GitClone {
 	   
@@ -78,12 +79,18 @@ object GitClone {
 	   val future =
 	   executeAsyncProvideError(
 	   {
-	   return@executeAsyncProvideError Git.cloneRepository()
-	   .setURI(url)
-	   .setDirectory(targetDir)
-	   .setProgressMonitor(progress)
-	   .call()
+	   val cloneCommand: CloneCommand =  Git.cloneRepository()
+	   cloneCommand.setURI(url)
+ 	   cloneCommand.setDirectory(targetDir)
+	   
+	   if(url.startsWith("git@github.com") && url.startsWith("ssh://git@github.com")) {
+      // cloneCommand.setTransportConfigCallback(sshTransportConfigCallback)
+       }
+		
+       cloneCommand.setProgressMonitor(progress)
+  	   cloneCommand.call()
 	   .also { git = it }
+	   return@executeAsyncProvideError
 	   },
 	   { _, _ -> }
 	   )
@@ -100,8 +107,7 @@ object GitClone {
 	   future.whenComplete { result, error ->
        ThreadUtils.runOnUiThread {
        dialog?.dismiss()
-       result?.close()
-       
+     
        if (result == null || error != null) {
        if (!future.isCancelled) {
 	   showCloneError(error, context)
