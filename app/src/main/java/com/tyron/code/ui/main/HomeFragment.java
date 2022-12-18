@@ -66,10 +66,25 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import android.content.Context;
 import com.tyron.code.ui.project.ProjectSheetFragment;
+import com.google.android.material.textfield.TextInputLayout;
 
 import android.util.Log;
-
-
+import android.text.Editable;
+import android.widget.Toast;
+import org.eclipse.jgit.api.CloneCommand;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRemoteException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.api.errors.TransportException;
+import org.eclipse.jgit.errors.NotSupportedException;
+import android.os.AsyncTask;
+import java.lang.ref.WeakReference;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
+import android.os.Handler;
+import android.os.Looper;
+import com.tyron.code.ui.git.GitClone;
 
 public class HomeFragment extends Fragment {
     public static final String TAG = HomeFragment.class.getSimpleName();
@@ -85,8 +100,8 @@ public class HomeFragment extends Fragment {
     private String mPreviousPath;
 
     private FilePickerDialogFixed mDirectoryPickerDialog;
-    
-	
+
+
 	@Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -141,6 +156,7 @@ public class HomeFragment extends Fragment {
                     });
 		
 		clone_git_repository.setOnClickListener(v -> {
+			GitClone.INSTANCE.cloneGitRepo((Context) requireContext());
 		});
 		
 		project_manager.setOnClickListener(v -> {
@@ -156,8 +172,7 @@ public class HomeFragment extends Fragment {
 		
 		
 	}
-	
-	
+					  
 	private void showProjects() {
 		ProjectSheetFragment projectSheetFragment =	new ProjectSheetFragment();
 		projectSheetFragment.show(getFragmentManager(),
@@ -257,5 +272,4 @@ public class HomeFragment extends Fragment {
 			new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
 				Manifest.permission.READ_EXTERNAL_STORAGE});
     }
-
-	}
+}
