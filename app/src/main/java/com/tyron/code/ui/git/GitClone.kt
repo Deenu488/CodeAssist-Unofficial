@@ -1,5 +1,6 @@
 package com.tyron.code.ui.git
 
+import android.os.Build
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -62,8 +63,16 @@ object GitClone {
        builder.setCancelable(false)
 	   
 	   val repoName = url.substringAfterLast('/').substringBeforeLast(".git")
-	   val targetDir = File(context.getExternalFilesDir("/Projects"), repoName)
-  
+	   //val targetDir = File(context.getExternalFilesDir("/Projects"), repoName)
+	   
+	   val targetDir:File
+	   
+       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+	   targetDir = File(context.getExternalFilesDir("/Projects"), repoName)
+       } else {  
+	   targetDir = File(Environment.getExternalStorageDirectory().absolutePath + "/CodeAssistProjects"  , repoName)
+       }
+	   
 	   val progress = GitCloneProgressMonitor(binding.progress, binding.message)
        var git: Git? = null
 	    
