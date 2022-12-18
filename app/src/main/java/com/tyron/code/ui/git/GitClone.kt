@@ -63,8 +63,7 @@ object GitClone {
        builder.setCancelable(false)
 	   
 	   val repoName = url.substringAfterLast('/').substringBeforeLast(".git")
-	   //val targetDir = File(context.getExternalFilesDir("/Projects"), repoName)
-	   
+		   
 	   val targetDir:File
 	   
        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
