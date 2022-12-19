@@ -167,8 +167,6 @@
 	<string name="settings_git_title">Git Source Control</string>
 	<string name="settings_git_desc">Configure the Git Source Control</string>  
 	<string name="git_title">Git</string>
-	<string name="settings_create_repo">Create Repository</string>
-	<string name="settings_create_repo_desc">Create Git Repository for new projects</string>
 	<string name="git_user_name_title">User Name</string>
 	<string name="git_user_desc">Full name (recorded with commits)</string> 
 	<string name="enter_full_name">Enter full name</string>

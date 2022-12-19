@@ -17,14 +17,6 @@
             app:iconSpaceReserved="false"
             app:title="@string/git_user_email_title"
             app:summary="@string/git_email_desc"/>
-   
-        <SwitchPreference
-            android:defaultValue="false"
-            android:iconSpaceReserved="false"
-            android:key="create_repo"
-            app:iconSpaceReserved="false"
-            android:title="@string/settings_create_repo"
-            android:summary="@string/settings_create_repo_desc"/>
-
-    </PreferenceCategory>
+		
+       </PreferenceCategory>
 </PreferenceScreen>

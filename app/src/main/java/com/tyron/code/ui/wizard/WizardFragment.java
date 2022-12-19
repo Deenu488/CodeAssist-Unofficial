@@ -236,6 +236,7 @@ public class WizardFragment extends Fragment {
         });
 
         mSaveLocationLayout = mWizardDetailsView.findViewById(R.id.til_save_location);
+		mSaveLocationLayout.setEnabled(false);
         mSaveLocationLayout.getEditText()
                 .setText(PreferenceManager.getDefaultSharedPreferences(requireContext())
                         .getString(SharedPreferenceKeys.PROJECT_SAVE_PATH,
