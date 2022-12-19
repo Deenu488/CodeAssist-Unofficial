@@ -120,6 +120,7 @@
     <string name="editor_scheme_title">Editor color scheme</string>
     <string name="editor_scheme_desc">Change the color scheme</string>
     <string name="change_scheme_dialog_title">Paste the path of theme file</string>
+	<string name="set_scheme_file_path">Set scheme file path</string>
     <string name="font_size_title">Font size</string>
     <string name="font_size_message">Set editor font size</string>
     <string name="font_size_summary">Specify the default font size of the editor</string>
@@ -162,6 +163,19 @@
     <string name="community">Community</string>
     <string name="rate_us">Rate us</string>
 
+	<!-- Git Settings -->
+	<string name="settings_git_title">Git Source Control</string>
+	<string name="settings_git_desc">Configure the Git Source Control</string>  
+	<string name="git_title">Git</string>
+	<string name="settings_create_repo">Create Repository</string>
+	<string name="settings_create_repo_desc">Create Git Repository for new projects</string>
+	<string name="git_user_name_title">User Name</string>
+	<string name="git_user_desc">Full name (recorded with commits)</string> 
+	<string name="enter_full_name">Enter full name</string>
+	<string name="git_user_email_title">User Email</string>
+	<string name="git_email_desc">Email (recorded with commits)</string>  
+	<string name="enter_email">Enter email</string>
+	
     <!-- file manager menu -->
     <string name="error">Error</string>
     <string name="error_resource_name_restriction">Resource names must only contain lowercase letters (a–z), digits (0–9), and underscores.</string>

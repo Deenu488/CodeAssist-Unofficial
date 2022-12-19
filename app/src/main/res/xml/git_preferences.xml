@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        android:title="@string/git_title">
+		
+		<Preference
+            app:key="user_name"
+            app:iconSpaceReserved="false"
+            app:title="@string/git_user_name_title"
+            app:summary="@string/git_user_desc"/>
+		
+		<Preference
+            app:key="user_email"
+            app:iconSpaceReserved="false"
+            app:title="@string/git_user_email_title"
+            app:summary="@string/git_email_desc"/>
+   
+        <SwitchPreference
+            android:defaultValue="false"
+            android:iconSpaceReserved="false"
+            android:key="create_repo"
+            app:iconSpaceReserved="false"
+            android:title="@string/settings_create_repo"
+            android:summary="@string/settings_create_repo_desc"/>
+
+    </PreferenceCategory>
+</PreferenceScreen>

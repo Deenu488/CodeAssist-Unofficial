@@ -77,6 +77,7 @@ public class EditorSettingsFragment extends PreferenceFragmentCompat {
                 final Button button = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
 
                 TextInputLayout layout = dialog.findViewById(R.id.textinput_layout);
+				layout.setHint(R.string.set_scheme_file_path);
                 EditText editText = Objects.requireNonNull(layout).getEditText();
                 assert editText != null;
 
