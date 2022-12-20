@@ -20,8 +20,11 @@ import org.eclipse.jgit.api.CloneCommand
 import com.tyron.builder.project.Project
 import org.eclipse.jgit.api.Status
 import android.widget.Toast
+import com.tyron.code.ui.git.SshTransportConfigCallback
+
 object GitClone {
 
+       val sshTransportConfigCallback =  SshTransportConfigCallback()
        var mResult:  StringBuffer  =  StringBuffer()
 
        fun cloneGitRepo(context:Context) {
@@ -80,21 +83,29 @@ object GitClone {
 	   val progress = GitCloneProgressMonitor(binding.progress, binding.message)
        var git: Git? = null
 	    
-	   val future =
+	   val future = 
+	   if(url.startsWith("git@github.com")) {
 	   executeAsyncProvideError(
 	   {
-	   val cloneCommand: CloneCommand =  Git.cloneRepository()
-	   cloneCommand.setURI(url)
- 	   cloneCommand.setDirectory(targetDir)
-	   
-	   if(url.startsWith("git@github.com") && url.startsWith("ssh://git@github.com")) {
-      // cloneCommand.setTransportConfigCallback(sshTransportConfigCallback)
-       }
-		
-       cloneCommand.setProgressMonitor(progress)
-  	   cloneCommand.call()
+	   return@executeAsyncProvideError Git.cloneRepository()
+	   .setURI(url)
+	   .setDirectory(targetDir)
+	   .setTransportConfigCallback(sshTransportConfigCallback)
+	   .setProgressMonitor(progress)
+	   .call()
 	   .also { git = it }
-	   return@executeAsyncProvideError
+	   },
+	   { _, _ -> }
+	   )
+	   } else
+	   executeAsyncProvideError(
+	   {
+	   return@executeAsyncProvideError Git.cloneRepository()
+	   .setURI(url)
+	   .setDirectory(targetDir)
+	   .setProgressMonitor(progress)
+	   .call()
+	   .also { git = it }
 	   },
 	   { _, _ -> }
 	   )
