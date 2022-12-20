@@ -17,9 +17,11 @@ import android.widget.TextView
 import com.blankj.utilcode.util.ThreadUtils
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import org.eclipse.jgit.api.CloneCommand
-
+import com.tyron.builder.project.Project
+import org.eclipse.jgit.api.Status
+import android.widget.Toast
 object GitClone {
-	   
+       
        fun cloneGitRepo(context:Context) {
    	   val inflater = LayoutInflater.from(context).context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater        
        inflater.inflate(R.layout.base_textinput_layout, null)
@@ -159,4 +161,83 @@ object GitClone {
        return cancelled || Thread.currentThread().isInterrupted
        }
        }
-       }
+       fun gitActions(context:Context, project:Project) {
+       val option = arrayOf(
+            "Init",			
+            "Status",
+			"Fetch",
+		    "Commit",
+            "Push",
+            "Pull"
+            )
+					
+	   val builder = MaterialAlertDialogBuilder(context)
+       
+	   builder.setItems(option) { _, which ->
+	 
+	   when (which) {
+		 0 -> { val future =
+	   executeAsyncProvideError(
+	   {
+		var git: Git? = null
+		git = Git.init().setDirectory(project.getRootFile()).call()
+	   
+	   .also { git = it }
+	   
+	   return@executeAsyncProvideError
+	   },
+	   { _, _ -> }   
+	   )  
+	   
+	   future.whenComplete { result, error ->
+	   ThreadUtils.runOnUiThread {
+	  
+       if (result == null || error != null) {
+	   showError(error, context)
+       } else {
+       Toast.makeText(context,"Git repositoty initialize success",Toast.LENGTH_SHORT).show()  
+
+        }   
+      }  }
+       }     
+	       1 -> { 
+	       
+	val future =
+	   executeAsyncProvideError(
+	   {
+		 var git: Git? = null
+		
+		
+		var status: Status =    Git.open(project.getRootFile()).status().call()
+	  	 
+		 ThreadUtils.runOnUiThread {
+	 	 val builder = MaterialAlertDialogBuilder(context)      
+    	 var st : String = "Added: " + status.getAdded() + "\n" + "Changed: " + status.getChanged()+ "\n" + "Conflicting: " + status.getConflicting()+ "\n" +	 "ConflictingStageState: " + status.getConflictingStageState()+ "\n" + "IgnoredNotInIndex: " + status.getIgnoredNotInIndex()+ "\n" +	 "Missing: " + status.getMissing()+ "\n" +	"Modified: " + status.getModified()+ "\n" +	"Removed: " + status.getRemoved()+ "\n" +	 "Untracked: " + status.getUntracked()+ "\n" + "UntrackedFolders: " + status.getUntrackedFolders()
+    	 builder.setMessage(st)	   
+         builder.show()
+	   }	 	   
+	   return@executeAsyncProvideError
+	   
+	   },
+	   { _, _ -> }   
+	   )  
+	   future.whenComplete { result, error ->
+	   ThreadUtils.runOnUiThread {
+	  
+       if (result == null || error != null) {
+	   showError(error, context)
+       }    } }
+	       
+	       }
+	     
+	       }   }
+	   builder.show()
+	   }
+	   private fun showError(error: Throwable, context:Context) {
+	   val builder = MaterialAlertDialogBuilder(context)
+       builder.setMessage(error.localizedMessage)
+       builder.show()
+	   }
+	   }
+	   
+	   

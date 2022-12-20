@@ -31,7 +31,9 @@ public class ProjectActionGroup extends ActionGroup {
                     .setVisible(false);
             return;
         }
-
+		
+		event.getPresentation()
+			.setVisible(true);
         event.getPresentation()
                 .setVisible(true);
         event.getPresentation()
@@ -50,6 +52,6 @@ public class ProjectActionGroup extends ActionGroup {
     @Override
     public AnAction[] getChildren(@Nullable AnActionEvent e) {
         return new AnAction[]{new SaveAction(), new RefreshProjectAction(),
-                new OpenLibraryManagerAction()};
+			new OpenLibraryManagerAction(),new GitAction()};
     }
 }
