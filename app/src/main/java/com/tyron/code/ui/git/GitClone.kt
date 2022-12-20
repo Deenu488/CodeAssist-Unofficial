@@ -21,6 +21,7 @@ import com.tyron.builder.project.Project
 import org.eclipse.jgit.api.Status
 import android.widget.Toast
 import com.tyron.code.ui.git.SshTransportConfigCallback
+import org.eclipse.jgit.transport.FetchResult
 
 object GitClone {
 
@@ -193,9 +194,20 @@ object GitClone {
 	   executeAsyncProvideError(
 	   {
 		var git: Git? = null
+		var file = File(project.getRootFile(), "/.git")
+		var path = file.toString()
+		if (file.exists()){
 		git = Git.init().setDirectory(project.getRootFile()).call()
-	   
-	   .also { git = it }
+		ThreadUtils.runOnUiThread {
+		Toast.makeText(context,"Reinitialized existing Git repository in " + path,Toast.LENGTH_SHORT).show()  
+	  }
+		} else {
+		git = Git.init().setDirectory(project.getRootFile()).call()
+		ThreadUtils.runOnUiThread {
+		Toast.makeText(context,"Initialized empty Git repository in " + path,Toast.LENGTH_SHORT).show()  
+	  }
+		}
+	  // .also { git = it }
 	   
 	   return@executeAsyncProvideError
 	   },
@@ -208,8 +220,7 @@ object GitClone {
        if (result == null || error != null) {
 	   showError(error, context)
        } else {
-       Toast.makeText(context,"Git repositoty initialize success",Toast.LENGTH_SHORT).show()  
-
+       
         }   
       }  }
        }     
@@ -241,7 +252,32 @@ object GitClone {
 	   showError(error, context)
        }    } }
 	       
-	       }
+	     }
+	     
+	          2 -> { 
+	  val fetch = BasicProgressMonitor(context)
+
+	  val future =
+	   executeAsyncProvideError(
+	   {
+		 var git: Git? = null
+		 
+		val remote:FetchResult =    Git.open(project.getRootFile()).fetch().setTransportConfigCallback(sshTransportConfigCallback) .setProgressMonitor(fetch).call()
+	  	 
+	   return@executeAsyncProvideError
+	   
+	   },
+	   { _, _ -> }   
+	   )  
+	   future.whenComplete { result, error ->
+	   ThreadUtils.runOnUiThread {
+	  
+       if (result == null || error != null) {
+	   showError(error, context)
+       }    } }
+	       
+	     }
+	     
 	     
 	       }   }
 	   builder.show()
@@ -281,5 +317,24 @@ object GitClone {
 			  }
 
 	   }
-	   
-	   
+	    class BasicProgressMonitor(val context:Context) :
+       ProgressMonitor {
+		  		   
+       private var cancelled = false
+     
+	   fun cancel() {
+       cancelled = true
+       }	   
+       override fun start(totalTasks: Int) {       
+       }  
+       override fun beginTask(title: String?, totalWork: Int) {
+       ThreadUtils.runOnUiThread {
+       Toast.makeText(context, title, Toast.LENGTH_SHORT).show()     }
+       }
+       override fun update(completed: Int) {       
+       }
+       override fun endTask() {}
+       override fun isCancelled(): Boolean {
+       return cancelled || Thread.currentThread().isInterrupted       
+       }     
+       }
