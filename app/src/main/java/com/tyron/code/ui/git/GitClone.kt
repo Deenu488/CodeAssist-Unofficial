@@ -21,7 +21,9 @@ import com.tyron.builder.project.Project
 import org.eclipse.jgit.api.Status
 import android.widget.Toast
 object GitClone {
-       
+
+       var mResult:  StringBuffer  =  StringBuffer()
+
        fun cloneGitRepo(context:Context) {
    	   val inflater = LayoutInflater.from(context).context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater        
        inflater.inflate(R.layout.base_textinput_layout, null)
@@ -209,11 +211,11 @@ object GitClone {
 		
 		
 		var status: Status =    Git.open(project.getRootFile()).status().call()
+	  	 convertStatus(status)
 	  	 
 		 ThreadUtils.runOnUiThread {
 	 	 val builder = MaterialAlertDialogBuilder(context)      
-    	 var st : String = "Added: " + status.getAdded() + "\n" + "Changed: " + status.getChanged()+ "\n" + "Conflicting: " + status.getConflicting()+ "\n" +	 "ConflictingStageState: " + status.getConflictingStageState()+ "\n" + "IgnoredNotInIndex: " + status.getIgnoredNotInIndex()+ "\n" +	 "Missing: " + status.getMissing()+ "\n" +	"Modified: " + status.getModified()+ "\n" +	"Removed: " + status.getRemoved()+ "\n" +	 "Untracked: " + status.getUntracked()+ "\n" + "UntrackedFolders: " + status.getUntrackedFolders()
-    	 builder.setMessage(st)	   
+         builder.setMessage(mResult)	   
          builder.show()
 	   }	 	   
 	   return@executeAsyncProvideError
@@ -238,6 +240,35 @@ object GitClone {
        builder.setMessage(error.localizedMessage)
        builder.show()
 	   }
+	   	   private fun convertStatus(status:Status) {
+        if (!status.hasUncommittedChanges() && status.isClean()) {
+            mResult.append("Nothing to commit, working directory clean")
+            return
+        }
+        
+        convertStatusSet("Added files:", status.getAdded())
+        convertStatusSet("Changed files:", status.getChanged())
+        convertStatusSet("Removed files:", status.getRemoved())
+        convertStatusSet("Missing files:", status.getMissing())
+        convertStatusSet("Modified files:", status.getModified())
+        convertStatusSet("Conflicting files:", status.getConflicting())
+        convertStatusSet("Untracked files:", status.getUntracked())
+    }
+	   
+    private fun convertStatusSet(str:String, set:Set<String>) {
+   
+	    if (!set.isEmpty()) {
+            mResult.append(str)
+            mResult.append("\n\n")
+		for (s in set) {
+            mResult.append("\t");
+            mResult.append(s)
+            mResult.append("\n")
+			  }	
+            mResult.append("\n")
+			 }
+			  }
+
 	   }
 	   
 	   
