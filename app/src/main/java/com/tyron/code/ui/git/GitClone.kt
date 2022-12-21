@@ -180,6 +180,7 @@ object GitClone {
             "Init",			
             "Status",
 			"Fetch",
+			"Add",
 		    "Commit",
             "Push",
             "Pull"
@@ -277,6 +278,80 @@ object GitClone {
        }    } }
 	       
 	     }
+	  
+	     
+	            3 -> { 
+	       
+	val future =
+	   executeAsyncProvideError(
+	   {
+		
+	     Git.open(project.getRootFile()).add().addFilepattern(".").call()
+		 	 
+		 ThreadUtils.runOnUiThread {
+	 	 Toast.makeText(context,"File has been added to stage",Toast.LENGTH_SHORT).show()  
+
+	   }	 	   
+	   return@executeAsyncProvideError
+	   
+	   },
+	   { _, _ -> }   
+	   )  
+	   future.whenComplete { result, error ->
+	   ThreadUtils.runOnUiThread {
+	  
+       if (result == null || error != null) {
+	   showError(error, context)
+       }    } }
+	       
+	     }
+	     
+	               4 -> { 
+	               
+	         	 val inflater = LayoutInflater.from(context).context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater        
+       inflater.inflate(R.layout.base_textinput_layout, null)
+	   
+	   val binding = BaseTextinputLayoutBinding.inflate(inflater,null,false)
+	   binding.textinputLayout.setHint("Commit message")
+	   val builder = MaterialAlertDialogBuilder(context)
+	   builder.setTitle("Commit Changes")
+	   builder.setView(binding.root)
+       builder.setPositiveButton("Commit") { dialog, _ ->
+       
+       val msg = binding.textinputLayout.editText?.text?.toString()
+       
+       val future =
+	   executeAsyncProvideError(
+	   {
+		var file = File(project.getRootFile(), "/.git")
+		var path = file.toString()
+	   Git.open(project.getRootFile()).commit().setAll(true)
+                        .setMessage(msg)
+                        .call()
+               	 ThreadUtils.runOnUiThread {
+	 	 Toast.makeText(context,"Committed all changes to repository at + path",Toast.LENGTH_SHORT).show()  
+	   }	 	   
+
+	    	   
+	   return@executeAsyncProvideError
+	   
+	   },
+	   { _, _ -> }   
+	   )  
+	   future.whenComplete { result, error ->
+	   ThreadUtils.runOnUiThread {
+	  
+       if (result == null || error != null) {
+	   showError(error, context)
+       }    } }
+       
+       }
+       builder.show()
+	         
+	                  
+	       
+	     }
+	   
 	     
 	     
 	       }   }
