@@ -183,10 +183,13 @@ object GitClone {
             "Init",			
             "Status",
 			"Fetch",
-			"Add",
+			"Add Files",
 		    "Commit",
+		    "New Branch",
+		    "Add Remote",
             "Push",
-            "Pull"
+            "Pull",
+            "Reset",
             )
 					
 	   val builder = MaterialAlertDialogBuilder(context)
@@ -391,10 +394,11 @@ object GitClone {
 	   }
 	   	   private fun convertStatus(status:Status) {
         if (!status.hasUncommittedChanges() && status.isClean()) {
+         mResult.setLength(0)
             mResult.append("Nothing to commit, working directory clean")
             return
         }
-        
+        mResult.setLength(0)
         convertStatusSet("Added files:", status.getAdded())
         convertStatusSet("Changed files:", status.getChanged())
         convertStatusSet("Removed files:", status.getRemoved())
@@ -402,6 +406,7 @@ object GitClone {
         convertStatusSet("Modified files:", status.getModified())
         convertStatusSet("Conflicting files:", status.getConflicting())
         convertStatusSet("Untracked files:", status.getUntracked())
+        
     }
 	   
     private fun convertStatusSet(str:String, set:Set<String>) {
@@ -410,11 +415,13 @@ object GitClone {
             mResult.append(str)
             mResult.append("\n\n")
 		for (s in set) {
+		
             mResult.append("\t");
             mResult.append(s)
             mResult.append("\n")
 			  }	
             mResult.append("\n")
+            
 			 }
 			  }
 
