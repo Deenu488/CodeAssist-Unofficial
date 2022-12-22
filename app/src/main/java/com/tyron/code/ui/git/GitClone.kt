@@ -25,11 +25,17 @@ import org.eclipse.jgit.transport.FetchResult
 import com.tyron.common.SharedPreferenceKeys
 import android.content.SharedPreferences
 import com.tyron.code.ApplicationLoader
+import org.eclipse.jgit.api.ResetCommand
+import org.eclipse.jgit.lib.StoredConfig
+import org.eclipse.jgit.api.PullCommand
 
 object GitClone {
 
        val sshTransportConfigCallback =  SshTransportConfigCallback()
        var mResult:  StringBuffer  =  StringBuffer()
+       val sharedPreferences: SharedPreferences = ApplicationLoader.getDefaultPreferences()
+    val userName  = sharedPreferences.getString(SharedPreferenceKeys.GIT_USER_NAME,"")  
+       val userEmail  = sharedPreferences.getString(SharedPreferenceKeys.GIT_USER_EMAIL,"")  
 
        fun cloneGitRepo(context:Context) {
    	   val inflater = LayoutInflater.from(context).context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater        
@@ -180,16 +186,18 @@ object GitClone {
        }
        fun gitActions(context:Context, project:Project) {
        val option = arrayOf(
-            "Init",			
-            "Status",
-			"Fetch",
-			"Add Files",
-		    "Commit",
-		    "New Branch",
-		    "Add Remote",
-            "Push",
-            "Pull",
-            "Reset",
+            "Init",	//0		
+            "Status", //1
+			"Fetch", //2
+			"Add all to stage", //3
+		    "Commit", //4
+		    "New Branch", //5
+	        "Delete Branch", //6
+		    "Add Remote", //7
+	        "Remove Remote", //8
+            "Push", //9
+            "Pull", //10
+            "Reset (HARD)", //11
             )
 					
 	   val builder = MaterialAlertDialogBuilder(context)
@@ -262,27 +270,49 @@ object GitClone {
 	     }
 	     
 	          2 -> { 
-	  val fetch = BasicProgressMonitor(context)
+   
+       val inflater = LayoutInflater.from(context).context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater        
+       inflater.inflate(R.layout.layout_dialog_progress, null)
+	   
+	   val binding = LayoutDialogProgressBinding.inflate(inflater,null,false)
+	   val view = binding.root
+	   
+	   binding.message.visibility = View.VISIBLE
+	  
+	   val builder = MaterialAlertDialogBuilder(context)
+	   builder.setTitle("Fetching...")
+       builder.setView(view)
+       builder.setCancelable(false)
+      
+   	          
+	  
+	  val progress = GitCloneProgressMonitor(binding.progress, binding.message)
 
 	  val future =
 	   executeAsyncProvideError(
 	   {
 		 var git: Git? = null
 		 
-		val remote:FetchResult =    Git.open(project.getRootFile()).fetch().setTransportConfigCallback(sshTransportConfigCallback) .setProgressMonitor(fetch).call()
+		val remote:FetchResult =    Git.open(project.getRootFile()).fetch().setTransportConfigCallback(sshTransportConfigCallback) .setProgressMonitor(progress).call()
 	  	 
 	   return@executeAsyncProvideError
 	   
 	   },
 	   { _, _ -> }   
 	   )  
+	   val dialog = builder.show() 
+	         
+	   
 	   future.whenComplete { result, error ->
 	   ThreadUtils.runOnUiThread {
-	  
+	   dialog?.dismiss()
+	   
        if (result == null || error != null) {
 	   showError(error, context)
-       }    } }
-	       
+       }   else {
+       		Toast.makeText(context,"Fetch completed",Toast.LENGTH_SHORT).show()  
+        }     
+       }}        
 	     }
 	  
 	     
@@ -313,8 +343,7 @@ object GitClone {
 	     }
 	     
 	               4 -> { 
-	            val sharedPreferences: SharedPreferences = ApplicationLoader.getDefaultPreferences()
-    
+	            
 	               
 	         	 val inflater = LayoutInflater.from(context).context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater        
        inflater.inflate(R.layout.base_textinput_layout, null)
@@ -335,9 +364,7 @@ object GitClone {
 	    
 	   val msg = binding.textinputLayout.editText?.text?.toString()
        
-	   val userName  = sharedPreferences.getString(SharedPreferenceKeys.GIT_USER_NAME,"")  
-       val userEmail  = sharedPreferences.getString(SharedPreferenceKeys.GIT_USER_EMAIL,"")  
-    
+	       
 	    var file = File(project.getRootFile(), "/.git")
 		var path = file.toString()
 		
@@ -376,12 +403,331 @@ object GitClone {
        }    } }
        
        }
+       builder.setNegativeButton(android.R.string.cancel, null)
        builder.show()
-	         
-	                  
+	                
+	     }
+	     
+	              5 -> { 
 	       
+
+        	 val inflater = LayoutInflater.from(context).context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater        
+       inflater.inflate(R.layout.base_textinput_layout, null)
+	   
+	   val binding = BaseTextinputLayoutBinding.inflate(inflater,null,false)
+	   binding.textinputLayout.setHint("Branch name")
+	   val builder = MaterialAlertDialogBuilder(context)
+	   builder.setTitle("Create new branch")
+	   builder.setView(binding.root)
+	   builder.setPositiveButton("Create") { dialog, _ ->
+         
+       val future =
+	   executeAsyncProvideError(
+	   {
+	   val branch = binding.textinputLayout.editText?.text?.toString()
+ 
+	    if (branch.isNullOrBlank()) {
+    ThreadUtils.runOnUiThread {
+	 	 Toast.makeText(context,"Branch name can't be empty",Toast.LENGTH_SHORT).show()  
+	   }	 	   
+    } else {
+    
+    Git.open(project.getRootFile()).checkout().setName(branch).setCreateBranch(true) .call()
+	   
+               	 ThreadUtils.runOnUiThread {
+	 	 Toast.makeText(context,"New branch created successfully",Toast.LENGTH_SHORT).show()  
+	   }	 	   
+
+    }
+	   
+		 	return@executeAsyncProvideError
+	   
+	   },
+	   { _, _ -> }   
+	   )  
+	   future.whenComplete { result, error ->
+	   ThreadUtils.runOnUiThread {
+	  
+       if (result == null || error != null) {
+	   showError(error, context)
+       }    } } 
+       
+       }
+       builder.setNegativeButton(android.R.string.cancel, null)
+		 builder.show()	 
 	     }
 	   
+	             6 -> { 
+	       
+
+        	 val inflater = LayoutInflater.from(context).context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater        
+       inflater.inflate(R.layout.base_textinput_layout, null)
+	   
+	   val binding = BaseTextinputLayoutBinding.inflate(inflater,null,false)
+	   binding.textinputLayout.setHint("Branch name")
+	   val builder = MaterialAlertDialogBuilder(context)
+	   builder.setTitle("Delete branch")
+	   builder.setView(binding.root)
+	   builder.setPositiveButton("Delete") { dialog, _ ->
+         
+       val future =
+	   executeAsyncProvideError(
+	   {
+	   val branch = binding.textinputLayout.editText?.text?.toString()
+ 
+	    if (branch.isNullOrBlank()) {
+    ThreadUtils.runOnUiThread {
+	 	 Toast.makeText(context,"Branch name can't be empty",Toast.LENGTH_SHORT).show()  
+	   }	 	   
+    } else {
+    
+    Git.open(project.getRootFile()).branchDelete()
+                                                    .setBranchNames(branch)
+                                                    .setForce(true)
+                                                    .call()
+	   
+               	 ThreadUtils.runOnUiThread {
+	 	 Toast.makeText(context,"Branch deleted successfully",Toast.LENGTH_SHORT).show()  
+	   }	 	   
+
+    }
+	   
+		 	return@executeAsyncProvideError
+	   
+	   },
+	   { _, _ -> }   
+	   )  
+	   future.whenComplete { result, error ->
+	   ThreadUtils.runOnUiThread {
+	  
+       if (result == null || error != null) {
+	   showError(error, context)
+       }    } } 
+       
+       }
+       builder.setNegativeButton(android.R.string.cancel, null)
+		 builder.show()	 
+	     }
+	   
+	   
+	   
+	                  7 -> { 
+	       
+
+        	 val inflater = LayoutInflater.from(context).context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater        
+       inflater.inflate(R.layout.base_textinput_layout, null)
+	   
+	   val binding = BaseTextinputLayoutBinding.inflate(inflater,null,false)
+	   binding.textinputLayout.setHint("Remote name")
+	   val builder = MaterialAlertDialogBuilder(context)
+	   builder.setTitle("Add Remote")
+	   builder.setView(binding.root)
+	   builder.setPositiveButton("Add") { dialog, _ ->
+         
+       val future =
+	   executeAsyncProvideError(
+	   {
+	   
+	   val remote = binding.textinputLayout.editText?.text?.toString()
+	   
+	    if (remote.isNullOrBlank()) {
+    ThreadUtils.runOnUiThread {
+	 	 Toast.makeText(context,"Remote name can't be empty",Toast.LENGTH_SHORT).show()  
+	   }	 	   
+    } else {
+       val url : String = "git@github.com:"+ userName.toString()+"/" + project.getRootFile().getName()+ ".git"
+  	   val  config : StoredConfig = Git.open(project.getRootFile()).getRepository().getConfig()
+       config.setString("remote", remote, "url", url)
+       config.setString("remote", remote, "fetch", "+refs/heads/*:refs/remotes/" + remote +"/*");
+       config.save()
+       
+               	 ThreadUtils.runOnUiThread {
+	 	 Toast.makeText(context,"Remote added successfully",Toast.LENGTH_SHORT).show()  
+	   }	 	   
+
+    }
+	   
+		 	return@executeAsyncProvideError
+	   
+	   },
+	   { _, _ -> }   
+	   )  
+	   future.whenComplete { result, error ->
+	   ThreadUtils.runOnUiThread {
+	  
+       if (result == null || error != null) {
+	   showError(error, context)
+       }    } } 
+       
+       }
+       builder.setNegativeButton(android.R.string.cancel, null)
+		 builder.show()	 
+	     }
+	     
+	                       8 -> { 
+	       
+
+        	 val inflater = LayoutInflater.from(context).context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater        
+       inflater.inflate(R.layout.base_textinput_layout, null)
+	   
+	   val binding = BaseTextinputLayoutBinding.inflate(inflater,null,false)
+	   binding.textinputLayout.setHint("Remote name")
+	   val builder = MaterialAlertDialogBuilder(context)
+	   builder.setTitle("Remove Remote")
+	   builder.setView(binding.root)
+	   builder.setPositiveButton("Remove") { dialog, _ ->
+         
+       val future =
+	   executeAsyncProvideError(
+	   {
+	   
+	   val remote = binding.textinputLayout.editText?.text?.toString()
+	   
+	    if (remote.isNullOrBlank()) {
+    ThreadUtils.runOnUiThread {
+	 	 Toast.makeText(context,"Remote name can't be empty",Toast.LENGTH_SHORT).show()  
+	   }	 	   
+    } else {
+
+  	   val  config : StoredConfig = Git.open(project.getRootFile()).getRepository().getConfig()
+       config.unsetSection("remote", remote);
+       config.save()
+       
+               	 ThreadUtils.runOnUiThread {
+	 	 Toast.makeText(context,"Remote removed successfully",Toast.LENGTH_SHORT).show()  
+	   }	 	   
+
+    }
+	   
+		 	return@executeAsyncProvideError
+	   
+	   },
+	   { _, _ -> }   
+	   )  
+	   future.whenComplete { result, error ->
+	   ThreadUtils.runOnUiThread {
+	  
+       if (result == null || error != null) {
+	   showError(error, context)
+       }    } } 
+       
+       }
+       builder.setNegativeButton(android.R.string.cancel, null)
+		 builder.show()	 
+	     }
+	     
+	                  9 -> { 
+	                  
+	     val inflater = LayoutInflater.from(context).context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater        
+       inflater.inflate(R.layout.layout_dialog_progress, null)  
+	   val binding = LayoutDialogProgressBinding.inflate(inflater,null,false)
+	   val view = binding.root   
+	   binding.message.visibility = View.VISIBLE 
+	   val builder = MaterialAlertDialogBuilder(context)
+	   builder.setTitle("Pushing...")
+       builder.setView(view)
+       builder.setCancelable(false)     
+	  
+	  val progress = GitCloneProgressMonitor(binding.progress, binding.message)
+             
+	               
+       val future =
+	   executeAsyncProvideError(
+	   {
+	    
+	   Git.open(project.getRootFile()).push().setProgressMonitor(progress).setTransportConfigCallback(sshTransportConfigCallback).call()
+	
+		 	return@executeAsyncProvideError
+	   
+	   },
+	   { _, _ -> }   
+	   )  
+	      val dialog = builder.show() 
+	   future.whenComplete { result, error ->
+	   ThreadUtils.runOnUiThread {
+	   dialog?.dismiss()
+	   
+       if (result == null || error != null) {
+	   showError(error, context)
+       }   else {
+       		Toast.makeText(context,"Push completed",Toast.LENGTH_SHORT).show()  
+        }     
+       }}        
+	     }	     
+	                  10 -> { 
+	
+       val inflater = LayoutInflater.from(context).context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater        
+       inflater.inflate(R.layout.layout_dialog_progress, null)  
+	   val binding = LayoutDialogProgressBinding.inflate(inflater,null,false)
+	   val view = binding.root   
+	   binding.message.visibility = View.VISIBLE 
+	   val builder = MaterialAlertDialogBuilder(context)
+	   builder.setTitle("Pulling...")
+       builder.setView(view)
+       builder.setCancelable(false)     
+	  
+	  val progress = GitCloneProgressMonitor(binding.progress, binding.message)
+            	              
+       val future =
+	   executeAsyncProvideError(
+	   {
+	
+	 Git.open(project.getRootFile()).pull().setProgressMonitor(progress).setTransportConfigCallback(sshTransportConfigCallback).call()
+	
+		 	return@executeAsyncProvideError
+	   
+	   },
+	   { _, _ -> }   
+	   )
+	     
+	      val dialog = builder.show() 
+	   future.whenComplete { result, error ->
+	   ThreadUtils.runOnUiThread {
+	   dialog?.dismiss()
+	   
+       if (result == null || error != null) {
+	   showError(error, context)
+       }   else {
+       		Toast.makeText(context,"Pull completed",Toast.LENGTH_SHORT).show()  
+        }     
+       }}        
+	     }
+	     
+	                  11 -> { 
+	       
+	   val builder = MaterialAlertDialogBuilder(context)
+	   builder.setTitle("Reset Changes")
+	   builder.setMessage("Are you sure you want to discard all the changes?")
+	   builder.setPositiveButton("Reset") { dialog, _ ->
+         
+       val future =
+	   executeAsyncProvideError(
+	   {
+	   
+	   Git.open(project.getRootFile()).reset().setMode(ResetCommand.ResetType.HARD).call()
+	   
+		ThreadUtils.runOnUiThread {
+	 	 Toast.makeText(context,"Changes has been discarded",Toast.LENGTH_SHORT).show()  
+	 
+	   }	 	   
+		
+		 	return@executeAsyncProvideError
+	   
+	   
+	   },
+	   { _, _ -> }   
+	   )  
+	   future.whenComplete { result, error ->
+	   ThreadUtils.runOnUiThread {
+	  
+       if (result == null || error != null) {
+	   showError(error, context)
+       }    } } 
+       
+       }
+       builder.setNegativeButton(android.R.string.cancel, null)
+		 builder.show()	 
+	     }
 	     
 	     
 	       }   }
@@ -426,24 +772,4 @@ object GitClone {
 			  }
 
 	   }
-	    class BasicProgressMonitor(val context:Context) :
-       ProgressMonitor {
-		  		   
-       private var cancelled = false
-     
-	   fun cancel() {
-       cancelled = true
-       }	   
-       override fun start(totalTasks: Int) {       
-       }  
-       override fun beginTask(title: String?, totalWork: Int) {
-       ThreadUtils.runOnUiThread {
-       Toast.makeText(context, title, Toast.LENGTH_SHORT).show()     }
-       }
-       override fun update(completed: Int) {       
-       }
-       override fun endTask() {}
-       override fun isCancelled(): Boolean {
-       return cancelled || Thread.currentThread().isInterrupted       
-       }     
-       }
+	   
