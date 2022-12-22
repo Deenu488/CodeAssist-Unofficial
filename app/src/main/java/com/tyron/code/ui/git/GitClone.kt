@@ -20,7 +20,7 @@ import org.eclipse.jgit.api.CloneCommand
 import com.tyron.builder.project.Project
 import org.eclipse.jgit.api.Status
 import android.widget.Toast
-import com.tyron.code.ui.git.SshTransportConfigCallback
+import com.tyron.code.ui.ssh.callback.SshTransportConfigCallback
 import org.eclipse.jgit.transport.FetchResult
 import com.tyron.common.SharedPreferenceKeys
 import android.content.SharedPreferences

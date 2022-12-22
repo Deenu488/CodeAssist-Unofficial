@@ -52,6 +52,7 @@ import com.tyron.selection.java.JavaExpandSelectionProvider;
 import com.tyron.selection.xml.XmlExpandSelectionProvider;
 
 import com.tyron.code.event.EventManager;
+import com.tyron.code.ui.main.action.other.SSHKeyManagerAction;
 
 public class ApplicationLoader extends Application {
 
@@ -147,6 +148,7 @@ public class ApplicationLoader extends Application {
             manager.registerAction(PreviewLayoutAction.ID, new PreviewLayoutAction());
             manager.registerAction(OpenSettingsAction.ID, new OpenSettingsAction());
             manager.registerAction(FormatAction.ID, new FormatAction());
+			manager.registerAction(SSHKeyManagerAction.ID, new SSHKeyManagerAction());
             manager.registerAction(DebugActionGroup.ID, new DebugActionGroup());
 
             // editor tab actions

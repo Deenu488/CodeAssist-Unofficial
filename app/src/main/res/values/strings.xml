@@ -173,6 +173,9 @@
 	<string name="git_user_email_title">User Email</string>
 	<string name="git_email_desc">Email (recorded with commits)</string>  
 	<string name="enter_email">Enter email</string>
+	<string name="ssh_key_manager">SSH Keys Manager</string>
+	<string name="ssh_keys_manager_empty">SSH Keys are empty</string>
+	<string name="ssh_key_manager_null_ssh_keys">No SSH Keys found</string>
 	
     <!-- file manager menu -->
     <string name="error">Error</string>

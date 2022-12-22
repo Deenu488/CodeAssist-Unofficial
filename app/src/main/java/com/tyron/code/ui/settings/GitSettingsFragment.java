@@ -112,10 +112,10 @@ public class GitSettingsFragment extends PreferenceFragmentCompat {
 
 				dialog1.show();
 
-				return true;
+				return true;												
 		}
 
 		return super.onPreferenceTreeClick(preference);
 	}
-}
+	}
 

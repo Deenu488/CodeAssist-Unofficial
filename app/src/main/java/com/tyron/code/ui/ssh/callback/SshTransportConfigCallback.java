@@ -1,6 +1,6 @@
-package com.tyron.code.ui.git;
+package com.tyron.code.ui.ssh.callback;
 
-import android.content.Context;
+
 import android.os.Build;
 import android.os.Environment;
 import com.jcraft.jsch.JSch;
@@ -20,7 +20,7 @@ import com.tyron.code.ApplicationLoader;
 public class SshTransportConfigCallback implements TransportConfigCallback {
 
 	private File sshDir;
-	
+
 	private final SshSessionFactory sshSessionFactory = new JschConfigSessionFactory() {
 		@Override
 		protected void configure(OpenSshConfig.Host hc, Session session) {

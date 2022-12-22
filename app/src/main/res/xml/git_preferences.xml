@@ -17,6 +17,6 @@
             app:iconSpaceReserved="false"
             app:title="@string/git_user_email_title"
             app:summary="@string/git_email_desc"/>
-		
+	
        </PreferenceCategory>
 </PreferenceScreen>
