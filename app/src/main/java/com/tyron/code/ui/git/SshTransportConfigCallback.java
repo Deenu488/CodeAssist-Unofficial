@@ -15,11 +15,12 @@ import org.eclipse.jgit.transport.SshTransport;
 import org.eclipse.jgit.transport.SshSessionFactory;
 import org.eclipse.jgit.util.FS;
 import org.eclipse.jgit.transport.Transport;
+import com.tyron.code.ApplicationLoader;
 
 public class SshTransportConfigCallback implements TransportConfigCallback {
 
 	private File sshDir;
-	private Context context;
+	
 	private final SshSessionFactory sshSessionFactory = new JschConfigSessionFactory() {
 		@Override
 		protected void configure(OpenSshConfig.Host hc, Session session) {
@@ -33,7 +34,7 @@ public class SshTransportConfigCallback implements TransportConfigCallback {
 			jSch.removeAllIdentity();
 
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-				sshDir = new File(context.getExternalFilesDir("/.ssh").getAbsolutePath());
+				sshDir = new File(ApplicationLoader.applicationContext.getExternalFilesDir("/.ssh").getAbsolutePath());
 
 			} else {
 				sshDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/.ssh");

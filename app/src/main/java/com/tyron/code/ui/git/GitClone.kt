@@ -85,7 +85,7 @@ object GitClone {
 	   val targetDir:File
 	   
        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-	   targetDir = File(context.getExternalFilesDir("/Projects"), repoName)
+	   targetDir = File(ApplicationLoader.applicationContext.getExternalFilesDir("/Projects"), repoName)
        } else {  
 	   targetDir = File(Environment.getExternalStorageDirectory().absolutePath + "/CodeAssistProjects"  , repoName)
        }
