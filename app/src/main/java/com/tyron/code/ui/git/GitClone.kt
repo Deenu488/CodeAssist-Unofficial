@@ -34,9 +34,7 @@ object GitClone {
        val sshTransportConfigCallback =  SshTransportConfigCallback()
        var mResult:  StringBuffer  =  StringBuffer()
        val sharedPreferences: SharedPreferences = ApplicationLoader.getDefaultPreferences()
-    val userName  = sharedPreferences.getString(SharedPreferenceKeys.GIT_USER_NAME,"")  
-       val userEmail  = sharedPreferences.getString(SharedPreferenceKeys.GIT_USER_EMAIL,"")  
-
+    
        fun cloneGitRepo(context:Context) {
    	   val inflater = LayoutInflater.from(context).context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater        
        inflater.inflate(R.layout.base_textinput_layout, null)
@@ -357,6 +355,10 @@ object GitClone {
        
   
        builder.setPositiveButton("Commit") { dialog, _ ->
+       
+       val userName  = sharedPreferences.getString(SharedPreferenceKeys.GIT_USER_NAME,"")  
+       val userEmail  = sharedPreferences.getString(SharedPreferenceKeys.GIT_USER_EMAIL,"")  
+
          
        val future =
 	   executeAsyncProvideError(
@@ -535,6 +537,9 @@ object GitClone {
 	 	 Toast.makeText(context,"Remote name can't be empty",Toast.LENGTH_SHORT).show()  
 	   }	 	   
     } else {
+    val userName  = sharedPreferences.getString(SharedPreferenceKeys.GIT_USER_NAME,"")  
+       
+    
        val url : String = "git@github.com:"+ userName.toString()+"/" + project.getRootFile().getName()+ ".git"
   	   val  config : StoredConfig = Git.open(project.getRootFile()).getRepository().getConfig()
        config.setString("remote", remote, "url", url)
