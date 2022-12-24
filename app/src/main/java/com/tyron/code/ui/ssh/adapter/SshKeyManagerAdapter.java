@@ -21,7 +21,7 @@ public class SshKeyManagerAdapter extends RecyclerView.Adapter<SshKeyManagerAdap
 
     private static final int TYPE_EMPTY = -1;
     private static final int TYPE_ITEM = 1;
-
+	private final int limit = 2;
     public interface OnSshKeysSelectedListener {
         void onSshKeysSelect(SshKeys sshKeys);
     }
@@ -115,8 +115,12 @@ public class SshKeyManagerAdapter extends RecyclerView.Adapter<SshKeyManagerAdap
 
     @Override
     public int getItemCount() {
-        return mSshKeys.size();
-    }
+	
+		if(mSshKeys.size() > limit){
+			return limit;
+		}
+		return mSshKeys.size();
+	}
 
     @Override
     public int getItemViewType(int position) {

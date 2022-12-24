@@ -241,10 +241,8 @@ public class ProjectSheetFragment extends BottomSheetDialogFragment {
                 FileUtils.forceDelete(project.getRootFile());
                 if (getActivity() != null) {
                     requireActivity().runOnUiThread(() -> {
-                        AndroidUtilities.showSimpleAlert(
-							requireContext(),
-							getString(R.string.success),
-							getString(R.string.delete_success));
+                        Toast toast = Toast.makeText(requireContext(), R.string.delete_success, Toast.LENGTH_LONG); 
+						toast.show();
                         loadProjects();
                     });
                 }

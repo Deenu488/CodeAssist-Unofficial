@@ -16,11 +16,14 @@ import org.eclipse.jgit.transport.SshSessionFactory;
 import org.eclipse.jgit.util.FS;
 import org.eclipse.jgit.transport.Transport;
 import com.tyron.code.ApplicationLoader;
+import com.tyron.common.SharedPreferenceKeys;
+import android.content.SharedPreferences;
 
 public class SshTransportConfigCallback implements TransportConfigCallback {
 
 	private File sshDir;
-
+	SharedPreferences sharedPreferences = ApplicationLoader.getDefaultPreferences();
+	
 	private final SshSessionFactory sshSessionFactory = new JschConfigSessionFactory() {
 		@Override
 		protected void configure(OpenSshConfig.Host hc, Session session) {
@@ -29,6 +32,8 @@ public class SshTransportConfigCallback implements TransportConfigCallback {
 
 		@Override
 		protected JSch createDefaultJSch(FS fs) throws JSchException {
+		    String	keyName  = sharedPreferences.getString(SharedPreferenceKeys.SSH_KEY_NAME,"");
+			
 			JSch jsch = new JSch();
 			JSch jSch = super.createDefaultJSch(fs);
 			jSch.removeAllIdentity();
@@ -45,7 +50,7 @@ public class SshTransportConfigCallback implements TransportConfigCallback {
 			}
 
 			jsch.setKnownHosts(sshDir.toString());
-			jSch.addIdentity(sshDir.toString() + "/id_rsa", "super-secret-passphrase".getBytes());
+			jSch.addIdentity(sshDir.toString() + "/"+ keyName, "super-secret-passphrase".getBytes());
 			return jSch;
 		}
 	};

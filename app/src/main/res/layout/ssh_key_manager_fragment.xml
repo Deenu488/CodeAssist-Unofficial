@@ -38,13 +38,12 @@
 			android:nestedScrollingEnabled="false"
 			android:paddingBottom="55dp"
 			android:scrollbars="none"
-			tools:itemCount="10"
+			tools:itemCount="2"
 			tools:listitem="@layout/ssh_key_item" />
 
 		<include
 			android:id="@+id/empty_container"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
+			
 			layout="@layout/loading_layout" />
 
 		<include
@@ -62,6 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
+		android:visibility="gone"
         app:srcCompat="@drawable/ic_baseline_add_24"
         android:contentDescription="" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

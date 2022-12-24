@@ -22,4 +22,5 @@ public class SharedPreferenceKeys {
     public static final String GIT_USER_NAME = "user_name";
 	public static final String GIT_USER_EMAIL = "user_email";
 	public static final String SSH_KEYS= "ssh_keys";
+	public static final String SSH_KEY_NAME= "ssh_key_name";
 	}

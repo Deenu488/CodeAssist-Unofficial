@@ -146,9 +146,9 @@ public class ApplicationLoader extends Application {
             manager.registerAction(CompileActionGroup.ID, new CompileActionGroup());
             manager.registerAction(ProjectActionGroup.ID, new ProjectActionGroup());
             manager.registerAction(PreviewLayoutAction.ID, new PreviewLayoutAction());
-            manager.registerAction(OpenSettingsAction.ID, new OpenSettingsAction());
             manager.registerAction(FormatAction.ID, new FormatAction());
 			manager.registerAction(SSHKeyManagerAction.ID, new SSHKeyManagerAction());
+			manager.registerAction(OpenSettingsAction.ID, new OpenSettingsAction());
             manager.registerAction(DebugActionGroup.ID, new DebugActionGroup());
 
             // editor tab actions
