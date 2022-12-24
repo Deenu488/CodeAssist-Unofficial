@@ -30,6 +30,7 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 import com.tyron.code.ApplicationLoader;
+import android.graphics.drawable.BitmapDrawable;
 
 public class ProjectManagerAdapter extends RecyclerView.Adapter<ProjectManagerAdapter.ViewHolder> {
 
@@ -162,7 +163,23 @@ public class ProjectManagerAdapter extends RecyclerView.Adapter<ProjectManagerAd
         }
 
         public void bind(Project module) {
-            title.setText(module.getRootFile().getName());
+			String webp = module.getRootFile() + "/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png";
+			String pn = module.getRootFile() + "/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp";
+			
+			File  web= new File(webp);		
+			File  png= new File(pn);
+			
+			if(web.exists()) {
+				BitmapDrawable bitmapDrawable = new BitmapDrawable(ApplicationLoader.applicationContext.getResources(), web.toString()); 
+				icon.setImageDrawable(bitmapDrawable);
+			} else	if (png.exists()) {	
+			BitmapDrawable bitmapDrawable = new BitmapDrawable(ApplicationLoader.applicationContext.getResources(), png.toString()); 
+			icon.setImageDrawable(bitmapDrawable);
+			} else {
+			icon.setImageResource(R.drawable.ic_launcher);
+			}
+			
+			title.setText(module.getRootFile().getName());
 			String manifest = module.getRootFile() + "/app/src/main/AndroidManifest.xml";
 		
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();	
