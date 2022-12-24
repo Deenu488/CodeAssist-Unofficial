@@ -4,14 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content" >
 
-    <com.google.android.material.card.MaterialCardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="90dp"
         android:layout_margin="2dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:cardCornerRadius="16dp"
         app:cardElevation="2dp"
         app:cardUseCompatPadding="true" >
@@ -24,8 +21,8 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/icon"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_margin="10dp"
                 android:src="@drawable/ic_key"
                 app:shapeAppearance="@style/RoundedCorners" />
@@ -33,6 +30,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_margin="5dp"
                 android:gravity="center_vertical"
                 android:orientation="vertical" >
 
@@ -41,9 +39,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="20sp"
+                    android:textStyle="bold"
                     tools:text="SSH Keys" />
             </LinearLayout>
         </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

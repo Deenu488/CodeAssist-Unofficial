@@ -60,6 +60,7 @@ import com.tyron.code.ApplicationLoader;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import android.content.SharedPreferences;
+import android.widget.TextView;
 
 public class SshKeyManagerFragment extends Fragment {
 
@@ -121,19 +122,19 @@ public class SshKeyManagerFragment extends Fragment {
             LayoutInflater inflater = (LayoutInflater) requireContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
 			View vie  = inflater.inflate( R.layout.base_textinput_layout, null );
 			TextInputLayout layout = vie.findViewById(R.id.textinput_layout);
-			layout.setHint("Key name");		
+			layout.setHint(R.string.keyName);
 			final Editable keyName = layout.getEditText().getText();
 			
 			new MaterialAlertDialogBuilder(requireContext())
-				.setTitle("Generate Key")
+				.setTitle(R.string.generateKey)
 				.setView(vie)
-				.setPositiveButton("Generate", new DialogInterface.OnClickListener() {
+				.setPositiveButton(R.string.generate, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dia, int which) {
 						
 						generateSshKeys(keyName.toString());
-	
-					}
+						
+						}
 					})
 	     		.setNegativeButton(android.R.string.cancel, null)
 				.show();
@@ -161,12 +162,12 @@ public class SshKeyManagerFragment extends Fragment {
 		publicKey = new File(sshDir.getAbsolutePath(), keyName+ ".pub");
 		
 		if (privateKey.exists()) {
-			Toast toast = Toast.makeText(requireContext(), "Private key already exists", Toast.LENGTH_LONG); 
+			Toast toast = Toast.makeText(requireContext(),R.string.keyExists, Toast.LENGTH_LONG); 
 			toast.show();
 			return;
 			}
 		if (keyName.isEmpty()) {
-			Toast toast = Toast.makeText(requireContext(), "Key name can't be empty", Toast.LENGTH_LONG); 
+			Toast toast = Toast.makeText(requireContext(), R.string.keyEmpty, Toast.LENGTH_LONG); 
 			toast.show();
 			return;
         } else {
@@ -192,7 +193,7 @@ public class SshKeyManagerFragment extends Fragment {
 				.putString(SharedPreferenceKeys.SSH_KEY_NAME, privateKey.getName())
 				.apply();						
 				loadSshKeys();
-			Toast toast = Toast.makeText(requireContext(), "Key is loading...", Toast.LENGTH_LONG); 
+			Toast toast = Toast.makeText(requireContext(), R.string.keyLoaded, Toast.LENGTH_LONG); 
 			toast.show();
 				}}
 				
@@ -255,20 +256,40 @@ public class SshKeyManagerFragment extends Fragment {
             if (view == null) {
                 return;
             }
-
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+				sshDir = new File( requireContext().getExternalFilesDir("/.ssh").getAbsolutePath());
+			} else {
+				sshDir = new File( Environment.getExternalStorageDirectory()+ "/.ssh");
+			}
+			
             View recycler = view.findViewById(R.id.ssh_keys_recycler);
             View empty = view.findViewById(R.id.empty_ssh_keys);
 			View fab = view.findViewById(R.id.fab_add_ssh_key);
+			TextView current_key = view.findViewById(R.id.ssh_key_path);
 			fab.setVisibility(View.GONE);
+			String	keyName  = mPreferences.getString(SharedPreferenceKeys.SSH_KEY_NAME,"");
+			
             TransitionManager.beginDelayedTransition(
 				(ViewGroup) recycler.getParent(), new MaterialFade());
             if (sshkeys.size() == 0) {
                 recycler.setVisibility(View.GONE);
                 empty.setVisibility(View.VISIBLE);
 				fab.setVisibility(View.VISIBLE);
+				current_key.setVisibility(View.VISIBLE);
+				if(keyName.isEmpty()) {
+				current_key.setText("Current Key : Key is not loaded");
+				} else {
+					current_key.setText("Current Key : " + sshDir.getAbsolutePath().toString() + "/" + keyName);
+				}
             } else {
                 recycler.setVisibility(View.VISIBLE);
                 empty.setVisibility(View.GONE);
+				current_key.setVisibility(View.VISIBLE);
+				if (keyName.isEmpty()) {
+					current_key.setText("Current Key : Key is not loaded");
+				} else {
+					current_key.setText("Current Key : " + sshDir.getAbsolutePath().toString() +"/"+ keyName);
+				}
             }
         }, 300);
     }
@@ -286,6 +307,7 @@ public class SshKeyManagerFragment extends Fragment {
             View empty = view.findViewById(R.id.empty_container);
             View empty_ssh_keys= view.findViewById(R.id.empty_ssh_keys);
 			View fab = view.findViewById(R.id.fab_add_ssh_key);
+			TextView current_key = view.findViewById(R.id.ssh_key_path);
 			fab.setVisibility(View.GONE);
 			empty_ssh_keys.setVisibility(View.GONE);
 
@@ -294,10 +316,12 @@ public class SshKeyManagerFragment extends Fragment {
             if (show) {
                 recycler.setVisibility(View.GONE);
                 empty.setVisibility(View.VISIBLE);
+				current_key.setVisibility(View.VISIBLE);
             } else {
                 recycler.setVisibility(View.VISIBLE);
                 empty.setVisibility(View.GONE);
-			
+				current_key.setVisibility(View.VISIBLE);
+				empty.setVisibility(View.GONE);
             }
         }, 300);
 		
@@ -370,7 +394,8 @@ public class SshKeyManagerFragment extends Fragment {
 
 
     private void deleteSshKeys(SshKeys sshkeys) {
-
+		String	keyName  = mPreferences.getString(SharedPreferenceKeys.SSH_KEY_NAME,"");
+		
         Executors.newSingleThreadExecutor().execute(() -> {
             try {
                 FileUtils.forceDelete(sshkeys.getRootFile());
@@ -378,6 +403,10 @@ public class SshKeyManagerFragment extends Fragment {
                     requireActivity().runOnUiThread(() -> {
                         Toast toast = Toast.makeText(requireContext(), R.string.delete_success, Toast.LENGTH_LONG); 
 						toast.show();
+						if(keyName.equals(sshkeys.getRootFile().getName())) {
+							mPreferences.edit()
+								.remove(SharedPreferenceKeys.SSH_KEY_NAME).commit();			
+						}		
                         loadSshKeys();
                     });
                 }

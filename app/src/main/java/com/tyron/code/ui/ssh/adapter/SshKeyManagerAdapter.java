@@ -150,6 +150,11 @@ public class SshKeyManagerAdapter extends RecyclerView.Adapter<SshKeyManagerAdap
         }
 
         public void bind(SshKeys sshKeys) {
+			if(sshKeys.getRootFile().getName().endsWith(".key")) {
+				icon.setImageResource(R.drawable.ic_key);
+			} else if (sshKeys.getRootFile().getName().endsWith(".pub")){
+				icon.setImageResource(R.drawable.ic_pub);
+			}
             title.setText(sshKeys.getRootFile().getName());
 		}
 	}

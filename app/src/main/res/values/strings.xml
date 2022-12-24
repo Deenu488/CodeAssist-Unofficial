@@ -265,4 +265,12 @@
 	<string name="cloned_successfully">Cloned successfully</string>
 	<string name="git_clone_failed">Failed to clone git repository</string>
 	
+	<!-- SSH -->
+	<string name="keyName">Key name</string>
+	<string name="generateKey">Generate Key</string>
+	<string name="generate">Generate</string>
+	<string name="keyExists">Private key already exists</string>
+	<string name="keyEmpty">Key name can not be empty</string>
+	<string name="keyLoaded">Key is loaded</string>
+	
 </resources>
