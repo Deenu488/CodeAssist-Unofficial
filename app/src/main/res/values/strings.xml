@@ -173,10 +173,7 @@
 	<string name="git_user_email_title">User Email</string>
 	<string name="git_email_desc">Email (recorded with commits)</string>  
 	<string name="enter_email">Enter email</string>
-	<string name="ssh_key_manager">SSH Keys Manager</string>
-	<string name="ssh_keys_manager_empty">SSH Keys are empty</string>
-	<string name="ssh_key_manager_null_ssh_keys">No SSH Keys found</string>
-	
+		
     <!-- file manager menu -->
     <string name="error">Error</string>
     <string name="error_resource_name_restriction">Resource names must only contain lowercase letters (a–z), digits (0–9), and underscores.</string>
@@ -257,7 +254,7 @@
     <string name="tab_ide_logs_title">IDE Logs</string>
     <string name="tab_diagnostics_title">Diagnostics</string>
 	
-	<!-- GIT -->
+	<!-- GIT CLONE MAIN-->
 	<string name="git_clone">Clone</string>
 	<string name="git_clone_repo">Clone git repository</string>
 	<string name="git_clone_repo_url">Repository URL</string>
@@ -272,5 +269,9 @@
 	<string name="keyExists">Private key already exists</string>
 	<string name="keyEmpty">Key name can not be empty</string>
 	<string name="keyLoaded">Key is loaded</string>
+    <string name="ssh_key_manager">SSH Keys Manager</string>
+    <string name="ssh_keys_manager_empty">SSH Keys are empty</string>
+    <string name="ssh_key_manager_null_ssh_keys">No SSH Keys found</string>
+    
 	
 </resources>

@@ -53,6 +53,7 @@ import com.tyron.selection.xml.XmlExpandSelectionProvider;
 
 import com.tyron.code.event.EventManager;
 import com.tyron.code.ui.main.action.other.SSHKeyManagerAction;
+import com.tyron.code.ui.file.action.GitActionGroup;
 
 public class ApplicationLoader extends Application {
 
@@ -166,6 +167,7 @@ public class ApplicationLoader extends Application {
             if(Build.VERSION.SDK_INT<Build.VERSION_CODES.R) {
                 manager.registerAction(ImportFileActionGroup.ID,new ImportFileActionGroup());
             }
+            manager.registerAction(GitActionGroup.ID, new GitActionGroup());
 
             // java actions
             CompletionModule.registerActions(manager);
