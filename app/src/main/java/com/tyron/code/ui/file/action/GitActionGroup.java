@@ -10,12 +10,14 @@ import com.tyron.actions.Presentation;
 import com.tyron.code.R;
 import com.tyron.code.ui.file.CommonFileKeys;
 import com.tyron.code.ui.file.tree.model.TreeFile;
-import com.tyron.ui.treeview.TreeNode;
 import com.tyron.code.ui.file.action.git.GitAddToStageAction;
 import com.tyron.code.ui.file.action.git.GitResetChangesAction;
 import com.tyron.builder.project.Project;
 import java.io.File;
 import com.tyron.code.ui.file.action.git.GitRemoveFromIndex;
+import com.tyron.code.ui.file.tree.TreeFileManagerFragment;
+import com.tyron.ui.treeview.TreeNode;
+import com.tyron.ui.treeview.TreeView;
 
 public class GitActionGroup extends ActionGroup {
 
@@ -36,13 +38,29 @@ public class GitActionGroup extends ActionGroup {
         if (project == null) {
             return;
         }
-        File gitConfig = new File(project.getRootFile(), ".git/config");
-        if (gitConfig.exists()) {
+        TreeFileManagerFragment fragment =
+            (TreeFileManagerFragment) event.getRequiredData(CommonDataKeys.FRAGMENT);
+        TreeView<TreeFile> treeView = fragment.getTreeView();
+        TreeNode<TreeFile> currentNode = event.getRequiredData(CommonFileKeys.TREE_NODE);
+        
+        String path;
+        File rootProject = project.getRootFile();
+        File gitConfig = new File(rootProject+"/.git/config");
+        File currentFile = currentNode.getValue().getFile();
+        
+        if (currentFile.isDirectory()){
+            path = currentFile.getAbsolutePath().substring((rootProject.getAbsolutePath()+ "/app").lastIndexOf("/"));
+           if(path.startsWith(".git")){
+               presentation.setVisible(false);
+            } else if (path.isEmpty()){
+                presentation.setVisible(false); 
+            }
+        } else if (gitConfig.exists()){
             presentation.setVisible(true);
-        }
-        presentation.setText(event.getDataContext().getString(R.string.menu_git));
-    }
-
+        }         
+         presentation.setText(event.getDataContext().getString(R.string.menu_git));
+         }
+         
     @Override
     public AnAction[] getChildren(@Nullable AnActionEvent e) {
         return new AnAction[] { new GitAddToStageAction(), new GitResetChangesAction(), new GitRemoveFromIndex()};
