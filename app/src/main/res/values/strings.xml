@@ -262,6 +262,10 @@
 	<string name="cloned_successfully">Cloned successfully</string>
 	<string name="git_clone_failed">Failed to clone git repository</string>
 	
+    <!-- GIT MENU-->
+    <string name="added_to_staged">has been added to staged</string>
+    
+    
 	<!-- SSH -->
 	<string name="keyName">Key name</string>
 	<string name="generateKey">Generate Key</string>

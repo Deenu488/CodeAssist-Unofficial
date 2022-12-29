@@ -42,9 +42,9 @@ public class GitAddToStageAction extends FileAction {
         
         File rootProject = project.getRootFile();
         File currentFile = currentNode.getValue().getFile();
-        String path = currentFile.getAbsolutePath().substring((rootProject.getAbsolutePath()+ "/app").lastIndexOf("/"));
+        String path = currentFile.getAbsolutePath().substring((rootProject.getAbsolutePath()+ "/app").lastIndexOf("/")+1);
         
-        AddToStageTask.INSTANCE.add();
+        AddToStageTask.INSTANCE.add(project, path);
     }
 }
 

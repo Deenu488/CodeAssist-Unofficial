@@ -9,6 +9,10 @@ import com.tyron.actions.AnActionEvent;
 import com.tyron.actions.Presentation;
 import com.tyron.code.R;
 import com.tyron.ui.treeview.TreeNode;
+import com.tyron.actions.CommonDataKeys;
+import com.tyron.ui.treeview.TreeNode;
+import com.tyron.ui.treeview.TreeView;
+import com.tyron.code.ui.file.tree.TreeFileManagerFragment;
 import com.tyron.code.ui.file.CommonFileKeys;
 import com.tyron.code.ui.file.action.file.CreateDirectoryAction;
 import com.tyron.code.ui.file.action.file.CreateFileAction;
@@ -16,6 +20,7 @@ import com.tyron.code.ui.file.action.java.CreateClassAction;
 import com.tyron.code.ui.file.action.kotlin.CreateKotlinClassAction;
 import com.tyron.code.ui.file.action.xml.CreateLayoutAction;
 import com.tyron.code.ui.file.tree.model.TreeFile;
+import java.io.File;
 
 public class NewFileActionGroup extends ActionGroup {
 
@@ -30,8 +35,15 @@ public class NewFileActionGroup extends ActionGroup {
         if (data == null) {
             return;
         }
+        TreeFileManagerFragment fragment =
+            (TreeFileManagerFragment) event.getRequiredData(CommonDataKeys.FRAGMENT);
+        TreeView<TreeFile> treeView = fragment.getTreeView();
+        TreeNode<TreeFile> currentNode = event.getRequiredData(CommonFileKeys.TREE_NODE);
 
-        presentation.setVisible(true);
+        File currentFile = currentNode.getValue().getFile();
+        if (currentFile.isDirectory()){
+            presentation.setVisible(true);
+        }
         presentation.setText(event.getDataContext().getString(R.string.menu_new));
     }
 
