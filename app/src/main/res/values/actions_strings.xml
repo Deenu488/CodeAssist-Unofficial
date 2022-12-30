@@ -22,4 +22,6 @@
     <string name="menu_git_add_to_stage">Add to stage</string>
     <string name="menu_git_reset_changes">Reset changes</string>
     <string name="menu_git_remove_from_index">Remove from index</string>
+    <string name="menu_git_remove_from_index_force">Remove from index (Force)</string>
+    
 </resources>

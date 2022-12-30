@@ -21,6 +21,7 @@
 	<string name="welcome_message">Welcome to CodeAssist</string>
     <item name="more" type="string">More</item>
 	<item name="rename" type="string">Rename</item>
+    <item name="remove" type="string">Remove</item>
 	<item name="new_name" type="string">New name</item>
 	<item name="rename_success" type="string">Rename success</item>
 	<item name="copied_to_clipboard" type="string">Copied to clipboard</item>
@@ -264,7 +265,12 @@
 	
     <!-- GIT MENU-->
     <string name="added_to_staged">has been added to staged</string>
-    
+    <string name="removed_from_index">has been removed from index</string>
+    <string name="reset_changes_success">reset changes success</string>
+    <string name="remove_from_index">Remove from index</string>
+    <string name="remove_from_index_force">Remove from index(Force)</string>
+    <string name="remove_from_index_msg">Are you sure you want to remove this from index?</string>
+    <string name="remove_from_index_force_msg">Are you sure you want to remove this from working directory and index?</string>
     
 	<!-- SSH -->
 	<string name="keyName">Key name</string>

@@ -1,5 +1,5 @@
-package com.tyron.code.tasks.git
-
+package com.tyron.code.tasks.git;
+    
 import com.tyron.builder.project.Project
 import java.lang.String
 import org.eclipse.jgit.api.Git
@@ -10,12 +10,12 @@ import com.tyron.code.ApplicationLoader
 import com.tyron.code.R
 import com.tyron.code.tasks.git.ErrorOutput
 
-object AddToStageTask {
+object RemoveFromIndexForceTask {
    
-    fun add(project:Project, path:String, name:String) {
+    fun remove(project:Project, path:String, name:String) {
         val future =
        executeAsyncProvideError({   
-         Git.open(project.getRootFile()).add().addFilepattern(path.toString()).call()
+         Git.open(project.getRootFile()).rm().addFilepattern(path.toString()).call()
                 return@executeAsyncProvideError   
        },    { _, _ -> })  
        
@@ -23,7 +23,7 @@ object AddToStageTask {
        ThreadUtils.runOnUiThread {
        if (result == null || error != null) {
        ErrorOutput.ShowError(error)
-       } else {   Toast.makeText(ApplicationLoader.applicationContext, name.toString() + " " + ApplicationLoader.applicationContext.getString(R.string.added_to_staged), Toast.LENGTH_SHORT).show()      }
+       } else {   Toast.makeText(ApplicationLoader.applicationContext, name.toString() + " " + ApplicationLoader.applicationContext.getString(R.string.removed_from_index), Toast.LENGTH_SHORT).show()      }
        }
        }
 

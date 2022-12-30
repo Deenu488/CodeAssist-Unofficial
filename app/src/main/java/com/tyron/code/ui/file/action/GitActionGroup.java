@@ -14,10 +14,11 @@ import com.tyron.code.ui.file.action.git.GitAddToStageAction;
 import com.tyron.code.ui.file.action.git.GitResetChangesAction;
 import com.tyron.builder.project.Project;
 import java.io.File;
-import com.tyron.code.ui.file.action.git.GitRemoveFromIndex;
+import com.tyron.code.ui.file.action.git.GitRemoveFromIndexAction;
 import com.tyron.code.ui.file.tree.TreeFileManagerFragment;
 import com.tyron.ui.treeview.TreeNode;
 import com.tyron.ui.treeview.TreeView;
+import com.tyron.code.ui.file.action.git.GitRemoveFromIndexForceAction;
 
 public class GitActionGroup extends ActionGroup {
 
@@ -63,6 +64,6 @@ public class GitActionGroup extends ActionGroup {
          
     @Override
     public AnAction[] getChildren(@Nullable AnActionEvent e) {
-        return new AnAction[] { new GitAddToStageAction(), new GitResetChangesAction(), new GitRemoveFromIndex()};
+        return new AnAction[] { new GitAddToStageAction() , new GitRemoveFromIndexAction(),new GitRemoveFromIndexForceAction(), new GitResetChangesAction()};
     }
 }

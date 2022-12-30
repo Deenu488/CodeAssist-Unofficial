@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-
+    
     <style name="AppThemeNew" parent="Theme.Material3.Dark.NoActionBar">
         <item name="colorPrimary">@color/md_theme_dark_primary</item>
         <item name="colorOnPrimary">@color/md_theme_dark_onPrimary</item>
@@ -26,10 +27,8 @@
         <item name="colorOutline">@color/md_theme_dark_outline</item>
         <item name="colorOnSurfaceInverse">@color/md_theme_dark_inverseOnSurface</item>
         <item name="colorSurfaceInverse">@color/md_theme_dark_inverseSurface</item>
-        <!--        <item name="colorInversePrimary">@color/md_theme_dark_inversePrimary</item>-->
-        <!--        <item name="colorShadow">@color/md_theme_dark_shadow</item>-->
-        <item name="colorPrimaryInverse">@color/md_theme_dark_primaryInverse</item>
-
+        <item name="colorPrimaryInverse">@color/md_theme_dark_inversePrimary</item>
+        
         <item name="dividerColor">#555555</item>
         <item name="editorColorScheme">@style/EditorColorSchemeNight</item>
 
@@ -38,5 +37,5 @@
         <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
         <item name="android:windowLightStatusBar">false</item>
-    </style>
+    </style>    
 </resources>
