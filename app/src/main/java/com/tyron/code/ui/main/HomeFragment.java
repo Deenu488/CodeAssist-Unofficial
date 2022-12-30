@@ -84,7 +84,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import android.os.Handler;
 import android.os.Looper;
-import com.tyron.code.ui.git.GitClone;
+import com.tyron.code.tasks.git.GitCloneTask;
 
 public class HomeFragment extends Fragment {
     public static final String TAG = HomeFragment.class.getSimpleName();
@@ -156,7 +156,7 @@ public class HomeFragment extends Fragment {
                     });
 		
 		clone_git_repository.setOnClickListener(v -> {
-			GitClone.INSTANCE.cloneGitRepo((Context) requireContext());
+			GitCloneTask.INSTANCE.clone((Context) requireContext());
 		});
 		
 		project_manager.setOnClickListener(v -> {

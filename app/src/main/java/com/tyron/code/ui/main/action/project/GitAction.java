@@ -13,6 +13,7 @@ import com.tyron.code.ui.main.MainFragment;
 import com.tyron.code.ui.main.MainViewModel;
 import com.tyron.code.ui.git.GitClone;
 import com.tyron.code.ApplicationLoader;
+import com.tyron.code.tasks.git.GitTask;
 
 public class GitAction extends AnAction {
 	public static Context context;
@@ -43,7 +44,7 @@ public class GitAction extends AnAction {
 	@Override
 	public void actionPerformed(@NonNull AnActionEvent e) {
 		Context context = e.getData(CommonDataKeys.CONTEXT);
-		GitClone.INSTANCE.gitActions((Context) context, project);
+        GitTask.INSTANCE.showTasks((Context) context, project);
 	}
 	}
 	
