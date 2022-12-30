@@ -56,6 +56,7 @@ public class DeleteFileAction extends FileAction {
         new MaterialAlertDialogBuilder(fragment.requireContext())
                 .setMessage(String.format(fragment.getString(R.string.dialog_confirm_delete),
                         currentNode.getValue().getFile().getName()))
+            .setNegativeButton(android.R.string.no, null)
                 .setPositiveButton(fragment.getString(R.string.dialog_delete), (d, which) -> {
                     ProgressManager progress = ProgressManager.getInstance();
                     progress.runNonCancelableAsync(() -> {

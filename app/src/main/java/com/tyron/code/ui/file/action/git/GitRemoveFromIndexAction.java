@@ -47,10 +47,12 @@ public class GitRemoveFromIndexAction extends FileAction {
         File currentFile = currentNode.getValue().getFile();
         String path = currentFile.getAbsolutePath().substring((rootProject.getAbsolutePath()+ "/app").lastIndexOf("/")+1);
         String name = currentFile.getName();
+        String message =context.getString(R.string.remove_from_index_msg, name);
+        
 
         new MaterialAlertDialogBuilder(context)
             .setTitle(R.string.remove_from_index)
-            .setMessage(R.string.remove_from_index_msg)
+            .setMessage(message)
             .setPositiveButton(R.string.remove,
                                (d, w) -> RemoveFromIndexTask.INSTANCE.remove(project, path, name))
         .setNegativeButton(android.R.string.cancel, null)

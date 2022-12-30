@@ -269,8 +269,8 @@
     <string name="reset_changes_success">reset changes success</string>
     <string name="remove_from_index">Remove from index</string>
     <string name="remove_from_index_force">Remove from index(Force)</string>
-    <string name="remove_from_index_msg">Are you sure you want to remove this from index?</string>
-    <string name="remove_from_index_force_msg">Are you sure you want to remove this from working directory and index?</string>
+    <string name="remove_from_index_msg">Are you sure you want to remove %1$s from index?</string>
+    <string name="remove_from_index_force_msg">Are you sure you want to remove %1$s from working directory and index?</string>
     
 	<!-- SSH -->
 	<string name="keyName">Key name</string>
