@@ -1,4 +1,4 @@
-package com.tyron.code.tasks.git;
+package com.tyron.code.tasks.git
 
 import com.tyron.builder.project.Project
 import java.lang.String
@@ -9,10 +9,11 @@ import android.widget.Toast
 import com.tyron.code.ApplicationLoader
 import com.tyron.code.R
 import com.tyron.code.tasks.git.ErrorOutput
+import android.content.Context
 
 object ResetChangesTask {
    
-    fun reset(project:Project, path:String, name:String) {
+    fun reset(project:Project, path:String, context:Context) {
         val future =
        executeAsyncProvideError({   
          Git.open(project.getRootFile()).checkout().addPath(path.toString()).call()
@@ -22,8 +23,8 @@ object ResetChangesTask {
        future.whenComplete { result, error ->
        ThreadUtils.runOnUiThread {
        if (result == null || error != null) {
-       ErrorOutput.ShowError(error)
-       } else {   Toast.makeText(ApplicationLoader.applicationContext, name.toString() + " " + ApplicationLoader.applicationContext.getString(R.string.reset_changes_success), Toast.LENGTH_SHORT).show()      }
+       ErrorOutput.ShowError(error, context)
+       } else {   Toast.makeText(context, context.getString(R.string.reset_changes_success), Toast.LENGTH_SHORT).show()      }
        }
        }
 

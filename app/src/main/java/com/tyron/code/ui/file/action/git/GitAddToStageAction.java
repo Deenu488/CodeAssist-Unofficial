@@ -19,6 +19,7 @@ public class GitAddToStageAction extends FileAction {
 
     public static final String ID = "fileManagerGitAddToStageAction";
     private Project project;
+    private Context context;
     @Override
     public String getTitle(Context context) {
         return context.getString(R.string.menu_git_add_to_stage);
@@ -35,6 +36,7 @@ public class GitAddToStageAction extends FileAction {
         if (project == null) {
             return;
         }
+        context = e.getData(CommonDataKeys.CONTEXT);
         TreeFileManagerFragment fragment =
             (TreeFileManagerFragment) e.getRequiredData(CommonDataKeys.FRAGMENT);
         TreeView<TreeFile> treeView = fragment.getTreeView();
@@ -45,7 +47,7 @@ public class GitAddToStageAction extends FileAction {
         String path = currentFile.getAbsolutePath().substring((rootProject.getAbsolutePath()+ "/app").lastIndexOf("/")+1);
         String name = currentFile.getName();
         
-        AddToStageTask.INSTANCE.add(project, path, name);
+        AddToStageTask.INSTANCE.add(project, path, name, context);
     }
 }
 

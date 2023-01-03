@@ -18,6 +18,7 @@ import com.tyron.code.ui.file.tree.TreeFileManagerFragment;
 public class GitResetChangesAction extends FileAction {
     public static final String ID = "fileManagerGitResetChangesAction";
     private Project project;
+    private Context context;
 
     @Override
     public String getTitle(Context context) {
@@ -35,6 +36,7 @@ public class GitResetChangesAction extends FileAction {
         if (project == null) {
             return;
         }
+        context = e.getData(CommonDataKeys.CONTEXT);
         TreeFileManagerFragment fragment =
             (TreeFileManagerFragment) e.getRequiredData(CommonDataKeys.FRAGMENT);
         TreeView<TreeFile> treeView = fragment.getTreeView();
@@ -43,9 +45,8 @@ public class GitResetChangesAction extends FileAction {
         File rootProject = project.getRootFile();
         File currentFile = currentNode.getValue().getFile();
         String path = currentFile.getAbsolutePath().substring((rootProject.getAbsolutePath()+ "/app").lastIndexOf("/")+1);
-        String name = currentFile.getName();
-
-        ResetChangesTask.INSTANCE.reset(project, path, name);
+        
+        ResetChangesTask.INSTANCE.reset(project, path, context);
         
     }
 }

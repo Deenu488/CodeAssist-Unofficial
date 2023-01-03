@@ -54,7 +54,7 @@ public class GitRemoveFromIndexForceAction extends FileAction {
             .setTitle(R.string.remove_from_index_force)
             .setMessage(message)
             .setPositiveButton(R.string.remove,
-                               (d, w) -> RemoveFromIndexForceTask.INSTANCE.remove(project, path, name))
+                               (d, w) -> RemoveFromIndexForceTask.INSTANCE.remove(project, path, name, context))
         .setNegativeButton(android.R.string.cancel, null)
             .show();    
         

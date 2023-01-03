@@ -1,12 +1,13 @@
 package com.tyron.code.tasks.git
 
-import com.tyron.code.ApplicationLoader
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import android.content.Context
 
 object  ErrorOutput {
     
-       fun ShowError(error: Throwable) {
-       val builder = MaterialAlertDialogBuilder(ApplicationLoader.applicationContext)
+       fun ShowError(error: Throwable, context:Context) {
+     
+       val builder = MaterialAlertDialogBuilder(context)
        builder.setMessage(error.localizedMessage)
        builder.show()
     } 

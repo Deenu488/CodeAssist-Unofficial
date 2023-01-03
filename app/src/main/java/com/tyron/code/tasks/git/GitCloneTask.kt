@@ -1,4 +1,4 @@
-package com.tyron.code.tasks.git;
+package com.tyron.code.tasks.git
 
 import android.os.Build
 import android.content.Context
@@ -11,7 +11,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.os.Environment
 import java.io.File
 import org.eclipse.jgit.api.Git
-import org.eclipse.jgit.lib.ProgressMonitor
 import com.tyron.code.util.executeAsyncProvideError
 import android.widget.TextView
 import com.blankj.utilcode.util.ThreadUtils
@@ -20,6 +19,7 @@ import com.tyron.builder.project.Project
 import android.widget.Toast
 import com.tyron.code.ui.ssh.callback.SshTransportConfigCallback
 import com.tyron.code.ApplicationLoader
+import com.tyron.code.tasks.git.GitProgressMonitor
 
 object GitCloneTask {
 
@@ -78,7 +78,7 @@ object GitCloneTask {
        targetDir = File(Environment.getExternalStorageDirectory().absolutePath + "/CodeAssistProjects"  , repoName)
        }
        
-       val progress = GitCloneProgressMonitor(binding.progress, binding.message)
+       val progress = GitProgressMonitor(binding.progress, binding.message)
        var git: Git? = null
         
        val future = 
@@ -111,6 +111,7 @@ object GitCloneTask {
        builder.setPositiveButton(android.R.string.cancel) { iface, _ ->
        iface.dismiss()
        progress.cancel()
+       Toast.makeText(context, R.string.git_clone_cancled, Toast.LENGTH_SHORT).show()
        git?.close()
        future.cancel(true)
        }
@@ -143,34 +144,6 @@ object GitCloneTask {
        builder.setMessage(error.localizedMessage)
        builder.setPositiveButton(android.R.string.ok, null)
        builder.show()
-       }
-       
-       class GitCloneProgressMonitor(val progress: LinearProgressIndicator, val message: TextView) :
-       ProgressMonitor {
-
-       private var cancelled = false
-
-       fun cancel() {
-       cancelled = true
-       }
-
-       override fun start(totalTasks: Int) {
-       ThreadUtils.runOnUiThread { progress.max = totalTasks }
-       }
-  
-       override fun beginTask(title: String?, totalWork: Int) {
-       ThreadUtils.runOnUiThread { message.text = title }
-       }
-
-       override fun update(completed: Int) {
-       ThreadUtils.runOnUiThread { progress.progress = completed }
-       }
-
-       override fun endTask() {}
-
-       override fun isCancelled(): Boolean {
-       return cancelled || Thread.currentThread().isInterrupted
-       }
        }
        }
 

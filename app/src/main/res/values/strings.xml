@@ -262,17 +262,39 @@
 	<string name="git_clone_in_progress">Cloning repository</string>
 	<string name="cloned_successfully">Cloned successfully</string>
 	<string name="git_clone_failed">Failed to clone git repository</string>
-	
-    <!-- GIT MENU-->
+    <string name="git_clone_cancled">Cloning cancled</string>
+    
+    <!-- GIT-->
     <string name="added_to_staged">has been added to staged</string>
+    <string name="all_files_added_to_staged">All files has been added to staged</string>
     <string name="removed_from_index">has been removed from index</string>
-    <string name="reset_changes_success">reset changes success</string>
+    <string name="reset_changes_success">Reset changes success</string>
     <string name="remove_from_index">Remove from index</string>
-    <string name="remove_from_index_force">Remove from index(Force)</string>
+    <string name="remove_from_index_force">Remove from index (Force)</string>
     <string name="remove_from_index_msg">Are you sure you want to remove %1$s from index?</string>
     <string name="remove_from_index_force_msg">Are you sure you want to remove %1$s from working directory and index?</string>
+    <string name="title_fetching">Fetching...</string>
+    <string name="fetch_completed">Fetch completed</string>
+    <string name="commit_message">Commit message</string>
+    <string name="commit_changes">Commit Changes</string>
+    <string name="title_commit">Commit</string>
+    <string name="empty_commit">Commit message can not be empty</string>
+    <string name="set_user_and_password">Please set Username and Email in settings</string>
+    <string name="reset_changes">Reset Changes</string>
+    <string name="title_reset">Reset</string>
+    <string name="all_changes_discarded">All changes has been discarded</string>
+    <string name="reset_confirm">Are you sure you want to discard all the changes?</string>
+    <string name="pulling">Pulling...</string>
+    <string name="pull_completed">Pull completed</string>
+    <string name="pushing">Pushing...</string>
+    <string name="push_completed">Push completed</string>
+    <string name="set_branch">Set branch</string>
+    <string name="title_merge">Merge</string>
+    <string name="title_branch_to_merge">Branch to Merge</string>
+    <string name="empty_branch">Branch name can not be empty</string>
+    <string name="merge_completed">Merge completed</string>
     
-	<!-- SSH -->
+    <!-- SSH -->
 	<string name="keyName">Key name</string>
 	<string name="generateKey">Generate Key</string>
 	<string name="generate">Generate</string>
