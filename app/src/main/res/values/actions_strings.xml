@@ -19,6 +19,7 @@
     <string name="menu_new_layout">New layout</string>
     <string name="error_file_creation">Unable to create file.</string>
     <string name="menu_git">Git</string>
+    <string name="menu_commit">Commit</string>
     <string name="menu_git_add_to_stage">Add to stage</string>
     <string name="menu_git_reset_changes">Reset changes</string>
     <string name="menu_git_remove_from_index">Remove from index</string>

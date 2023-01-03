@@ -19,6 +19,7 @@ import com.tyron.code.ui.file.tree.TreeFileManagerFragment;
 import com.tyron.ui.treeview.TreeNode;
 import com.tyron.ui.treeview.TreeView;
 import com.tyron.code.ui.file.action.git.GitRemoveFromIndexForceAction;
+import com.tyron.code.ui.file.action.git.GitCommitAction;
 
 public class GitActionGroup extends ActionGroup {
 
@@ -64,6 +65,6 @@ public class GitActionGroup extends ActionGroup {
          
     @Override
     public AnAction[] getChildren(@Nullable AnActionEvent e) {
-        return new AnAction[] { new GitAddToStageAction() , new GitRemoveFromIndexAction(),new GitRemoveFromIndexForceAction(), new GitResetChangesAction()};
+        return new AnAction[] { new GitAddToStageAction(), new GitCommitAction() , new GitRemoveFromIndexAction(),new GitRemoveFromIndexForceAction(), new GitResetChangesAction()};
     }
 }
