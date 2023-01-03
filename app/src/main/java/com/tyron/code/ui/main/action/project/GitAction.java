@@ -11,7 +11,6 @@ import com.tyron.builder.project.Project;
 import com.tyron.code.R;
 import com.tyron.code.ui.main.MainFragment;
 import com.tyron.code.ui.main.MainViewModel;
-import com.tyron.code.ui.git.GitClone;
 import com.tyron.code.ApplicationLoader;
 import com.tyron.code.tasks.git.GitTask;
 
