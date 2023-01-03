@@ -25,6 +25,8 @@
 	<item name="new_name" type="string">New name</item>
 	<item name="rename_success" type="string">Rename success</item>
 	<item name="copied_to_clipboard" type="string">Copied to clipboard</item>
+    <string name="add">Add</string>
+    
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>
@@ -288,12 +290,17 @@
     <string name="pull_completed">Pull completed</string>
     <string name="pushing">Pushing...</string>
     <string name="push_completed">Push completed</string>
-    <string name="set_branch">Set branch</string>
-    <string name="title_merge">Merge</string>
-    <string name="title_branch_to_merge">Branch to Merge</string>
+    <string name="branch_name">Branch name</string>
+    <string name="title_create_remove_branch">Create/Remove Branch</string>
     <string name="empty_branch">Branch name can not be empty</string>
-    <string name="merge_completed">Merge completed</string>
-    
+    <string name="branch_created_successfully">Branch created successfully</string>
+    <string name="branch_removed_successfully">Branch removed successfully</string>
+    <string name="remote_name">Remote name</string>
+    <string name="title_add_remove_remote">Add/Remove Remote</string>
+    <string name="empty_remote">Remote name can not be empty</string>
+    <string name="remote_added_successfully">Remote added successfully</string>
+    <string name="remote_removed_successfully">Remote removed successfully</string>
+   
     <!-- SSH -->
 	<string name="keyName">Key name</string>
 	<string name="generateKey">Generate Key</string>

@@ -537,6 +537,7 @@ object GitClone {
 	 	 Toast.makeText(context,"Remote name can't be empty",Toast.LENGTH_SHORT).show()  
 	   }	 	   
     } else {
+  
     val userName  = sharedPreferences.getString(SharedPreferenceKeys.GIT_USER_NAME,"")  
        
     
