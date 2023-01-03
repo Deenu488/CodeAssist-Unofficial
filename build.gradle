@@ -37,5 +37,5 @@ ext {
 
     applicationId = "com.tyron.code"
     versionCode = 29
-    versionName = "0.2.9"
+    versionName = "0.2.9-alpha01"
 }
