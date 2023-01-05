@@ -26,6 +26,11 @@
 	<item name="rename_success" type="string">Rename success</item>
 	<item name="copied_to_clipboard" type="string">Copied to clipboard</item>
     <string name="add">Add</string>
+    <string name="added_successfully">Added successfully</string>
+    <string name="extract_icons">Extract icons</string>
+    <string name="extract">Extract</string>
+    <string name="confirm_extract">Do you want to extract all icons from CodeAssist?</string>
+    <string name="extracting_icons">Extracting icons</string>
     
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
@@ -76,9 +81,11 @@
     <string name="menu_run">Run</string>
     <string name="menu_refresh">Refresh module</string>
     <string name="menu_library_manager">Library manager</string>
+    <string name="menu_drawable_manager">Drawable manager</string>
+    <string name="menu_icon_manager">Icon manager</string>
     <string name="menu_format">Format</string>
     <string name="menu_settings">Settings</string>
-
+     
     <!-- preferences -->
     <string name="settings_title_application">Application</string>
     <string name="settings_desc_application">General application preferences</string>
@@ -308,9 +315,16 @@
 	<string name="keyExists">Private key already exists</string>
 	<string name="keyEmpty">Key name can not be empty</string>
 	<string name="keyLoaded">Key is loaded</string>
-    <string name="ssh_key_manager">SSH Keys Manager</string>
+    <string name="ssh_key_manager">SSH Keys manager</string>
     <string name="ssh_keys_manager_empty">SSH Keys are empty</string>
     <string name="ssh_key_manager_null_ssh_keys">No SSH Keys found</string>
     
-	
+    <!-- Icon Manager -->
+    <string name="icon_manager_empty">Icons folder is empty</string>
+    <string name="icon_manager_null_icons">No Icons found</string>
+ 
+    <!-- Drawable Manager -->
+    <string name="drawable_manager_empty">Drawable folder is empty</string>
+    <string name="drawable_manager_null_drawables">No drawable found</string>
+    
 </resources>

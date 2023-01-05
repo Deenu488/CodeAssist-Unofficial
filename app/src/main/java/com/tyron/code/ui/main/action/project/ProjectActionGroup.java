@@ -33,11 +33,17 @@ public class ProjectActionGroup extends ActionGroup {
         }
 		
 		event.getPresentation()
-			.setVisible(true);
+			    .setVisible(true);
         event.getPresentation()
                 .setVisible(true);
         event.getPresentation()
                 .setEnabled(true);
+        event.getPresentation()
+                .setEnabled(true);
+        event.getPresentation()
+                .setEnabled(true);         
+        event.getPresentation()
+                .setEnabled(true);                  
         event.getPresentation()
                 .setText(context.getString(R.string.item_project));
         event.getPresentation()
@@ -52,6 +58,6 @@ public class ProjectActionGroup extends ActionGroup {
     @Override
     public AnAction[] getChildren(@Nullable AnActionEvent e) {
         return new AnAction[]{new SaveAction(), new RefreshProjectAction(),
-			new OpenLibraryManagerAction(),new GitAction()};
+			new OpenLibraryManagerAction(), new DrawableManagerAction(), new IconManagerAction(), new GitAction()};
     }
 }

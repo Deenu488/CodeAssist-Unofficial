@@ -15,18 +15,19 @@ import com.tyron.code.ApplicationLoader;
 import com.tyron.code.tasks.git.GitTask;
 
 public class GitAction extends AnAction {
-	public static Context context;
-	private Project project;
+	
+    private Project project;
+    
     @Override
     public void update(@NonNull AnActionEvent event) {
         Presentation presentation = event.getPresentation();
         presentation.setVisible(false);
-			
+        Context context = event.getData(CommonDataKeys.CONTEXT);
         if (!ActionPlaces.MAIN_TOOLBAR.equals(event.getPlace())) {
             return;
         }
 
-         project = event.getData(CommonDataKeys.PROJECT);
+        project = event.getData(CommonDataKeys.PROJECT);
         if (project == null) {
             return;
         }
@@ -37,7 +38,7 @@ public class GitAction extends AnAction {
         }
 
         presentation.setVisible(true);
-        presentation.setText("Git");
+        presentation.setText(context.getString(R.string.menu_git));
     }
 
 	@Override
