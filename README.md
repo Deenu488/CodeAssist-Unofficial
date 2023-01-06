@@ -17,6 +17,8 @@
 ![CI](https://github.com/Deenu143/CodeAssist-ALPHA-0.2.9/actions/workflows/build-apk.yml/badge.svg)
 [![Total downloads](https://img.shields.io/github/downloads/Deenu143/CodeAssist-ALPHA-0.2.9/total)](https://github.com/Deenu143/CodeAssist-ALPHA-0.2.9/releases)
 ![Commit Activity](https://img.shields.io/github/commit-activity/m/Deenu143/CodeAssist-ALPHA-0.2.9)
+<img src="https://img.shields.io/github/v/release/Deenu143/CodeAssist-ALPHA-0.2.9?include_prereleases&amp;label=latest%20release" alt="Latest release">
+
   <h2>A javac APIs-based code editor that supports building Android apps.</h2>
 
 </div>
@@ -95,5 +97,4 @@ Clone this repository to your local device and then open it on Android Studio.
 
 - Ilyasse Salama
 
-<img style="border-radius: 30px; width: 100%; height: 100%" src="https://krishnavyshak.github.io/info_codeassist_1.png">
 # CodeAssist-ALPHA-0.2.9
