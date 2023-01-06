@@ -10,9 +10,10 @@
 </div>
 
 <div align='center'>
-  
+ 
 [![stability-alpha](https://img.shields.io/badge/stability-alpha-f4d03f.svg)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#alpha)
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da)](https://discord.gg/pffnyE6prs)
+<img src="https://github.com/MrCode403/CodeAssist-/actions/workflows/build-apk.yml/badge.svg" alt="Builds and tests">
 
   <h2>A javac APIs-based code editor that supports building Android apps.</h2>
 
