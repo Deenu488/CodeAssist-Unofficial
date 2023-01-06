@@ -15,7 +15,7 @@
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da)](https://discord.gg/pffnyE6prs)
 ![Repository Size](https://img.shields.io/github/repo-size/Deenu143/CodeAssist-ALPHA-0.2.9)
 ![CI](https://github.com/Deenu143/CodeAssist-ALPHA-0.2.9/actions/workflows/build-apk.yml/badge.svg)
-
+[![Total downloads](https://img.shields.io/github/downloads/Deenu143/CodeAssist-ALPHA-0.2.9/total)](https://github.com/Deenu143/CodeAssist-ALPHA-0.2.9/releases)
   <h2>A javac APIs-based code editor that supports building Android apps.</h2>
 
 </div>
