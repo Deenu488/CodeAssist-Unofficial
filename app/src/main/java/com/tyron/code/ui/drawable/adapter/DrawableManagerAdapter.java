@@ -175,7 +175,9 @@ public class DrawableManagerAdapter extends RecyclerView.Adapter<DrawableManager
           
              File icon_cache= ApplicationLoader.applicationContext.getExternalFilesDir("icon_cache");
           
-             if (icon_cache.exists()){} else {icon_cache.mkdirs();}  
+             if (icon_cache.exists()){
+              
+             } else {icon_cache.mkdirs();}  
              
              File output =new File(icon_cache.getAbsolutePath() , drawables.getRootFile().getName().replace(".xml", ".svg"));
                 Vector2Svg converter = new Vector2Svg(new File(drawables.getRootFile().getAbsolutePath()), output);
@@ -189,6 +191,7 @@ public class DrawableManagerAdapter extends RecyclerView.Adapter<DrawableManager
                             SVG svg = SVG.getFromInputStream(fileInputStream);
                             d = new PictureDrawable(svg.renderToPicture());
                             drawable.setImageDrawable(d);
+                            icon_cache.deleteOnExit();
                         } catch (SVGParseException e) {
                         }
                     } catch (FileNotFoundException e) {
