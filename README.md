@@ -55,6 +55,8 @@
 
 - [ ] Lint 
 
+- [x] Git Integration
+
 <img style=" width: 100%;" src=".github/resources/images/hr.jpg">
 
 ## CodeAssist Community
