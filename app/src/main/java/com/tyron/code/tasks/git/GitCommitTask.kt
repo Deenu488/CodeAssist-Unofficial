@@ -31,7 +31,7 @@ object GitCommitTask {
        val builder = MaterialAlertDialogBuilder(context)
        builder.setTitle(R.string.commit_changes)
        builder.setView(binding.root)
-       builder.setPositiveButton(R.string.title_commit) { dialog, _ ->
+       builder.setPositiveButton(R.string.title_commit) { _, _ ->
        
        val userName  = sharedPreferences.getString(SharedPreferenceKeys.GIT_USER_NAME,"")  
        val userEmail  = sharedPreferences.getString(SharedPreferenceKeys.GIT_USER_EMAIL,"")  

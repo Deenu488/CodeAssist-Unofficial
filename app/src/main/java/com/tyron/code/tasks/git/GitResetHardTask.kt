@@ -18,7 +18,7 @@ object GitResetHardTask {
        val builder = MaterialAlertDialogBuilder(context)
        builder.setTitle(R.string.reset_changes)
        builder.setMessage(R.string.reset_confirm)
-       builder.setPositiveButton(R.string.title_reset) { dialog, _ ->
+       builder.setPositiveButton(R.string.title_reset) { _, _ ->
          
        val future =
        executeAsyncProvideError( {

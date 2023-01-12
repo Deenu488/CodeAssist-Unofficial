@@ -6,7 +6,6 @@ import java.io.File;
 import com.tyron.actions.AnActionEvent;
 import androidx.annotation.NonNull;
 import com.tyron.code.R;
-import com.tyron.code.tasks.git.CommitTask;
 import com.tyron.builder.project.Project;
 import com.tyron.actions.CommonDataKeys;
 import com.tyron.code.ui.file.CommonFileKeys;
@@ -14,6 +13,7 @@ import com.tyron.code.ui.file.tree.model.TreeFile;
 import com.tyron.ui.treeview.TreeNode;
 import com.tyron.ui.treeview.TreeView;
 import com.tyron.code.ui.file.tree.TreeFileManagerFragment;
+import com.tyron.code.tasks.git.GitCommitTask;
 
 public class GitCommitAction extends FileAction {
 
@@ -37,16 +37,7 @@ public class GitCommitAction extends FileAction {
             return;
         }
         context = e.getData(CommonDataKeys.CONTEXT);
-        TreeFileManagerFragment fragment =
-            (TreeFileManagerFragment) e.getRequiredData(CommonDataKeys.FRAGMENT);
-        TreeView<TreeFile> treeView = fragment.getTreeView();
-        TreeNode<TreeFile> currentNode = e.getRequiredData(CommonFileKeys.TREE_NODE);
-
-        File rootProject = project.getRootFile();
-        File currentFile = currentNode.getValue().getFile();
-        String path = currentFile.getAbsolutePath().substring((rootProject.getAbsolutePath()+ "/app").lastIndexOf("/")+1);
-        String name = currentFile.getName();
-        CommitTask.INSTANCE.addcommit(project, path, name, context);
+        GitCommitTask.INSTANCE.commit(project, context);
  
     }
 }
