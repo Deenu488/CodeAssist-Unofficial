@@ -6,7 +6,7 @@
 
 ### Added BuildConfig Task
 
-### Added Custom Java Target ans Source Version 
+### Added Custom Java Target And Source Version
 
 ### Added Mudule Types 
  
