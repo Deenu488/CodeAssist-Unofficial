@@ -102,11 +102,10 @@ public class AabTask extends Task<AndroidModule> {
             copyJni();
             copyDexFiles();
             baseZip();
-            copyLibraries();
-       
+            copyLibraries();     
             aab();
-           // buildApks();
-          //  extractApks();
+            buildApks();
+            extractApks();
         } catch (SignedJarBuilder.IZipEntryFilter.ZipAbortException e) {
             String message = e.getMessage();
             if (e instanceof DuplicateFileException) {
@@ -171,30 +170,8 @@ public class AabTask extends Task<AndroidModule> {
 
     private void buildApks() throws CompilationFailedException {
         getLogger().debug("Building Apks");
-       /* List<String> args = new ArrayList<>();
-        args.add("dalvikvm");
-        args.add("-Xcompiler-option");
-        args.add("--compiler-filter=speed");
-        args.add("-Xmx256m");
-        args.add("-Djava.io.tmpdir=" + BuildModule.getContext().getCacheDir().getAbsolutePath());
-        args.add("-cp");
-        args.add(BuildModule.getContext().getFilesDir() + "/bundletool.jar");
-        args.add("com.android.tools.build.bundletool.BundleToolMain");
-        args.add("build-apks");
-        args.add("--bundle=" + mBinDir.getAbsolutePath() + "/module.aab");
-        args.add("--output=" + mBinDir.getAbsolutePath() + "/App.apks");
-        args.add("--mode=universal");
-        args.add("--aapt2=" + BuildModule.getContext().getApplicationInfo().nativeLibraryDir + "/libaapt2.so");
-
-
-        BinaryExecutor executor = new BinaryExecutor();
-        executor.setCommands(args);
-        if (!executor.execute().isEmpty()) {
-            throw new CompilationFailedException(executor.getLog());
-        }*/
-		BundleTool signer = new BundleTool(mOutputApk.getAbsolutePath(),
+   		BundleTool signer = new BundleTool(mOutputApk.getAbsolutePath(),
 										   mOutputApks.getAbsolutePath());
-
         try {
             signer.apk();
         } catch (Exception e) {
@@ -209,27 +186,8 @@ public class AabTask extends Task<AndroidModule> {
     private void aab() throws CompilationFailedException {
         getLogger().debug("Generating AAB.");
 
-     /*   List<String> args = new ArrayList<>();
-        args.add("dalvikvm");
-        args.add("-Xcompiler-option");
-        args.add("--compiler-filter=speed");
-        args.add("-Xmx256m");
-        args.add("-Djava.io.tmpdir=" + BuildModule.getContext().getCacheDir().getAbsolutePath());
-        args.add("-cp");
-        args.add(BuildModule.getContext().getFilesDir() + "/bundletool.jar");
-        args.add("com.android.tools.build.bundletool.BundleToolMain");
-        args.add("build-bundle");
-        args.add("--modules=" + mBinDir.getAbsolutePath() + "/Base-Module.zip");
-        args.add("--output=" + mBinDir.getAbsolutePath() + "/module.aab");
-
-        BinaryExecutor executor = new BinaryExecutor();
-        executor.setCommands(args);
-        if (!executor.execute().isEmpty()) {
-            throw new CompilationFailedException(executor.getLog());
-        }*/
-		BundleTool signer = new BundleTool(mInputApk.getAbsolutePath(),
+ 		BundleTool signer = new BundleTool(mInputApk.getAbsolutePath(),
 										 mOutputApk.getAbsolutePath());
-
         try {
             signer.aab();
         } catch (Exception e) {
