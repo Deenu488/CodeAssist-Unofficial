@@ -37,7 +37,7 @@ public class ApkSigner {
         commands.add("--min-sdk-version");
         commands.add("21");
         commands.add("--max-sdk-version");
-        commands.add("30");
+        commands.add("33");
         commands.add("--out");
         commands.add(mApkOutputPath);
         commands.add("--in");
