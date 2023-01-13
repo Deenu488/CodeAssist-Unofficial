@@ -61,7 +61,7 @@ public abstract class BuilderImpl<T extends Module> implements Builder<T> {
         for (int i = 0, tasksSize = tasks.size(); i < tasksSize; i++) {
             Task<? super T> task = tasks.get(i);
             final float current = i;
-            getLogger().info("Running " + task.getName());
+            getLogger().info(":app:" + task.getName());
             try {
                 mMainHandler.post(() -> updateProgress(task.getName(), "Task started",
                         (int) ((current / (float) tasks.size()) * 100f)));
