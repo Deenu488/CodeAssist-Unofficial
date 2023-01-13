@@ -85,6 +85,8 @@ import java.util.concurrent.Executor;
 import android.os.Handler;
 import android.os.Looper;
 import com.tyron.code.tasks.git.GitCloneTask;
+import android.widget.TextView;
+import com.tyron.code.BuildConfig;
 
 public class HomeFragment extends Fragment {
     public static final String TAG = HomeFragment.class.getSimpleName();
@@ -98,7 +100,7 @@ public class HomeFragment extends Fragment {
 	new ActivityResultContracts.RequestMultiplePermissions();
 
     private String mPreviousPath;
-
+    private TextView app_version;
     private FilePickerDialogFixed mDirectoryPickerDialog;
 
 
@@ -143,8 +145,12 @@ public class HomeFragment extends Fragment {
 		clone_git_repository = view.findViewById(R.id.gitCloneRepo);
 		project_manager = view.findViewById(R.id.projectManager);
 		configure_settings = view.findViewById(R.id.configureSettings);
+		app_version = view.findViewById(R.id.app_version);
+       
+        String versionName = String.valueOf(BuildConfig.VERSION_NAME);
+        app_version.setText("Version " + versionName);
 		
-		create_new_project.setOnClickListener(v -> {
+        create_new_project.setOnClickListener(v -> {
 			
 			WizardFragment wizardFragment = new WizardFragment();
             wizardFragment.setOnProjectCreatedListener(this::openProject);

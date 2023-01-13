@@ -74,7 +74,7 @@ public class ModuleSettings implements SharedPreferences {
         map.put(VERSION_CODE, 1);
         map.put(ZIP_ALIGN_ENABLED, false);
         map.put(VIEW_BINDING_ENABLED, false);
-        map.put(MODULE_TYPE, "android_app");
+        map.put(MODULE_TYPE, "android_application");
         return map;
     }
 

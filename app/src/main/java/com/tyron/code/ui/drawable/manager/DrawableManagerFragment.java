@@ -41,6 +41,13 @@ import java.util.Comparator;
 import com.tyron.code.ui.drawable.adapter.DrawableManagerAdapter;
 import com.tyron.code.ui.drawable.Drawables;
 import com.tyron.code.ui.project.ProjectManager;
+import android.text.Editable;
+import java.io.IOException;
+import android.widget.Toast;
+import android.content.DialogInterface;
+import android.content.Context;
+import android.os.Build;
+import android.os.Environment;
 
 public class DrawableManagerFragment extends Fragment {
     
@@ -79,7 +86,7 @@ public class DrawableManagerFragment extends Fragment {
         toolbar.setOnMenuItemClickListener(menu -> getParentFragmentManager().popBackStackImmediate());
       
         mAdapter = new DrawableManagerAdapter();
-      //  mAdapter.setOnDrawableSelectedListener(this::showDialog);
+        mAdapter.setOnDrawableSelectedListener(this::showDialog);
         mRecyclerView = view.findViewById(R.id.recyclerView);
         mRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 4));
         mRecyclerView.setAdapter(mAdapter);
@@ -188,4 +195,110 @@ public class DrawableManagerFragment extends Fragment {
             }
         }, 300);
     }
+    
+    private boolean showDialog(final Drawables drawable) {
+        String[] option = {"Rename", "Delete"};        
+        new MaterialAlertDialogBuilder(requireContext())
+            .setItems(option, new DialogInterface.OnClickListener() {           
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which) {
+                        case 0:
+                            LayoutInflater inflater = (LayoutInflater) requireContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+                            View v = inflater.inflate( R.layout.base_textinput_layout, null );
+                            TextInputLayout layout = v.findViewById(R.id.textinput_layout);
+                            layout.setHint(R.string.new_name);
+                            final Editable rename = layout.getEditText().getText();
+
+                            new MaterialAlertDialogBuilder(requireContext())
+                                .setTitle(R.string.rename)
+                                .setView( v)
+                                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+
+                                    @Override
+                                    public void onClick(DialogInterface dia, int which) {
+                                        try {
+                                         
+                                            String path =  ProjectManager.getInstance().getCurrentProject().getRootFile().getAbsolutePath() + "/app/src/main/res/drawable";
+                                            
+                                            File oldDir = drawable.getRootFile();
+                                            File newDir = new File(path + "/" + rename);
+                                            if (newDir.exists()) {
+                                                throw new IllegalArgumentException();
+                                            }else{
+                                                oldDir.renameTo(newDir);
+                                            }
+
+                                            if (getActivity() != null) {
+                                                requireActivity().runOnUiThread(() -> {
+                                                    AndroidUtilities.showSimpleAlert(
+                                                        requireContext(),
+                                                        getString(R.string.success),
+                                                        getString(R.string.rename_success));
+                                                    loadDrwables();
+                                                });
+                                            }
+                                        } catch (Exception e) {
+                                            if (getActivity() != null) {
+                                                requireActivity().runOnUiThread(() ->
+                                                AndroidUtilities.showSimpleAlert(requireContext(),
+                                                                                 getString(R.string.error),
+                                                                                 e.getMessage()));
+                                            }
+                                        }
+                                    }
+                                })
+
+                                .setNegativeButton(android.R.string.cancel, null)
+                                .show();
+
+
+                            break;
+
+                        case 1:
+                            String message = getString(R.string.dialog_confirm_delete,
+                                                       drawable.getRootFile().getName());
+                            new MaterialAlertDialogBuilder(requireContext())
+                                .setTitle(R.string.dialog_delete)
+                                .setMessage(message)
+                                .setPositiveButton(android.R.string.yes,
+                                                   (d, w) -> deleteDrawable(drawable))
+                            .setNegativeButton(android.R.string.no, null)
+                                .show();
+                            break;  
+
+                         
+                    }
+                }
+            })
+            .show();        
+
+        return true;    
+
+    }
+    
+    private void deleteDrawable(Drawables drawable) {
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try {
+                FileUtils.forceDelete(drawable.getRootFile());
+                if (getActivity() != null) {
+                    requireActivity().runOnUiThread(() -> {
+                        Toast toast = Toast.makeText(requireContext(), R.string.delete_success, Toast.LENGTH_LONG); 
+                        toast.show();
+                        loadDrwables();
+                    });
+                }
+            } catch (IOException e) {
+                if (getActivity() != null) {
+                    requireActivity().runOnUiThread(() ->
+                    AndroidUtilities.showSimpleAlert(requireContext(),
+                                                     getString(R.string.error),
+                                                     e.getMessage()));
+                }
+            }
+        });
+    }
+
+    
     }

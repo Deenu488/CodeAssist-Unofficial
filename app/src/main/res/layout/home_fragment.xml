@@ -61,7 +61,7 @@
 				app:layout_constraintLeft_toLeftOf="parent"
 				app:layout_constraintRight_toRightOf="parent"
 				app:layout_constraintTop_toBottomOf="@+id/app_title"
-				android:text="Version 0.2.9-alpha01"
+				android:text="app_version"
 				android:textAppearance="@style/TextAppearance.Material3.TitleSmall"/>
 
 			<com.google.android.material.card.MaterialCardView
