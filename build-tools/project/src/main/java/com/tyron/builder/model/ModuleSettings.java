@@ -69,7 +69,7 @@ public class ModuleSettings implements SharedPreferences {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put(USE_R8, false);
         map.put(MIN_SDK_VERSION, 21);
-        map.put(TARGET_SDK_VERSION, 30);
+        map.put(TARGET_SDK_VERSION, 33);
         map.put(VERSION_NAME, "1.0");
         map.put(VERSION_CODE, 1);
         map.put(ZIP_ALIGN_ENABLED, false);
