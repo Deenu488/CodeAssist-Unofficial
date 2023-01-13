@@ -42,7 +42,7 @@ public class ProjectBuilder {
             String moduleType = module.getSettings()
                     .getString(ModuleSettings.MODULE_TYPE, "android_app");
             switch (Objects.requireNonNull(moduleType)) {
-                case "library":
+                case "java_library":
                     builder = new JarBuilder(mProject, (JavaModule) module, mLogger);
                     break;
                 default:
