@@ -53,7 +53,7 @@ public class GenerateBuildConfigReleaseTask extends Task<AndroidModule> {
             "package " + getModule().getPackageName() + ";\n" + 
             "\n" +  
             "public final class BuildConfig {" + "\n" +
-            "    public static final boolean DEBUG = " + "false"  + ";\n" +
+            "    public static final boolean DEBUG = " + "false" + ";\n" +
             "    public static final String APPLICATION_ID = " + "\"$package_name\"" .replace("$package_name", getModule().getPackageName())  + ";\n" +
             "    public static final String BUILD_TYPE = " + "\"release\"" + ";\n" +
             "    public static final int VERSION_CODE = " + getModule().getSettings().getInt(ModuleSettings.VERSION_CODE, 1) + ";\n" +

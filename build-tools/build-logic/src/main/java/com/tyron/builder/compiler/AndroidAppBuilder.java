@@ -41,12 +41,12 @@ public class AndroidAppBuilder extends BuilderImpl<AndroidModule> {
         tasks.add(new CleanTask(getProject(), module, logger));
         tasks.add(new CheckLibrariesTask(getProject(), module, logger));
         tasks.add(new ManifestMergeTask(getProject(), module, logger));
-        tasks.add(new GenerateFirebaseConfigTask(getProject(), module, logger));
         if (type == BuildType.DEBUG) {
             tasks.add(new GenerateBuildConfigDebugTask(getProject(), module, logger));
         } else {
             tasks.add(new GenerateBuildConfigReleaseTask(getProject(), module, logger)); 
         }
+        tasks.add(new GenerateFirebaseConfigTask(getProject(), module, logger));
         if (type == BuildType.DEBUG) {
             tasks.add(new InjectLoggerTask(getProject(), module, logger));
         }
