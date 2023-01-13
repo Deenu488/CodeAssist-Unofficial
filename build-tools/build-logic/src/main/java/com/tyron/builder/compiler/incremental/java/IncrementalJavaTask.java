@@ -16,6 +16,7 @@ import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.builder.project.api.JavaModule;
 import com.tyron.builder.project.cache.CacheHolder;
 import com.tyron.common.util.Cache;
+import com.tyron.builder.model.ModuleSettings;
 
 import org.apache.commons.io.FileUtils;
 
@@ -144,12 +145,15 @@ public class IncrementalJavaTask extends Task<JavaModule> {
                 }
             });
         }
+        
+        String target = getModule().getSettings().getString(ModuleSettings.JAVA_SOURCE_VERSION, "1.8");
+        String source = getModule().getSettings().getString(ModuleSettings.JAVA_SOURCE_VERSION, "1.8");
 
         List<String> options = new ArrayList<>();
         options.add("-source");
-        options.add("1.8");
+        options.add(source);
         options.add("-target");
-        options.add("1.8");
+        options.add(target);
         JavacTask task = tool.getTask(null, standardJavaFileManager, diagnosticCollector,
                 options, null, javaFileObjects);
 
