@@ -40,13 +40,13 @@ public class ProjectBuilder {
             Builder<? extends Module> builder;
 
             String moduleType = module.getSettings()
-                    .getString(ModuleSettings.MODULE_TYPE, "android_app");
+                    .getString(ModuleSettings.MODULE_TYPE, "android_application");
             switch (Objects.requireNonNull(moduleType)) {
                 case "java_library":
                     builder = new JarBuilder(mProject, (JavaModule) module, mLogger);
                     break;
                 default:
-                case "android_app":
+                case "android_application":
                     AndroidModule androidModule = (AndroidModule) module;
                     if (androidModule.getPackageName() == null) {
                         throw new CompilationFailedException("Module " +
