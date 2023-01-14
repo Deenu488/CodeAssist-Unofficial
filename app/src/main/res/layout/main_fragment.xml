@@ -51,7 +51,7 @@
         android:name="com.tyron.code.ui.file.tree.TreeFileManagerFragment"
         android:layout_width="300dp"
         android:layout_height="match_parent"
-        android:background="?android:attr/colorBackground"
+        android:background="@drawable/nav_background"
         android:layout_gravity="start" />
 
 </com.tyron.code.util.AllowChildInterceptDrawerLayout>
