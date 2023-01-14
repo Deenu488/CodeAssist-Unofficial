@@ -40,8 +40,15 @@ public class GenerateBuildConfigReleaseTask extends Task<AndroidModule> {
     private void GenerateBuildConfig() throws IOException {
         getLogger().debug("Generating BuildConfig.java");
 
+        File packageDir = new File(getModule().getJavaDirectory(), getModule().getPackageName()
+                                   .replace('.', '/'));
         File buildConfigClass = new File(getModule().getJavaDirectory(), getModule().getPackageName()
                                          .replace('.', '/') + "/BuildConfig.java");
+        if (packageDir.exists()) {
+        } else {
+            packageDir.mkdirs();  
+        }                                        
+                                         
         if (!buildConfigClass.exists() && !buildConfigClass.createNewFile()) {
             throw new IOException("Unable to generate BuildConfig.java");
         }
