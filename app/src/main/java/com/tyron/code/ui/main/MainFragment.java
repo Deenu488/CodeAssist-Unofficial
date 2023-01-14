@@ -73,7 +73,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
+import androidx.fragment.app.FragmentContainerView;
 public class MainFragment extends Fragment implements ProjectManager.OnProjectOpenListener {
 
     public static final String REFRESH_TOOLBAR_KEY = "refreshToolbar";
@@ -83,7 +83,9 @@ public class MainFragment extends Fragment implements ProjectManager.OnProjectOp
     public static final Key<MainViewModel> MAIN_VIEW_MODEL_KEY = Key.create("mainViewModel");
 
     private Handler mHandler;
-
+    static final float END_SCALE = 0.7f;
+    FragmentContainerView contentView;
+    
     public static MainFragment newInstance(@NonNull String projectPath) {
         Bundle bundle = new Bundle();
         bundle.putString("project_path", projectPath);
@@ -159,6 +161,7 @@ public class MainFragment extends Fragment implements ProjectManager.OnProjectOp
         mProgressBar.setVisibility(View.GONE);
 
         mToolbar = mRoot.findViewById(R.id.toolbar);
+        contentView = mRoot.findViewById(R.id.root);
         mToolbar.setNavigationIcon(R.drawable.ic_baseline_menu_24);
         UiUtilsKt.addSystemWindowInsetToPadding(mToolbar, false, true, false, false);
 
@@ -201,6 +204,20 @@ public class MainFragment extends Fragment implements ProjectManager.OnProjectOp
                     mMainViewModel.setDrawerState(false);
                     onBackPressedCallback.setEnabled(false);
                 }
+                
+                @Override
+                public void onDrawerSlide(View drawerView, float slideOffset) {
+                    // Scale the View based on current slide offset
+                    final float diffScaledOffset = slideOffset * (1 - END_SCALE);
+                    final float offsetScale = 1 - diffScaledOffset;
+                    contentView.setScaleX(offsetScale);
+                    contentView.setScaleY(offsetScale);
+                    // Translate the View, accounting for the scaled width
+                    final float xOffset = drawerView.getWidth() * slideOffset;
+                    final float xOffsetDiff = contentView.getWidth() * diffScaledOffset / 2;
+                    final float xTranslation = xOffset - xOffsetDiff;
+                    contentView.setTranslationX(xTranslation);
+                    }
             });
         } else {
             mToolbar.setNavigationIcon(null);
