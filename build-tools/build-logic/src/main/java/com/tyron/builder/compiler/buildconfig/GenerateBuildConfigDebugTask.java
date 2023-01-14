@@ -15,7 +15,6 @@ import java.io.IOException;
 public class GenerateBuildConfigDebugTask extends Task<AndroidModule> {
 
     private static final String TAG = "GenerateBuildConfigDebugTask";
-    private File mBuildConfigFile;
 
     public GenerateBuildConfigDebugTask(Project project, AndroidModule module, ILogger logger) {
         super(project, module, logger);
@@ -40,10 +39,9 @@ public class GenerateBuildConfigDebugTask extends Task<AndroidModule> {
     private void GenerateBuildConfig() throws IOException {
         getLogger().debug("Generating BuildConfig.java");
 
-        File packageDir = new File(getModule().getJavaDirectory(), getModule().getPackageName()
+        File packageDir = new File(getModule().getBuildDirectory()+ "/gen", getModule().getPackageName()
                                    .replace('.', '/'));
-        File buildConfigClass = new File(getModule().getJavaDirectory(), getModule().getPackageName()
-                                         .replace('.', '/') + "/BuildConfig.java");
+        File buildConfigClass = new File(packageDir, "/BuildConfig.java");
         if (packageDir.exists()) {
         } else {
             packageDir.mkdirs();  
@@ -68,7 +66,5 @@ public class GenerateBuildConfigDebugTask extends Task<AndroidModule> {
             "}\n";
 
         FileUtils.writeStringToFile(buildConfigClass, buildConfigString, Charset.defaultCharset());
-        mBuildConfigFile = buildConfigClass;
-        getModule().addJavaFile(buildConfigClass);
     }
 }

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.tyron.builder.compiler.buildconfig.GenerateBuildConfigDebugTask;
 import com.tyron.builder.compiler.buildconfig.GenerateBuildConfigReleaseTask;
+import com.tyron.builder.compiler.aidl.AidlTask;
 
 public class AndroidAppBuilder extends BuilderImpl<AndroidModule> {
 
@@ -41,6 +42,7 @@ public class AndroidAppBuilder extends BuilderImpl<AndroidModule> {
         tasks.add(new CleanTask(getProject(), module, logger));
         tasks.add(new CheckLibrariesTask(getProject(), module, logger));
         tasks.add(new ManifestMergeTask(getProject(), module, logger));
+        tasks.add(new AidlTask(getProject(), module, logger));
         if (type == BuildType.DEBUG) {
             tasks.add(new GenerateBuildConfigDebugTask(getProject(), module, logger));
         } else {
