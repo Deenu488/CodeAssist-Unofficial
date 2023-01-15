@@ -63,11 +63,6 @@ public class KotlinAnalyzer extends DiagnosticTextmateAnalyzer {
     @Override
     public void analyzeInBackground(CharSequence content) {
 
-        // remove this when kotlin analysis is stable
-        if (true) {
-            return;
-        }
-
         if (mEditor == null) {
             return;
         }
