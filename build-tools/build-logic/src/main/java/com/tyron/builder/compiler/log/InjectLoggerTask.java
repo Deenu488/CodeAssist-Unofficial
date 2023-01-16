@@ -310,8 +310,13 @@ public class InjectLoggerTask extends Task<AndroidModule> {
     private void addLoggerClass() throws IOException {
         getLogger().debug("Creating Logger.java");
 
-        File loggerClass = new File(getModule().getJavaDirectory(), getModule().getPackageName()
-        .replace('.', '/') + "/Logger.java");
+        File packageDir = new File(getModule().getJavaDirectory(), getModule().getPackageName()
+        .replace('.', '/'));
+        File loggerClass = new File(packageDir, "/Logger.java");
+        if (packageDir.exists()) {
+        } else {
+            packageDir.mkdirs();  
+        }
         if (!loggerClass.exists() && !loggerClass.createNewFile()) {
             throw new IOException("Unable to create Logger.java");
         }
