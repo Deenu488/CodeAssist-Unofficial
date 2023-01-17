@@ -19,7 +19,7 @@ import android.util.Log;
 
 public class CleanTask extends Task<AndroidModule> {
 
-    private static final String TAG = CleanTask.class.getSimpleName();
+    private static final String TAG = "clean";
 
     private BuildType mBuildType;
 
