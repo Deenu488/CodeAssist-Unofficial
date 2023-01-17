@@ -15,6 +15,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import android.util.Log;
 
 public class CleanTask extends Task<AndroidModule> {
 
@@ -47,7 +48,7 @@ public class CleanTask extends Task<AndroidModule> {
     }
 
     private void cleanRelease() throws IOException {
-        getLogger().info("Release build, clearing intermediate cache");
+        Log.i(TAG, "Release build, clearing intermediate cache");
 
         File binDirectory = new File(getModule().getBuildDirectory(), "bin");
         if (binDirectory.exists()) {
@@ -86,7 +87,7 @@ public class CleanTask extends Task<AndroidModule> {
 
             if (!classExists(path)) {
                 if (file.delete()) {
-                    getLogger().debug("Deleted class file " + file.getName());
+                    Log.d(TAG, "Deleted class file " + file.getName());
                 };
             }
         }
@@ -111,7 +112,7 @@ public class CleanTask extends Task<AndroidModule> {
                 int start = name.indexOf('$', 3) + 1;
                 int end = name.indexOf('$', start);
                 if (start == -1 || end == -1) {
-                    getLogger().warning("Unrecognized dex file: " + file.getName());
+                    Log.w(TAG, "Unrecognized dex file: " + file.getName());
                     continue;
                 } else {
                     String className = name.substring(start, end);
@@ -125,7 +126,7 @@ public class CleanTask extends Task<AndroidModule> {
 
             if (!classExists(packageName)) {
                 if (file.delete()) {
-                    getLogger().debug("Deleted dex file " + path);
+                    Log.d(TAG, "Deleted dex file " + path);
                 }
             }
         }
