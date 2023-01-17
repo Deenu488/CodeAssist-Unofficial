@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import android.util.Log;
 
 public class PackageTask extends Task<AndroidModule> {
 
@@ -48,7 +49,7 @@ public class PackageTask extends Task<AndroidModule> {
 
     @Override
     public String getName() {
-        return "Package";
+        return "package";
     }
 
     @Override
@@ -74,7 +75,7 @@ public class PackageTask extends Task<AndroidModule> {
 
         mLibraries.addAll(getModule().getLibraries());
 
-        getLogger().debug("Packaging APK.");
+        Log.d(getName().toString(),"Packaging APK.");
     }
 
     @Override

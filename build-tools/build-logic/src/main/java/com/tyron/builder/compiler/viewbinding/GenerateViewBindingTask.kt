@@ -22,7 +22,6 @@ import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
-
 /**
  * @param addToClasspath true if the generated binding classes
  * should be added to the module classpath for compilation
@@ -55,7 +54,7 @@ class GenerateViewBindingTask(
 
     override fun run() {
         if (!module.settings.getBoolean(ModuleSettings.VIEW_BINDING_ENABLED, false)) {
-            logger.info("View binding is disabled, skipping")
+            Log.d(TAG, "View binding is disabled, skipping")
             return
         }
 
@@ -139,7 +138,7 @@ class GenerateViewBindingTask(
     }
 
     companion object {
-        const val TAG = "GenerateViewBindingTask"
+        const val TAG = "generateViewBinding"
         const val VIEW_BINDING_GEN_DIR = "view_binding"
 
         private fun getUpToDateFileContent(module: AndroidModule, file: File): String? {

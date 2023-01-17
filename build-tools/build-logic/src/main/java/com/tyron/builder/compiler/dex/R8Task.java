@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 
 public class R8Task extends Task<AndroidModule> {
 
-    private static final String TAG = R8Task.class.getSimpleName();
+    private static final String TAG = "mergeDexWithR8";
 
     public R8Task(Project project, AndroidModule module, ILogger logger) {
         super(project, module, logger);

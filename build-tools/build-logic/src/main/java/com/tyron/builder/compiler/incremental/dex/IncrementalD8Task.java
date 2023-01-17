@@ -28,10 +28,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+import android.util.Log;
 
 public class IncrementalD8Task extends Task<AndroidModule> {
 
-    private static final String TAG = IncrementalD8Task.class.getSimpleName();
+    private static final String TAG = "mergeDexWithD8";
 
     public static final CacheHolder.CacheKey<String, List<File>> CACHE_KEY =
             new CacheHolder.CacheKey<>("dexCache");
@@ -209,7 +210,7 @@ public class IncrementalD8Task extends Task<AndroidModule> {
             File[] libFiles = lib.getParentFile().listFiles();
             if (libFiles == null) {
                 if (!lib.delete()) {
-                    getLogger().warning("Failed to delete " + lib.getAbsolutePath());
+                    Log.w(TAG, "Failed to delete " + lib.getAbsolutePath());
                 }
             } else {
                 File dex = new File(lib.getParentFile(), "classes.dex");
@@ -221,11 +222,11 @@ public class IncrementalD8Task extends Task<AndroidModule> {
                     Library library = getModule().getLibrary(parentFile.getName());
                     if (library != null) {
                         boolean declared = library.getDeclaration() != null;
-                        message = "Dexing library " +
+                        message = "> DexingWithClasspathTransform " +
                                   (declared ? library.getDeclaration() : library.getSourceFile()
                                           .getName());
                     } else {
-                        message = "Dexing jar " + parentFile.getName();
+                        message = "> DexingWithClasspathTransform " + parentFile.getName();
                     }
                     getLogger().debug(message);
                     D8Command command = D8Command.builder(diagnosticsHandler)

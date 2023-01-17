@@ -11,12 +11,13 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.io.IOException;
+import android.util.Log;
 
-public class GenerateBuildConfigReleaseTask extends Task<AndroidModule> {
+public class GenerateReleaseBuildConfigTask extends Task<AndroidModule> {
 
-    private static final String TAG = "GenerateBuildConfigReleaseTask";
+    private static final String TAG = "generateReleaseBuildConfig";
     
-    public GenerateBuildConfigReleaseTask(Project project, AndroidModule module, ILogger logger) {
+    public GenerateReleaseBuildConfigTask(Project project, AndroidModule module, ILogger logger) {
         super(project, module, logger);
     }
 
@@ -37,7 +38,7 @@ public class GenerateBuildConfigReleaseTask extends Task<AndroidModule> {
     }
 
     private void GenerateBuildConfig() throws IOException {
-        getLogger().debug("Generating BuildConfig.java");
+        Log.d(TAG, "Generating BuildConfig.java");
 
         File packageDir = new File(getModule().getBuildDirectory()+ "/gen", getModule().getPackageName()
                                    .replace('.', '/'));

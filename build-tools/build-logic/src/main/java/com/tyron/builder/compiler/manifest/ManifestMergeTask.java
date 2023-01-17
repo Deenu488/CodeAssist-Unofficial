@@ -34,7 +34,7 @@ public class ManifestMergeTask extends Task<AndroidModule> {
 
     @Override
     public String getName() {
-        return "ManifestMerger";
+        return "mergeManifest";
     }
 
     @Override

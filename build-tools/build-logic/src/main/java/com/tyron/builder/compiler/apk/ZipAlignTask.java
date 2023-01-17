@@ -21,7 +21,7 @@ import java.util.List;
 
 public class ZipAlignTask extends Task<AndroidModule> {
 
-    private static final String TAG = ZipAlignTask.class.getSimpleName();
+    private static final String TAG = "zipAlign";
 
     private File mApkFile;
 

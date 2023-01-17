@@ -12,6 +12,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import android.util.Log;
 
 public class SignTask extends Task<AndroidModule> {
 
@@ -24,7 +25,7 @@ public class SignTask extends Task<AndroidModule> {
 
     @Override
     public String getName() {
-        return "Sign";
+        return "sign";
     }
 
     @Override
@@ -40,7 +41,7 @@ public class SignTask extends Task<AndroidModule> {
             throw new IOException("Unable to find generated apk file.");
         }
 
-        getLogger().debug("Signing APK.");
+        Log.d(getName().toString(),"Signing APK.");
     }
 
     @Override

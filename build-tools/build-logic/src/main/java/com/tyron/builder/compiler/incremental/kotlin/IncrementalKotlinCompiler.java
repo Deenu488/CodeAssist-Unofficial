@@ -38,10 +38,11 @@ import java.util.stream.Collectors;
 
 import dalvik.system.DexFile;
 import kotlin.jvm.functions.Function0;
+import android.util.Log;
 
 public class IncrementalKotlinCompiler extends Task<AndroidModule> {
 
-    private static final String TAG = IncrementalKotlinCompiler.class.getSimpleName();
+    private static final String TAG = "compileKotlin";
 
     private File mKotlinHome;
     private File mClassOutput;
@@ -78,7 +79,7 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
     @Override
     public void run() throws IOException, CompilationFailedException {
         if (mFilesToCompile.stream().noneMatch(file -> file.getName().endsWith(".kt"))) {
-            getLogger().info("No kotlin source files, Skipping compilation.");
+            Log.i(TAG, "No kotlin source files, Skipping compilation.");
             return;
         }
         List<File> classpath = new ArrayList<>();

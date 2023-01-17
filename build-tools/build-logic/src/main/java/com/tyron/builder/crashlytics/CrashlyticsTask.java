@@ -24,13 +24,14 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import android.util.Log;
 
 /**
  * Task to inject crashlytics build id to the resource directory
  */
 public class CrashlyticsTask extends Task<AndroidModule> {
 
-    private static final String TAG = CrashlyticsTask.class.getSimpleName();
+    private static final String TAG = "crashlytics";
 
     private static final String LEGACY_MAPPING_FILE_ID_RESOURCE_NAME =
             "com_crashlytics_android_build_id";
@@ -64,7 +65,7 @@ public class CrashlyticsTask extends Task<AndroidModule> {
 
         Repository repository = getRepository(getProject(), getModule());
         if (repository == null) {
-            getLogger().warning("Unable to get repository.");
+            Log.w(TAG, "Unable to get repository.");
             return;
         }
 

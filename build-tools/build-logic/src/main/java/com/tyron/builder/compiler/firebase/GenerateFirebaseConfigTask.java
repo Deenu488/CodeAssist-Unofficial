@@ -22,10 +22,11 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import android.util.Log;
 
 public class GenerateFirebaseConfigTask extends Task<AndroidModule> {
 
-    private static final String TAG = GenerateFirebaseConfigTask.class.getSimpleName();
+    private static final String TAG = "generateFirebaseConfig";
 
     private static final String VALUES = "values";
     private static final String CLIENT = "client";
@@ -72,7 +73,7 @@ public class GenerateFirebaseConfigTask extends Task<AndroidModule> {
     @Override
     public void run() throws IOException, CompilationFailedException {
         if (!mConfigFile.exists()) {
-            getLogger().debug("No google-services.json found.");
+            Log.d(TAG, "No google-services.json found.");
             return;
         }
 

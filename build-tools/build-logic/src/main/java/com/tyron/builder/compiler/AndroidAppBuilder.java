@@ -22,9 +22,9 @@ import com.tyron.builder.project.api.AndroidModule;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.tyron.builder.compiler.buildconfig.GenerateBuildConfigDebugTask;
-import com.tyron.builder.compiler.buildconfig.GenerateBuildConfigReleaseTask;
 import com.tyron.builder.compiler.aidl.AidlTask;
+import com.tyron.builder.compiler.buildconfig.GenerateDebugBuildConfigTask;
+import com.tyron.builder.compiler.buildconfig.GenerateReleaseBuildConfigTask;
 
 public class AndroidAppBuilder extends BuilderImpl<AndroidModule> {
 
@@ -44,9 +44,9 @@ public class AndroidAppBuilder extends BuilderImpl<AndroidModule> {
         tasks.add(new ManifestMergeTask(getProject(), module, logger));
         tasks.add(new AidlTask(getProject(), module, logger));
         if (type == BuildType.DEBUG) {
-            tasks.add(new GenerateBuildConfigDebugTask(getProject(), module, logger));
+            tasks.add(new GenerateDebugBuildConfigTask(getProject(), module, logger));
         } else {
-            tasks.add(new GenerateBuildConfigReleaseTask(getProject(), module, logger)); 
+            tasks.add(new GenerateReleaseBuildConfigTask(getProject(), module, logger)); 
         }
         tasks.add(new GenerateFirebaseConfigTask(getProject(), module, logger));
         if (type == BuildType.DEBUG) {

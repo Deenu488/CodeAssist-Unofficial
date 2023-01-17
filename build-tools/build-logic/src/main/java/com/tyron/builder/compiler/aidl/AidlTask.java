@@ -15,7 +15,7 @@ public class AidlTask extends Task<AndroidModule> {
         super(project, module, logger);
     }
 
-    private static final String TAG = "AidlTask";
+    private static final String TAG = "compileAidl";
 
     @Override
     public String getName() {

@@ -38,12 +38,13 @@ import javax.tools.DiagnosticListener;
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardLocation;
+import android.util.Log;
 
 public class IncrementalJavaTask extends Task<JavaModule> {
 
     public static final CacheHolder.CacheKey<String, List<File>> CACHE_KEY =
             new CacheHolder.CacheKey<>("javaCache");
-    private static final String TAG = IncrementalJavaTask.class.getSimpleName();
+    private static final String TAG = "compileJavaWithJavac";
 
     private File mOutputDir;
     private List<File> mJavaFiles;
@@ -98,7 +99,7 @@ public class IncrementalJavaTask extends Task<JavaModule> {
             return;
         }
 
-        getLogger().debug("Compiling java files");
+        Log.d(TAG, "Compiling java files");
 
         DiagnosticListener<JavaFileObject> diagnosticCollector = diagnostic -> {
             switch (diagnostic.getKind()) {
@@ -205,7 +206,7 @@ public class IncrementalJavaTask extends Task<JavaModule> {
                         for (File file : children) {
                             if (!values.contains(file)) {
                                 if (file.delete()) {
-                                    getLogger().debug("Deleted file " + file.getAbsolutePath());
+                                    Log.d(TAG, "Deleted file " + file.getAbsolutePath());
                                 }
                             }
                         }

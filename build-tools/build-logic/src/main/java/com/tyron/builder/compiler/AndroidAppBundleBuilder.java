@@ -19,7 +19,7 @@ import com.tyron.builder.project.api.AndroidModule;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.tyron.builder.compiler.buildconfig.GenerateBuildConfigReleaseTask;
+import com.tyron.builder.compiler.buildconfig.GenerateReleaseBuildConfigTask;
 import com.tyron.builder.compiler.aidl.AidlTask;
 
 public class AndroidAppBundleBuilder extends BuilderImpl<AndroidModule> {
@@ -35,7 +35,7 @@ public class AndroidAppBundleBuilder extends BuilderImpl<AndroidModule> {
         tasks.add(new CheckLibrariesTask(getProject(), getModule(), getLogger()));
         tasks.add(new ManifestMergeTask(getProject(), getModule(), getLogger()));
         tasks.add(new AidlTask(getProject(), getModule(), getLogger()));
-        tasks.add(new GenerateBuildConfigReleaseTask(getProject(), getModule(), getLogger()));
+        tasks.add(new GenerateReleaseBuildConfigTask(getProject(), getModule(), getLogger()));
         tasks.add(new GenerateFirebaseConfigTask(getProject(), getModule(), getLogger()));
         tasks.add(new CrashlyticsTask(getProject(), getModule(), getLogger()));
         tasks.add(new IncrementalAapt2Task(getProject(), getModule(), getLogger(), true));

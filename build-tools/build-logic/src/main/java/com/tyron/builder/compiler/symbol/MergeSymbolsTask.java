@@ -41,7 +41,7 @@ public class MergeSymbolsTask extends Task<AndroidModule> {
 
     @Override
     public String getName() {
-        return "SymbolProcessor";
+        return "symbolProcessor";
     }
 
     @Override

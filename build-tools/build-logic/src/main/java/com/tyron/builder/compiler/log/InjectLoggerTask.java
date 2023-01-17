@@ -36,7 +36,7 @@ import java.util.List;
 
 public class InjectLoggerTask extends Task<AndroidModule> {
 
-    private static final String TAG = "InjectLogger";
+    private static final String TAG = "injectLogger";
     private static final String APPLICATION_CLASS = "\nimport android.app.Application;\n" +
             "public class LoggerApplication extends Application {\n" +
             "   public void onCreate() {\n" +
@@ -188,7 +188,7 @@ public class InjectLoggerTask extends Task<AndroidModule> {
 
             injectLogger(mApplicationFile);
 
-            getLogger().debug("application class: " + applicationClass);
+            Log.d(TAG, "application class: " + applicationClass);
         } catch (RuntimeException | XmlPullParserException | ParserConfigurationException | SAXException | TransformerException e) {
             throw new CompilationFailedException(Log.getStackTraceString(e));
         }
@@ -207,7 +207,7 @@ public class InjectLoggerTask extends Task<AndroidModule> {
                     getModule().removeJavaFile(StringSearch.packageName(mApplicationFile));
                     FileUtils.delete(mApplicationFile);
                 } catch (IOException e) {
-                    getLogger().error("Failed to delete application class: " + e.getMessage());
+                    Log.e(TAG, "Failed to delete application class: " + e.getMessage());
                 }
             }
         }
@@ -217,7 +217,7 @@ public class InjectLoggerTask extends Task<AndroidModule> {
                 getModule().removeJavaFile(StringSearch.packageName(mLoggerFile));
                 FileUtils.delete(mLoggerFile);
             } catch (IOException e) {
-                getLogger().error("Failed to delete logger class: " + e.getMessage());
+                Log.e(TAG, "Failed to delete logger class: " + e.getMessage());
             }
         }
     }
@@ -258,7 +258,7 @@ public class InjectLoggerTask extends Task<AndroidModule> {
     }
 
     private void createApplicationClass(String name) throws IOException, ParserConfigurationException, TransformerException, SAXException {
-        getLogger().debug("Creating application class " + name);
+        Log.d(TAG,"Creating application class " + name);
 
         File manifest = new File(getModule().getBuildDirectory().getAbsolutePath().replaceAll("%20", " "), "bin/AndroidManifest.xml");
 
@@ -290,7 +290,7 @@ public class InjectLoggerTask extends Task<AndroidModule> {
     private void injectLogger(File applicationClass) throws IOException, CompilationFailedException {
         String applicationContents = FileUtils.readFileToString(applicationClass, Charset.defaultCharset());
         if (applicationContents.contains("Logger.initialize(this);")) {
-            getLogger().debug("Application class already initializes Logger");
+            Log.d(TAG, "Application class already initializes Logger");
             return;
         }
 
@@ -308,7 +308,7 @@ public class InjectLoggerTask extends Task<AndroidModule> {
     }
 
     private void addLoggerClass() throws IOException {
-        getLogger().debug("Creating Logger.java");
+        Log.d(TAG, "Creating Logger.java");
 
         File packageDir = new File(getModule().getJavaDirectory(), getModule().getPackageName()
         .replace('.', '/'));

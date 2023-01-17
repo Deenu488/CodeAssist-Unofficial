@@ -43,7 +43,7 @@ public class CheckLibrariesTask extends Task<JavaModule> {
 
     @Override
     public String getName() {
-        return CheckLibrariesTask.class.getSimpleName();
+        return "checkLibraries";
     }
 
     @Override

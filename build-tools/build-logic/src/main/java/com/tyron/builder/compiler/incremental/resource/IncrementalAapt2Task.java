@@ -25,10 +25,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import android.util.Log;
 
 public class IncrementalAapt2Task extends Task<AndroidModule> {
 
-    private static final String TAG = "IncrementalAAPT2";
+    private static final String TAG = "mergeResources";
 
     private final boolean mGenerateProtoFormat;
 
@@ -106,7 +107,7 @@ public class IncrementalAapt2Task extends Task<AndroidModule> {
 
     private void compileLibraries(List<File> libraries) throws IOException,
             CompilationFailedException {
-        getLogger().debug("Compiling libraries.");
+        Log.d(TAG,"Compiling libraries.");
 
         File output = new File(getModule().getBuildDirectory(), "bin/res");
         if (!output.exists()) {
@@ -147,7 +148,7 @@ public class IncrementalAapt2Task extends Task<AndroidModule> {
     }
 
     private void link() throws IOException, CompilationFailedException {
-        getLogger().debug("Linking resources");
+        Log.d(TAG, "Linking resources");
 
         List<String> args = new ArrayList<>();
         args.add("-I");
@@ -172,12 +173,12 @@ public class IncrementalAapt2Task extends Task<AndroidModule> {
                     continue;
                 }
                 if (!resource.getName().endsWith(".zip")) {
-                    getLogger().warning("Unrecognized file " + resource.getName());
+                    Log.w(TAG, "Unrecognized file " + resource.getName());
                     continue;
                 }
 
                 if (resource.length() == 0) {
-                    getLogger().warning("Empty zip file " + resource.getName());
+                    Log.w(TAG, "Empty zip file " + resource.getName());
                 }
 
                 args.add("-R");
@@ -189,7 +190,7 @@ public class IncrementalAapt2Task extends Task<AndroidModule> {
         if (resources != null) {
             for (File resource : resources) {
                 if (!resource.getName().endsWith(".flat")) {
-                    getLogger().warning(
+                    Log.w(TAG,
                             "Unrecognized file " + resource.getName() + " at compiled directory");
                     continue;
                 }
