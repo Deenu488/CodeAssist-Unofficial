@@ -147,14 +147,11 @@ public class IncrementalJavaTask extends Task<JavaModule> {
             });
         }
         
-        String target = getModule().getSettings().getString(ModuleSettings.JAVA_SOURCE_VERSION, "1.8");
-        String source = getModule().getSettings().getString(ModuleSettings.JAVA_SOURCE_VERSION, "1.8");
-
         List<String> options = new ArrayList<>();
         options.add("-source");
-        options.add(source);
+        options.add("1.8");
         options.add("-target");
-        options.add(target);
+        options.add("1.8");
         JavacTask task = tool.getTask(null, standardJavaFileManager, diagnosticCollector,
                 options, null, javaFileObjects);
 
