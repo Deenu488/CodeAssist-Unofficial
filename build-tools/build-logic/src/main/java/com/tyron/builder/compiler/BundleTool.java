@@ -48,7 +48,7 @@ public class BundleTool {
         commands.add("build-bundle");
         commands.add("--modules=" + mApkInputPath);
         commands.add("--output=" + mApkOutputPath);
-        commands.add("--uncompressed=" + uncompressed);
+        commands.add("--uncompressed=" + String.valueOf(uncompressed));
         main(commands.toArray(new String[0]));
     }
 
