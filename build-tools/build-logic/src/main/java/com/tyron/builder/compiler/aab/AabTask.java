@@ -43,6 +43,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import com.tyron.builder.compiler.BundleTool;
+import android.util.Log;
 
 public class AabTask extends Task<AndroidModule> {
 
@@ -50,7 +51,7 @@ public class AabTask extends Task<AndroidModule> {
         super(project, module, logger);
     }
 
-    private static final String TAG = "AabTask";
+    private static final String TAG = "bundleRelease";
 
     private File mBinDir;
     private File base;
@@ -85,9 +86,9 @@ public class AabTask extends Task<AndroidModule> {
         if (!dex.exists() && !dex.mkdirs()) {
             throw new IOException("Failed to create resource output directory");
         }
-		mInputApk = new File(mBinDir.getAbsolutePath() + "/Base-Module.zip");
-        mOutputApk = new File(mBinDir.getAbsolutePath() + "/module.aab");
-		mOutputApks = new File(mBinDir.getAbsolutePath() + "/App.apks");
+		mInputApk = new File(mBinDir.getAbsolutePath() + "/app-module.zip");
+        mOutputApk = new File(mBinDir.getAbsolutePath() + "/app-module.aab");
+		mOutputApks = new File(mBinDir.getAbsolutePath() + "/app.apks");
 		
         
 		
@@ -129,8 +130,8 @@ public class AabTask extends Task<AndroidModule> {
     }
 
     private void extractApks() throws IOException {
-        getLogger().debug("Extracting Apks");
-        String Apks = mBinDir.getAbsolutePath() + "/App.apks";
+        Log.d(TAG,"Extracting Apks");
+        String Apks = mBinDir.getAbsolutePath() + "/app.apks";
         String dApks = mBinDir.getAbsolutePath() + "";
         uApks(Apks, dApks);
     }
@@ -169,7 +170,7 @@ public class AabTask extends Task<AndroidModule> {
     }
 
     private void buildApks() throws CompilationFailedException {
-        getLogger().debug("Building Apks");
+        Log.d(TAG,"Building Apks");
    		BundleTool signer = new BundleTool(mOutputApk.getAbsolutePath(),
 										   mOutputApks.getAbsolutePath());
         try {
@@ -184,7 +185,7 @@ public class AabTask extends Task<AndroidModule> {
 
 
     private void aab() throws CompilationFailedException {
-        getLogger().debug("Generating AAB.");
+        Log.d(TAG,"Generating AAB.");
 
  		BundleTool signer = new BundleTool(mInputApk.getAbsolutePath(),
 										 mOutputApk.getAbsolutePath());
@@ -199,9 +200,9 @@ public class AabTask extends Task<AndroidModule> {
 
 
     private void baseZip() throws IOException {
-        getLogger().debug("Creating Module Archive");
+        Log.d(TAG,"Creating Module Archive");
         String folderToZip = base.getAbsolutePath();
-        String zipName = mBinDir.getAbsolutePath() + "/Base-Module.zip";
+        String zipName = mBinDir.getAbsolutePath() + "/app-module.zip";
         zipFolder(Paths.get(folderToZip), Paths.get(zipName));
     }
 
@@ -221,7 +222,7 @@ public class AabTask extends Task<AndroidModule> {
 
 
     private void copyManifest() throws CompilationFailedException {
-        getLogger().debug("Copying Manifest.");
+        Log.d(TAG,"Copying Manifest.");
 
         List<String> args = new ArrayList<>();
         args.add("mv");
@@ -248,7 +249,7 @@ public class AabTask extends Task<AndroidModule> {
     }
 
     private void copyJni() throws IOException {
-        getLogger().debug("Coping JniLibs.");
+        Log.d(TAG,"Coping JniLibs.");
         String fromDirectory = getModule().getNativeLibrariesDirectory().getAbsolutePath();
         String toToDirectory = base.getAbsolutePath() + "/lib";
         copyDirectoryFileVisitor(fromDirectory, toToDirectory);
@@ -298,7 +299,7 @@ public class AabTask extends Task<AndroidModule> {
 
     private void copyLibraries() throws IOException, SignedJarBuilder.IZipEntryFilter.ZipAbortException {
         List<File> libraryJars = getModule().getLibraries();
-        File originalFile = new File(mBinDir, "Base-Module.zip");
+        File originalFile = new File(mBinDir, "app-module.zip");
         try (ZipFile zipFile = new ZipFile(originalFile)) {
             for (File libraryJar : libraryJars) {
                 if (!libraryJar.exists()) {
@@ -352,7 +353,7 @@ public class AabTask extends Task<AndroidModule> {
 
 
     private void unZip() {
-        getLogger().debug("Unzipping proto format.");
+        Log.d(TAG,"Unzipping proto format.");
         String zipFilePath = mBinDir.getAbsolutePath() + "/proto-format.zip";
         String destDir = base.getAbsolutePath() + "";
         Decompress.unzip(zipFilePath, destDir);
