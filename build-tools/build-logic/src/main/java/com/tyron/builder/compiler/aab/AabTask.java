@@ -44,6 +44,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import com.tyron.builder.compiler.BundleTool;
 import android.util.Log;
+import com.tyron.builder.model.ModuleSettings;
 
 public class AabTask extends Task<AndroidModule> {
 
@@ -106,7 +107,11 @@ public class AabTask extends Task<AndroidModule> {
             copyLibraries();     
             aab();
             buildApks();
+         
+            if (getModule().getSettings().getBoolean(ModuleSettings.EXTRACT_APKS, true)) {
             extractApks();
+            }
+            
         } catch (SignedJarBuilder.IZipEntryFilter.ZipAbortException e) {
             String message = e.getMessage();
             if (e instanceof DuplicateFileException) {
@@ -174,7 +179,7 @@ public class AabTask extends Task<AndroidModule> {
    		BundleTool signer = new BundleTool(mOutputApk.getAbsolutePath(),
 										   mOutputApks.getAbsolutePath());
         try {
-            signer.apk();
+            signer.apk();       
         } catch (Exception e) {
             throw new CompilationFailedException(e);
         }
@@ -186,11 +191,18 @@ public class AabTask extends Task<AndroidModule> {
 
     private void aab() throws CompilationFailedException {
         Log.d(TAG,"Generating AAB.");
-
+        boolean uncompressed;
  		BundleTool signer = new BundleTool(mInputApk.getAbsolutePath(),
 										 mOutputApk.getAbsolutePath());
         try {
-            signer.aab();
+            
+          if (getModule().getSettings().getBoolean(ModuleSettings.UNCOMPRESSED_FLAG, true)) {
+              uncompressed = true;
+              signer.aab(uncompressed);            
+          } else {
+              uncompressed = false;
+              signer.aab(uncompressed); 
+          }
         } catch (Exception e) {
             throw new CompilationFailedException(e);
         }

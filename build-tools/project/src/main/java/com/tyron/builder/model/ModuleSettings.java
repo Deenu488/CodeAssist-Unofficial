@@ -43,8 +43,6 @@ public class ModuleSettings implements SharedPreferences {
     public static final String ZIP_ALIGN_ENABLED = "zipAlignEnabled";
     public static final String VIEW_BINDING_ENABLED = "viewBindingEnabled";
     public static final String PACKAGE_NAME = "packageName";
-    public static final String UNIVERSAL_FLAG = "bundle_universal";
-    public static final String VERBOSE_FLAG = "bundle_verbose";
     public static final String EXTRACT_APKS = "extractApks";
     public static final String UNCOMPRESSED_FLAG = "bundle_enableUncompressedNativeLibs";
     private final File mConfigFile;
@@ -80,8 +78,6 @@ public class ModuleSettings implements SharedPreferences {
         map.put(MODULE_TYPE, "android_application");
       //  map.put(JAVA_TARGET_VERSION, "1.8");
       //  map.put(JAVA_SOURCE_VERSION, "1.8");
-        map.put(UNIVERSAL_FLAG, false);
-        map.put(VERBOSE_FLAG, false);
         map.put(EXTRACT_APKS, false);
         map.put(UNCOMPRESSED_FLAG, false);
         return map;

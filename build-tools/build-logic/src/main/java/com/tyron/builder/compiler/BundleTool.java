@@ -44,11 +44,11 @@ public class BundleTool {
         mApkOutputPath = outputPath;
     }
 
-    public void aab() throws Exception {
+    public void aab(boolean uncompressed) throws Exception {
         commands.add("build-bundle");
         commands.add("--modules=" + mApkInputPath);
         commands.add("--output=" + mApkOutputPath);
-
+        commands.add("--uncompressed=" + uncompressed);
         main(commands.toArray(new String[0]));
     }
 
