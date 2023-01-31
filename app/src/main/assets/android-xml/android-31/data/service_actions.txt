@@ -6,7 +6,9 @@ android.intent.action.RESPOND_VIA_MESSAGE
 android.intent.action.TTS_SERVICE
 android.media.MediaRoute2ProviderService
 android.media.browse.MediaBrowserService
+android.media.tv.interactive.TvInteractiveAppService
 android.net.action.RECOMMEND_NETWORKS
+android.net.action.VPN_MANAGER_EVENT
 android.nfc.cardemulation.action.HOST_APDU_SERVICE
 android.nfc.cardemulation.action.HOST_NFCF_SERVICE
 android.nfc.cardemulation.action.OFF_HOST_APDU_SERVICE
@@ -15,6 +17,8 @@ android.service.carrier.CarrierMessagingService
 android.service.chooser.ChooserTargetService
 android.service.controls.ControlsProviderService
 android.service.dreams.DreamService
+android.service.games.action.GAME_SERVICE
+android.service.games.action.GAME_SESSION_SERVICE
 android.service.notification.ConditionProviderService
 android.service.notification.NotificationAssistantService
 android.service.notification.NotificationListenerService
