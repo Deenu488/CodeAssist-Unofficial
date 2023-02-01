@@ -23,8 +23,10 @@ import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
 import android.widget.Toast;
 import com.tyron.code.ui.drawable.Icons;
+import android.widget.Filterable;
+import android.widget.Filter;
 
-public class IconManagerAdapter extends RecyclerView.Adapter<IconManagerAdapter.ViewHolder> {
+public class IconManagerAdapter extends RecyclerView.Adapter<IconManagerAdapter.ViewHolder> implements Filterable {
 
     private static final int TYPE_EMPTY = -1;
     private static final int TYPE_ITEM = 1;
@@ -116,7 +118,12 @@ public class IconManagerAdapter extends RecyclerView.Adapter<IconManagerAdapter.
 
         return TYPE_ITEM;
     }
-
+	
+	@Override
+	public Filter getFilter() {
+		return iconsFilter;
+	}
+	
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ViewHolder(View view) {
             super(view);
@@ -180,6 +187,34 @@ public class IconManagerAdapter extends RecyclerView.Adapter<IconManagerAdapter.
         }
     }
   
+	private Filter iconsFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            List<Icons> icons = new ArrayList<>();
 
+            if (constraint == null || constraint.length() == 0) {
+                icons.addAll(mIcons);
+            } else {
+                String filterPattern = constraint.toString().toLowerCase().trim();
+
+                for (Icons item : mIcons) {
+                    if (item.getRootFile().getName().toLowerCase().contains(filterPattern)) {
+                        icons.add(item);
+                    }
+                }
+            }
+
+            FilterResults results = new FilterResults();
+            results.values = icons;
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            mIcons.clear();
+            mIcons.addAll((List<Icons>) results.values);
+            notifyDataSetChanged();
+        }
+    };
     
 }

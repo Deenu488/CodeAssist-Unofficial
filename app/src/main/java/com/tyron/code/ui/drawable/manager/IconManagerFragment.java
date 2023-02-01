@@ -11,6 +11,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentActivity;
 import com.tyron.code.R;
 import androidx.appcompat.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import androidx.core.view.MenuProvider;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -44,6 +47,8 @@ import com.tyron.code.ui.drawable.EditVectorDialogFragment;
 import com.tyron.code.ui.drawable.Icons;
 import android.widget.Toast;
 import android.widget.TextView;
+import androidx.core.view.MenuItemCompat;
+import androidx.appcompat.widget.SearchView;
 
 public class IconManagerFragment extends Fragment {
 
@@ -51,7 +56,7 @@ public class IconManagerFragment extends Fragment {
  
     private RecyclerView mRecyclerView;
     private IconManagerAdapter mAdapter;
-   
+    private List<Icons> Icons = new ArrayList<>();
     public static IconManagerFragment newInstance( ) {
         IconManagerFragment fragment = new IconManagerFragment();
 
@@ -61,7 +66,6 @@ public class IconManagerFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Nullable
@@ -73,8 +77,7 @@ public class IconManagerFragment extends Fragment {
     
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         toolbar.setNavigationOnClickListener(v ->  getParentFragmentManager().popBackStack());
-
-        
+	
         return view;
     }
 
@@ -82,7 +85,33 @@ public class IconManagerFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         toolbar.setOnMenuItemClickListener(menu -> getParentFragmentManager().popBackStackImmediate());
-        
+        toolbar.addMenuProvider(new MenuProvider() {
+				@Override
+				public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {												
+					menuInflater.inflate(R.menu.icon_manager_menu, menu); 	
+					MenuItem searchViewItem = menu.findItem(R.id.search_bar);
+					SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchViewItem);
+
+					searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+							@Override
+							public boolean onQueryTextSubmit(String query) {						    
+								mAdapter.getFilter().filter(query);
+								return false;
+							}
+
+							@Override
+							public boolean onQueryTextChange(String newText) {						
+								mAdapter.getFilter().filter(newText);
+								return false;
+							}
+						});
+				}
+
+				@Override
+				public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+					return false;
+				}
+			});
         mAdapter = new IconManagerAdapter();
         mAdapter.setOnIconSelectedListener(this::showDialog);
         mRecyclerView = view.findViewById(R.id.recyclerView);
@@ -109,8 +138,7 @@ public class IconManagerFragment extends Fragment {
                 iconDir.mkdirs();
             }
             File[] files = iconDir.listFiles(File::isFile);
-
-            List<Icons> Icons = new ArrayList<>();
+       
             if (files != null) {
                 Arrays.sort(files, Comparator.comparingLong(File::lastModified));
                 for (File file : files) {
