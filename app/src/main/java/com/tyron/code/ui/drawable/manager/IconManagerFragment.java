@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentActivity;
 import com.tyron.code.R;
-import androidx.appcompat.widget.Toolbar;
+import com.google.android.material.appbar.MaterialToolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -49,6 +49,10 @@ import android.widget.Toast;
 import android.widget.TextView;
 import androidx.core.view.MenuItemCompat;
 import androidx.appcompat.widget.SearchView;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.text.TextWatcher;
+import android.text.Editable;
 
 public class IconManagerFragment extends Fragment {
 
@@ -57,7 +61,9 @@ public class IconManagerFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private IconManagerAdapter mAdapter;
     private List<Icons> Icons = new ArrayList<>();
-    public static IconManagerFragment newInstance( ) {
+    EditText editText;
+    ImageButton clearButton;
+	public static IconManagerFragment newInstance( ) {
         IconManagerFragment fragment = new IconManagerFragment();
 
         return fragment;
@@ -75,55 +81,67 @@ public class IconManagerFragment extends Fragment {
         View view = inflater.inflate(R.layout.icon_manager_fragment, container, false);
         view.setClickable(true);
     
-        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        MaterialToolbar toolbar = view.findViewById(R.id.toolbar);
         toolbar.setNavigationOnClickListener(v ->  getParentFragmentManager().popBackStack());
-	
-        return view;
+		editText = view.findViewById(R.id.search_view_edit_text);
+		clearButton = view.findViewById(R.id.search_view_clear_button);
+		return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        MaterialToolbar toolbar = view.findViewById(R.id.toolbar);
         toolbar.setOnMenuItemClickListener(menu -> getParentFragmentManager().popBackStackImmediate());
-        toolbar.addMenuProvider(new MenuProvider() {
-				@Override
-				public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {												
-					menuInflater.inflate(R.menu.icon_manager_menu, menu); 	
-					MenuItem searchViewItem = menu.findItem(R.id.search_bar);
-					SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchViewItem);
-
-					searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-							@Override
-							public boolean onQueryTextSubmit(String query) {						    
-								mAdapter.getFilter().filter(query);
-								return false;
-							}
-
-							@Override
-							public boolean onQueryTextChange(String newText) {						
-								mAdapter.getFilter().filter(newText);
-								return false;
-							}
-						});
-				}
-
-				@Override
-				public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-					return false;
-				}
-			});
+        
+		editText = view.findViewById(R.id.search_view_edit_text);
+		clearButton = view.findViewById(R.id.search_view_clear_button);
+		editText.setHint("Search Icons");
         mAdapter = new IconManagerAdapter();
         mAdapter.setOnIconSelectedListener(this::showDialog);
         mRecyclerView = view.findViewById(R.id.recyclerView);
         mRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 4));
         mRecyclerView.setAdapter(mAdapter);
-     
+		setUpClearButton();
         if (!new File(getPackageDirectory() + "/Icons/").exists()) {
             showConfirmationDialog();
         } else {
             loadIcons();
 		}
-    } 
+    }
+
+	private void setUpClearButton() {
+		clearButton.setOnClickListener(
+        v -> {
+			clearText();	    
+        });
+
+		editText.addTextChangedListener(
+			new TextWatcher() {
+				@Override
+				public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+				@Override
+				public void onTextChanged(CharSequence s, int start, int before, int count) {
+					clearButton.setVisibility(s.length() > 0 ? View.VISIBLE : View.GONE);												
+					mAdapter.getFilter().filter(s);		
+					Icons.clear();
+				}
+
+				@Override
+				public void afterTextChanged(Editable s) {
+					if (s.toString().isEmpty()) {
+						Icons.clear();
+						loadIcons();				
+					}
+				}
+			});
+	}
+	
+	public void clearText() {
+		Icons.clear();
+		editText.setText("");
+		}
+	
     private void loadIcons() {
        
         toggleLoading(true);

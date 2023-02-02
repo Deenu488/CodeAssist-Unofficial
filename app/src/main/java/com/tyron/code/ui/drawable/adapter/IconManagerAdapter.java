@@ -70,7 +70,7 @@ public class IconManagerAdapter extends RecyclerView.Adapter<IconManagerAdapter.
             });
         mIcons.clear();
         mIcons.addAll(icons);
-        diffResult.dispatchUpdatesTo(this);
+       diffResult.dispatchUpdatesTo(this);
     }
 
     @NonNull
@@ -193,7 +193,7 @@ public class IconManagerAdapter extends RecyclerView.Adapter<IconManagerAdapter.
             List<Icons> icons = new ArrayList<>();
 
             if (constraint == null || constraint.length() == 0) {
-                icons.addAll(mIcons);
+                icons.addAll(mIcons);	  
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
 
@@ -210,9 +210,9 @@ public class IconManagerAdapter extends RecyclerView.Adapter<IconManagerAdapter.
         }
 
         @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-            mIcons.clear();
-            mIcons.addAll((List<Icons>) results.values);
+        protected void publishResults(CharSequence constraint, FilterResults results) {		
+			mIcons.clear();
+            mIcons.addAll((List<Icons>) results.values);		
             notifyDataSetChanged();
         }
     };
