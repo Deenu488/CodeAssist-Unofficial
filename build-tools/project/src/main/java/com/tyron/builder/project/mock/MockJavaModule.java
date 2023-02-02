@@ -193,6 +193,11 @@ public class MockJavaModule extends ModuleImpl implements JavaModule {
     public File getBuildDirectory() {
         return new File(getRootFile(), "build");
     }
+	
+	@Override
+    public File getBuildClassesDirectory() {
+        return new File(getRootFile(), "build/bin/java/classes");
+    }
 
     @NonNull
     @Override

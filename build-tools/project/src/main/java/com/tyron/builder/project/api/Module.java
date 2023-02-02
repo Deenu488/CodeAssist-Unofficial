@@ -38,4 +38,6 @@ public interface Module extends UserDataHolderEx, CacheHolder {
      * @return The directory that this project can use to compile files
      */
     File getBuildDirectory();
+	
+	File getBuildClassesDirectory();
 }

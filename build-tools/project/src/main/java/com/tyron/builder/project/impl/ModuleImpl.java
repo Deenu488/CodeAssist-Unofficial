@@ -57,6 +57,15 @@ public class ModuleImpl implements Module {
         }
         return new File(getRootFile(), "build");
     }
+	
+	@Override
+    public File getBuildClassesDirectory() {
+        File custom = getPathSetting("build_classes_directory");
+        if (custom.exists()) {
+            return custom;
+        }
+        return new File(getRootFile(), "build/bin/java/classes");
+    }
 
     @Override
     public ModuleSettings getSettings() {
