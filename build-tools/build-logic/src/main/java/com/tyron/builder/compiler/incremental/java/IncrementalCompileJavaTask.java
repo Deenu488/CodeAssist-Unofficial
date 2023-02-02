@@ -39,19 +39,20 @@ import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardLocation;
 import android.util.Log;
+import java.util.Set;
 
-public class IncrementalJavaTask extends Task<JavaModule> {
+public class IncrementalCompileJavaTask extends Task<JavaModule> {
 
     public static final CacheHolder.CacheKey<String, List<File>> CACHE_KEY =
-            new CacheHolder.CacheKey<>("javaCache");
-    private static final String TAG = "compileJavaWithJavac";
+	new CacheHolder.CacheKey<>("javaCache");
+    private static final String TAG = "compileJava";
 
     private File mOutputDir;
     private List<File> mJavaFiles;
     private List<File> mFilesToCompile;
     private Cache<String, List<File>> mClassCache;
 
-    public IncrementalJavaTask(Project project, JavaModule module, ILogger logger) {
+    public IncrementalCompileJavaTask(Project project, JavaModule module, ILogger logger) {
         super(project, module, logger);
     }
 
@@ -70,10 +71,10 @@ public class IncrementalJavaTask extends Task<JavaModule> {
         mFilesToCompile = new ArrayList<>();
         mClassCache = getModule().getCache(CACHE_KEY, new Cache<>());
 
-        mJavaFiles = new ArrayList<>(getModule().getJavaFiles().values());
-     /*   if (getModule() instanceof AndroidModule) {
-            mJavaFiles.addAll(((AndroidModule) getModule()).getResourceClasses().values());
-        }*/
+        mJavaFiles = new ArrayList<>(); 
+        mJavaFiles.addAll(getJavaFiles(new File(getModule().getBuildDirectory(), "gen")));
+		mJavaFiles.addAll(getJavaFiles(new File(getModule().getBuildDirectory(), "view_binding")));
+				
         for (Cache.Key<String> key : new HashSet<>(mClassCache.getKeys())) {
             if (!mJavaFiles.contains(key.file.toFile())) {
                 File file = mClassCache.get(key.file, "class").iterator().next();
@@ -115,8 +116,8 @@ public class IncrementalJavaTask extends Task<JavaModule> {
         JavacTool tool = JavacTool.create();
 
         JavacFileManager standardJavaFileManager =
-                tool.getStandardFileManager(diagnosticCollector, Locale.getDefault(),
-                        Charset.defaultCharset());
+			tool.getStandardFileManager(diagnosticCollector, Locale.getDefault(),
+										Charset.defaultCharset());
         standardJavaFileManager.setSymbolFileEnabled(false);
 
         List<File> classpath = new ArrayList<>(getModule().getLibraries());
@@ -124,15 +125,13 @@ public class IncrementalJavaTask extends Task<JavaModule> {
 
         File kotlinOutputDir = new File(getModule().getBuildDirectory(), "bin/kotlin/classes");
         classpath.add(kotlinOutputDir);
-	
-        classpath.add(getModule().getBuildClassesDirectory());
 
         try {
             standardJavaFileManager.setLocation(StandardLocation.CLASS_OUTPUT,
-                    Collections.singletonList(mOutputDir));
+												Collections.singletonList(mOutputDir));
             standardJavaFileManager.setLocation(StandardLocation.PLATFORM_CLASS_PATH,
-                    Arrays.asList(getModule().getBootstrapJarFile(),
-                            getModule().getLambdaStubsJarFile()));
+												Arrays.asList(getModule().getBootstrapJarFile(),
+															  getModule().getLambdaStubsJarFile()));
             standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, classpath);
             standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, mJavaFiles);
         } catch (IOException e) {
@@ -142,20 +141,20 @@ public class IncrementalJavaTask extends Task<JavaModule> {
         List<JavaFileObject> javaFileObjects = new ArrayList<>();
         for (File file : mFilesToCompile) {
             javaFileObjects.add(new SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
-                @Override
-                public CharSequence getCharContent(boolean ignoreEncodingErrors) throws IOException {
-                    return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-                }
-            });
+					@Override
+					public CharSequence getCharContent(boolean ignoreEncodingErrors) throws IOException {
+						return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+					}
+				});
         }
-        
+
         List<String> options = new ArrayList<>();
         options.add("-source");
         options.add("1.8");
         options.add("-target");
         options.add("1.8");
         JavacTask task = tool.getTask(null, standardJavaFileManager, diagnosticCollector,
-                options, null, javaFileObjects);
+									  options, null, javaFileObjects);
 
         HashMap<String, List<File>> compiledFiles = new HashMap<>();
         try {
@@ -168,7 +167,7 @@ public class IncrementalJavaTask extends Task<JavaModule> {
                 File classFile = new File(path);
                 if (classFile. exists()) {
                     String classPath = classFile.getAbsolutePath().replace("build/bin/classes/",
-                            "src/main/java/").replace(".class", ".java");
+																		   "src/main/java/").replace(".class", ".java");
                     if (classFile.getName().indexOf('$') != -1) {
                         classPath = classPath.substring(0, classPath.indexOf('$')) + ".java";
                     }
@@ -225,6 +224,27 @@ public class IncrementalJavaTask extends Task<JavaModule> {
     public List<File> getCompiledFiles() {
         return mFilesToCompile;
     }
+	
+	public static Set<File> getJavaFiles(File dir) {
+        Set<File> javaFiles = new HashSet<>();
+
+        File[] files = dir.listFiles();
+        if (files == null) {
+            return Collections.emptySet();
+        }
+
+        for (File file : files) {
+            if (file.isDirectory()) {
+                javaFiles.addAll(getJavaFiles(file));
+            } else {
+                if (file.getName().endsWith(".java")) {
+                    javaFiles.add(file);
+                }
+            }
+        }
+
+        return javaFiles;
+    }
 
     private File findClassFile(String packageName) {
         String path = packageName.replace(".", "/").concat(".class");
@@ -236,7 +256,7 @@ public class IncrementalJavaTask extends Task<JavaModule> {
         String name = classFile.getName().replace(ext, "");
         if (parent != null) {
             File[] children =
-                    parent.listFiles((c) -> c.getName().endsWith(ext) && c.getName().contains("$"));
+				parent.listFiles((c) -> c.getName().endsWith(ext) && c.getName().contains("$"));
             if (children != null) {
                 for (File child : children) {
                     if (child.getName().startsWith(name)) {

@@ -85,6 +85,7 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         List<File> classpath = new ArrayList<>();
         classpath.add(getModule().getBootstrapJarFile());
         classpath.add(getModule().getLambdaStubsJarFile());
+		classpath.add(getModule().getBuildClassesDirectory());
         classpath.addAll(getModule().getLibraries());
         List<String> arguments = new ArrayList<>();
         Collections.addAll(arguments, "-cp",

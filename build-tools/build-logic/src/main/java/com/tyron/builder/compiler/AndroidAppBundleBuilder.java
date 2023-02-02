@@ -20,6 +20,7 @@ import com.tyron.builder.project.api.AndroidModule;
 import java.util.ArrayList;
 import java.util.List;
 import com.tyron.builder.compiler.buildconfig.GenerateReleaseBuildConfigTask;
+import com.tyron.builder.compiler.incremental.java.IncrementalCompileJavaTask;
 
 public class AndroidAppBundleBuilder extends BuilderImpl<AndroidModule> {
 
@@ -38,6 +39,7 @@ public class AndroidAppBundleBuilder extends BuilderImpl<AndroidModule> {
         tasks.add(new CrashlyticsTask(getProject(), getModule(), getLogger()));
         tasks.add(new IncrementalAapt2Task(getProject(), getModule(), getLogger(), true));
         tasks.add(new GenerateViewBindingTask(getProject(), getModule(), getLogger(), true));
+		tasks.add(new IncrementalCompileJavaTask(getProject(), getModule(), getLogger()));
         tasks.add(new MergeSymbolsTask(getProject(), getModule(), getLogger()));
         tasks.add(new IncrementalKotlinCompiler(getProject(), getModule(), getLogger()));
         tasks.add(new IncrementalJavaTask(getProject(), getModule(), getLogger()));
