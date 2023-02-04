@@ -71,9 +71,9 @@ public class IncrementalJavaTask extends Task<JavaModule> {
         mClassCache = getModule().getCache(CACHE_KEY, new Cache<>());
 
         mJavaFiles = new ArrayList<>(getModule().getJavaFiles().values());
-     /*   if (getModule() instanceof AndroidModule) {
+        if (getModule() instanceof AndroidModule) {
             mJavaFiles.addAll(((AndroidModule) getModule()).getResourceClasses().values());
-        }*/
+        }
         for (Cache.Key<String> key : new HashSet<>(mClassCache.getKeys())) {
             if (!mJavaFiles.contains(key.file.toFile())) {
                 File file = mClassCache.get(key.file, "class").iterator().next();
