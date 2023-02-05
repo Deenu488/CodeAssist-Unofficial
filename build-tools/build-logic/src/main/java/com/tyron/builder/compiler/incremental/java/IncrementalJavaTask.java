@@ -39,6 +39,7 @@ import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardLocation;
 import android.util.Log;
+import java.util.Set;
 
 public class IncrementalJavaTask extends Task<JavaModule> {
 
@@ -71,6 +72,18 @@ public class IncrementalJavaTask extends Task<JavaModule> {
         mClassCache = getModule().getCache(CACHE_KEY, new Cache<>());
 
         mJavaFiles = new ArrayList<>(getModule().getJavaFiles().values());
+
+		String projects = getModule().getSettings().getString(ModuleSettings.INCLUDE, "[]");
+		String replace = projects.replace("[","").replace("]","").replace(","," ");
+		String[] names = replace.split("\\s");
+
+		for (String str:names) {
+			File java = new File(getModule().getRootFile().getParentFile(), str + "/src/main/java");
+			if (java.exists()) {
+				mJavaFiles.addAll(getJavaFiles(java));
+				}
+		}
+
         if (getModule() instanceof AndroidModule) {
             mJavaFiles.addAll(((AndroidModule) getModule()).getResourceClasses().values());
         }
@@ -229,6 +242,27 @@ public class IncrementalJavaTask extends Task<JavaModule> {
     private File findClassFile(String packageName) {
         String path = packageName.replace(".", "/").concat(".class");
         return new File(mOutputDir, path);
+    }
+
+	public static Set<File> getJavaFiles(File dir) {
+        Set<File> javaFiles = new HashSet<>();
+
+        File[] files = dir.listFiles();
+        if (files == null) {
+            return Collections.emptySet();
+        }
+
+        for (File file : files) {
+            if (file.isDirectory()) {
+                javaFiles.addAll(getJavaFiles(file));
+            } else {
+                if (file.getName().endsWith(".java")) {
+                    javaFiles.add(file);
+                }
+            }
+        }
+
+        return javaFiles;
     }
 
     private void deleteAllFiles(File classFile, String ext) throws IOException {
