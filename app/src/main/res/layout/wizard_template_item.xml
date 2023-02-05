@@ -27,17 +27,18 @@
 		<com.google.android.material.imageview.ShapeableImageView
 			android:id="@+id/template_icon"
 			android:layout_width="120dp"
-			android:layout_height="160dp"
+			android:layout_height="170dp"	
 			android:adjustViewBounds="true"
-			android:scaleType="center"
-			app:shapeAppearance="@style/RoundedCorners"/>
+			android:scaleType="centerCrop"
+			android:elevation="2dp"
+			/>
 
 		<TextView
 			android:id="@+id/template_name"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:maxLines="2"
-			android:layout_marginTop="5dp"
+			android:layout_marginTop="8dp"
 			android:gravity="center_horizontal"
 			android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
 			tools:text="Empty Activity"/>

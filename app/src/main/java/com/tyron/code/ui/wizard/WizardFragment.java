@@ -54,6 +54,7 @@ import com.tyron.completion.progress.ProgressManager;
 
 import org.apache.commons.io.FileUtils;
 import javax.lang.model.SourceVersion;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import java.io.File;
 import java.io.IOException;
@@ -88,7 +89,7 @@ public class WizardFragment extends Fragment {
     private boolean mUseInternalStorage = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
 
     private WizardTemplate mCurrentTemplate;
-
+	private MaterialToolbar toolbar;
     private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
         @Override
         public void handleOnBackPressed() {
@@ -174,11 +175,16 @@ public class WizardFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        loadTemplates();
+	    toolbar = view.findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.wizard_templates);
+		toolbar.setTitleCentered(true);
+		loadTemplates();
     }
 
     private void onNavigateBack() {
-        if (!mLast) {
+		toolbar.setTitle(R.string.wizard_templates);
+		toolbar.setTitleCentered(true);
+		if (!mLast) {	
             getParentFragmentManager().popBackStack();
         } else {
             showTemplatesView();
@@ -188,8 +194,10 @@ public class WizardFragment extends Fragment {
 
 
     private void onNavigateNext(View view) {
-        if (!mLast) {
-            showDetailsView();
+		toolbar.setTitle(mCurrentTemplate.getName());
+		toolbar.setTitleCentered(true);
+		if (!mLast) {	
+            showDetailsView();		
             mLast = true;
         } else {
             createProjectAsync();
