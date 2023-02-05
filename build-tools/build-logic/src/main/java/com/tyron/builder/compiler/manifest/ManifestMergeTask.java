@@ -111,7 +111,7 @@ public class ManifestMergeTask extends Task<AndroidModule> {
         if (mLibraryManifestFiles != null) {
             invoker.addLibraryManifests(mLibraryManifestFiles);
         }
-        invoker.setVerbose(true);
+        invoker.setVerbose(false);
         try {
             MergingReport report = invoker.merge();
             if (report.getResult().isError()) {
