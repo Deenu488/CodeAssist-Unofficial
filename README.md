@@ -41,7 +41,9 @@
 
 - [x] R8/ProGuard
 
-- [x] Code Completions (Currently for Java only)  
+- [x] Java Code Completions
+
+- [x] Kotlin Code Completions (Unstable)
 
 - [x] Quick fixes (Import missing class and Implement Abstract Methods)  
 
@@ -51,11 +53,13 @@
 
 - [ ] Layout Editor
 
-- [ ] Debugger
+- [x] Debugger
 
 - [ ] Lint 
 
 - [x] Git Integration
+
+- [x] Multiple Projects (85%)
 
 <img style=" width: 100%;" src=".github/resources/images/hr.jpg">
 
