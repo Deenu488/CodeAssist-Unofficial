@@ -284,6 +284,18 @@ public class IncrementalAapt2Task extends Task<AndroidModule> {
             args.add(getModule().getAssetsDirectory().getAbsolutePath());
         }
 
+		String projects = getModule().getSettings().getString(ModuleSettings.INCLUDE, "[]");
+		String replace = projects.replace("[","").replace("]","").replace(","," ");
+		String[] names = replace.split("\\s");
+
+		for (String str:names) {
+			File assets = new File(getModule().getRootFile().getParentFile(), str + "/src/main/assets");
+			if (assets.exists()) {
+			args.add("-A");
+			args.add(assets.getAbsolutePath());
+			}
+		}
+
         int compile = Aapt2Jni.link(args);
         List<DiagnosticWrapper> logs = Aapt2Jni.getLogs();
         LogUtils.log(logs, getLogger());
