@@ -12,7 +12,7 @@ import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.log.ILogger;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
-
+import com.tyron.builder.model.ModuleSettings;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -110,6 +110,17 @@ public class PackageTask extends Task<AndroidModule> {
             if (getModule().getNativeLibrariesDirectory().exists()) {
                 builder.addNativeLibraries(getModule().getNativeLibrariesDirectory());
             }
+
+			String projects = getModule().getSettings().getString(ModuleSettings.INCLUDE, "[]");
+			String replace = projects.replace("[","").replace("]","").replace(","," ");
+			String[] names = replace.split("\\s");
+
+			for (String str:names) {
+				File jniLibs = new File(getModule().getRootFile().getParentFile(), str + "/src/main/jniLibs");
+				if (jniLibs.exists() && jniLibs.isDirectory()) {
+					builder.addNativeLibraries(jniLibs);
+					}
+			}
 
             if (mBuildType == BuildType.DEBUG) {
                 builder.setDebugMode(true);
