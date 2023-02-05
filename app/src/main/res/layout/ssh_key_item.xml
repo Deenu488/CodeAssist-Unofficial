@@ -4,13 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content" >
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="90dp"
         android:layout_margin="2dp"
         app:cardCornerRadius="16dp"
         app:cardElevation="2dp"
+		android:descendantFocusability="blocksDescendants"	
+		android:focusable="true"
+		app:strokeWidth="0dp"
         app:cardUseCompatPadding="true" >
 
         <LinearLayout
@@ -43,7 +46,7 @@
                     tools:text="SSH Keys" />
             </LinearLayout>
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

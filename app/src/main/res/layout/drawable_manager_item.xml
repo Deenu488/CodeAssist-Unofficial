@@ -8,7 +8,7 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardview"
         android:layout_width="90dp"
         android:layout_height="105dp"
@@ -16,6 +16,9 @@
         android:layout_marginBottom="3dp"
         app:cardCornerRadius="16dp"
         app:cardUseCompatPadding="true"
+		android:descendantFocusability="blocksDescendants"	
+		android:focusable="true"
+		app:strokeWidth="0dp"
         app:cardElevation="3dp" >
 
         <LinearLayout
@@ -55,7 +58,7 @@
 
         </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>
 

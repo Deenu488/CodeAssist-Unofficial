@@ -73,7 +73,10 @@
 				app:layout_constraintRight_toRightOf="parent"
 				app:layout_constraintTop_toBottomOf="@+id/app_version"
 				app:cardCornerRadius="32dp"
-				app:cardUseCompatPadding="true"
+				app:cardUseCompatPadding="true"		
+				android:descendantFocusability="blocksDescendants"
+				android:focusable="true"
+				app:strokeWidth="0dp"
 				app:cardElevation="2dp">
 
 				<LinearLayout

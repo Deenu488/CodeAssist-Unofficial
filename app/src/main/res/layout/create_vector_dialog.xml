@@ -126,19 +126,24 @@
                     android:text="#000000" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                app:cardCornerRadius="10dp" >
+				app:cardCornerRadius="10dp"
+				app:cardElevation="2dp"
+				android:descendantFocusability="blocksDescendants"	
+				android:focusable="true"
+				app:strokeWidth="0dp"
+				app:cardUseCompatPadding="true" >
 
                 <LinearLayout
                     android:id="@+id/round"
                     android:layout_width="match_parent"
                     android:layout_height="40dp" />
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
     </ScrollView>
 

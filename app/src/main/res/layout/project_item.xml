@@ -14,6 +14,9 @@
         app:layout_constraintTop_toTopOf="parent"
         app:cardCornerRadius="16dp"
 		app:cardUseCompatPadding="true"
+		android:descendantFocusability="blocksDescendants"	
+		android:focusable="true"
+		app:strokeWidth="0dp"
         app:cardElevation="3dp" >
 
         <LinearLayout
