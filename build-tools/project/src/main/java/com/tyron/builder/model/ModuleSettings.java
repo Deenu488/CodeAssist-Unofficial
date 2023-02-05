@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Executors;
+import java.util.List;
 
 @SuppressWarnings({"unchecked"})
 public class ModuleSettings implements SharedPreferences {
@@ -45,7 +46,9 @@ public class ModuleSettings implements SharedPreferences {
     public static final String PACKAGE_NAME = "packageName";
     public static final String EXTRACT_APKS = "extractApks";
     public static final String UNCOMPRESSED_FLAG = "bundle_enableUncompressedNativeLibs";
-    private final File mConfigFile;
+	public static final String INCLUDE = "include";
+	
+	private final File mConfigFile;
     private final Map<String, Object> mConfigMap;
 
     public ModuleSettings(File configFile) {
@@ -68,7 +71,10 @@ public class ModuleSettings implements SharedPreferences {
 
     protected Map<String, Object> getDefaults() {
         Map<String, Object> map = new LinkedHashMap<>();
-        map.put(USE_R8, false);
+		List<String> includeList = new ArrayList<String>();
+		includeList.add("");
+		
+		map.put(USE_R8, false);
         map.put(MIN_SDK_VERSION, 21);
         map.put(TARGET_SDK_VERSION, 33);
         map.put(VERSION_NAME, "1.0");
@@ -80,6 +86,7 @@ public class ModuleSettings implements SharedPreferences {
       //  map.put(JAVA_SOURCE_VERSION, "1.8");
         map.put(EXTRACT_APKS, false);
         map.put(UNCOMPRESSED_FLAG, false);
+		map.put(INCLUDE, includeList.toString());
         return map;
     }
 

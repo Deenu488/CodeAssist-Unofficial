@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 public class ManifestMergeTask extends Task<AndroidModule> {
 
@@ -78,9 +79,19 @@ public class ManifestMergeTask extends Task<AndroidModule> {
             }
         }
 
+		String projects = getModule().getSettings().getString(ModuleSettings.INCLUDE, "[]");
+		String replace = projects.replace("[","").replace("]","").replace(","," ");
+		String[] names = replace.split("\\s");
+
+		for (String str:names) {
+			File manifest = new File(getModule().getRootFile().getParentFile(), str + "/src/main/AndroidManifest.xml");
+			if (manifest.exists()) {
+			manifests.add(manifest);
+			}
+	    }
+
         mLibraryManifestFiles = manifests.toArray(new File[0]);
     }
-
 
     @Override
     public void run() throws IOException, CompilationFailedException {
@@ -100,7 +111,7 @@ public class ManifestMergeTask extends Task<AndroidModule> {
         if (mLibraryManifestFiles != null) {
             invoker.addLibraryManifests(mLibraryManifestFiles);
         }
-        invoker.setVerbose(false);
+        invoker.setVerbose(true);
         try {
             MergingReport report = invoker.merge();
             if (report.getResult().isError()) {
