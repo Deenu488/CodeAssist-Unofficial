@@ -48,9 +48,9 @@ public class IncrementalBundleAarTask extends Task<AndroidModule> {
     }
 
     public void run() throws IOException, CompilationFailedException {
-
+		
 		compileProjects();
-       // link();
+        link();
     }
 
 	private void compileProjects() throws IOException,
@@ -85,7 +85,89 @@ public class IncrementalBundleAarTask extends Task<AndroidModule> {
 				}						
 			}
 	    }
+	}
+	
+	private void link() throws IOException,
+	CompilationFailedException {
 
+		String projects = getModule().getSettings().getString(ModuleSettings.INCLUDE, "[]");
+		String replace = projects.replace("[","").replace("]","").replace(","," ");
+		String[] names = replace.split("\\s");
+
+		for (String str:names) {
+			File output = new File(getModule().getRootFile().getParentFile(), str + "/build/bin/res");
+			if (!output.exists()) {
+				if (!output.mkdirs()) {
+					throw new IOException("Failed to create resource output directory");
+				}
+			}
+			File res = new File(getModule().getRootFile().getParentFile(), str + "/src/main/res");
+			if (res.exists()) {
+				List<String> args = new ArrayList<>();
+				args.add("-I");
+				args.add(getModule().getBootstrapJarFile().getAbsolutePath());
+				args.add("--allow-reserved-package-id");
+				args.add("--no-version-vectors");
+				args.add("--no-version-transitions");
+				args.add("--auto-add-overlay");
+				args.add("--min-sdk-version");
+				args.add(String.valueOf(getModule().getMinSdk()));
+				args.add("--target-sdk-version");
+				args.add(String.valueOf(getModule().getTargetSdk()));
+				args.add("--proguard");
+				args.add(createNewFile(output, "proguard.txt").getAbsolutePath());
+				
+				File resource = new File(output.getAbsolutePath(), str + "_res.zip");			
+				if (!resource.exists()) {
+					throw new IOException("Unable to get resource file");
+				}			
+				args.add("-R");
+				args.add(resource.getAbsolutePath());
+				
+				args.add("--java");
+				File gen = new File(getModule().getRootFile().getParentFile(), str + "/build/gen");
+				if (!gen.exists()) {
+					if (!gen.mkdirs()) {
+						throw new CompilationFailedException("Failed to create gen folder");
+					}
+				}
+				args.add(gen.getAbsolutePath());
+
+				args.add("--manifest");
+				File projectsManifest = new File(getModule().getRootFile().getParentFile(), str + "/src/main/AndroidManifest.xml");
+				if (!projectsManifest.exists()) {
+					throw new IOException("Unable to get project manifest file");
+				}
+				args.add(projectsManifest.getAbsolutePath());
+				
+				args.add("-o");
+				File out = new File(getModule().getRootFile().getParentFile(), str + "/build/bin/generated.aar.res");	
+				args.add(out.getAbsolutePath());			
+				
+				args.add("--output-text-symbols");
+				File file = new File(output.getAbsolutePath(), "R.txt");
+				Files.deleteIfExists(file.toPath());
+				if (!file.createNewFile()) {
+					throw new IOException("Unable to create R.txt file");
+				}
+				args.add(file.getAbsolutePath());
+				
+				File assets = new File(getModule().getRootFile().getParentFile(), str + "/src/main/assets");	
+				if (assets.exists()) {
+					args.add("-A");
+					args.add(assets.getAbsolutePath());
+				}
+				
+				int compile = Aapt2Jni.link(args);
+				List<DiagnosticWrapper> logs = Aapt2Jni.getLogs();
+				LogUtils.log(logs, getLogger());
+
+				if (compile != 0) {
+					throw new CompilationFailedException(
+						"Compilation failed, check logs for more details.");
+				}
+			}
+	    }
 	}
 
     private File createNewFile(File parent, String name) throws IOException {
