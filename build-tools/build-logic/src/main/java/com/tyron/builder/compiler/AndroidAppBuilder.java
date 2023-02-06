@@ -25,6 +25,7 @@ import java.util.List;
 import com.tyron.builder.compiler.buildconfig.GenerateDebugBuildConfigTask;
 import com.tyron.builder.compiler.buildconfig.GenerateReleaseBuildConfigTask;
 import com.tyron.builder.compiler.incremental.java.IncrementalCompileJavaTask;
+import com.tyron.builder.compiler.incremental.resource.IncrementalBundleAarTask;
 
 public class AndroidAppBuilder extends BuilderImpl<AndroidModule> {
 
@@ -40,7 +41,8 @@ public class AndroidAppBuilder extends BuilderImpl<AndroidModule> {
 
         List<Task<? super AndroidModule>> tasks = new ArrayList<>();
         tasks.add(new CleanTask(getProject(), module, logger));
-        tasks.add(new CheckLibrariesTask(getProject(), module, logger));
+		tasks.add(new IncrementalBundleAarTask(getProject(), module, logger));
+		tasks.add(new CheckLibrariesTask(getProject(), module, logger));
         tasks.add(new ManifestMergeTask(getProject(), module, logger));
         if (type == BuildType.DEBUG) {
             tasks.add(new GenerateDebugBuildConfigTask(getProject(), module, logger));
