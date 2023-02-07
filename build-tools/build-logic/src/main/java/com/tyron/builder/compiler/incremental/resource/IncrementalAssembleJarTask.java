@@ -68,6 +68,11 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
 			File res = new File(getModule().getRootFile().getParentFile(), names[i] + "/src/main/res");
 			File classes = new File(getModule().getRootFile().getParentFile(), names[i] + "/build/bin/java/classes");		
 			File out = new File(getModule().getRootFile().getParentFile(), names[i] + "/build/libs/" + names[i] + ".jar");			
+			File build = new File(getModule().getRootFile().getParentFile(), names[i] + "/build");
+
+			if (build.exists()) {
+			FileUtils.deleteDirectory(build);
+			}
 			if(res.exists()) {	
 			return;
 			}
