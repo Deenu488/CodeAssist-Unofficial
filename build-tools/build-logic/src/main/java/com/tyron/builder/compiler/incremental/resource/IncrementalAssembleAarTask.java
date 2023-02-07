@@ -40,14 +40,23 @@ import com.tyron.builder.model.DiagnosticWrapper;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+import com.tyron.builder.internal.jar.AssembleJar;
+import java.util.zip.ZipOutputStream;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Path;
+import java.io.FileOutputStream;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.SimpleFileVisitor;
+import java.util.zip.ZipEntry;
+import java.nio.file.Paths;
 
 public class IncrementalAssembleAarTask extends Task<AndroidModule> {
 
     private static final String TAG = "assembleAar";
-	
+
     public IncrementalAssembleAarTask(Project project,
-                                AndroidModule module,
-                                ILogger logger) {
+									  AndroidModule module,
+									  ILogger logger) {
         super(project, module, logger); 
 	}
     @Override
@@ -61,11 +70,11 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
     }
 
     public void run() throws IOException, CompilationFailedException {
-		
+
 		String projects = getModule().getSettings().getString(ModuleSettings.INCLUDE, "[]");
 		String replace = projects.replace("[", "").replace("]", "").replace(",", " ");
 		String[] names = replace.split("\\s");
-		
+
 		for (int i = 0; i < names.length; i++) {
 			File res = new File(getModule().getRootFile().getParentFile(), names[i] + "/src/main/res");
 			File bin_res = new File(getModule().getRootFile().getParentFile(), names[i] + "/build/bin/res");		
@@ -74,26 +83,66 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
 			File assets = new File(getModule().getRootFile().getParentFile(), names[i] + "/src/main/assets");
 			File java = new File(getModule().getRootFile().getParentFile(), names[i] + "/src/main/java");
 			File classes = new File(getModule().getRootFile().getParentFile(), names[i] + "/build/bin/java/classes");		
-			
+			File gen = new File(getModule().getRootFile().getParentFile(), names[i] + "/build/gen");
+			File aar = new File(getModule().getRootFile().getParentFile(), names[i] + "/build/bin/aar");		
+
 			if (res.exists() && manifest.exists()) {
-			if (build.exists()) {
+				if (build.exists()) {
 					FileUtils.deleteDirectory(build);
-			}	
-			
-			compileRes(res,bin_res,names[i]);
-			linkRes(bin_res,names[i],manifest,assets);
-			
-			if (java.exists()) {
-				compileJava(java, classes);	
+				}	
+
+				compileRes(res, bin_res, names[i]);
+				linkRes(bin_res, names[i], manifest, assets);
+
+				if (java.exists()) {
+					compileJava(java, gen , classes);	
+				}
+				if (classes.exists()) {
+					assembleAar(classes, aar, build, names[i]);
+				}
+			}
+		}		
+	}
+
+	private void assembleAar(File input, File aar, File build, String name) throws IOException, CompilationFailedException {
+		if (!aar.exists()) {
+			if (!aar.mkdirs()) {
+				throw new IOException("Failed to create resource aar directory");
 			}
 		}
-  	}		
-}
- 
-	
+		AssembleJar assembleJar = new AssembleJar(false);
+		assembleJar.setOutputFile(new File(aar.getAbsolutePath(), "classes.jar"));
+		assembleJar.createJarArchive(input);
+
+		File libs = new File(build.getAbsolutePath() , "libs");
+		if (!libs.exists()) {
+			if (!libs.mkdirs()) {
+				throw new IOException("Failed to create resource libs directory");
+			}
+		}
+		copyResources(new File(build.getParentFile().getAbsolutePath() , "src/main/AndroidManifest.xml"), aar.getAbsolutePath());
+		copyResources(new File(build.getParentFile().getAbsolutePath() , "src/main/res"), aar.getAbsolutePath());
+
+		File assets = new File(build.getParentFile().getAbsolutePath() , "src/main/assets");
+		File jniLibs  = new File(build.getParentFile().getAbsolutePath() , "src/main/jniLibs");
+
+		if (assets.exists()) {
+			copyResources(assets, aar.getAbsolutePath());
+		}
+		if (jniLibs.exists()) {
+			copyResources(jniLibs, aar.getAbsolutePath());	
+			File jni = new File(aar.getAbsolutePath(), "jniLibs");
+			jni.renameTo(new File(aar.getAbsolutePath(), "jni"));	
+		}
+		zipFolder(Paths.get(aar.getAbsolutePath()), Paths.get(libs.getAbsolutePath(), name + ".aar"));
+		if (aar.exists()) {
+			FileUtils.deleteDirectory(aar);
+		}	
+	}
+
 	private boolean mHasErrors = false;
 
-	public void compileJava(File java, File out) throws IOException,
+	public void compileJava(File java, File gen, File out) throws IOException,
 	CompilationFailedException {
 
 		if (!out.exists()) {
@@ -107,6 +156,7 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
 		List<JavaFileObject> javaFileObjects = new ArrayList<>();
 
 		mFilesToCompile.addAll(getJavaFiles(java));
+		mFilesToCompile.addAll(getJavaFiles(gen));
 
 		if (mFilesToCompile.isEmpty()) {
             return;
@@ -128,15 +178,15 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
         }
 
 		DiagnosticListener<JavaFileObject> diagnosticCollector = diagnostic -> {
-			switch (diagnostic.getKind()) {
-				case ERROR:
-					mHasErrors = true;
-					getLogger().error(new DiagnosticWrapper(diagnostic));
-					break;
-				case WARNING:
-					getLogger().warning(new DiagnosticWrapper(diagnostic));
-			}
-		};
+		 switch (diagnostic.getKind()) {
+		 case ERROR:
+		 mHasErrors = true;
+		 getLogger().error(new DiagnosticWrapper(diagnostic));
+		 break;
+		 case WARNING:
+		 getLogger().warning(new DiagnosticWrapper(diagnostic));
+		 }
+		 };
 
 		JavacTool tool = JavacTool.create();
         JavacFileManager standardJavaFileManager =
@@ -175,7 +225,7 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
 		args.add("--target-sdk-version");
 		args.add(String.valueOf(getModule().getTargetSdk()));
 		args.add("--proguard");
-		args.add(createNewFile(in, "proguard.txt").getAbsolutePath());
+		args.add(createNewFile(new File(in.getParentFile().getAbsolutePath(), "aar"), "proguard.txt").getAbsolutePath());
 
 		File resource = new File(in.getAbsolutePath(), name + "_res.zip");			
 		if (!resource.exists()) {
@@ -204,13 +254,13 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
 		args.add(out.getAbsolutePath());			
 
 		args.add("--output-text-symbols");
-		File file = new File(in.getAbsolutePath(), "R.txt");
+		File file = new File(new File(in.getParentFile().getAbsolutePath(), "aar"), "R.txt");
 		Files.deleteIfExists(file.toPath());
 		if (!file.createNewFile()) {
 			throw new IOException("Unable to create R.txt file");
 		}
 		args.add(file.getAbsolutePath());
-	
+
 		if (assets.exists()) {
 			args.add("-A");
 			args.add(assets.getAbsolutePath());
@@ -241,7 +291,7 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
 		int compile = Aapt2Jni.compile(args);
 		List<DiagnosticWrapper> logs = Aapt2Jni.getLogs();
 		LogUtils.log(logs, getLogger());
-		
+
 		if (compile != 0) {
 			throw new CompilationFailedException(
 				"Compilation failed, check logs for more details.");
@@ -260,7 +310,7 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
         }
         return createdFile;
     }
-	
+
 	public static Set<File> getJavaFiles(File dir) {
         Set<File> javaFiles = new HashSet<>();
 
@@ -281,4 +331,36 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
 
         return javaFiles;
     }
+
+	private void zipFolder(final Path sourceFolderPath, Path zipPath) throws IOException {
+        final ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipPath.toFile()));
+        Files.walkFileTree(sourceFolderPath, new SimpleFileVisitor<Path>() {
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+					zos.putNextEntry(new ZipEntry(sourceFolderPath.relativize(file).toString()));
+					Files.copy(file, zos);
+					zos.closeEntry();
+					return FileVisitResult.CONTINUE;
+				}
+			});
+        zos.close();
+    }
+
+	private void copyResources(File file, String path) throws IOException {
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (files != null) {
+                for (File child : files) {
+                    copyResources(child, path + "/" + file.getName());
+                }
+            }
+        } else {
+            File directory = new File(path);
+            if (!directory.exists() && !directory.mkdirs()) {
+                throw new IOException("Failed to create directory " + directory);
+            }
+
+            FileUtils.copyFileToDirectory(file, directory);
+        }
+    }
+
 }

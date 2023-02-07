@@ -65,7 +65,6 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
 
 		for (int i = 0; i < names.length; i++) {
 			File java = new File(getModule().getRootFile().getParentFile(), names[i] + "/src/main/java");
-			File res = new File(getModule().getRootFile().getParentFile(), names[i] + "/src/main/res");
 			File classes = new File(getModule().getRootFile().getParentFile(), names[i] + "/build/bin/java/classes");		
 			File out = new File(getModule().getRootFile().getParentFile(), names[i] + "/build/libs/" + names[i] + ".jar");			
 			File build = new File(getModule().getRootFile().getParentFile(), names[i] + "/build");
