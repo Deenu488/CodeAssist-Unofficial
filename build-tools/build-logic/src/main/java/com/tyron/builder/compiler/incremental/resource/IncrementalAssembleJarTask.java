@@ -73,12 +73,12 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
 			if (build.exists()) {
 			FileUtils.deleteDirectory(build);
 			}
-			if(res.exists()) {	
-			return;
-			}
+
 			if (java.exists()) {
 			compileJava(java, classes);
-			assembleJar(classes,out);
+			}
+			if (classes.exists()) {
+				assembleJar(classes,out);
 			}
 		}	
 	}
@@ -94,13 +94,19 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
 		assembleJar.createJarArchive(input);
 	}
 
-	private void compileJava(File java, File out) throws IOException,
+	public void compileJava(File java, File out) throws IOException,
 	CompilationFailedException {
 		
 		if (!out.exists()) {
 			if (!out.mkdirs()) {
 				throw new IOException("Failed to create resource output directory");
 			}
+		}
+		
+		File res = new File(java.getParentFile().getAbsolutePath(),"res");
+		if (res.exists()){
+		FileUtils.deleteDirectory(out);	
+		return;
 		}
 		
 		List<File> mFilesToCompile = new ArrayList<>();
