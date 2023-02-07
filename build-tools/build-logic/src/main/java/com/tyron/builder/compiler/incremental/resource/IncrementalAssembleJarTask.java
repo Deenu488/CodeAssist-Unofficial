@@ -63,31 +63,27 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
 		String replace = projects.replace("[", "").replace("]", "").replace(",", " ");
 		String[] names = replace.split("\\s");
 
-		for (String str:names) {
-			File output = new File(getModule().getRootFile().getParentFile(), str + "/build/bin/java/classes");
-			File libs = new File(getModule().getRootFile().getParentFile(), str + "/build/libs");
-			if (!output.exists()) {
-				if (!output.mkdirs()) {
-					throw new IOException("Failed to create resource output directory");
-				}
-			}
-			if (!libs.exists()) {
-				if (!libs.mkdirs()) {
-					throw new IOException("Failed to create resource libs directory");
-				}
-			}
-		}
-
 		for (int i = 0; i < names.length; i++) {
 			File java = new File(getModule().getRootFile().getParentFile(), names[i] + "/src/main/java");
+			File res = new File(getModule().getRootFile().getParentFile(), names[i] + "/src/main/res");
 			File classes = new File(getModule().getRootFile().getParentFile(), names[i] + "/build/bin/java/classes");		
 			File out = new File(getModule().getRootFile().getParentFile(), names[i] + "/build/libs/" + names[i] + ".jar");			
+			if(res.exists()) {	
+			return;
+			}
+			if (java.exists()) {
 			compileJava(java, classes);
 			assembleJar(classes,out);
+			}
 		}	
 	}
 
 	private void assembleJar(File input,File out) throws IOException, CompilationFailedException {
+		if (!out.getParentFile().exists()) {
+			if (!out.getParentFile().mkdirs()) {
+				throw new IOException("Failed to create resource output directory");
+			}
+		}
 		AssembleJar assembleJar = new AssembleJar(false);
 		assembleJar.setOutputFile(out);
 		assembleJar.createJarArchive(input);
@@ -95,16 +91,18 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
 
 	private void compileJava(File java, File out) throws IOException,
 	CompilationFailedException {
-		getLogger().debug("File" + java.getAbsolutePath());
-		getLogger().debug("Out" + out.getAbsolutePath());
-
+		
+		if (!out.exists()) {
+			if (!out.mkdirs()) {
+				throw new IOException("Failed to create resource output directory");
+			}
+		}
+		
 		List<File> mFilesToCompile = new ArrayList<>();
 		List<File> classpath = new ArrayList<>();		
 		List<JavaFileObject> javaFileObjects = new ArrayList<>();
 
 		mFilesToCompile.addAll(getJavaFiles(java));
-
-		getLogger().debug("mFilesToCompile" + mFilesToCompile.toString());
 
 		if (mFilesToCompile.isEmpty()) {
             return;
@@ -123,7 +121,6 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
 						return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
 					}
 				});
-			getLogger().debug("file" + file.getAbsolutePath());	
         }
 
 		DiagnosticListener<JavaFileObject> diagnosticCollector = diagnostic -> {
