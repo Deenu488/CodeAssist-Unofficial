@@ -13,7 +13,6 @@ import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.JavaModule;
 import com.tyron.builder.project.api.Module;
 import com.tyron.common.util.Decompress;
-import com.tyron.builder.model.ModuleSettings;
 
 import org.apache.commons.io.FileUtils;
 
@@ -61,9 +60,8 @@ public class CheckLibrariesTask extends Task<JavaModule> {
         Set<Library> libraries = new HashSet<>();
 
         Map<String, Library> fileLibsHashes = new HashMap<>();
-		
         File[] fileLibraries = project.getLibraryDirectory().listFiles(c ->
-                c.getName().endsWith(".aar") || c.getName().endsWith(".jar"));
+			c.getName().endsWith(".aar") || c.getName().endsWith(".jar"));
         if (fileLibraries != null) {
             for (File fileLibrary : fileLibraries) {
                 try {
@@ -73,57 +71,12 @@ public class CheckLibrariesTask extends Task<JavaModule> {
                     fileLibsHashes.put(calculateMD5(fileLibrary), library);
                 } catch (IOException e) {
                     String message = "File " + fileLibrary +
-                            " is corrupt! Ignoring.";
+						" is corrupt! Ignoring.";
                     logger.warning(message);
                 }
             }
         }
-		
-		String projects = getModule().getSettings().getString(ModuleSettings.INCLUDE, "[]");
-		String replace = projects.replace("[", "").replace("]", "").replace(",", " ");
-		String[] names = replace.split("\\s");
-		
-		for (int i = 0; i < names.length; i++) {
-			File libs = new File(getModule().getRootFile().getParentFile(), names[i] + "/libs");
-			File[] projectsLibraries = libs.listFiles(c ->
-                c.getName().endsWith(".aar") || c.getName().endsWith(".jar"));
-				
-			if (projectsLibraries != null) {
-				for (File fileLibrary : projectsLibraries) {
-					try {
-						ZipFile zipFile = new ZipFile(fileLibrary);
-						Library library = new Library();
-						library.setSourceFile(fileLibrary);
-						fileLibsHashes.put(calculateMD5(fileLibrary), library);
-					} catch (IOException e) {
-						String message = "File " + fileLibrary +
-                            " is corrupt! Ignoring.";
-						logger.warning(message);
-					}
-				}
-			}		
-		}
-		
-		for (int i = 0; i < names.length; i++) {
-			File libs = new File(getModule().getRootFile().getParentFile(), names[i] + "/build/libs");
-			File[] projectsLibraries = libs.listFiles(c ->
-                c.getName().endsWith(".aar") || c.getName().endsWith(".jar"));
 
-			if (projectsLibraries != null) {
-				for (File fileLibrary : projectsLibraries) {
-					try {
-						ZipFile zipFile = new ZipFile(fileLibrary);
-						Library library = new Library();
-						library.setSourceFile(fileLibrary);
-						fileLibsHashes.put(calculateMD5(fileLibrary), library);
-					} catch (IOException e) {
-						String message = "File " + fileLibrary +
-                            " is corrupt! Ignoring.";
-						logger.warning(message);
-					}
-				}
-			}		
-		}
 
         newLibraries.forEach(it -> {
             Library library = new Library();
@@ -143,7 +96,7 @@ public class CheckLibrariesTask extends Task<JavaModule> {
 
         Map<String, Library> md5Map = new HashMap<>();
         libraries.forEach(it ->
-                md5Map.put(calculateMD5(it.getSourceFile()), it));
+			md5Map.put(calculateMD5(it.getSourceFile()), it));
         File buildLibs = new File(project.getBuildDirectory(), "libs");
         File[] buildLibraryDirs = buildLibs.listFiles(File::isDirectory);
         if (buildLibraryDirs != null) {
@@ -184,14 +137,14 @@ public class CheckLibrariesTask extends Task<JavaModule> {
                 file.renameTo(new File(libraryDir, "classes.jar"));
             } else if (library.getSourceFile().getName().endsWith(".aar")) {
                 Decompress.unzip(library.getSourceFile().getAbsolutePath(),
-                        libraryDir.getAbsolutePath());
+								 libraryDir.getAbsolutePath());
             }
         }
 
         String librariesString = new Gson().toJson(libraries.values());
         module.getSettings().edit()
-                .putString("libraries", librariesString)
-                .apply();
+			.putString("libraries", librariesString)
+			.apply();
     }
 
     public static String calculateMD5(File updateFile) {
