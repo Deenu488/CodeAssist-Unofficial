@@ -58,46 +58,9 @@ public class IncrementalAapt2Task extends Task<AndroidModule> {
 
         compileProject(filesToCompile);
         compileLibraries(librariesToCompile);
-		compileProjects();
         link();
-
         updateJavaFiles();
     }
-
-	private void compileProjects() throws IOException,
-	CompilationFailedException {
-		File output = new File(getModule().getBuildDirectory(), "bin/res");
-        if (!output.exists()) {
-            if (!output.mkdirs()) {
-                throw new IOException("Failed to create resource output directory");
-            }
-        }
-
-		String projects = getModule().getSettings().getString(ModuleSettings.INCLUDE, "[]");
-		String replace = projects.replace("[","").replace("]","").replace(","," ");
-		String[] names = replace.split("\\s");
-
-		for (String str:names) {
-			File res = new File(getModule().getRootFile().getParentFile(), str + "/src/main/res");
-			if (res.exists()) {
-				List<String> args = new ArrayList<>();
-				args.add("--dir");
-				args.add(res.getAbsolutePath());
-				args.add("-o");
-				args.add(createNewFile(output, str + "-res.zip").getAbsolutePath());
-
-				int compile = Aapt2Jni.compile(args);
-				List<DiagnosticWrapper> logs = Aapt2Jni.getLogs();
-				LogUtils.log(logs, getLogger());
-
-				if (compile != 0) {
-					throw new CompilationFailedException(
-						"Compilation failed, check logs for more details.");
-				}						
-			}
-	    }
-		
-	}
 
     private void updateJavaFiles() {
         File genFolder = new File(getModule().getBuildDirectory(), "gen");
@@ -283,18 +246,6 @@ public class IncrementalAapt2Task extends Task<AndroidModule> {
             args.add("-A");
             args.add(getModule().getAssetsDirectory().getAbsolutePath());
         }
-
-		String projects = getModule().getSettings().getString(ModuleSettings.INCLUDE, "[]");
-		String replace = projects.replace("[","").replace("]","").replace(","," ");
-		String[] names = replace.split("\\s");
-
-		for (String str:names) {
-			File assets = new File(getModule().getRootFile().getParentFile(), str + "/src/main/assets");
-			if (assets.exists()) {
-			args.add("-A");
-			args.add(assets.getAbsolutePath());
-			}
-		}
 
         int compile = Aapt2Jni.link(args);
         List<DiagnosticWrapper> logs = Aapt2Jni.getLogs();

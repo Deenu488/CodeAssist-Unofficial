@@ -69,17 +69,6 @@ public class IncrementalJavaTask extends Task<JavaModule> {
 
         mJavaFiles = new ArrayList<>(getModule().getJavaFiles().values());
 
-		String projects = getModule().getSettings().getString(ModuleSettings.INCLUDE, "[]");
-		String replace = projects.replace("[","").replace("]","").replace(","," ");
-		String[] names = replace.split("\\s");
-
-		for (String str:names) {
-			File java = new File(getModule().getRootFile().getParentFile(), str + "/src/main/java");
-			if (java.exists()) {
-				mJavaFiles.addAll(getJavaFiles(java));
-				}
-		}
-
         if (getModule() instanceof AndroidModule) {
             mJavaFiles.addAll(((AndroidModule) getModule()).getResourceClasses().values());
         }
@@ -129,11 +118,8 @@ public class IncrementalJavaTask extends Task<JavaModule> {
         standardJavaFileManager.setSymbolFileEnabled(false);
 
         List<File> classpath = new ArrayList<>(getModule().getLibraries());
-        classpath.add(mOutputDir);
-
         File kotlinOutputDir = new File(getModule().getBuildDirectory(), "bin/kotlin/classes");
         classpath.add(kotlinOutputDir);
-	
         classpath.add(getModule().getBuildClassesDirectory());
 
         try {
@@ -233,11 +219,6 @@ public class IncrementalJavaTask extends Task<JavaModule> {
     @VisibleForTesting
     public List<File> getCompiledFiles() {
         return mFilesToCompile;
-    }
-
-    private File findClassFile(String packageName) {
-        String path = packageName.replace(".", "/").concat(".class");
-        return new File(mOutputDir, path);
     }
 
 	public static Set<File> getJavaFiles(File dir) {

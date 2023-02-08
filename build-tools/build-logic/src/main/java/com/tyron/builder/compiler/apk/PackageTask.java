@@ -111,17 +111,6 @@ public class PackageTask extends Task<AndroidModule> {
                 builder.addNativeLibraries(getModule().getNativeLibrariesDirectory());
             }
 
-			String projects = getModule().getSettings().getString(ModuleSettings.INCLUDE, "[]");
-			String replace = projects.replace("[","").replace("]","").replace(","," ");
-			String[] names = replace.split("\\s");
-
-			for (String str:names) {
-				File jniLibs = new File(getModule().getRootFile().getParentFile(), str + "/src/main/jniLibs");
-				if (jniLibs.exists() && jniLibs.isDirectory()) {
-					builder.addNativeLibraries(jniLibs);
-					}
-			}
-
             if (mBuildType == BuildType.DEBUG) {
                 builder.setDebugMode(true);
                 // For debug mode, dex files are not merged to save up compile time
