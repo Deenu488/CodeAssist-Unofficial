@@ -15,6 +15,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import android.util.Log;
+import com.tyron.builder.compiler.incremental.java.IncrementalCompileJavaTask;
+import com.tyron.builder.compiler.incremental.resource.IncrementalAssembleJarTask;
+import com.tyron.builder.compiler.incremental.resource.IncrementalAssembleAarTask;
 
 public class CleanTask extends Task<AndroidModule> {
 
@@ -75,7 +78,13 @@ public class CleanTask extends Task<AndroidModule> {
         getModule().getCache(IncrementalD8Task.CACHE_KEY, new Cache<>())
                 .clear();
         getModule().getCache(MergeSymbolsTask.CACHE_KEY, new Cache<>())
-                .clear();      
+                .clear();
+		getModule().getCache(IncrementalCompileJavaTask.CACHE_KEY, new Cache<>())
+			.clear();
+        getModule().getCache(IncrementalAssembleJarTask.CACHE_KEY, new Cache<>())
+			.clear();
+        getModule().getCache(IncrementalAssembleAarTask.CACHE_KEY, new Cache<>())
+			.clear();      		
 	}
     private void cleanClasses() {
 

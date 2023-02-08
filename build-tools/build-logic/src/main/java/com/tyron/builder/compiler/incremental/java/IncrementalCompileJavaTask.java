@@ -17,6 +17,8 @@ import com.tyron.builder.project.api.JavaModule;
 import com.tyron.builder.project.cache.CacheHolder;
 import com.tyron.common.util.Cache;
 import com.tyron.builder.model.ModuleSettings;
+import com.tyron.builder.project.cache.CacheHolder;
+import com.tyron.common.util.Cache;
 
 import org.apache.commons.io.FileUtils;
 
@@ -43,11 +45,13 @@ import java.util.Set;
 
 public class IncrementalCompileJavaTask extends Task<JavaModule> {
 
-
+	public static final CacheHolder.CacheKey<String, List<File>> CACHE_KEY =
+	new CacheHolder.CacheKey<>("javaCache");
     private static final String TAG = "compileJava";
     private File mOutputDir;
     private List<File> mFilesToCompile;
-
+	private Cache<String, List<File>> mClassCache;
+	
     public IncrementalCompileJavaTask(Project project, JavaModule module, ILogger logger) {
         super(project, module, logger);
     }
@@ -63,8 +67,18 @@ public class IncrementalCompileJavaTask extends Task<JavaModule> {
         if (!mOutputDir.exists() && !mOutputDir.mkdirs()) {
             throw new IOException("Unable to create output directory");
         }
-
-        mFilesToCompile = new ArrayList<>();     
+		
+        mFilesToCompile = new ArrayList<>();  
+		
+		mClassCache = getModule().getCache(CACHE_KEY, new Cache<>());
+		for (Cache.Key<String> key : new HashSet<>(mClassCache.getKeys())) {
+            if (!mFilesToCompile.contains(key.file.toFile())) {
+                File file = mClassCache.get(key.file, "class").iterator().next();
+                deleteAllFiles(file, ".class");
+                mClassCache.remove(key.file, "class", "dex");
+            }
+        }
+		
         mFilesToCompile.addAll(getJavaFiles(new File(getModule().getBuildDirectory(), "gen")));
 		mFilesToCompile.addAll(getJavaFiles(new File(getModule().getBuildDirectory(), "view_binding")));
     }
@@ -160,5 +174,24 @@ public class IncrementalCompileJavaTask extends Task<JavaModule> {
         }
 
         return javaFiles;
+    }
+	
+	private void deleteAllFiles(File classFile, String ext) throws IOException {
+        File parent = classFile.getParentFile();
+        String name = classFile.getName().replace(ext, "");
+        if (parent != null) {
+            File[] children =
+				parent.listFiles((c) -> c.getName().endsWith(ext) && c.getName().contains("$"));
+            if (children != null) {
+                for (File child : children) {
+                    if (child.getName().startsWith(name)) {
+                        FileUtils.delete(child);
+                    }
+                }
+            }
+        }
+        if (classFile.exists()) {
+            FileUtils.delete(classFile);
+        }
     }
 }

@@ -14,6 +14,8 @@ import com.tyron.builder.model.ModuleSettings;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import com.tyron.builder.project.cache.CacheHolder;
+import com.tyron.common.util.Cache;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,9 +53,12 @@ import java.util.zip.ZipEntry;
 import java.nio.file.Paths;
 
 public class IncrementalAssembleAarTask extends Task<AndroidModule> {
-
+	
+	public static final CacheHolder.CacheKey<String, List<File>> CACHE_KEY =
+	new CacheHolder.CacheKey<>("javaCache");
     private static final String TAG = "assembleAar";
-
+	private Cache<String, List<File>> mClassCache;
+	
     public IncrementalAssembleAarTask(Project project,
 									  AndroidModule module,
 									  ILogger logger) {
@@ -152,6 +157,16 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
 		}
 
 		List<File> mFilesToCompile = new ArrayList<>();
+		
+		mClassCache = getModule().getCache(CACHE_KEY, new Cache<>());
+		for (Cache.Key<String> key : new HashSet<>(mClassCache.getKeys())) {
+            if (!mFilesToCompile.contains(key.file.toFile())) {
+                File file = mClassCache.get(key.file, "class").iterator().next();
+                deleteAllFiles(file, ".class");
+                mClassCache.remove(key.file, "class", "dex");
+            }
+        }
+		
 		List<File> classpath = new ArrayList<>();		
 		List<JavaFileObject> javaFileObjects = new ArrayList<>();
 
@@ -362,5 +377,23 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
             FileUtils.copyFileToDirectory(file, directory);
         }
     }
-
+	
+	private void deleteAllFiles(File classFile, String ext) throws IOException {
+        File parent = classFile.getParentFile();
+        String name = classFile.getName().replace(ext, "");
+        if (parent != null) {
+            File[] children =
+				parent.listFiles((c) -> c.getName().endsWith(ext) && c.getName().contains("$"));
+            if (children != null) {
+                for (File child : children) {
+                    if (child.getName().startsWith(name)) {
+                        FileUtils.delete(child);
+                    }
+                }
+            }
+        }
+        if (classFile.exists()) {
+            FileUtils.delete(classFile);
+        }
+    }
 }
