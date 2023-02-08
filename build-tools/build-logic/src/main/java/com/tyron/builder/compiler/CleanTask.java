@@ -9,8 +9,9 @@ import com.tyron.builder.parser.FileManager;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.common.util.Cache;
-import com.tyron.builder.model.ModuleSettings;
+
 import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -52,85 +53,67 @@ public class CleanTask extends Task<AndroidModule> {
     private void cleanRelease() throws IOException {
         Log.i(TAG, "Release build, clearing intermediate cache");
 
-		String projects = getModule().getSettings().getString(ModuleSettings.INCLUDE, "[]");
-		String replace = projects.replace("[","").replace("]","").replace(","," ");
-		String[] names = replace.split("\\s");
-
-		for (String str:names) {
-			File binDirectory = new File(getModule().getRootFile().getParentFile(), str + "/build/bin");
+        File binDirectory = new File(getModule().getBuildDirectory(), "bin");
         if (binDirectory.exists()) {
             FileUtils.deleteDirectory(binDirectory);
         }
 
-			File genDirectory = new File(getModule().getRootFile().getParentFile(), str + "/build/gen");
+        File genDirectory = new File(getModule().getBuildDirectory(), "gen");
         if (genDirectory.exists()) {
             FileUtils.deleteDirectory(genDirectory);
         }
 
-			File intermediateDirectory = new File(getModule().getRootFile().getParentFile(), str + "/build/intermediate");
+        File intermediateDirectory = new File(getModule().getBuildDirectory(), "intermediate");
         if (intermediateDirectory.exists()) {
             FileUtils.deleteDirectory(intermediateDirectory);
-            }
-		}
+        }
 
         getModule().getCache(IncrementalJavaTask.CACHE_KEY, new Cache<>())
-                .clear();
+			.clear();
         getModule().getCache(IncrementalD8Task.CACHE_KEY, new Cache<>())
-                .clear();
+			.clear();
         getModule().getCache(MergeSymbolsTask.CACHE_KEY, new Cache<>())
-                .clear();
+			.clear();
 		getModule().getCache(IncrementalCompileJavaTask.CACHE_KEY, new Cache<>())
 			.clear();
         getModule().getCache(IncrementalAssembleJarTask.CACHE_KEY, new Cache<>())
 			.clear();
         getModule().getCache(IncrementalAssembleAarTask.CACHE_KEY, new Cache<>())
-			.clear();      		
-	}
+			.clear();
+    }
     private void cleanClasses() {
 
-		String projects = getModule().getSettings().getString(ModuleSettings.INCLUDE, "[]");
-		String replace = projects.replace("[","").replace("]","").replace(","," ");
-		String[] names = replace.split("\\s");
-
-		for (String str:names) {
-			File output = new File(getModule().getRootFile().getParentFile(), str + "/build/bin/classes/");
+        File output = new File(getModule().getBuildDirectory(), "bin/classes/");
         List<File> classFiles = FileManager.findFilesWithExtension(
-                output,
-                ".class");
+			output,
+			".class");
         for (File file : classFiles) {
             String path = file.getAbsolutePath()
-                    .replace(output.getAbsolutePath(), "")
-                    .replace("/", ".")
-                    .substring(1)
-                    .replace(".class", "");
+				.replace(output.getAbsolutePath(), "")
+				.replace("/", ".")
+				.substring(1)
+				.replace(".class", "");
 
             if (!classExists(path)) {
                 if (file.delete()) {
                     Log.d(TAG, "Deleted class file " + file.getName());
                 };
             }
-         }
-	  }
+        }
     }
 
     private void cleanDexFiles() {
-
-		String projects = getModule().getSettings().getString(ModuleSettings.INCLUDE, "[]");
-		String replace = projects.replace("[","").replace("]","").replace(","," ");
-		String[] names = replace.split("\\s");
-
-		for (String str:names) {
-			File output = new File(getModule().getRootFile().getParentFile(), str + "/build/intermediate/classes");
+        File output = new File(getModule().getBuildDirectory(), "intermediate/classes");
         List<File> classFiles = FileManager.findFilesWithExtension(
-                output,
-                ".dex");
+			output,
+			".dex");
 
         for (File file : classFiles) {
             String path = file.getAbsolutePath()
-                    .replace(output.getAbsolutePath(), "")
-                    .replace("/", ".")
-                    .substring(1)
-                    .replace(".dex", "");
+				.replace(output.getAbsolutePath(), "")
+				.replace("/", ".")
+				.substring(1)
+				.replace(".dex", "");
             String packageName = path;
 
             if (file.getName().startsWith("-$$")) {
@@ -155,8 +138,7 @@ public class CleanTask extends Task<AndroidModule> {
                     Log.d(TAG, "Deleted dex file " + path);
                 }
             }
-         }
-	  }
+        }
     }
 
     private boolean classExists(String fqn) {
@@ -164,7 +146,7 @@ public class CleanTask extends Task<AndroidModule> {
             fqn = fqn.substring(0, fqn.indexOf('$'));
         }
         return getModule().getJavaFiles().get(fqn) != null ||
-               getModule().getKotlinFiles().get(fqn) != null ||
-               getModule().getResourceClasses().containsKey(fqn);
+			getModule().getKotlinFiles().get(fqn) != null ||
+			getModule().getResourceClasses().containsKey(fqn);
     }
 }
