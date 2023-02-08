@@ -24,6 +24,7 @@ import com.tyron.resolver.repository.RemoteRepository;
 import com.tyron.resolver.repository.Repository;
 import com.tyron.resolver.repository.RepositoryManager;
 import com.tyron.resolver.repository.RepositoryManagerImpl;
+import com.tyron.builder.model.ModuleSettings;
 
 import org.apache.commons.io.FileUtils;
 
@@ -62,7 +63,7 @@ public class DependencyManager {
 
     public static List<Repository> getFromModule(JavaModule module) throws IOException {
         File rootFile = module.getRootFile();
-        File repositoriesFile = new File(rootFile, REPOSITORIES_JSON);
+        File repositoriesFile = new File(rootFile.getParentFile(), REPOSITORIES_JSON);
         List<RepositoryModel> repositoryModels = parseFile(repositoriesFile);
         List<Repository> repositories = new ArrayList<>();
         for (RepositoryModel model : repositoryModels) {
@@ -138,16 +139,31 @@ public class DependencyManager {
             }
         });
 		
-		File gradleFile = new File(project.getRootFile(), "build.gradle");
-        List<Dependency> declaredDependencies = DependencyUtils.parseGradle(mRepository, gradleFile, logger);
+		File gradleFile = new File(project.getRootFile(), "build.gradle");	
+		resolveDependency(project, listener ,logger ,gradleFile);
+	
+		String projects = project.getSettings().getString(ModuleSettings.INCLUDE, "[]");
+		String replace = projects.replace("[", "").replace("]", "").replace(",", " ");
+		String[] names = replace.split("\\s");
+		
+		for (int i = 0; i < names.length; i++) {
+			File gradle = new File(project.getRootFile().getParentFile(), names[i] +"/build.gradle");
+			if (gradle.exists()) {
+				resolveDependency(project, listener ,logger ,gradle);
+			}		
+		}
+	  
+		
+       }
+	
+	private void resolveDependency(JavaModule project, ProjectManager.TaskListener listener, ILogger logger, File gradleFile) throws IOException {
+		List<Dependency> declaredDependencies = DependencyUtils.parseGradle(mRepository, gradleFile, logger);
         List<Pom> resolvedPoms = mResolver.resolveDependencies(declaredDependencies);
-
         listener.onTaskStarted("Downloading dependencies");
         List<Library> files = getFiles(resolvedPoms, logger);
-
         listener.onTaskStarted("Checking dependencies");
-        checkLibraries(project, logger, files);
-    }
+		checkLibraries(project, logger, files);
+	}
 
     private void checkLibraries(JavaModule project, ILogger logger, List<Library> newLibraries) throws IOException {
         Set<Library> libraries = new HashSet<>(newLibraries);
