@@ -77,18 +77,7 @@ public class ManifestMergeTask extends Task<AndroidModule> {
                     manifests.add(manifest);
                 }
             }
-        }
-
-		String projects = getModule().getSettings().getString(ModuleSettings.INCLUDE, "[]");
-		String replace = projects.replace("[","").replace("]","").replace(","," ");
-		String[] names = replace.split("\\s");
-
-		for (String str:names) {
-			File manifest = new File(getModule().getRootFile().getParentFile(), str + "/src/main/AndroidManifest.xml");
-			if (manifest.exists()) {
-			manifests.add(manifest);
-			}
-	    }
+        }	
 
         mLibraryManifestFiles = manifests.toArray(new File[0]);
     }

@@ -21,33 +21,33 @@ public class ProjectActionGroup extends ActionGroup {
     public void update(@NonNull AnActionEvent event) {
         if (!ActionPlaces.MAIN_TOOLBAR.equals(event.getPlace())) {
             event.getPresentation()
-                    .setVisible(false);
+				.setVisible(false);
             return;
         }
 
         Context context = event.getData(CommonDataKeys.CONTEXT);
         if (context == null) {
             event.getPresentation()
-                    .setVisible(false);
+				.setVisible(false);
             return;
         }
-		
+
 		event.getPresentation()
-			    .setVisible(true);
+			.setVisible(true);
         event.getPresentation()
-                .setVisible(true);
+			.setVisible(true);
         event.getPresentation()
-                .setEnabled(true);
+			.setEnabled(true);
         event.getPresentation()
-                .setEnabled(true);
+			.setEnabled(true);
         event.getPresentation()
-                .setEnabled(true);         
+			.setEnabled(true);         
         event.getPresentation()
-                .setEnabled(true);                  
+			.setEnabled(true);                  
         event.getPresentation()
-                .setText(context.getString(R.string.item_project));
+			.setText(context.getString(R.string.item_project));
         event.getPresentation()
-                .setIcon(ContextCompat.getDrawable(context, R.drawable.round_folder_24));
+			.setIcon(ContextCompat.getDrawable(context, R.drawable.round_folder_24));
     }
 
     @Override
@@ -58,6 +58,6 @@ public class ProjectActionGroup extends ActionGroup {
     @Override
     public AnAction[] getChildren(@Nullable AnActionEvent e) {
         return new AnAction[]{new SaveAction(), new RefreshProjectAction(),
-			new OpenLibraryManagerAction(), new DrawableManagerAction(), new IconManagerAction(), new GitAction()};
+			new DrawableManagerAction(), new IconManagerAction(), new GitAction()};
     }
 }

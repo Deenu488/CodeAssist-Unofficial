@@ -137,8 +137,9 @@ public class DependencyManager {
                 logger.error(message);
             }
         });
-
-        List<Dependency> declaredDependencies = DependencyUtils.parseLibraries(project.getLibraryFile(), logger);
+		
+		File gradleFile = new File(project.getRootFile(), "build.gradle");
+        List<Dependency> declaredDependencies = DependencyUtils.parseGradle(mRepository, gradleFile, logger);
         List<Pom> resolvedPoms = mResolver.resolveDependencies(declaredDependencies);
 
         listener.onTaskStarted("Downloading dependencies");
