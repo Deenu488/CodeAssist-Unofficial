@@ -78,7 +78,7 @@ dependencies {
     // TODO: language processing should be on its own module
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'org.antlr:antlr4-runtime:4.9.2'
-    
+    implementation project(path: ':gradle-utils')
     // TODO: completion providers should not be included on the main module
     implementation project(path: ':code-editor')
     implementation project(path: ':xml-completion')

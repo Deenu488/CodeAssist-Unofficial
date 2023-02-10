@@ -12,7 +12,7 @@ include ':actions-api'
 include ':editor-api'
 include ':completion-api'
 include ':fileeditor-api'
-
+include ':gradle-utils'
 include ':layout-preview'
 include ':layout-preview:appcompat-widgets'
 include ':layout-preview:proteus-core'

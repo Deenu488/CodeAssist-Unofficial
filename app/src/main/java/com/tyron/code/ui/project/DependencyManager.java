@@ -25,7 +25,7 @@ import com.tyron.resolver.repository.Repository;
 import com.tyron.resolver.repository.RepositoryManager;
 import com.tyron.resolver.repository.RepositoryManagerImpl;
 import com.tyron.builder.model.ModuleSettings;
-
+import com.deenu143.gradle.utils.GradleUtils;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -157,7 +157,7 @@ public class DependencyManager {
        }
 	
 	private void resolveDependency(JavaModule project, ProjectManager.TaskListener listener, ILogger logger, File gradleFile) throws IOException {
-		List<Dependency> declaredDependencies = DependencyUtils.parseGradle(mRepository, gradleFile, logger);
+		List<Dependency> declaredDependencies = GradleUtils.parseDependencies(mRepository, gradleFile, logger);
         List<Pom> resolvedPoms = mResolver.resolveDependencies(declaredDependencies);
         listener.onTaskStarted("Downloading dependencies");
         List<Library> files = getFiles(resolvedPoms, logger);
