@@ -90,10 +90,9 @@ import com.tyron.code.BuildConfig;
 
 public class HomeFragment extends Fragment {
     public static final String TAG = HomeFragment.class.getSimpleName();
-	private MaterialButton create_new_project, clone_git_repository, project_manager, configure_settings;	
+	private MaterialButton create_new_project, clone_git_repository, open_existing_project, configure_settings;	
     private SharedPreferences mPreferences;
     
-    private ExtendedFloatingActionButton mCreateProjectFab;
     private boolean mShowDialogOnPermissionGrant;
     private ActivityResultLauncher<String[]> mPermissionLauncher;
     private final ActivityResultContracts.RequestMultiplePermissions mPermissionsContract =
@@ -143,7 +142,7 @@ public class HomeFragment extends Fragment {
 		
 		create_new_project = view.findViewById(R.id.createNewProject);
 		clone_git_repository = view.findViewById(R.id.gitCloneRepo);
-		project_manager = view.findViewById(R.id.projectManager);
+		open_existing_project = view.findViewById(R.id.openExistingProject);
 		configure_settings = view.findViewById(R.id.configureSettings);
 		app_version = view.findViewById(R.id.app_version);
        
@@ -165,7 +164,7 @@ public class HomeFragment extends Fragment {
 			GitCloneTask.INSTANCE.clone((Context) requireContext());
 		});
 		
-		project_manager.setOnClickListener(v -> {
+		open_existing_project.setOnClickListener(v -> {
 			showProjects();
 		});
 		

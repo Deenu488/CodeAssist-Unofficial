@@ -112,7 +112,7 @@
 						android:text="@string/git_clone_repo"/>
 
 					<com.google.android.material.button.MaterialButton
-						android:id="@+id/projectManager"
+						android:id="@+id/openExistingProject"
 						android:layout_width="match_parent"
 						android:layout_height="50dp"
 						app:iconPadding="16dp"
@@ -122,7 +122,7 @@
 						android:layout_marginLeft="32dp"
 						android:layout_marginRight="32dp"
 						android:layout_marginBottom="10dp"
-						android:text="@string/project_manager"/>
+						android:text="@string/open_existing_project"/>
 
 					<com.google.android.material.button.MaterialButton
 						android:id="@+id/configureSettings"

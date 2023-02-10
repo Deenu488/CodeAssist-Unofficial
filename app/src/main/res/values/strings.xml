@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+	
+	<!-- app name -->
     <string name="app_name">CodeAssist</string>
+	
+	<!-- home fragment -->
+	<string name="create_new_project">Create new project</string>
+	<string name="git_clone_repo">Clone git repository</string>
+	<string name="open_existing_project">Open existing project</string>
+	<string name="configure_settings">Configure Settings</string>
+	
+		
     <string name="hello_world">Hello world!</string>
     <item name="paste" type="string">Paste</item>
     <item name="copy" type="string">Copy</item>
@@ -15,9 +24,8 @@
     <item name="replacement" type="string">Replacement</item>
     <item name="cancel" type="string">Cancel</item>
     <item name="text_to_search" type="string">Text to search</item>
-	<string name="create_new_project">Create new project</string>
-    <string name="project_manager">Project Manager</string>
-	<string name="configure_settings">Configure Settings</string>
+	
+    
 	<string name="welcome_message">Welcome to CodeAssist</string>
     <item name="more" type="string">More</item>
 	<item name="rename" type="string">Rename</item>
@@ -266,7 +274,6 @@
 	
 	<!-- GIT CLONE MAIN-->
 	<string name="git_clone">Clone</string>
-	<string name="git_clone_repo">Clone git repository</string>
 	<string name="git_clone_repo_url">Repository URL</string>
 	<string name="git_clone_in_progress">Cloning repository</string>
 	<string name="cloned_successfully">Cloned successfully</string>
