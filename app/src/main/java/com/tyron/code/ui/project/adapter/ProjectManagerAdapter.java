@@ -166,26 +166,34 @@ public class ProjectManagerAdapter extends RecyclerView.Adapter<ProjectManagerAd
 			String pn = module.getRootFile() + "/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp";
 			File  web= new File(webp);		
 			File  png= new File(pn);
-			File gradleFile = new File(module.getRootFile(), "app/build.gradle");
 			
-			if (web.exists()) {
-				BitmapDrawable bitmapDrawable = new BitmapDrawable(ApplicationLoader.applicationContext.getResources(), web.toString()); 
-				icon.setImageDrawable(bitmapDrawable);
-			} else	if (png.exists()) {	
-				BitmapDrawable bitmapDrawable = new BitmapDrawable(ApplicationLoader.applicationContext.getResources(), png.toString()); 
-				icon.setImageDrawable(bitmapDrawable);
-			} else {
-				icon.setImageResource(R.drawable.ic_launcher);
-			}		
 			title.setText(module.getRootFile().getName());
-				
+			
+			File gradleFile = new File(module.getRootFile(), "app/build.gradle");
 			try {
-				String name = GradleUtils.parseApplicationId(gradleFile);
-				if(name.isEmpty()) {
-				pkg.setText("Unable to find package name");
-				} else {
-				pkg.setText(name);
+				String plugins = GradleUtils.parsePlugins(gradleFile);
+				if (plugins.contains("java.library")) {
+					icon.setImageResource(R.drawable.ic_java);
 				}
+				if (plugins.contains("com.android.library")) {
+					icon.setImageResource(R.drawable.ic_library);
+				}
+				if (plugins.contains("com.android.application")) {
+					if (web.exists()) {
+						BitmapDrawable bitmapDrawable = new BitmapDrawable(ApplicationLoader.applicationContext.getResources(), web.toString()); 
+						icon.setImageDrawable(bitmapDrawable);
+					} else	if (png.exists()) {	
+						BitmapDrawable bitmapDrawable = new BitmapDrawable(ApplicationLoader.applicationContext.getResources(), png.toString()); 
+						icon.setImageDrawable(bitmapDrawable);
+					}
+				}
+			} catch (Exception e) {
+				icon.setImageResource(R.drawable.ic_launcher);
+			}
+			
+			try {
+				String name = GradleUtils.parseApplicationId(gradleFile);		
+				pkg.setText(name);		
 			} catch (Exception e) {
 				pkg.setText("Unable to find package name");
 	      }
@@ -198,7 +206,6 @@ public class ProjectManagerAdapter extends RecyclerView.Adapter<ProjectManagerAd
 
         public EmptyViewHolder(FrameLayout view) {
             super(view);
-
             text = new TextView(view.getContext());
             text.setTextSize(18);
             text.setText(R.string.project_manager_empty);
