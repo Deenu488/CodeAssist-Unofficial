@@ -13,10 +13,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-
+		
+		HomeFragment homeFragment = new HomeFragment();
         if (getSupportFragmentManager().findFragmentByTag(HomeFragment.TAG) == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new HomeFragment(),
+                    .replace(R.id.fragment_container, homeFragment,
                              HomeFragment.TAG)
                     .commit();
         }

@@ -89,24 +89,19 @@ import android.widget.TextView;
 import com.tyron.code.BuildConfig;
 
 public class HomeFragment extends Fragment {
-    public static final String TAG = HomeFragment.class.getSimpleName();
-	private MaterialButton create_new_project, clone_git_repository, open_existing_project, configure_settings;	
-    private SharedPreferences mPreferences;
-    
+   
+	public static final String TAG = HomeFragment.class.getSimpleName();
+	private MaterialButton create_new_project, clone_git_repository, open_project_manager, configure_settings;	
+    private SharedPreferences mPreferences;  
     private boolean mShowDialogOnPermissionGrant;
     private ActivityResultLauncher<String[]> mPermissionLauncher;
     private final ActivityResultContracts.RequestMultiplePermissions mPermissionsContract =
-	new ActivityResultContracts.RequestMultiplePermissions();
-
-    private String mPreviousPath;
+	new ActivityResultContracts.RequestMultiplePermissions();  
     private TextView app_version;
-    private FilePickerDialogFixed mDirectoryPickerDialog;
-
-
+    
 	@Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-		
+        super.onCreate(savedInstanceState);	
 		setExitTransition(new MaterialSharedAxis(MaterialSharedAxis.X, false));
         mPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
         mPermissionLauncher = registerForActivityResult(mPermissionsContract, isGranted -> {
@@ -123,12 +118,11 @@ public class HomeFragment extends Fragment {
 					setSavePath(requireContext().getExternalFilesDir("/Projects").getAbsolutePath());			
 				})
 				.show();
-                setSavePath(requireContext().getExternalFilesDir("/Projects").getAbsolutePath());
-				
+                setSavePath(requireContext().getExternalFilesDir("/Projects").getAbsolutePath());		
             } else {
                 if (mShowDialogOnPermissionGrant) {
                     mShowDialogOnPermissionGrant = false;
-                    showDirectorySelectDialog();
+                    savePath();
                 }
             }
         });
@@ -138,47 +132,43 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		MaterialToolbar toolbar = view.findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.welcome_message);
-		toolbar.setTitleCentered(true);
-		
+		toolbar.setTitleCentered(true);	
 		create_new_project = view.findViewById(R.id.createNewProject);
 		clone_git_repository = view.findViewById(R.id.gitCloneRepo);
-		open_existing_project = view.findViewById(R.id.openExistingProject);
+		open_project_manager = view.findViewById(R.id.openProjectManager);
 		configure_settings = view.findViewById(R.id.configureSettings);
-		app_version = view.findViewById(R.id.app_version);
-       
+		app_version = view.findViewById(R.id.app_version);      
         String versionName = String.valueOf(BuildConfig.VERSION_NAME);
         app_version.setText("Version " + versionName);
-		
-        create_new_project.setOnClickListener(v -> {
-			
+        create_new_project.setOnClickListener(v -> {		
 			WizardFragment wizardFragment = new WizardFragment();
             wizardFragment.setOnProjectCreatedListener(this::openProject);
             getParentFragmentManager().beginTransaction()
 				.replace(R.id.fragment_container, wizardFragment)
 				.addToBackStack(null)
-				.commit();
-			
+				.commit();		
                     });
-		
+	
 		clone_git_repository.setOnClickListener(v -> {
 			GitCloneTask.INSTANCE.clone((Context) requireContext());
 		});
 		
-		open_existing_project.setOnClickListener(v -> {
-			showProjects();
+		open_project_manager.setOnClickListener(v -> {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+			showProjectManager();		
+		} else {
+			showProjectManager();
+			}
 		});
 		
 		configure_settings.setOnClickListener(v -> {
 			Intent intent = new Intent();
 			intent.setClass(requireActivity(), SettingsActivity.class);
 			startActivity(intent);
-		});
-		
-		
-		
+		});	
 	}
 					  
-	private void showProjects() {
+	private void showProjectManager() {
 		ProjectSheetFragment projectSheetFragment =	new ProjectSheetFragment();
 		projectSheetFragment.show(getFragmentManager(),
 										  ProjectSheetFragment.TAG);
@@ -190,20 +180,19 @@ public class HomeFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.home_fragment, container, false);
-
 	}
 
     @Override
     public void onResume() {
         super.onResume();
 		checkSavePath();
-
     }
+	
 	private void checkSavePath() {
         String path = mPreferences.getString(SharedPreferenceKeys.PROJECT_SAVE_PATH, null);
         if (path == null && Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             if (permissionsGranted()) {
-               showDirectorySelectDialog();
+               savePath();
             } else if (shouldShowRequestPermissionRationale()) {
                 if (shouldShowRequestPermissionRationale()) {
                     new MaterialAlertDialogBuilder(requireContext())
@@ -220,8 +209,7 @@ public class HomeFragment extends Fragment {
             } else {
                 requestPermissions();
             }
-        } else {
-      
+        } else {     
         }
     }
 
@@ -231,17 +219,7 @@ public class HomeFragment extends Fragment {
 			.apply();
     }
 
-    @VisibleForTesting
-    String getPreviousPath() {
-        return mPreviousPath;
-    }
-
-    @VisibleForTesting
-    FilePickerDialogFixed getDirectoryPickerDialog() {
-        return mDirectoryPickerDialog;
-    }
-
-    private void showDirectorySelectDialog() {
+    private void savePath() {
     String path = Environment.getExternalStorageDirectory().getAbsolutePath()+ "/CodeAssistProjects";
 	File file = new File(path);
 	if (file.exists()){	
@@ -249,7 +227,6 @@ public class HomeFragment extends Fragment {
 		file.mkdirs();
 	}
 		setSavePath(path);
-
     }
 	
 	private void openProject(Project project) {

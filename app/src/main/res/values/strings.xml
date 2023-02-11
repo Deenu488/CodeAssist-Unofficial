@@ -8,8 +8,8 @@
 	<string name="create_new_project">Create new project</string>
 	<string name="git_clone_repo">Clone git repository</string>
 	<string name="open_existing_project">Open existing project</string>
-	<string name="configure_settings">Configure Settings</string>
-	
+	<string name="project_manager">Project manager</string>
+	<string name="configure_settings">Configure settings</string>
 		
     <string name="hello_world">Hello world!</string>
     <item name="paste" type="string">Paste</item>
