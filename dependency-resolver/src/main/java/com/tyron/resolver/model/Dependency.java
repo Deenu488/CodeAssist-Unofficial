@@ -9,10 +9,7 @@ import java.util.Objects;
 public class Dependency {
 
     public static Dependency valueOf(String declaration) {
-        String[] names = declaration.split(":");
-        if (names.length < 3) {
-            throw new IllegalStateException("Unknown format: " + declaration);
-        }
+        String[] names = declaration.split(":");   
         return new Dependency(names[0], names[1], names[2]);
     }
 
