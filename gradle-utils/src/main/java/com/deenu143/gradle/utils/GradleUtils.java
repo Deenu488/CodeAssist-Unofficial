@@ -44,7 +44,12 @@ public class GradleUtils {
 			.compile("\\s*(implementation project)\\s*(')([a-zA-Z0-9.'/-:\\-]+)(')");
 	private static final Pattern IMPLEMENTATION_PROJECT_QUOT = Pattern
 			.compile("\\s*(implementation project)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
-
+			
+	public static String parsePlugins(File file)throws IOException {
+		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
+		return parsePlugins(readString);
+	}
+	
 	public static String parsePlugins(String readString) throws IOException {
 		readString = readString.replaceAll("\\s*//.*", "");
 		Matcher matcher = PLUGINS_ID.matcher(readString);
@@ -64,7 +69,12 @@ public class GradleUtils {
 		}
 		return plugins.toString();
 	}
-
+	
+	public static String parseNameSpace(File file)throws IOException {
+		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
+		return parseNameSpace(readString);
+	}
+	
 	public static String parseNameSpace(String readString) throws IOException {
 		readString = readString.replaceAll("\\s*//.*", "");
 		Matcher matcher = NAMESPLACE.matcher(readString);
@@ -85,7 +95,12 @@ public class GradleUtils {
 		}
 		return null;
 	}
-
+	
+	public static String parseApplicationId(File file)throws IOException {
+		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
+		return parseApplicationId(readString);
+	}
+	
 	public static String parseApplicationId(String readString) throws IOException {
 		readString = readString.replaceAll("\\s*//.*", "");
 		Matcher matcher = APPLICATION_ID.matcher(readString);
@@ -106,7 +121,12 @@ public class GradleUtils {
 		}
 		return null;
 	}
-
+	
+	public static String parseMinSdk(File file)throws IOException {
+		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
+		return parseMinSdk(readString);
+	}
+	
 	public static String parseMinSdk(String readString) throws IOException {
 		Matcher matcher = MIN_SDK.matcher(readString);
 		while (matcher.find()) {
@@ -117,6 +137,11 @@ public class GradleUtils {
 			}
 		}
 		return null;
+	}
+	
+	public static String parseTargetSdk(File file)throws IOException {
+		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
+		return parseTargetSdk(readString);
 	}
 
 	public static String parseTargetSdk(String readString) throws IOException {
@@ -130,6 +155,11 @@ public class GradleUtils {
 		}
 		return null;
 	}
+	
+	public static String parseVersionCode(File file)throws IOException {
+		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
+		return parseVersionCode(readString);
+	}
 
 	public static String parseVersionCode(String readString) throws IOException {
 		Matcher matcher = VERSION_CODE.matcher(readString);
@@ -141,6 +171,11 @@ public class GradleUtils {
 			}
 		}
 		return null;
+	}
+	
+	public static String parseVersionName(File file)throws IOException {
+		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
+		return parseVersionName(readString);
 	}
 
 	public static String parseVersionName(String readString) throws IOException {
@@ -163,7 +198,12 @@ public class GradleUtils {
 		}
 		return null;
 	}
-
+	
+	public static String parseMinfyEnabled(File file)throws IOException {
+		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
+		return parseMinfyEnabled(readString);
+	}
+	
 	public static String parseMinfyEnabled(String readString) throws IOException {
 		Matcher matcher = MINIFY_ENABLED.matcher(readString);
 		while (matcher.find()) {
@@ -175,7 +215,12 @@ public class GradleUtils {
 		}
 		return null;
 	}
-
+	
+	public static String parseUseLegacyPackaging(File file)throws IOException {
+		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
+		return parseUseLegacyPackaging(readString);
+	}
+	
 	public static String parseUseLegacyPackaging(String readString) throws IOException {
 		Matcher matcher = USE_LEGACY_PACKAGING.matcher(readString);
 		while (matcher.find()) {
@@ -187,7 +232,12 @@ public class GradleUtils {
 		}
 		return null;
 	}
-
+	
+	public static String parseShrinkResources(File file)throws IOException {
+		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
+		return parseShrinkResources(readString);
+	}
+	
 	public static String parseShrinkResources(String readString) throws IOException {
 		Matcher matcher = SHRINK_RESOURCES.matcher(readString);
 		while (matcher.find()) {
@@ -198,6 +248,11 @@ public class GradleUtils {
 			}
 		}
 		return null;
+	}
+	
+	public static String parseImplementationProject(File file)throws IOException {
+		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
+		return parseImplementationProject(readString);
 	}
 
 	public static String parseImplementationProject(String readString) throws IOException {

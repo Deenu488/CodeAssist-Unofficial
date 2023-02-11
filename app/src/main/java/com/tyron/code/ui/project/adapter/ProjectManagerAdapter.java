@@ -15,6 +15,7 @@ import com.google.android.material.imageview.ShapeableImageView;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.Module;
 import com.tyron.code.R;
+import com.deenu143.gradle.utils.GradleUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,26 +64,26 @@ public class ProjectManagerAdapter extends RecyclerView.Adapter<ProjectManagerAd
 
     public void submitList(@NonNull List<Project> projects) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
-            @Override
-            public int getOldListSize() {
-                return mProjects.size();
-            }
+				@Override
+				public int getOldListSize() {
+					return mProjects.size();
+				}
 
-            @Override
-            public int getNewListSize() {
-                return projects.size();
-            }
+				@Override
+				public int getNewListSize() {
+					return projects.size();
+				}
 
-            @Override
-            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                return mProjects.get(oldItemPosition).equals(projects.get(newItemPosition));
-            }
+				@Override
+				public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+					return mProjects.get(oldItemPosition).equals(projects.get(newItemPosition));
+				}
 
-            @Override
-            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                return mProjects.get(oldItemPosition).equals(projects.get(newItemPosition));
-            }
-        });
+				@Override
+				public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+					return mProjects.get(oldItemPosition).equals(projects.get(newItemPosition));
+				}
+			});
         mProjects.clear();
         mProjects.addAll(projects);
         diffResult.dispatchUpdatesTo(this);
@@ -93,31 +94,30 @@ public class ProjectManagerAdapter extends RecyclerView.Adapter<ProjectManagerAd
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         FrameLayout root = new FrameLayout(parent.getContext());
         root.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT));
+														   ViewGroup.LayoutParams.WRAP_CONTENT));
         final ViewHolder holder;
         if (viewType == TYPE_EMPTY) {
             holder = new EmptyViewHolder(root);
         } else {
             holder = new ItemViewHolder(root);
         }
-
-        root.setOnClickListener(v -> {
-           if (mListener != null) {
-               int position = holder.getBindingAdapterPosition();
-               if (position != RecyclerView.NO_POSITION) {
-                   mListener.onProjectSelect(mProjects.get(position));				   
-               }
-           }
-        });
-        root.setOnLongClickListener(v -> {
-            if (mLongClickListener != null) {
-                int position = holder.getBindingAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    return mLongClickListener.onLongClicked(v, mProjects.get(position));
-                }
-            }
-            return false;
-        });
+		root.setOnClickListener(v -> {
+		 if (mListener != null) {
+		 int position = holder.getBindingAdapterPosition();
+		 if (position != RecyclerView.NO_POSITION) {
+		 mListener.onProjectSelect(mProjects.get(position));				   
+		 }
+		 }
+		 });
+		 root.setOnLongClickListener(v -> {
+		 if (mLongClickListener != null) {
+		 int position = holder.getBindingAdapterPosition();
+		 if (position != RecyclerView.NO_POSITION) {
+		 return mLongClickListener.onLongClicked(v, mProjects.get(position));
+		 }
+		 }
+		 return false;
+		 });
         return holder;
     }
 
@@ -138,7 +138,6 @@ public class ProjectManagerAdapter extends RecyclerView.Adapter<ProjectManagerAd
         if (mProjects.isEmpty()) {
             return TYPE_EMPTY;
         }
-
         return TYPE_ITEM;
     }
 
@@ -156,7 +155,7 @@ public class ProjectManagerAdapter extends RecyclerView.Adapter<ProjectManagerAd
         public ItemViewHolder(FrameLayout view) {
             super(view);
             LayoutInflater.from(view.getContext())
-                    .inflate(R.layout.project_item, view);
+				.inflate(R.layout.project_item, view);
             icon = view.findViewById(R.id.icon);
             title = view.findViewById(R.id.title);
 			pkg = view.findViewById(R.id.pkg);
@@ -165,41 +164,34 @@ public class ProjectManagerAdapter extends RecyclerView.Adapter<ProjectManagerAd
         public void bind(Project module) {
 			String webp = module.getRootFile() + "/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png";
 			String pn = module.getRootFile() + "/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp";
-			
 			File  web= new File(webp);		
 			File  png= new File(pn);
+			File gradleFile = new File(module.getRootFile(), "app/build.gradle");
 			
-			if(web.exists()) {
+			if (web.exists()) {
 				BitmapDrawable bitmapDrawable = new BitmapDrawable(ApplicationLoader.applicationContext.getResources(), web.toString()); 
 				icon.setImageDrawable(bitmapDrawable);
 			} else	if (png.exists()) {	
-			BitmapDrawable bitmapDrawable = new BitmapDrawable(ApplicationLoader.applicationContext.getResources(), png.toString()); 
-			icon.setImageDrawable(bitmapDrawable);
+				BitmapDrawable bitmapDrawable = new BitmapDrawable(ApplicationLoader.applicationContext.getResources(), png.toString()); 
+				icon.setImageDrawable(bitmapDrawable);
 			} else {
-			icon.setImageResource(R.drawable.ic_launcher);
-			}
-			
+				icon.setImageResource(R.drawable.ic_launcher);
+			}		
 			title.setText(module.getRootFile().getName());
-			String manifest = module.getRootFile() + "/app/src/main/AndroidManifest.xml";
-		
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();	
-						try {
-					DocumentBuilder db = dbf.newDocumentBuilder();
-					Document doc = db.parse(new File(manifest));
-					doc.getDocumentElement().normalize();
-					
-					String packageName = doc.getDocumentElement().getAttribute("package");					
-			
-					if  (packageName.isEmpty()) {
-					pkg.setText("package error");
-							}else {
-					pkg.setText(packageName);		
-						}
-						
-					} catch (ParserConfigurationException | SAXException |   IOException e) {
-						}
+				
+			try {
+				String name = GradleUtils.parseApplicationId(gradleFile);
+				if(name.isEmpty()) {
+				pkg.setText("Unable to find package name");
+				} else {
+				pkg.setText(name);
 				}
-		}
+			} catch (Exception e) {
+				pkg.setText("Unable to find package name");
+	      }
+	    }
+	 }
+		 
     private static class EmptyViewHolder extends ViewHolder {
 
         public final TextView text;
@@ -211,7 +203,7 @@ public class ProjectManagerAdapter extends RecyclerView.Adapter<ProjectManagerAd
             text.setTextSize(18);
             text.setText(R.string.project_manager_empty);
             view.addView(text, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
-                    FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
+															FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
         }
     }
 }
