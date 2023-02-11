@@ -42,6 +42,11 @@
                     android:id="@+id/title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+					android:ellipsize = "marquee"
+					android:fadingEdge = "horizontal"
+					android:marqueeRepeatLimit = "marquee_forever"
+					android:scrollHorizontally = "true"
+					android:singleLine = "true"
                     android:textSize="20sp"
                     tools:text="Code Assist" />
 
@@ -50,6 +55,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="14dp"
+					android:ellipsize = "marquee"
+					android:fadingEdge = "horizontal"
+					android:marqueeRepeatLimit = "marquee_forever"
+					android:scrollHorizontally = "true"
+					android:singleLine = "true"
 					android:layout_marginLeft="1dp"
                     />
             </LinearLayout>
