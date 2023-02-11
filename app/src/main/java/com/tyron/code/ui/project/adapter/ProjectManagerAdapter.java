@@ -188,7 +188,7 @@ public class ProjectManagerAdapter extends RecyclerView.Adapter<ProjectManagerAd
 					}
 				}
 			} catch (Exception e) {
-				icon.setImageResource(R.drawable.ic_launcher);
+				icon.setImageResource(R.mipmap.ic_launcher);
 			}
 			
 			try {

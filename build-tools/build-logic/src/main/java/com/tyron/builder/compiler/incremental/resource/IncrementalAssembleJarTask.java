@@ -124,7 +124,8 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
             }
         }
 		
-		List<File> classpath = new ArrayList<>();		
+		List<File> classpath = new ArrayList<>(getModule().getLibraries());	
+	
 		List<JavaFileObject> javaFileObjects = new ArrayList<>();
 
 		mFilesToCompile.addAll(getJavaFiles(java));
