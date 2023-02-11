@@ -170,8 +170,10 @@ public class ProjectManagerAdapter extends RecyclerView.Adapter<ProjectManagerAd
 			title.setText(module.getRootFile().getName());
 			
 			File gradleFile = new File(module.getRootFile(), "app/build.gradle");
+			
 			try {
-				String plugins = GradleUtils.parsePlugins(gradleFile);
+				List<String> plugins = GradleUtils.parsePlugins(gradleFile);
+				plugins.forEach(names -> {
 				if (plugins.contains("java.library")) {
 					icon.setImageResource(R.drawable.ic_java);
 				}
@@ -187,9 +189,10 @@ public class ProjectManagerAdapter extends RecyclerView.Adapter<ProjectManagerAd
 						icon.setImageDrawable(bitmapDrawable);
 					}
 				}
+			  });
 			} catch (Exception e) {
 				icon.setImageResource(R.mipmap.ic_launcher);
-			}
+			}	
 			
 			try {
 				String name = GradleUtils.parseApplicationId(gradleFile);		

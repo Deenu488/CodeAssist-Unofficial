@@ -45,12 +45,12 @@ public class GradleUtils {
 	private static final Pattern IMPLEMENTATION_PROJECT_QUOT = Pattern
 			.compile("\\s*(implementation project)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
 			
-	public static String parsePlugins(File file)throws IOException {
+	public static List<String> parsePlugins(File file)throws IOException {
 		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
 		return parsePlugins(readString);
 	}
 	
-	public static String parsePlugins(String readString) throws IOException {
+	public static List<String> parsePlugins(String readString) throws IOException {
 		readString = readString.replaceAll("\\s*//.*", "");
 		Matcher matcher = PLUGINS_ID.matcher(readString);
 		List<String> plugins = new ArrayList<>();
@@ -67,7 +67,7 @@ public class GradleUtils {
 				plugins.add(String.valueOf(declaration));
 			}
 		}
-		return plugins.toString();
+		return plugins;
 	}
 	
 	public static String parseNameSpace(File file)throws IOException {
