@@ -140,23 +140,28 @@ public class DependencyManager {
         });
 		
 		File gradleFile = new File(project.getRootFile(), "build.gradle");	
-		resolveDependency(project, listener ,logger ,gradleFile);
-	
-		String projects = project.getSettings().getString(ModuleSettings.INCLUDE, "[]");
-		String replace = projects.replace("[", "").replace("]", "").replace(",", " ");
-		String[] names = replace.split("\\s");
+		resolveMainDependency(project, listener ,logger ,gradleFile);
 		
-		for (int i = 0; i < names.length; i++) {
-			File gradle = new File(project.getRootFile().getParentFile(), names[i] +"/build.gradle");
-			if (gradle.exists()) {
-				resolveDependency(project, listener ,logger ,gradle);
-			}		
-		}
-	  
-		
-       }
+		List<String> projects = GradleUtils.parseImplementationProject(gradleFile);	
+		projects.forEach(names -> {
+			File gradle = new File(project.getRootFile().getParentFile(), names +"/build.gradle");	
+			try {
+			resolveProjectsDependency(project, listener ,logger ,gradle);
+			} catch (IOException e) {		
+			}
+		});
+	}
 	
-	private void resolveDependency(JavaModule project, ProjectManager.TaskListener listener, ILogger logger, File gradleFile) throws IOException {
+	private void resolveMainDependency(JavaModule project, ProjectManager.TaskListener listener, ILogger logger, File gradleFile) throws IOException {
+		List<Dependency> declaredDependencies = GradleUtils.parseDependencies(mRepository, gradleFile, logger);
+        List<Pom> resolvedPoms = mResolver.resolveDependencies(declaredDependencies);
+        listener.onTaskStarted("Downloading dependencies");
+        List<Library> files = getFiles(resolvedPoms, logger);
+        listener.onTaskStarted("Checking dependencies");
+		checkLibraries(project, logger, files);
+	}
+	
+	private void resolveProjectsDependency(JavaModule project, ProjectManager.TaskListener listener, ILogger logger, File gradleFile) throws IOException {
 		List<Dependency> declaredDependencies = GradleUtils.parseDependencies(mRepository, gradleFile, logger);
         List<Pom> resolvedPoms = mResolver.resolveDependencies(declaredDependencies);
         listener.onTaskStarted("Downloading dependencies");

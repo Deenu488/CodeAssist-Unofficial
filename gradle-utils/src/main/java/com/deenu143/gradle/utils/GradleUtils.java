@@ -250,12 +250,12 @@ public class GradleUtils {
 		return null;
 	}
 	
-	public static String parseImplementationProject(File file)throws IOException {
+	public static List<String> parseImplementationProject(File file)throws IOException {
 		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
 		return parseImplementationProject(readString);
 	}
 
-	public static String parseImplementationProject(String readString) throws IOException {
+	public static List<String> parseImplementationProject(String readString) throws IOException {
 		readString = readString.replace("(", "").replace(")", "").replace(":", "").replace("'", "'").replace("path",
 				"");
 		Matcher matcher = IMPLEMENTATION_PROJECT.matcher(readString);
@@ -273,7 +273,7 @@ public class GradleUtils {
 				implementationProject.add(String.valueOf(declaration));
 			}
 		}
-		return implementationProject.toString();
+		return implementationProject;
 
 	}
 
