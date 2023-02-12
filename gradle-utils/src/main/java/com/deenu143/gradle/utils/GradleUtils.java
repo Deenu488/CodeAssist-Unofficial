@@ -23,33 +23,35 @@ public class GradleUtils {
 	private static final Pattern NAMESPLACE = Pattern.compile("\\s*(namespace)\\s*(')([a-zA-Z0-9.'/-:\\-]+)(')");
 	private static final Pattern NAMESPLACE_QUOT = Pattern.compile("\\s*(namespace)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
 	private static final Pattern APPLICATION_ID = Pattern
-			.compile("\\s*(applicationId)\\s*(')([a-zA-Z0-9.'/-:\\-]+)(')");
+	.compile("\\s*(applicationId)\\s*(')([a-zA-Z0-9.'/-:\\-]+)(')");
 	private static final Pattern APPLICATION_ID_QUOT = Pattern
-			.compile("\\s*(applicationId)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
+	.compile("\\s*(applicationId)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
 	private static final Pattern MIN_SDK = Pattern.compile("\\s*(minSdk)\\s*()([a-zA-Z0-9.'/-:\\-]+)()");
 	private static final Pattern TARGET_SDK = Pattern.compile("\\s*(targetSdk)\\s*()([a-zA-Z0-9.'/-:\\-]+)()");
 	private static final Pattern VERSION_CODE = Pattern.compile("\\s*(versionCode)\\s*()([a-zA-Z0-9.'/-:\\-]+)()");
 	private static final Pattern VERSION_NAME = Pattern.compile("\\s*(versionName)\\s*(')([a-zA-Z0-9.'/-:\\-]+)(')");
 	private static final Pattern VERSION_NAME_QUOT = Pattern
-			.compile("\\s*(versionName)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
+	.compile("\\s*(versionName)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
 	private static final Pattern DEPENDENCIES = Pattern.compile("\\s*(implementation)\\s*(')([a-zA-Z0-9.'/-:\\-]+)(')");
 	private static final Pattern DEPENDENCIES_QUOT = Pattern
-			.compile("\\s*(implementation)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
+	.compile("\\s*(implementation)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
 	private static final Pattern MINIFY_ENABLED = Pattern.compile("\\s*(minifyEnabled)\\s*()([a-zA-Z0-9.'/-:\\-]+)()");
 	private static final Pattern SHRINK_RESOURCES = Pattern
-			.compile("\\s*(shrinkResources)\\s*()([a-zA-Z0-9.'/-:\\-]+)()");
+	.compile("\\s*(shrinkResources)\\s*()([a-zA-Z0-9.'/-:\\-]+)()");
 	private static final Pattern USE_LEGACY_PACKAGING = Pattern
-			.compile("\\s*(useLegacyPackaging)\\s*()([a-zA-Z0-9.'/-:\\-]+)()");
+	.compile("\\s*(useLegacyPackaging)\\s*()([a-zA-Z0-9.'/-:\\-]+)()");
 	private static final Pattern IMPLEMENTATION_PROJECT = Pattern
-			.compile("\\s*(implementation project)\\s*(')([a-zA-Z0-9.'/-:\\-]+)(')");
+	.compile("\\s*(implementation project)\\s*(')([a-zA-Z0-9.'/-:\\-]+)(')");
 	private static final Pattern IMPLEMENTATION_PROJECT_QUOT = Pattern
-			.compile("\\s*(implementation project)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
-			
-	public static List<String> parsePlugins(File file)throws IOException {
+	.compile("\\s*(implementation project)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
+	private static final Pattern INCLUDE = Pattern.compile("\\s*(include)\\s*(')([a-zA-Z0-9.'/-:\\-]+)(')");
+	private static final Pattern INCLUDE_QUOT = Pattern.compile("\\s*(include)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
+
+	public static List<String> parsePlugins(File file) throws IOException {
 		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
 		return parsePlugins(readString);
 	}
-	
+
 	public static List<String> parsePlugins(String readString) throws IOException {
 		readString = readString.replaceAll("\\s*//.*", "");
 		Matcher matcher = PLUGINS_ID.matcher(readString);
@@ -69,12 +71,12 @@ public class GradleUtils {
 		}
 		return plugins;
 	}
-	
-	public static String parseNameSpace(File file)throws IOException {
+
+	public static String parseNameSpace(File file) throws IOException {
 		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
 		return parseNameSpace(readString);
 	}
-	
+
 	public static String parseNameSpace(String readString) throws IOException {
 		readString = readString.replaceAll("\\s*//.*", "");
 		Matcher matcher = NAMESPLACE.matcher(readString);
@@ -95,12 +97,12 @@ public class GradleUtils {
 		}
 		return null;
 	}
-	
-	public static String parseApplicationId(File file)throws IOException {
+
+	public static String parseApplicationId(File file) throws IOException {
 		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
 		return parseApplicationId(readString);
 	}
-	
+
 	public static String parseApplicationId(String readString) throws IOException {
 		readString = readString.replaceAll("\\s*//.*", "");
 		Matcher matcher = APPLICATION_ID.matcher(readString);
@@ -121,12 +123,12 @@ public class GradleUtils {
 		}
 		return null;
 	}
-	
-	public static String parseMinSdk(File file)throws IOException {
+
+	public static String parseMinSdk(File file) throws IOException {
 		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
 		return parseMinSdk(readString);
 	}
-	
+
 	public static String parseMinSdk(String readString) throws IOException {
 		Matcher matcher = MIN_SDK.matcher(readString);
 		while (matcher.find()) {
@@ -138,8 +140,8 @@ public class GradleUtils {
 		}
 		return null;
 	}
-	
-	public static String parseTargetSdk(File file)throws IOException {
+
+	public static String parseTargetSdk(File file) throws IOException {
 		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
 		return parseTargetSdk(readString);
 	}
@@ -155,8 +157,8 @@ public class GradleUtils {
 		}
 		return null;
 	}
-	
-	public static String parseVersionCode(File file)throws IOException {
+
+	public static String parseVersionCode(File file) throws IOException {
 		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
 		return parseVersionCode(readString);
 	}
@@ -172,8 +174,8 @@ public class GradleUtils {
 		}
 		return null;
 	}
-	
-	public static String parseVersionName(File file)throws IOException {
+
+	public static String parseVersionName(File file) throws IOException {
 		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
 		return parseVersionName(readString);
 	}
@@ -198,12 +200,12 @@ public class GradleUtils {
 		}
 		return null;
 	}
-	
-	public static String parseMinfyEnabled(File file)throws IOException {
+
+	public static String parseMinfyEnabled(File file) throws IOException {
 		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
 		return parseMinfyEnabled(readString);
 	}
-	
+
 	public static String parseMinfyEnabled(String readString) throws IOException {
 		Matcher matcher = MINIFY_ENABLED.matcher(readString);
 		while (matcher.find()) {
@@ -215,12 +217,12 @@ public class GradleUtils {
 		}
 		return null;
 	}
-	
-	public static String parseUseLegacyPackaging(File file)throws IOException {
+
+	public static String parseUseLegacyPackaging(File file) throws IOException {
 		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
 		return parseUseLegacyPackaging(readString);
 	}
-	
+
 	public static String parseUseLegacyPackaging(String readString) throws IOException {
 		Matcher matcher = USE_LEGACY_PACKAGING.matcher(readString);
 		while (matcher.find()) {
@@ -232,12 +234,12 @@ public class GradleUtils {
 		}
 		return null;
 	}
-	
-	public static String parseShrinkResources(File file)throws IOException {
+
+	public static String parseShrinkResources(File file) throws IOException {
 		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
 		return parseShrinkResources(readString);
 	}
-	
+
 	public static String parseShrinkResources(String readString) throws IOException {
 		Matcher matcher = SHRINK_RESOURCES.matcher(readString);
 		while (matcher.find()) {
@@ -249,15 +251,15 @@ public class GradleUtils {
 		}
 		return null;
 	}
-	
-	public static List<String> parseImplementationProject(File file)throws IOException {
+
+	public static List<String> parseImplementationProject(File file) throws IOException {
 		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
 		return parseImplementationProject(readString);
 	}
 
 	public static List<String> parseImplementationProject(String readString) throws IOException {
-		readString = readString.replace("(", "").replace(")", "").replace(":", "").replace("'", "'").replace("path",
-				"");
+		readString = readString.replaceAll("\\s*//.*", "").replace("(", "").replace(")", "").replace(":", "")
+			.replace("path", "");
 		Matcher matcher = IMPLEMENTATION_PROJECT.matcher(readString);
 		List<String> implementationProject = new ArrayList<>();
 		while (matcher.find()) {
@@ -274,17 +276,41 @@ public class GradleUtils {
 			}
 		}
 		return implementationProject;
+	}
 
+	public static List<String> parseInclude(File file) throws IOException {
+		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
+		return parseInclude(readString);
+	}
+
+	public static List<String> parseInclude(String readString) throws IOException {
+		readString = readString.replaceAll("\\s*//.*", "").replace(":", "");
+		Matcher matcher = INCLUDE.matcher(readString);
+		List<String> include = new ArrayList<>();
+		while (matcher.find()) {
+			String declaration = matcher.group(3);
+			if (declaration != null) {
+				include.add(String.valueOf(declaration));
+			}
+		}
+		matcher = INCLUDE_QUOT.matcher(readString);
+		while (matcher.find()) {
+			String declaration = matcher.group(3);
+			if (declaration != null) {
+				include.add(String.valueOf(declaration));
+			}
+		}
+		return include;
 	}
 
 	public static List<Dependency> parseDependencies(RepositoryManager repository, File file, ILogger logger)
-			throws IOException {
+	throws IOException {
 		String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
 		return parseDependencies(repository, readString, logger);
 	}
 
-	public static List<Dependency> parseDependencies(RepositoryManager repositoryManager, String readString, ILogger logger)
-			throws IOException {
+	public static List<Dependency> parseDependencies(RepositoryManager repositoryManager, String readString,
+													 ILogger logger) throws IOException {
 		readString = readString.replaceAll("\\s*//.*", "");
 		Matcher matcher = DEPENDENCIES.matcher(readString);
 		List<Dependency> dependencies = new ArrayList<>();
