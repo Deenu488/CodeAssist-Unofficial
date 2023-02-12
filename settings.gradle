@@ -1,7 +1,6 @@
 include ':app'
 
-include ':build-tools:jaxp:jaxp-internal'
-include ':build-tools:jaxp:xml'
+include ':build-tools:jaxp'
 include ':build-tools:build-logic'
 include ':build-tools:kotlinc'
 include ':build-tools:lint'
