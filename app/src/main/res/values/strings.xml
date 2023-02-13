@@ -11,6 +11,12 @@
 	<string name="project_manager">Project manager</string>
 	<string name="configure_settings">Configure settings</string>
 		
+	<!-- home menu -->
+		
+	<string name="action_menu_build_release">Release App</string>
+    <string name="action_menu_build_debug">Debug App</string>
+    <string name="action_menu_build_aab">App Bundle</string>
+	
     <string name="hello_world">Hello world!</string>
     <item name="paste" type="string">Paste</item>
     <item name="copy" type="string">Copy</item>
@@ -207,9 +213,6 @@
     <string name="dialog_confirm_delete">Are you sure you want to delete %1$s?</string>
     <string name="dialog_delete">Delete</string>
     <string name="menu_preview_layout">Preview Layout</string>
-    <string name="action_menu_build_release">Build release APK</string>
-    <string name="action_menu_build_debug">Build debug APK</string>
-    <string name="action_menu_build_aab">Build AAB</string>
 
     <string name="project_manager_alpha_notice_title">Alpha notice</string>
     <string name="project_manager_alpha_notice">CodeAssist is still in alpha,
