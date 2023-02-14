@@ -24,7 +24,6 @@ import com.tyron.code.ui.file.action.NewFileActionGroup;
 import com.tyron.code.ui.file.action.ImportFileActionGroup;
 import com.tyron.code.ui.file.action.file.DeleteFileAction;
 import com.tyron.code.ui.main.action.compile.CompileActionGroup;
-import com.tyron.code.ui.main.action.debug.DebugActionGroup;
 import com.tyron.code.ui.main.action.other.FormatAction;
 import com.tyron.code.ui.main.action.other.OpenSettingsAction;
 import com.tyron.code.ui.main.action.project.ProjectActionGroup;
@@ -150,8 +149,7 @@ public class ApplicationLoader extends Application {
             manager.registerAction(FormatAction.ID, new FormatAction());
             manager.registerAction(SSHKeyManagerAction.ID, new SSHKeyManagerAction());
 			manager.registerAction(OpenSettingsAction.ID, new OpenSettingsAction());
-            manager.registerAction(DebugActionGroup.ID, new DebugActionGroup());
-
+            
             // editor tab actions
             manager.registerAction(CloseFileEditorAction.ID, new CloseFileEditorAction());
             manager.registerAction(CloseOtherEditorAction.ID, new CloseOtherEditorAction());

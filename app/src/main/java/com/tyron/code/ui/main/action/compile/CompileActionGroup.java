@@ -18,6 +18,7 @@ import com.tyron.code.ui.main.CompileCallback;
 import com.tyron.code.ui.main.MainFragment;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.tyron.builder.project.Project;
+import com.tyron.builder.compiler.BuildType;
 
 import java.util.ArrayList;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -26,57 +27,51 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.card.MaterialCardView;
 import java.io.File;
 import java.util.List;
+import com.tyron.code.ui.main.MainViewModel;
+import com.tyron.code.ui.main.IndexCallback;
 
 public class CompileActionGroup extends ActionGroup {
 
     public static final String ID = "compileActionGroup";
-	private Project project;
-	
+
     @Override
-    public void update(@NonNull AnActionEvent event) {
-        CompileCallback data = event.getData(MainFragment.COMPILE_CALLBACK_KEY);
-        if (data == null) {
-            event.getPresentation().setVisible(false);
-            return;
-        }
-
-        if (!ActionPlaces.MAIN_TOOLBAR.equals(event.getPlace())) {
-            event.getPresentation().setVisible(false);
-            return;
-        }
-
-
-        Context context = event.getData(CommonDataKeys.CONTEXT);
-        if (context == null) {
-            event.getPresentation().setVisible(false);
-            return;
-        }
-		
-		project = event.getData(CommonDataKeys.PROJECT);
+    public void update(@NonNull AnActionEvent event) {	
+		Project project = event.getData(CommonDataKeys.PROJECT);
         if (project == null) {
             return;
         }
+		Context context = event.getData(CommonDataKeys.CONTEXT);
+        MainViewModel mainViewModel = event.getData(MainFragment.MAIN_VIEW_MODEL_KEY);
+        Boolean indexing = mainViewModel.isIndexing().getValue();
+        if (indexing == null) {
+            indexing = false;
+        }
+        if (project != null && !project.isCompiling() && !indexing) {      
+			event.getPresentation().setEnabled(true);
+		} else {
+			event.getPresentation().setEnabled(false);
+		}
 
-        event.getPresentation().setVisible(true);
-        event.getPresentation().setEnabled(true);
+        event.getPresentation().setVisible(true);   
         event.getPresentation().setText(context.getString(R.string.menu_run));
         event.getPresentation().setIcon(ContextCompat.getDrawable(context, R.drawable.round_play_arrow_24));
     }
 
     @Override
     public AnAction[] getChildren(@Nullable AnActionEvent e) {
-       return new AnAction[]{};
+		return new AnAction[]{};
     }
-	
+
 	@Override
 	public void actionPerformed(@NonNull AnActionEvent event) {
 		Context context = event.getData(CommonDataKeys.CONTEXT);
-		
+		CompileCallback callback = event.getData(MainFragment.COMPILE_CALLBACK_KEY);
+
 		Project project = event.getData(CommonDataKeys.PROJECT);
         if (project == null) {
             return;
         }
-		
+
 	    BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context);
 		bottomSheetDialog.setContentView(R.layout.layout_dialog_run_actions);
 
@@ -96,7 +91,7 @@ public class CompileActionGroup extends ActionGroup {
 		File gradleFile = new File(project.getRootFile(), "app/build.gradle");
 		try {
 			List<String> plugins = GradleUtils.parsePlugins(gradleFile);
-			plugins.forEach(names -> {
+			plugins.forEach(v -> {
 				if (plugins.contains("java.library")) {
 					jarActions.setVisibility(View.VISIBLE);
 					aarActions.setVisibility(View.GONE);
@@ -132,15 +127,18 @@ public class CompileActionGroup extends ActionGroup {
 		bottomSheetDialog.show();
 
 		buildRelease.setOnClickListener(v -> {
+			callback.compile(BuildType.RELEASE);
 			bottomSheetDialog.dismiss();
 		});
-		buildDebug.setOnClickListener(v -> {
+		buildDebug.setOnClickListener(v -> {	
+			callback.compile(BuildType.DEBUG);
 			bottomSheetDialog.dismiss();
 		});
 		buildBundle.setOnClickListener(v -> {
+			callback.compile(BuildType.AAB);
 			bottomSheetDialog.dismiss();
 		});
-		buildAar.setOnClickListener(v -> {
+		buildAar.setOnClickListener(v -> {			
 			bottomSheetDialog.dismiss();
 		});
 		buildJar.setOnClickListener(v -> {
