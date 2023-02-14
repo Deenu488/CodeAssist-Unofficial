@@ -11,12 +11,19 @@
 	<string name="project_manager">Project manager</string>
 	<string name="configure_settings">Configure settings</string>
 		
-	<!-- home menu -->
-		
+	<!-- main fragment -->
+	<string name="project_not_initialized">Project is not initialized</string>
+	<string name="assemble_aar">Assemble Aar</string>
+	<string name="assemble_jar">Assemble Jar</string>
+	<string name="run_jar">Run Jar</string>
 	<string name="action_menu_build_release">Release App</string>
     <string name="action_menu_build_debug">Debug App</string>
     <string name="action_menu_build_aab">App Bundle</string>
+	<string name="title_confirm_project_close">Close project</string>
+	<string name="msg_confirm_project_close">Are you sure you want to close this project? All running actions will be stopped after this project is closed.</string>
 	
+	<!-- home menu -->	
+		
     <string name="hello_world">Hello world!</string>
     <item name="paste" type="string">Paste</item>
     <item name="copy" type="string">Copy</item>

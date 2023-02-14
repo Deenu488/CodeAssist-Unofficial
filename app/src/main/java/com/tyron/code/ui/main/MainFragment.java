@@ -25,6 +25,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.transition.MaterialSharedAxis;
@@ -58,6 +59,8 @@ import com.tyron.code.service.IndexServiceConnection;
 import com.tyron.code.ui.editor.EditorContainerFragment;
 import com.tyron.code.ui.file.FileViewModel;
 import com.tyron.completion.java.provider.CompletionEngine;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import org.jetbrains.kotlin.com.intellij.openapi.util.Key;
 import javax.tools.Diagnostic;
@@ -74,6 +77,7 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import androidx.fragment.app.FragmentContainerView;
+import android.app.NotificationManager;
 public class MainFragment extends Fragment implements ProjectManager.OnProjectOpenListener {
 
     public static final String REFRESH_TOOLBAR_KEY = "refreshToolbar";
@@ -106,18 +110,21 @@ public class MainFragment extends Fragment implements ProjectManager.OnProjectOp
     private LinearProgressIndicator mProgressBar;
     private BroadcastReceiver mLogReceiver;
 
-    private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(false) {
+    private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
         @Override
-        public void handleOnBackPressed() {
+        public void handleOnBackPressed() {		
             if (mRoot instanceof DrawerLayout) {
                 //noinspection ConstantConditions
                 if (mMainViewModel.getDrawerState()
                         .getValue()) {
                     mMainViewModel.setDrawerState(false);
-                }
-            }
+                } else {
+					showExitDialog();	
+				}
+            }	
         }
     };
+	
     private Project mProject;
     private CompilerServiceConnection mServiceConnection;
     private IndexServiceConnection mIndexServiceConnection;
@@ -127,7 +134,6 @@ public class MainFragment extends Fragment implements ProjectManager.OnProjectOp
 
 
     public MainFragment() {
-
     }
 
     @Override
@@ -195,14 +201,12 @@ public class MainFragment extends Fragment implements ProjectManager.OnProjectOp
             drawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
                 @Override
                 public void onDrawerOpened(@NonNull View p1) {
-                    mMainViewModel.setDrawerState(true);
-                    onBackPressedCallback.setEnabled(true);
+                    mMainViewModel.setDrawerState(true);             
                 }
 
                 @Override
                 public void onDrawerClosed(@NonNull View p1) {
-                    mMainViewModel.setDrawerState(false);
-                    onBackPressedCallback.setEnabled(false);
+                    mMainViewModel.setDrawerState(false);             
                 }
                 
                 @Override
@@ -309,6 +313,37 @@ public class MainFragment extends Fragment implements ProjectManager.OnProjectOp
             return ViewCompat.onApplyWindowInsets(v, insets);
         });
     }
+	
+	public void showExitDialog() {
+		new MaterialAlertDialogBuilder(requireContext())
+			.setTitle(R.string.title_confirm_project_close)
+			.setMessage(R.string.msg_confirm_project_close) 
+			.setNegativeButton(android.R.string.no, null)
+			.setPositiveButton(android.R.string.yes,(d,w) -> {
+				saveAll();
+				closeProject();
+			})
+			.show();
+	}
+
+	private void closeProject() {
+		ProjectManager manager = ProjectManager.getInstance();
+        Project project = manager.getCurrentProject();
+        if (project != null) {
+            for (Module module : project.getModules()) {
+                module.getFileManager()
+					.shutdown();
+            }
+        }
+        manager.removeOnProjectOpenListener(this); 
+
+		MainFragment fragment = new MainFragment();
+		FragmentManager fm = getActivity().getSupportFragmentManager();
+		FragmentTransaction ft = fm.beginTransaction();
+		ft.remove(fragment);
+		ft.commit();
+		fm.popBackStack();	
+	}
 
     @Override
     public void onDestroy() {
