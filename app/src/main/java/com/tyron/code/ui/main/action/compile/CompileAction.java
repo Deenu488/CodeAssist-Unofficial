@@ -2,8 +2,10 @@ package com.tyron.code.ui.main.action.compile;
 
 import android.content.Context;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import com.tyron.actions.ActionManager;
 import com.tyron.actions.ActionPlaces;
 import com.tyron.actions.AnAction;
 import com.tyron.actions.AnActionEvent;
@@ -36,11 +38,15 @@ public abstract class CompileAction extends AnAction {
             event.getPresentation().setVisible(false);
             return;
         }
-
-
+		
         presentation.setText(getTitle(context));
         presentation.setEnabled(true);
         presentation.setVisible(true);
+    }
+
+    @CallSuper
+    @Override
+    public void actionPerformed(@NonNull AnActionEvent e) {
     }
 
     public abstract String getTitle(Context context);
