@@ -130,7 +130,7 @@ public class DependencyManager {
         mResolver.setResolveListener(new DependencyResolver.ResolveListener() {
             @Override
             public void onResolve(String message) {
-                listener.onTaskStarted(message);
+                
             }
 
             @Override
@@ -141,27 +141,9 @@ public class DependencyManager {
 		
 		File gradleFile = new File(project.getRootFile(), "build.gradle");	
 		resolveMainDependency(project, listener ,logger ,gradleFile);
-		
-		List<String> projects = GradleUtils.parseImplementationProject(gradleFile);	
-		projects.forEach(names -> {
-			File gradle = new File(project.getRootFile().getParentFile(), names +"/build.gradle");	
-			try {
-			resolveProjectsDependency(project, listener ,logger ,gradle);
-			} catch (IOException e) {		
-			}
-		});
 	}
 	
 	private void resolveMainDependency(JavaModule project, ProjectManager.TaskListener listener, ILogger logger, File gradleFile) throws IOException {
-		List<Dependency> declaredDependencies = DependencyUtils.parseDependencies(mRepository, gradleFile, logger);
-        List<Pom> resolvedPoms = mResolver.resolveDependencies(declaredDependencies);
-        listener.onTaskStarted("Downloading dependencies");
-        List<Library> files = getFiles(resolvedPoms, logger);
-        listener.onTaskStarted("Checking dependencies");
-		checkLibraries(project, logger, files);
-	}
-	
-	private void resolveProjectsDependency(JavaModule project, ProjectManager.TaskListener listener, ILogger logger, File gradleFile) throws IOException {
 		List<Dependency> declaredDependencies = DependencyUtils.parseDependencies(mRepository, gradleFile, logger);
         List<Pom> resolvedPoms = mResolver.resolveDependencies(declaredDependencies);
         listener.onTaskStarted("Downloading dependencies");
