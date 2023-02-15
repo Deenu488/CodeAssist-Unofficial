@@ -10,7 +10,8 @@
 	<string name="open_existing_project">Open existing project</string>
 	<string name="project_manager">Project manager</string>
 	<string name="configure_settings">Configure settings</string>
-		
+	<string name="choose_project">Choose project</string>
+	
 	<!-- main fragment -->
 	<string name="project_not_initialized">Project is not initialized</string>
 	<string name="assemble_aar">Assemble Aar</string>

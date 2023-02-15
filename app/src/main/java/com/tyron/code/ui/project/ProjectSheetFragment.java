@@ -85,11 +85,10 @@ public class ProjectSheetFragment extends BottomSheetDialogFragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {  
   
         mAdapter = new ProjectManagerAdapter();
-        mAdapter.setOnProjectSelectedListener(this::openProject);
+        mAdapter.setOnProjectSelectedListener(this::checkRootProject);
         mAdapter.setOnProjectLongClickListener(this::inflateProjectMenus);
         mRecyclerView = view.findViewById(R.id.projects_recycler);
 		BottomSheetDragHandleView 	bottomSheetDragHandleView = view.findViewById(R.id.drag_handle);
@@ -232,7 +231,6 @@ public class ProjectSheetFragment extends BottomSheetDialogFragment {
 	return true;	
 	
     }
-	
 
     private void deleteProject(Project project) {
 		
@@ -272,8 +270,6 @@ public class ProjectSheetFragment extends BottomSheetDialogFragment {
 
     }
 
-
-
     private void setSavePath(String path) {
         mPreferences.edit()
 			.putString(SharedPreferenceKeys.PROJECT_SAVE_PATH, path)
@@ -281,16 +277,61 @@ public class ProjectSheetFragment extends BottomSheetDialogFragment {
         loadProjects();
     }
 
-
-    
+	private void checkRootProject(Project project) {	
+		
+		File folder = project.getRootFile();		
+		try {	
+			List<String> projects = new ArrayList<>(checkFolders(folder));
+			final String[] options = checkFolders(folder).toArray(new String[0]);
+			
+			if (projects.isEmpty()|| projects.toString().equals("[app]")){
+				openProject(project);
+			} else {
+				new MaterialAlertDialogBuilder(getActivity())
+				.setTitle(R.string.choose_project)
+				.setItems(options, new DialogInterface.OnClickListener() {		
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					openProject(project, options[which]);
+				}
+			})
+			.show();         	
+			}
+		} catch (IOException e) {}		
+    }
+	
+	public static List<String> checkFolders(File folder) throws IOException {
+		List<String> root_projects = new ArrayList<>();
+		File[] files = folder.listFiles();
+		for (File file : files) {
+            if (file.isDirectory()) {
+				String path = file.getAbsolutePath().substring((folder.getAbsolutePath() + "/").lastIndexOf("/") + 1);
+				File main = new File(folder, path + "/src/main");	
+				if (main.isDirectory() || main.exists()) {		
+					String root = file.getAbsolutePath().substring((file.getAbsolutePath() + path).lastIndexOf("/") + 1);				
+					root_projects.add(root);											
+				}
+            }
+        }	
+		return root_projects;
+	}
+ 
     private void openProject(Project project) {
-	        MainFragment fragment = MainFragment.newInstance(project.getRootFile().getAbsolutePath(), "app");
+		dismiss();
+		MainFragment fragment = MainFragment.newInstance(project.getRootFile().getAbsolutePath(), "app");
+		getParentFragmentManager().beginTransaction()
+			.replace(R.id.fragment_container, fragment)
+			.addToBackStack(null)
+			.commit();			
+    }
+	
+	private void openProject(Project project, String name) {
+		dismiss();
+		MainFragment fragment = MainFragment.newInstance(project.getRootFile().getAbsolutePath(), name);
         getParentFragmentManager().beginTransaction()
 			.replace(R.id.fragment_container, fragment)
 			.addToBackStack(null)
-			.commit();
-	    	dismiss();
-					
+			.commit();			
     }
 
     private void loadProjects() {
