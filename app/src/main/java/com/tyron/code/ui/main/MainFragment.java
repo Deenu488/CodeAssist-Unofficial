@@ -64,6 +64,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import org.jetbrains.kotlin.com.intellij.openapi.util.Key;
 import javax.tools.Diagnostic;
+import com.tyron.common.SharedPreferenceKeys;
 
 import java.io.File;
 import java.time.Duration;
@@ -85,7 +86,8 @@ public class MainFragment extends Fragment implements ProjectManager.OnProjectOp
     public static final Key<CompileCallback> COMPILE_CALLBACK_KEY = Key.create("compileCallback");
     public static final Key<IndexCallback> INDEX_CALLBACK_KEY = Key.create("indexCallbackKey");
     public static final Key<MainViewModel> MAIN_VIEW_MODEL_KEY = Key.create("mainViewModel");
-
+	SharedPreferences sharedPreferences = ApplicationLoader.getDefaultPreferences();
+	
     private Handler mHandler;
     static final float END_SCALE = 0.7f;
     FragmentContainerView contentView;
@@ -146,7 +148,12 @@ public class MainFragment extends Fragment implements ProjectManager.OnProjectOp
                 .addCallback(this, onBackPressedCallback);
 
         String projectPath = requireArguments().getString("project_path");
-        mProject = new Project(new File(projectPath),"app");
+		String rootName = requireArguments().getString("root_name");
+      
+		sharedPreferences.edit().putString(SharedPreferenceKeys.SAVED_PROJECT_ROOT_NAME, rootName).apply();
+		sharedPreferences.edit().putString(SharedPreferenceKeys.SAVED_PROJECT_PATH, projectPath).apply();
+						
+		mProject = new Project(new File(projectPath),rootName);
         mProjectManager = ProjectManager.getInstance();
         mProjectManager.addOnProjectOpenListener(this);
         mLogViewModel = new ViewModelProvider(requireActivity()).get(LogViewModel.class);

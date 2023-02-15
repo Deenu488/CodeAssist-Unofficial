@@ -23,6 +23,7 @@ import com.tyron.builder.project.api.Module;
 import com.tyron.code.R;
 import com.tyron.code.ui.file.action.FileAction;
 import com.tyron.common.util.StringSearch;
+import com.tyron.common.SharedPreferenceKeys;
 
 import org.apache.commons.io.FileUtils;
 
@@ -33,11 +34,15 @@ import com.tyron.builder.project.Project;
 
 import kotlin.io.FileWalkDirection;
 import kotlin.io.FilesKt;
+import com.tyron.code.ui.main.MainFragment;
+import android.content.SharedPreferences;
+import com.tyron.code.ApplicationLoader;
 
 public class OpenProjectAction extends FileAction {
 
     public static final String ID = "fileManagerOpenProjectAction";
 	private Project project;
+	SharedPreferences sharedPreferences = ApplicationLoader.getDefaultPreferences();
 
     @Override
     public String getTitle(Context context) {
@@ -63,6 +68,13 @@ public class OpenProjectAction extends FileAction {
         if (project == null) {
             return;
         }
+
+		Context context = event.getData(CommonDataKeys.CONTEXT);
+        if (context == null) {
+            event.getPresentation().setVisible(false);
+            return;
+        }
+
         TreeFileManagerFragment fragment =
             (TreeFileManagerFragment) event.getRequiredData(CommonDataKeys.FRAGMENT);
         TreeView<TreeFile> treeView = fragment.getTreeView();
@@ -70,9 +82,11 @@ public class OpenProjectAction extends FileAction {
 
         File currentFile = currentNode.getValue().getFile();
 		File main = new File(currentFile, "src/main");
-		
+
+		String RootName  = sharedPreferences.getString(SharedPreferenceKeys.SAVED_PROJECT_ROOT_NAME, "");
+
 	    if (main.isDirectory() || main.exists()) {
-			if (currentFile.getName().equals("app")) {
+			if (currentFile.getName().equals(RootName)) {
 				presentation.setVisible(false);     
 			}  else {
 				presentation.setVisible(true);     	
@@ -90,6 +104,5 @@ public class OpenProjectAction extends FileAction {
         TreeView<TreeFile> treeView = fragment.getTreeView();
         TreeNode<TreeFile> currentNode = e.getRequiredData(CommonFileKeys.TREE_NODE);
 
-
-    }
+	}
 }
