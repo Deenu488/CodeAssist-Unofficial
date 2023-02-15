@@ -158,10 +158,10 @@ public class CompileActionGroup extends ActionGroup {
 		buildAar.setOnClickListener(v -> {			
 			bottomSheetDialog.dismiss();
 		});
-		buildJar.setOnClickListener(v -> {
-			bottomSheetDialog.dismiss();
-		});
 		buildRunJar.setOnClickListener(v -> {
+			bottomSheetDialog.dismiss();
+		});	
+		buildJar.setOnClickListener(v -> {
 			bottomSheetDialog.dismiss();
 		});	
     }	

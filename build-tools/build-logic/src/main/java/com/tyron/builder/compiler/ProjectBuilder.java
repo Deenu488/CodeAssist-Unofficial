@@ -9,7 +9,7 @@ import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.builder.project.api.JavaModule;
 import com.tyron.builder.project.api.Module;
-
+import com.deenu143.gradle.utils.GradleUtils;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -42,11 +42,14 @@ public class ProjectBuilder {
             String moduleType = module.getSettings()
                     .getString(ModuleSettings.MODULE_TYPE, "android_application");
             switch (Objects.requireNonNull(moduleType)) {
-                case "java_library":
+                case "java-library":
+                    builder = new JarBuilder(mProject, (JavaModule) module, mLogger);
+                    break;
+				case "com.android.library":
                     builder = new JarBuilder(mProject, (JavaModule) module, mLogger);
                     break;
                 default:
-                case "android_application":
+                case "com.android.application":
                     AndroidModule androidModule = (AndroidModule) module;
                     if (androidModule.getPackageName() == null) {
                         throw new CompilationFailedException("Module " +
