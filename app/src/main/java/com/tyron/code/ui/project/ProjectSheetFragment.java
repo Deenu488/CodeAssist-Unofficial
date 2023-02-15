@@ -284,7 +284,7 @@ public class ProjectSheetFragment extends BottomSheetDialogFragment {
 
     
     private void openProject(Project project) {
-	        MainFragment fragment = MainFragment.newInstance(project.getRootFile().getAbsolutePath());
+	        MainFragment fragment = MainFragment.newInstance(project.getRootFile().getAbsolutePath(), "app");
         getParentFragmentManager().beginTransaction()
 			.replace(R.id.fragment_container, fragment)
 			.addToBackStack(null)
@@ -318,7 +318,7 @@ public class ProjectSheetFragment extends BottomSheetDialogFragment {
                     File appModule = new File(directory, "app");
                     if (appModule.exists()) {
                         Project project = new Project(new File(directory.getAbsolutePath()
-															   .replaceAll("%20", " ")));
+															   .replaceAll("%20", " ")), "app");
                         // if (project.isValidProject()) {
                         projects.add(project);
                         // }

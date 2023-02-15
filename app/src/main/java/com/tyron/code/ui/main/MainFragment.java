@@ -90,10 +90,10 @@ public class MainFragment extends Fragment implements ProjectManager.OnProjectOp
     static final float END_SCALE = 0.7f;
     FragmentContainerView contentView;
     
-    public static MainFragment newInstance(@NonNull String projectPath) {
+    public static MainFragment newInstance(@NonNull String projectPath, @NonNull String rootName) {
         Bundle bundle = new Bundle();
         bundle.putString("project_path", projectPath);
-
+		bundle.putString("root_name", rootName);
         MainFragment fragment = new MainFragment();
         fragment.setArguments(bundle);
 
@@ -146,7 +146,7 @@ public class MainFragment extends Fragment implements ProjectManager.OnProjectOp
                 .addCallback(this, onBackPressedCallback);
 
         String projectPath = requireArguments().getString("project_path");
-        mProject = new Project(new File(projectPath));
+        mProject = new Project(new File(projectPath),"app");
         mProjectManager = ProjectManager.getInstance();
         mProjectManager.addOnProjectOpenListener(this);
         mLogViewModel = new ViewModelProvider(requireActivity()).get(LogViewModel.class);

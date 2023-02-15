@@ -38,7 +38,8 @@ public class Project {
     private final Map<String, Module> mModules;
     private final Module mMainModule;
     private final File mRoot;
-
+	private final String mName;
+	
     private final ProjectSettings mSettings;
 
     private volatile boolean mCompiling;
@@ -49,10 +50,11 @@ public class Project {
             .allowsSelfLoops(false)
             .build();
     
-    public Project(File root) {
+    public Project(File root, String name) {
         mRoot = root;
+		mName = name;
         mModules = new LinkedHashMap<>();
-        mMainModule = new AndroidModuleImpl(new File(mRoot, "app"));
+        mMainModule = new AndroidModuleImpl(new File(mRoot, mName));
         mSettings = new ProjectSettings(new File(root, "settings.json"));
     }
 

@@ -230,7 +230,7 @@ public class HomeFragment extends Fragment {
     }
 	
 	private void openProject(Project project) {
-        MainFragment fragment = MainFragment.newInstance(project.getRootFile().getAbsolutePath());
+        MainFragment fragment = MainFragment.newInstance(project.getRootFile().getAbsolutePath(),"app");
         getParentFragmentManager().beginTransaction()
 			.replace(R.id.fragment_container, fragment)
 			.addToBackStack(null)

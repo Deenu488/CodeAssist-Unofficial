@@ -489,7 +489,7 @@ public class WizardFragment extends Fragment {
                     return;
                 }
 
-                Project project = new Project(new File(savePath));
+                Project project = new Project(new File(savePath), "app");
                 replacePlaceholders(project.getRootFile());
 
                 if (getActivity() != null && mListener != null) {
