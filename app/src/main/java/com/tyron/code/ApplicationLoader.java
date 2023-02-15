@@ -53,7 +53,6 @@ import com.tyron.selection.xml.XmlExpandSelectionProvider;
 import com.tyron.code.event.EventManager;
 import com.tyron.code.ui.main.action.other.SSHKeyManagerAction;
 import com.tyron.code.ui.file.action.GitActionGroup;
-import com.tyron.code.ui.file.action.project.OpenProjectAction;
 
 public class ApplicationLoader extends Application {
 
@@ -160,8 +159,7 @@ public class ApplicationLoader extends Application {
             manager.registerAction(TextActionGroup.ID, new TextActionGroup());
             manager.registerAction(DiagnosticInfoAction.ID, new DiagnosticInfoAction());
 
-            // file manager actions
-			manager.registerAction(OpenProjectAction.ID, new OpenProjectAction());
+            // file manager actions		
             manager.registerAction(NewFileActionGroup.ID, new NewFileActionGroup());
             manager.registerAction(DeleteFileAction.ID, new DeleteFileAction());
             if(Build.VERSION.SDK_INT<Build.VERSION_CODES.R) {
