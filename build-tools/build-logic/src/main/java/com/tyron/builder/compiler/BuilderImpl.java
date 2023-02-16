@@ -14,6 +14,9 @@ import com.tyron.builder.project.api.Module;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.Instant;
+import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 public abstract class BuilderImpl<T extends Module> implements Builder<T> {
 
@@ -23,7 +26,8 @@ public abstract class BuilderImpl<T extends Module> implements Builder<T> {
     private final ILogger mLogger;
     private final List<Task<? super T>> mTasksRan;
     private TaskListener mTaskListener;
-
+	private Instant now;
+	
     public BuilderImpl(Project project, T module, ILogger logger) {
         mProject = project;
         mModule = module;
@@ -56,7 +60,8 @@ public abstract class BuilderImpl<T extends Module> implements Builder<T> {
 
     @Override
     public final void build(BuildType type) throws CompilationFailedException, IOException {
-        mTasksRan.clear();
+		now = Instant.now();
+		mTasksRan.clear();
         List<Task<? super T>> tasks = getTasks(type);
         for (int i = 0, tasksSize = tasks.size(); i < tasksSize; i++) {
             Task<? super T> task = tasks.get(i);
@@ -80,6 +85,11 @@ public abstract class BuilderImpl<T extends Module> implements Builder<T> {
             mTasksRan.add(task);
         }
         mTasksRan.forEach(Task::clean);
+		
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(Duration.between(now, Instant.now())
+                                                       .toMillis());  
+        getLogger().info("TIME TOOK " +  seconds + "s");
+		
     }
 
     public abstract List<Task<? super T>> getTasks(BuildType type);

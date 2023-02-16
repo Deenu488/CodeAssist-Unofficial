@@ -204,7 +204,7 @@ public class ProjectManager {
         
         long seconds = TimeUnit.MILLISECONDS.toSeconds(Duration.between(now, Instant.now())
                                                        .toMillis());  
-        logger.debug("REFRESH SUCCESSFUL in " +  seconds + "s");
+        logger.debug("TIME TOOK " +  seconds + "s");
         
     }
 
