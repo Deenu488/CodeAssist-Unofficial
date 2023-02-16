@@ -140,15 +140,14 @@ public class ProjectManager {
 
         if (module instanceof AndroidModule) {
             mListener.onTaskStarted("Generating resource files.");
-
             ManifestMergeTask manifestMergeTask =
                     new ManifestMergeTask(project, (AndroidModule) module, logger);
             IncrementalAapt2Task task =
                     new IncrementalAapt2Task(project, (AndroidModule) module, logger, false);
             try {
+				logger.debug("> Task :" + module.getRootFile().getName() + ":" + "generatingResources");
                 manifestMergeTask.prepare(BuildType.DEBUG);
                 manifestMergeTask.run();
-
                 task.prepare(BuildType.DEBUG);
                 task.run();
             } catch (IOException | CompilationFailedException e) {           
@@ -165,6 +164,7 @@ public class ProjectManager {
 
                 XmlRepository xmlRepository = index.get(project, module);
                 try {
+					logger.debug("> Task :" + module.getRootFile().getName() + ":" + "indexingResources");
                     xmlRepository.initialize((AndroidModule) module);
                 } catch (IOException e) {
                     String message = "Unable to initialize resource repository. " +
@@ -183,6 +183,7 @@ public class ProjectManager {
                 if (module instanceof AndroidModule) {
                     InjectResourcesTask.inject(project, (AndroidModule) module);
                     InjectViewBindingTask.inject(project, (AndroidModule) module);
+					logger.debug("> Task :" + module.getRootFile().getName() + ":" + "injectingResources");
                 }
 
                 JavaModule javaModule = ((JavaModule) module);

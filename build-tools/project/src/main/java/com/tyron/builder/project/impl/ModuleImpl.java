@@ -6,6 +6,9 @@ import com.tyron.builder.model.ModuleSettings;
 import com.tyron.builder.project.api.FileManager;
 import com.tyron.builder.project.api.Module;
 import com.tyron.common.util.Cache;
+import org.apache.commons.io.FileUtils;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.kotlin.com.intellij.openapi.util.Key;
@@ -17,6 +20,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class ModuleImpl implements Module {
 
@@ -28,7 +35,9 @@ public class ModuleImpl implements Module {
     private final File mRoot;
     private ModuleSettings myModuleSettings;
     private FileManager mFileManager;
-
+	private static final Pattern PLUGINS_ID = Pattern.compile("\\s*(id)\\s*(')([a-zA-Z0-9.'/-:\\-]+)(')");
+	private static final Pattern PLUGINS_ID_QUOT = Pattern.compile("\\s*(id)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
+	
     public ModuleImpl(File root) {
         mRoot = root;
         mFileManager = new FileManagerImpl(root);
@@ -96,8 +105,42 @@ public class ModuleImpl implements Module {
     public File getGradleFile() {
         File gradleFile = new File(getRootFile(),"build.gradle");
         return gradleFile;
-    }     
-    
+    }
+
+	@Override
+	public List<String> getPlugins() {
+		return getPlugins(getGradleFile());
+	}
+
+	private List<String> getPlugins(File gradleFile) {
+		try {
+		String readString = FileUtils.readFileToString(gradleFile, Charset.defaultCharset());
+		return getPlugins(readString);
+		} catch (IOException e) {		
+		}
+		return null;
+	}
+
+	private List<String> getPlugins(String readString) {
+		readString = readString.replaceAll("\\s*//.*", "");
+		Matcher matcher = PLUGINS_ID.matcher(readString);
+		List<String> plugins = new ArrayList<>();
+		while (matcher.find()) {
+			String declaration = matcher.group(3);
+			if (declaration != null) {
+				plugins.add(String.valueOf(declaration));
+			}
+		}
+		matcher = PLUGINS_ID_QUOT.matcher(readString);
+		while (matcher.find()) {
+			String declaration = matcher.group(3);
+			if (declaration != null) {
+				plugins.add(String.valueOf(declaration));
+			}
+		}
+		return plugins;
+	}
+	
     @Nullable
     @Override
     public <T> T getUserData(@NotNull Key<T> key) {

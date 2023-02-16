@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.com.intellij.openapi.util.UserDataHolderEx;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public interface Module extends UserDataHolderEx, CacheHolder {
 
@@ -19,6 +20,8 @@ public interface Module extends UserDataHolderEx, CacheHolder {
     File getGradleFile();
     
     File getRootProject();
+	
+	List<String> getPlugins();
 
     default String getName() {
         return getRootFile().getName();

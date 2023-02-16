@@ -151,9 +151,9 @@ public class DependencyManager {
         logger.debug("> Task :" + project.getRootFile().getName() + ":" + "downloadingDependencies");
         List<Library> files = getFiles(resolvedPoms, logger);
         listener.onTaskStarted("Checking dependencies");
-        logger.debug("> Task :" + project.getRootFile().getName() + ":" + "CheckingDependencies");
+        logger.debug("> Task :" + project.getRootFile().getName() + ":" + "checkingDependencies");
 		checkLibraries(project, logger, files);
-        logger.debug("> Task :" + project.getRootFile().getName() + ":" + "checkLibraries:done");
+        logger.debug("> Task :" + project.getRootFile().getName() + ":" + "checkingLibraries");
      }
 
     private void checkLibraries(JavaModule project, ILogger logger, List<Library> newLibraries) throws IOException {

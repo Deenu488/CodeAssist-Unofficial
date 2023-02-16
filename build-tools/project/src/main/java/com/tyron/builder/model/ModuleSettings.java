@@ -47,6 +47,7 @@ public class ModuleSettings implements SharedPreferences {
     public static final String EXTRACT_APKS = "extractApks";
     public static final String UNCOMPRESSED_FLAG = "bundle_enableUncompressedNativeLibs";
 	public static final String INCLUDE = "include";
+	public static final String PLUGINS_ID = "plugins";
 	
 	private final File mConfigFile;
     private final Map<String, Object> mConfigMap;
@@ -72,7 +73,8 @@ public class ModuleSettings implements SharedPreferences {
     protected Map<String, Object> getDefaults() {
         Map<String, Object> map = new LinkedHashMap<>();
 		List<String> includeList = new ArrayList<String>();
-		includeList.add("");
+		List<String> plugins = new ArrayList<>();
+		plugins.add("com.android.application");
 		
 		map.put(USE_R8, false);
         map.put(MIN_SDK_VERSION, 21);
@@ -87,6 +89,7 @@ public class ModuleSettings implements SharedPreferences {
         map.put(EXTRACT_APKS, false);
         map.put(UNCOMPRESSED_FLAG, false);
 		map.put(INCLUDE, includeList.toString());
+		map.put(PLUGINS_ID, plugins.toString());
         return map;
     }
 
