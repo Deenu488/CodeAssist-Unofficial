@@ -92,6 +92,12 @@ public class ModuleImpl implements Module {
         return mRoot.getParentFile();
     }
 
+    @Override
+    public File getGradleFile() {
+        File gradleFile = new File(getRootFile(),"build.gradle");
+        return gradleFile;
+    }     
+    
     @Nullable
     @Override
     public <T> T getUserData(@NotNull Key<T> key) {

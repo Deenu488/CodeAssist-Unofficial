@@ -138,13 +138,12 @@ public class DependencyManager {
                 logger.error(message);
             }
         });
-		
-		File gradleFile = new File(project.getRootFile(), "build.gradle");	
-		resolveMainDependency(project, listener ,logger ,gradleFile);
+			
+		resolveMainDependency(project, listener ,logger);
 	}
 	
-	private void resolveMainDependency(JavaModule project, ProjectManager.TaskListener listener, ILogger logger, File gradleFile) throws IOException {
-		List<Dependency> declaredDependencies = DependencyUtils.parseDependencies(mRepository, gradleFile, logger);
+	private void resolveMainDependency(JavaModule project, ProjectManager.TaskListener listener, ILogger logger) throws IOException {
+		List<Dependency> declaredDependencies = DependencyUtils.parseDependencies(mRepository, project.getGradleFile(), logger);
         List<Pom> resolvedPoms = mResolver.resolveDependencies(declaredDependencies);
         listener.onTaskStarted("Downloading dependencies");
         List<Library> files = getFiles(resolvedPoms, logger);
