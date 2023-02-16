@@ -151,8 +151,7 @@ public class ProjectManager {
 
                 task.prepare(BuildType.DEBUG);
                 task.run();
-            } catch (IOException | CompilationFailedException e) {
-                logger.warning("Unable to generate resource classes " + e.getMessage());
+            } catch (IOException | CompilationFailedException e) {           
             }
         }
 
@@ -204,7 +203,7 @@ public class ProjectManager {
         
         long seconds = TimeUnit.MILLISECONDS.toSeconds(Duration.between(now, Instant.now())
                                                        .toMillis());  
-        logger.debug("BUILD SUCCESSFUL in " +  seconds + "s");
+        logger.debug("REFRESH SUCCESSFUL in " +  seconds + "s");
         
     }
 

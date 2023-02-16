@@ -31,6 +31,23 @@ import com.tyron.code.ui.main.MainViewModel;
 import com.tyron.code.ui.main.IndexCallback;
 import androidx.annotation.CallSuper;
 
+import com.tyron.fileeditor.api.FileEditor;
+import com.tyron.code.ui.editor.Savable;
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
+import java.io.IOException;
+import androidx.annotation.WorkerThread;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import java.util.Optional;
+import java.time.Instant;
+import com.tyron.completion.progress.ProgressManager;
+import com.tyron.fileeditor.api.FileEditor;
+import org.apache.commons.io.FileUtils;
+import com.tyron.builder.project.Project;
+import com.tyron.builder.project.api.FileManager;
+import com.tyron.builder.project.api.Module;
+import java.nio.charset.StandardCharsets;
+
 public class CompileActionGroup extends ActionGroup {
 
     public static final String ID = "compileActionGroup";
@@ -83,11 +100,37 @@ public class CompileActionGroup extends ActionGroup {
     public void actionPerformed(@NonNull AnActionEvent event) {
 		Context context = event.getData(CommonDataKeys.CONTEXT);
 		CompileCallback callback = event.getData(MainFragment.COMPILE_CALLBACK_KEY);
-
+		MainViewModel viewModel = event.getRequiredData(MainFragment.MAIN_VIEW_MODEL_KEY);
 		Project project = event.getData(CommonDataKeys.PROJECT);
         if (project == null) {
             return;
         }
+		
+		List<FileEditor> editors = viewModel.getFiles()
+			.getValue();
+        if (editors == null) {
+            return;
+        } 
+		//save files before build
+		Stream<FileEditor> validEditors = editors.stream()
+			.filter(it -> it.getFragment() instanceof Savable)
+		.filter(it -> ((Savable) it.getFragment()).canSave());
+        List<File> filesToSave = validEditors
+			.map(FileEditor::getFile)
+		.collect(Collectors.toList());
+     
+        ProgressManager.getInstance()
+			.runNonCancelableAsync(() -> {
+			List<IOException> exceptions = saveFiles(project, filesToSave);
+			if (!exceptions.isEmpty()) {
+				new MaterialAlertDialogBuilder(event.getDataContext()).setTitle(R.string.error)
+					.setPositiveButton(android.R.string.ok, null)
+					.setMessage(exceptions.stream()
+								.map(IOException::getMessage)
+				.collect(Collectors.joining("\n\n")))
+				.show();
+			}
+		});
 
 	    BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context);
 		bottomSheetDialog.setContentView(R.layout.layout_dialog_run_actions);
@@ -169,5 +212,33 @@ public class CompileActionGroup extends ActionGroup {
     @Override
     public AnAction[] getChildren(@Nullable AnActionEvent e) {
 		return new AnAction[]{};
+    }
+	
+	@WorkerThread
+    private static List<IOException> saveFiles(Project project, List<File> files) {
+        List<IOException> exceptions = new ArrayList<>();
+        for (File file : files) {
+            Module module = project.getModule(file);
+            if (module == null) {
+                // TODO: try to save files without a module
+                continue;
+            }
+
+            FileManager fileManager = module.getFileManager();
+            Optional<CharSequence> fileContent = fileManager.getFileContent(file);
+            if (fileContent.isPresent()) {
+                try {
+                    FileUtils.writeStringToFile(file, fileContent.get()
+												.toString(), StandardCharsets.UTF_8);
+                    Instant instant = Instant.ofEpochMilli(file.lastModified());
+
+                    ProgressManager.getInstance()
+						.runLater(() -> fileManager.setLastModified(file, instant));
+                } catch (IOException e) {
+                    exceptions.add(e);
+                }
+            }
+        }
+        return exceptions;
     }
 }
