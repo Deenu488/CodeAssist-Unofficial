@@ -36,7 +36,12 @@ public class ModuleImpl implements Module {
 
     @Override
     public void open() throws IOException {
-        myModuleSettings = new ModuleSettings(new File(getRootFile(), "app_config.json"));
+        File codeassist = new File(getRootProject(), ".idea");
+        if (!codeassist.exists()) {
+            if (!codeassist.mkdirs()) {
+            }
+		}
+        myModuleSettings = new ModuleSettings(new File(codeassist, getRootFile().getName() + "_config.json"));
     }
 
     @Override
@@ -80,6 +85,11 @@ public class ModuleImpl implements Module {
     @Override
     public File getRootFile() {
         return mRoot;
+    }
+    
+    @Override
+    public File getRootProject() {
+        return mRoot.getParentFile();
     }
 
     @Nullable
