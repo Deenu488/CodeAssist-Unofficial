@@ -149,24 +149,5 @@ public class Project {
     }
 
     private void addEdges(MutableGraph<Module> graph, Module module) throws IOException {
-        Set<String> modules = module.getSettings().getStringSet("modules",
-                Collections.emptySet());
-        if (modules == null) {
-            return;
-        }
-
-        for (String s : modules) {
-            File moduleRoot = new File(mRoot, s);
-            if (!moduleRoot.exists()) {
-                continue;
-            }
-            Module subModule = ModuleUtil.fromDirectory(moduleRoot);
-            if (subModule != null) {
-                subModule.open();
-                graph.putEdge(module, subModule);
-
-                addEdges(graph, subModule);
-            }
-        }
     }
 }
