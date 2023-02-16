@@ -42,7 +42,10 @@ public class ResourceRepository extends SimpleResourceRepository {
         }
 
         File resDir = mModule.getAndroidResourcesDirectory();
+		
+		if (resDir.exists()) {
         parse(resDir, getNamespace(), null);
+		}
 
         for (File library : mModule.getLibraries()) {
             File parent = library.getParentFile();

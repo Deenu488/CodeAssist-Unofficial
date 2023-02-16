@@ -61,9 +61,8 @@ public class DependencyManager {
         mResolver = new DependencyResolver(mRepository);
     }
 
-    public static List<Repository> getFromModule(JavaModule module) throws IOException {
-        File rootFile = module.getRootFile();
-        File repositoriesFile = new File(rootFile.getParentFile(), REPOSITORIES_JSON);
+    public static List<Repository> getFromModule(JavaModule module) throws IOException {     
+        File repositoriesFile = new File(module.getRootProject(), ".idea/" + REPOSITORIES_JSON);
         List<RepositoryModel> repositoryModels = parseFile(repositoriesFile);
         List<Repository> repositories = new ArrayList<>();
         for (RepositoryModel model : repositoryModels) {
