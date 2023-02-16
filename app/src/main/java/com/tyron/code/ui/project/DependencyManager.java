@@ -48,7 +48,7 @@ public class DependencyManager {
 
     private final RepositoryManager mRepository;
     private final DependencyResolver mResolver;
-
+    
     public DependencyManager(JavaModule module, File cacheDir) throws IOException {
         extractCommonPomsIfNeeded();
 
@@ -125,8 +125,11 @@ public class DependencyManager {
     }
 
     public void resolve(JavaModule project, ProjectManager.TaskListener listener, ILogger logger) throws IOException {
+        
         listener.onTaskStarted("Resolving dependencies");
-
+        logger.debug("> Configure project :" + project.getRootFile().getName());
+        logger.debug("> Task :" + project.getRootFile().getName() + ":" + "resolvingDependencies");
+        
         mResolver.setResolveListener(new DependencyResolver.ResolveListener() {
             @Override
             public void onResolve(String message) {
@@ -146,10 +149,13 @@ public class DependencyManager {
 		List<Dependency> declaredDependencies = DependencyUtils.parseDependencies(mRepository, project.getGradleFile(), logger);
         List<Pom> resolvedPoms = mResolver.resolveDependencies(declaredDependencies);
         listener.onTaskStarted("Downloading dependencies");
+        logger.debug("> Task :" + project.getRootFile().getName() + ":" + "downloadingDependencies");
         List<Library> files = getFiles(resolvedPoms, logger);
         listener.onTaskStarted("Checking dependencies");
+        logger.debug("> Task :" + project.getRootFile().getName() + ":" + "CheckingDependencies");
 		checkLibraries(project, logger, files);
-	}
+        logger.debug("> Task :" + project.getRootFile().getName() + ":" + "checkLibraries:done");
+     }
 
     private void checkLibraries(JavaModule project, ILogger logger, List<Library> newLibraries) throws IOException {
         Set<Library> libraries = new HashSet<>(newLibraries);
@@ -171,7 +177,6 @@ public class DependencyManager {
                 }
             }
         }
-
 
         String librariesString = project.getSettings().getString("libraries", "[]");
         try {

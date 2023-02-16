@@ -41,13 +41,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 import kotlin.collections.CollectionsKt;
 
 public class ProjectManager {
 
     private static final Logger LOG = IdeLog.getCurrentLogger(ProjectManager.class);
-
+    private Instant now;
+    
     public interface TaskListener {
         void onTaskStarted(String message);
 
@@ -100,6 +103,7 @@ public class ProjectManager {
                                ILogger logger) {
         mCurrentProject = project;
 
+        now = Instant.now();
         boolean shouldReturn = false;
         // Index the project after downloading dependencies so it will get added to classpath
         try {
@@ -197,6 +201,11 @@ public class ProjectManager {
 
         mCurrentProject.setIndexing(false);
         mListener.onComplete(project, true, "Index successful");
+        
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(Duration.between(now, Instant.now())
+                                                       .toMillis());  
+        logger.debug("BUILD SUCCESSFUL in " +  seconds + "s");
+        
     }
 
     private void downloadLibraries(JavaModule project,
