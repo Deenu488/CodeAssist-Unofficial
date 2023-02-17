@@ -43,9 +43,11 @@ public class AndroidModuleImpl extends JavaModuleImpl implements AndroidModule {
         super.open();
 
         try {
+			File manifest = getManifestFile();
+			if (manifest.exists()) {
             mManifestData = AndroidManifestParser.parse(getManifestFile());
-        } catch (IOException e) {
-            throw new IOException("Unable to parse manifest. Fix manifest errors and then refresh the module.");
+			}
+        } catch (IOException e) {         
         }
     }
 
