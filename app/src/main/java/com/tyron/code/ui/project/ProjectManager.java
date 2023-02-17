@@ -102,11 +102,19 @@ public class ProjectManager {
                                TaskListener mListener,
                                ILogger logger) {
         mCurrentProject = project;
-
+		Module module = mCurrentProject.getMainModule();
+		
         now = Instant.now();
         boolean shouldReturn = false;
         // Index the project after downloading dependencies so it will get added to classpath
         try {
+			String plugins =  module.getPlugins();
+			logger.debug("> Task :" + module.getRootFile().getName() + ":" + "checkingPlugins");
+			if (plugins.isEmpty()) {
+				logger.warning("No Plugins detected");
+			} else {
+				logger.debug("NOTE:" + "Plugins detected: " + plugins);			
+			}	
             mCurrentProject.open();
         } catch (IOException exception) {
             logger.warning("Failed to open project: " + exception.getMessage());
@@ -124,9 +132,7 @@ public class ProjectManager {
             mCurrentProject.index();
         } catch (IOException exception) {
             logger.warning("Failed to open project: " + exception.getMessage());
-        }
-
-        Module module = mCurrentProject.getMainModule();
+        }   
 
         if (module instanceof JavaModule) {
             JavaModule javaModule = (JavaModule) module;

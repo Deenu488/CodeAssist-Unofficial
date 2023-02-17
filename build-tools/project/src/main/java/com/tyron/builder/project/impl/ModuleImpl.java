@@ -108,11 +108,11 @@ public class ModuleImpl implements Module {
     }
 
 	@Override
-	public List<String> getPlugins() {
+	public String getPlugins() {
 		return getPlugins(getGradleFile());
 	}
 
-	private List<String> getPlugins(File gradleFile) {
+	private String getPlugins(File gradleFile) {
 		try {
 		String readString = FileUtils.readFileToString(gradleFile, Charset.defaultCharset());
 		return getPlugins(readString);
@@ -121,7 +121,7 @@ public class ModuleImpl implements Module {
 		return null;
 	}
 
-	private List<String> getPlugins(String readString) {
+	private String getPlugins(String readString) {
 		readString = readString.replaceAll("\\s*//.*", "");
 		Matcher matcher = PLUGINS_ID.matcher(readString);
 		List<String> plugins = new ArrayList<>();
@@ -138,7 +138,7 @@ public class ModuleImpl implements Module {
 				plugins.add(String.valueOf(declaration));
 			}
 		}
-		return plugins;
+		return plugins.toString().replace("[","").replace("]","");
 	}
 	
     @Nullable
