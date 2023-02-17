@@ -174,8 +174,14 @@ public class ProjectManagerAdapter extends RecyclerView.Adapter<ProjectManagerAd
 			try {
 				List<String> plugins = GradleUtils.parsePlugins(gradleFile);
 				plugins.forEach(names -> {
-				if (plugins.contains("java.library")) {
+				if (plugins.contains("java-library")) {
 					icon.setImageResource(R.drawable.ic_java);
+				}
+				if (plugins.contains("java")) {
+						icon.setImageResource(R.drawable.ic_java);
+				}
+				if (plugins.contains("groovy")) {
+						icon.setImageResource(R.drawable.ic_groovy);
 				}
 				if (plugins.contains("com.android.library")) {
 					icon.setImageResource(R.drawable.ic_library);
@@ -195,8 +201,12 @@ public class ProjectManagerAdapter extends RecyclerView.Adapter<ProjectManagerAd
 			}	
 			
 			try {
-				String name = GradleUtils.parseApplicationId(gradleFile);		
-				pkg.setText(name);		
+				String name = GradleUtils.parseApplicationId(gradleFile);
+				if (name.isEmpty()) {
+				pkg.setText("Unable to find package name");
+				} else {
+				pkg.setText(name);
+				}
 			} catch (Exception e) {
 				pkg.setText("Unable to find package name");
 	      }

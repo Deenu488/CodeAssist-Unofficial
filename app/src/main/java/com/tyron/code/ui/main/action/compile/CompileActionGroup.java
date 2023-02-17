@@ -135,8 +135,6 @@ public class CompileActionGroup extends ActionGroup {
 	    BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context);
 		bottomSheetDialog.setContentView(R.layout.layout_dialog_run_actions);
 
-		LinearLayout aarActions = bottomSheetDialog.findViewById(R.id.android_library_actions);
-		LinearLayout jarActions = bottomSheetDialog.findViewById(R.id.java_library_actions);
 		LinearLayout appActions = bottomSheetDialog.findViewById(R.id.android_app_actions);
 		ConstraintLayout projectStatus = bottomSheetDialog.findViewById(R.id.project_status);
 
@@ -144,40 +142,19 @@ public class CompileActionGroup extends ActionGroup {
 		MaterialCardView buildDebug = bottomSheetDialog.findViewById(R.id.buildDebug);
 		MaterialCardView buildBundle = bottomSheetDialog.findViewById(R.id.buildBundle);
 
-		MaterialCardView buildAar = bottomSheetDialog.findViewById(R.id.buildAar);
-		MaterialCardView buildJar = bottomSheetDialog.findViewById(R.id.buildJar);
-		MaterialCardView buildRunJar = bottomSheetDialog.findViewById(R.id.buildRunJar);
-
-		File gradleFile = new File(project.getRootFile(), "app/build.gradle");
+		File gradleFile = project.getMainModule().getGradleFile();
 		try {
 			List<String> plugins = GradleUtils.parsePlugins(gradleFile);
 			plugins.forEach(v -> {
-				if (plugins.contains("java.library")) {
-					jarActions.setVisibility(View.VISIBLE);
-					aarActions.setVisibility(View.GONE);
-					appActions.setVisibility(View.GONE);
-					projectStatus.setVisibility(View.GONE);
-				}
-				if (plugins.contains("com.android.library")) {
-					aarActions.setVisibility(View.VISIBLE);
-					jarActions.setVisibility(View.GONE);
-					appActions.setVisibility(View.GONE);
-					projectStatus.setVisibility(View.GONE);
-
-				}
 				if (plugins.contains("com.android.application")) {
-					appActions.setVisibility(View.VISIBLE);
-					aarActions.setVisibility(View.GONE);
-					jarActions.setVisibility(View.GONE);
+					appActions.setVisibility(View.VISIBLE);			
 					projectStatus.setVisibility(View.GONE);
 				}
 				if (plugins.contains("com.android.application") || plugins.contains("com.android.library")
-					|| plugins.contains("java.library")) {
-
+					|| plugins.contains("java-library")||plugins.contains("java")|| plugins.contains("groovy")) {
 				} else {
 					projectStatus.setVisibility(View.VISIBLE);
 				}
-
 			});
 
 		} catch (Exception e) {
@@ -196,15 +173,6 @@ public class CompileActionGroup extends ActionGroup {
 		});
 		buildBundle.setOnClickListener(v -> {
 			callback.compile(BuildType.AAB);
-			bottomSheetDialog.dismiss();
-		});
-		buildAar.setOnClickListener(v -> {			
-			bottomSheetDialog.dismiss();
-		});
-		buildRunJar.setOnClickListener(v -> {
-			bottomSheetDialog.dismiss();
-		});	
-		buildJar.setOnClickListener(v -> {
 			bottomSheetDialog.dismiss();
 		});	
     }	

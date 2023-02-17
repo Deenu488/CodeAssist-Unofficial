@@ -14,9 +14,6 @@
 	
 	<!-- main fragment -->
 	<string name="project_not_initialized">Project is not initialized</string>
-	<string name="assemble_aar">Assemble Aar</string>
-	<string name="assemble_jar">Assemble Jar</string>
-	<string name="run_jar">Run Jar</string>
 	<string name="action_menu_build_release">Release App</string>
     <string name="action_menu_build_debug">Debug App</string>
     <string name="action_menu_build_aab">App Bundle</string>

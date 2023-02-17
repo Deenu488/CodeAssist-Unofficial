@@ -18,10 +18,6 @@
             android:text="Run actions"
             android:textAppearance="@style/TextAppearance.Material3.ActionBar.Title" />
 
-        <include layout="@layout/run_actions_java_library" />
-
-        <include layout="@layout/run_actions_android_library" />
-
         <include layout="@layout/run_actions_android" />
 
         <include layout="@layout/layout_project_not_initialized" />
