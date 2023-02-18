@@ -9,7 +9,10 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
-import android.widget.PopupMenu;
+import android.widget.PopupWindow;
+import androidx.appcompat.widget.PopupMenu;
+import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,6 +50,7 @@ import com.tyron.code.ui.project.ProjectManager;
 import java.io.File;
 import java.util.Collections;
 import java.util.concurrent.Executors;
+import java.lang.reflect.Field;
 
 public class TreeFileManagerFragment extends Fragment {
 
@@ -136,6 +140,18 @@ public class TreeFileManagerFragment extends Fragment {
             public boolean onNodeLongClicked(View view, TreeNode<TreeFile> treeNode, boolean expanded) {
                 PopupMenu popupMenu = new PopupMenu(requireContext(), view);
                 addMenus(popupMenu, treeNode);
+				// Get the background drawable and set its shape
+				try{
+					Field popupField = PopupMenu.class.getDeclaredField("mPopup");popupField.setAccessible(true);
+					Object menuPopupHelper = popupField.get(popupMenu);
+					Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
+					Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon",
+																	  boolean.class);setForceIcons.invoke(menuPopupHelper,true);
+					PopupWindow popupWindow = (PopupWindow) menuPopupHelper.getClass().getDeclaredField("mPopup")
+						.get(menuPopupHelper);popupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.rounded_popup_menu_background, null));
+				}catch(Exception e){
+					e.printStackTrace();
+				}
                 popupMenu.show();
                 return true;
             }
