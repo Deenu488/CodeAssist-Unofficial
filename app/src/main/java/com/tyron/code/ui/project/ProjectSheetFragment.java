@@ -156,7 +156,7 @@ public class ProjectSheetFragment extends BottomSheetDialogFragment {
 						
 						new MaterialAlertDialogBuilder(requireContext())
 							.setTitle(R.string.rename)
-							.setView( v)
+							.setView(v)
 							.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 
 								@Override

@@ -22,6 +22,7 @@ import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.tyron.actions.ActionManager;
 import com.tyron.actions.ActionPlaces;
@@ -46,11 +47,13 @@ import com.tyron.code.ui.file.tree.binder.TreeFileNodeViewFactory;
 import com.tyron.code.ui.file.tree.model.TreeFile;
 import com.tyron.code.ui.main.MainViewModel;
 import com.tyron.code.ui.project.ProjectManager;
-
+import com.google.android.material.button.MaterialButton;
 import java.io.File;
 import java.util.Collections;
 import java.util.concurrent.Executors;
 import java.lang.reflect.Field;
+import com.tyron.builder.project.Project;
+import android.content.Context;
 
 public class TreeFileManagerFragment extends Fragment {
 
@@ -99,8 +102,20 @@ public class TreeFileManagerFragment extends Fragment {
         treeView = new TreeView<>(
                 requireContext(), TreeNode.root(Collections.emptyList()));
 
-        HorizontalScrollView horizontalScrollView = view.findViewById(R.id.horizontalScrollView);
-        horizontalScrollView.addView(treeView.getView(), new ViewGroup.LayoutParams(
+        
+		MaterialButton addLibrary = view.findViewById(R.id.addNewLibrary);
+		MaterialButton projectInfo = view.findViewById(R.id.projectProperties);
+		
+		addLibrary.setOnClickListener(v -> {
+			showNewLibrary();
+		});
+		
+		projectInfo.setOnClickListener(v -> {
+			showProjectInfo();
+		});
+		
+		HorizontalScrollView horizontalScrollView = view.findViewById(R.id.horizontalScrollView);
+		horizontalScrollView.addView(treeView.getView(), new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
         ));
@@ -160,6 +175,26 @@ public class TreeFileManagerFragment extends Fragment {
             treeView.refreshTreeView(node);
         });
     }
+
+	private void showNewLibrary() {
+		new MaterialAlertDialogBuilder(requireContext()).setTitle(R.string.new_library)
+			.setPositiveButton(android.R.string.ok, null)
+			.show();
+	}
+
+	private void showProjectInfo() {
+		ProjectManager manager = ProjectManager.getInstance();
+        Project project = manager.getCurrentProject();
+		String root = project.getMainModule().getRootFile().getName();
+		
+		LayoutInflater inflater = (LayoutInflater) requireContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+		View v = inflater.inflate( R.layout.dialog_project_information, null );
+		
+		new MaterialAlertDialogBuilder(requireContext()).setTitle("Project " + "'" + root + "'")
+			.setPositiveButton(android.R.string.ok, null)
+			.setView(v)
+			.show();
+	}
 
 
     private void partialRefresh(Runnable callback) {

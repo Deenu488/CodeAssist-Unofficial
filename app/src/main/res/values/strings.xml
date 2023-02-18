@@ -20,6 +20,12 @@
 	<string name="title_confirm_project_close">Close project</string>
 	<string name="msg_confirm_project_close">Are you sure you want to close this project? All running actions will be stopped after this project is closed.</string>
 	
+	<!-- file manager -->	
+
+    <string name="add_new_library">Add new libray</string>
+	<string name="new_library">New libray</string>
+	<string name="project_properties">Project properties</string>
+	
 	<!-- home menu -->	
 		
     <string name="hello_world">Hello world!</string>
