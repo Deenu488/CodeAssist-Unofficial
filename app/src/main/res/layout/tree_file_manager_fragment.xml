@@ -17,7 +17,7 @@
             android:fillViewport="true"
             android:layout_height="0dp"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/buttonsLayout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
@@ -30,6 +30,44 @@
             </HorizontalScrollView>
 
         </androidx.core.widget.NestedScrollView>
+
+        <LinearLayout
+            android:id="@+id/buttonsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/addNewLibrary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Add new libray"
+                android:layout_weight="1"
+				app:iconPadding="16dp"
+				app:iconGravity="start"
+				app:icon="@drawable/ic_add_library"
+				android:textAlignment="textStart"
+				android:textColor="?attr/colorOnSurface"
+				android:elevation="0dp"
+				style="@style/Widget.Material3.Button.TextButton"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/projectProperties"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Project properties"
+                android:layout_weight="1"
+				app:iconPadding="16dp"
+				app:iconGravity="start"
+				android:textColor="?attr/colorOnSurface"
+				android:elevation="0dp"
+				app:icon="@drawable/ic_project_information"
+				android:textAlignment="textStart"
+				style="@style/Widget.Material3.Button.TextButton"/>
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
