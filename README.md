@@ -1,6 +1,6 @@
 <p align='center'>
-<img width='300px%' height='300px' src='https://raw.githubusercontent.com/KrishnaVyshak/CodeAssist/main/logo-dark.png#gh-dark-mode-only' >
-<img width='300px' height='300px' src='https://raw.githubusercontent.com/KrishnaVyshak/CodeAssist/main/logo-light.png#gh-light-mode-only'>
+<img width='300px%' height='300px' src='https://raw.githubusercontent.com/deenu143/CodeAssist-ALPHA-0.2.9/CodeAssist/main/logo-dark.png#gh-dark-mode-only' >
+<img width='300px' height='300px' src='https://raw.githubusercontent.com/deenu143/CodeAssist-ALPHA-0.2.9/CodeAssist/main/logo-light.png#gh-light-mode-only'>
 </p>
 
 <h2 align="center"><b>CodeAssist Unofficial</b></h2>
