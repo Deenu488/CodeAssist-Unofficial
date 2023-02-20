@@ -26,7 +26,11 @@
 	<string name="variants">Variants</string>
 	<string name="build_variants">Build variants</string>
 	<string name="switched_to_variant">Switched to build variant</string>
-
+	<string name="create">Create</string>
+	<string name="name">Name</string>
+	<string name="package_name">Package name</string>
+	<string name="java_library">Java library</string>
+	<string name="android_library">Android library</string>
 	<!-- home menu -->	
 		
     <string name="hello_world">Hello world!</string>
