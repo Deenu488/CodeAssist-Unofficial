@@ -111,34 +111,10 @@ public class ModuleImpl implements Module {
 	public String getPlugins() {
 		return getPlugins(getGradleFile());
 	}
-
-	private String getPlugins(File gradleFile) {
-		try {
-		String readString = FileUtils.readFileToString(gradleFile, Charset.defaultCharset());
-		return getPlugins(readString);
-		} catch (IOException e) {		
-		}
-		return null;
-	}
-
-	private String getPlugins(String readString) {
-		readString = readString.replaceAll("\\s*//.*", "");
-		Matcher matcher = PLUGINS_ID.matcher(readString);
-		List<String> plugins = new ArrayList<>();
-		while (matcher.find()) {
-			String declaration = matcher.group(3);
-			if (declaration != null) {
-				plugins.add(String.valueOf(declaration));
-			}
-		}
-		matcher = PLUGINS_ID_QUOT.matcher(readString);
-		while (matcher.find()) {
-			String declaration = matcher.group(3);
-			if (declaration != null) {
-				plugins.add(String.valueOf(declaration));
-			}
-		}
-		return plugins.toString().replace("[","").replace("]","");
+	
+	@Override
+	public List<String> getImplementationProjects() {
+		return parseImplementationProjects(getGradleFile());
 	}
 	
     @Nullable
@@ -234,4 +210,57 @@ public class ModuleImpl implements Module {
     public <K, V> void put(CacheKey<K, V> key, Cache<K, V> value) {
         mCacheMap.put(key, value);
     }
+	
+	private String getPlugins(File gradleFile) {
+		try {
+			String readString = FileUtils.readFileToString(gradleFile, Charset.defaultCharset());
+			return getPlugins(readString);
+		} catch (IOException e) {		
+		}
+		return null;
+	}
+
+	private String getPlugins(String readString) {
+		readString = readString.replaceAll("\\s*//.*", "");
+		Matcher matcher = PLUGINS_ID.matcher(readString);
+		List<String> plugins = new ArrayList<>();
+		while (matcher.find()) {
+			String declaration = matcher.group(3);
+			if (declaration != null) {
+				plugins.add(String.valueOf(declaration));
+			}
+		}
+		matcher = PLUGINS_ID_QUOT.matcher(readString);
+		while (matcher.find()) {
+			String declaration = matcher.group(3);
+			if (declaration != null) {
+				plugins.add(String.valueOf(declaration));
+			}
+		}
+		return plugins.toString().replace("[","").replace("]","");
+	}
+	
+	private List<String> parseImplementationProjects(File gradleFile) {
+		try {
+			String readString = FileUtils.readFileToString(gradleFile, Charset.defaultCharset());
+			return parseImplementationProjects(readString);
+		} catch (IOException e) {		
+		}
+		return null;
+	}
+
+	public static List<String> parseImplementationProjects(String readString) throws IOException {
+		final Pattern PROJECT_PATTERN = Pattern.compile("implementation project\\(path:\\s*['\"]([^'\"]+)['\"]\\)");
+		readString = readString.replaceAll("\\s*//.*", "");
+		List<String> projects = new ArrayList<>();
+		Matcher matcher = PROJECT_PATTERN.matcher(readString);
+		while (matcher.find()) {
+			String declaration = matcher.group(1);
+			if (declaration != null) {
+				declaration = declaration.replaceAll(":", "/");
+				projects.add(declaration);
+			}
+		}
+		return projects;
+	}
 }

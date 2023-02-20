@@ -211,6 +211,11 @@ public class TreeFileManagerFragment extends Fragment {
 		projectPath.setText(pr);
 		libraryProjects.setText(libraries);	
 		
+		List<String> implementationProjects = javaModule.getImplementationProjects();
+		String implementationText = implementationProjects.isEmpty() ? "Implementation projects: <none>" :
+			"Implementation projects:\n" + String.join("\n", implementationProjects);
+		libraryProjects.setText(implementationText);
+			
 		File[] fileLibraries = getProjectLibraries(javaModule.getLibraryDirectory());
 		
 		if (fileLibraries != null && fileLibraries.length > 0) {
