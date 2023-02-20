@@ -27,7 +27,8 @@
 	<string name="project_properties">Project properties</string>
 	<string name="variants">Variants</string>
 	<string name="build_variants">Build variants</string>
-	
+	<string name="switched_to_variants">Switched to build variants</string>
+
 	<!-- home menu -->	
 		
     <string name="hello_world">Hello world!</string>

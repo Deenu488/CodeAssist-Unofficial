@@ -55,6 +55,11 @@ import java.lang.reflect.Field;
 import com.tyron.builder.project.Project;
 import android.content.Context;
 import android.widget.TextView;
+import android.content.SharedPreferences;
+import androidx.preference.PreferenceManager;
+import java.util.List;
+import java.util.ArrayList;
+import android.widget.Toast;
 
 public class TreeFileManagerFragment extends Fragment {
 
@@ -208,24 +213,36 @@ public class TreeFileManagerFragment extends Fragment {
 			.show();
 	}
 
-	private void showBuildVariants() {
-		String[] option = {"Release", "Debug", "Aab"};
-		new MaterialAlertDialogBuilder(requireContext()).setTitle(R.string.build_variants)	
-		    .setSingleChoiceItems(option, -1, (dia,w) -> {			
-			switch (w) {
-			case 0:
-			break;
-			case 1:
-			break;
-			case 2:
-			break;		
-			}
-			})
-			.setPositiveButton(android.R.string.ok, (d, wh) -> {		
-			})	
-			.show();
-	}
+	private static final String LAST_SELECTED_INDEX_KEY = "last_selected_index";
+	private int lastSelectedIndex = 0;
 
+	private void showBuildVariants() {
+		List<String> variants = new ArrayList<>();
+		variants.add("Release");
+		variants.add("Debug");
+		variants.add("Aab");
+		final String[] options = variants.toArray(new String[0]);
+
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
+		int defaultSelection = preferences.getInt(LAST_SELECTED_INDEX_KEY, 0);
+		lastSelectedIndex = defaultSelection;
+
+		new MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.build_variants)
+            .setSingleChoiceItems(options, defaultSelection, (dialog, which) -> {
+			lastSelectedIndex = which;
+			preferences.edit().putInt(LAST_SELECTED_INDEX_KEY, which).apply();
+		})
+		.setPositiveButton(android.R.string.ok, (dialog, which) -> {
+			String selectedVariant = options[lastSelectedIndex];
+			if (defaultSelection != lastSelectedIndex) {
+				String message = getString(R.string.switched_to_variants) + " " + selectedVariant;
+				Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+			}
+		})
+		.show();
+	}
+	
     private void partialRefresh(Runnable callback) {
         ProgressManager.getInstance().runNonCancelableAsync(() -> {
             if (!treeView.getAllNodes().isEmpty()) {
