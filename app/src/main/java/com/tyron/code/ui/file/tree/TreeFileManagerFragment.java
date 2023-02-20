@@ -13,6 +13,8 @@ import android.widget.PopupWindow;
 import androidx.appcompat.widget.PopupMenu;
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
+import com.tyron.builder.project.api.JavaModule;
+import com.tyron.builder.project.api.Module;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -60,6 +62,7 @@ import androidx.preference.PreferenceManager;
 import java.util.List;
 import java.util.ArrayList;
 import android.widget.Toast;
+import java.util.Arrays;
 
 public class TreeFileManagerFragment extends Fragment {
 
@@ -191,18 +194,35 @@ public class TreeFileManagerFragment extends Fragment {
 	private void showProjectInfo() {
 		ProjectManager manager = ProjectManager.getInstance();
         Project project = manager.getCurrentProject();
-		String root = project.getMainModule().getRootFile().getName();
+		Module module = project.getMainModule();
+		JavaModule javaModule = (JavaModule) module;	
+		
+		String root = javaModule.getRootFile().getName();
 		
 		LayoutInflater inflater = (LayoutInflater) requireContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
 		View v = inflater.inflate( R.layout.dialog_project_information, null );
 		TextView projectPath = v.findViewById(R.id.projectPath); 
 		TextView libraryProjects = v.findViewById(R.id.libraryProjects); 
+		TextView projectLibraries = v.findViewById(R.id.projectLibraries); 
 		
-		File prPath = new File(project.getRootFile(), root);
+		File prPath = new File(javaModule.getRootFile(), root);
 		String pr = root.substring(0,1).toUpperCase() + root.substring(1) + " " + prPath.getAbsolutePath();
 		String libraries = "";
 		projectPath.setText(pr);
-		libraryProjects.setText(libraries);
+		libraryProjects.setText(libraries);	
+		
+		File[] fileLibraries = getProjectLibraries(javaModule.getLibraryDirectory());
+		
+		if (fileLibraries != null && fileLibraries.length > 0) {
+			StringBuilder libraryTextBuilder = new StringBuilder("Project libraries:\n");
+			for (File fileLibrary : fileLibraries) {
+				libraryTextBuilder.append(fileLibrary.getName()).append("\n");
+			}
+			String libraryText = libraryTextBuilder.toString().trim();
+			projectLibraries.setText(libraryText);
+		} else {
+			projectLibraries.setText("Project libraries: <none>");
+		}
 		
 		new MaterialAlertDialogBuilder(requireContext()).setTitle("Project " + "'" + root + "'")
 		.setView(v)
@@ -241,6 +261,12 @@ public class TreeFileManagerFragment extends Fragment {
 			}
 		})
 		.show();
+	}
+	
+	private File[] getProjectLibraries(File dir) {
+		File[] fileLibraries = dir.listFiles(c ->
+			c.getName().endsWith(".aar") || c.getName().endsWith(".jar"));
+		return fileLibraries;
 	}
 	
     private void partialRefresh(Runnable callback) {
