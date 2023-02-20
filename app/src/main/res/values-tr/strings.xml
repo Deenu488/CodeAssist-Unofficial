@@ -146,9 +146,6 @@
     <string name="dialog_confirm_delete">%1$s\'ı Silmek İstediğinize Emin Misiniz?</string>
     <string name="dialog_delete">Sil</string>
     <string name="menu_preview_layout">Tasarımı Ön İzle</string>
-    <string name="action_menu_build_release">Yayın APK\'sı Derle</string>
-    <string name="action_menu_build_debug">Debug APK\'sı Derle</string>
-    <string name="action_menu_build_aab">AAB Derle</string>
 
     <string name="project_manager_alpha_notice_title">Alpha Notu</string>
     <string name="project_manager_alpha_notice">CodeAssit hala Alpha sürümde,

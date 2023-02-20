@@ -169,9 +169,6 @@
     <string name="dialog_confirm_delete">您确定要删除吗?</string>
     <string name="dialog_delete">删除</string>
     <string name="menu_preview_layout">布局预览</string>
-    <string name="action_menu_build_release">构建发布版本APK</string>
-    <string name="action_menu_build_debug">构建测试版本APK</string>
-    <string name="action_menu_build_aab">构建 AAB</string>
 
     <string name="project_manager_alpha_notice_title">Alpha 版本公告</string>
     <string name="project_manager_alpha_notice">CodeAssist仍处于alpha版本，

@@ -148,10 +148,6 @@
     <string name="dialog_delete">Löschen</string>
     <string name="menu_preview_layout">Layout-Vorschau</string>
 
-    <string name="action_menu_build_release">Release-APK erstellen</string>
-    <string name="action_menu_build_debug">Debug-APK erstellen</string>
-    <string name="action_menu_build_aab">AAB erstellen</string>
-
     <string name="project_manager_alpha_notice_title">Alpha-Anmerkung</string>
     <string name="project_manager_alpha_notice">CodeAssist ist noch in der Alpha-Phase,
         das heißt du könntest Abstürze, Fehler und unvollständige Features bemerken.\nDu

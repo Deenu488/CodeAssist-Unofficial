@@ -5,9 +5,9 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
 	
-	lint {
+	/*lint {
         baseline = file("lint-baseline.xml")
-    }
+    }*/
 	
     defaultConfig {
         applicationId rootProject.ext.applicationId

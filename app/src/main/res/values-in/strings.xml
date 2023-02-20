@@ -146,9 +146,6 @@
     <string name="dialog_confirm_delete">Apakah anda yakin ingin menghapus %1$s?</string>
     <string name="dialog_delete">Hapus</string>
     <string name="menu_preview_layout">Pratinjau layout</string>
-    <string name="action_menu_build_release">Bangun APK rilis</string>
-    <string name="action_menu_build_debug">Bangun APK debug</string>
-    <string name="action_menu_build_aab">Bangun AAB</string>
 
     <string name="project_manager_alpha_notice_title">Pemberitahuan alpha</string>
     <string name="project_manager_alpha_notice">CodeAssist sedang dalam versi alpha,

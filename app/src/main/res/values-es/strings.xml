@@ -166,9 +166,6 @@
     <string name="dialog_confirm_delete">¿Estas seguro que quieres borrar %1$s?</string>
     <string name="dialog_delete">Borrar</string>
     <string name="menu_preview_layout">vista previa de diseño</string>
-    <string name="action_menu_build_release">Construir APK para actualización</string>
-    <string name="action_menu_build_debug">Construir APK de depuración</string>
-    <string name="action_menu_build_aab">Construir AAB</string>
 
     <string name="project_manager_alpha_notice_title">Aviso alfa</string>
     <string name="project_manager_alpha_notice">CodeAssist todavía está en alpha,
