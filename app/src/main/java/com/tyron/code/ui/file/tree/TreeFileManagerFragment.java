@@ -54,6 +54,7 @@ import java.util.concurrent.Executors;
 import java.lang.reflect.Field;
 import com.tyron.builder.project.Project;
 import android.content.Context;
+import android.widget.TextView;
 
 public class TreeFileManagerFragment extends Fragment {
 
@@ -189,6 +190,14 @@ public class TreeFileManagerFragment extends Fragment {
 		
 		LayoutInflater inflater = (LayoutInflater) requireContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
 		View v = inflater.inflate( R.layout.dialog_project_information, null );
+		TextView projectPath = v.findViewById(R.id.projectPath); 
+		TextView libraryProjects = v.findViewById(R.id.libraryProjects); 
+		
+		File prPath = new File(project.getRootFile(), root);
+		String pr = root.substring(0,1).toUpperCase() + root.substring(1) + " " + prPath.getAbsolutePath();
+		String libraries = "";
+		projectPath.setText(pr);
+		libraryProjects.setText(libraries);
 		
 		new MaterialAlertDialogBuilder(requireContext()).setTitle("Project " + "'" + root + "'")
 			.setPositiveButton(android.R.string.ok, null)
