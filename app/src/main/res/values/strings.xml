@@ -25,6 +25,8 @@
     <string name="add_new_library">Add new libray</string>
 	<string name="new_library">New libray</string>
 	<string name="project_properties">Project properties</string>
+	<string name="variants">Variants</string>
+	<string name="build_variants">Build variants</string>
 	
 	<!-- home menu -->	
 		

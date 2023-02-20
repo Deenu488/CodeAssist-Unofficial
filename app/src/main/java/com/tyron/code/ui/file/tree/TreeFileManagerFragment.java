@@ -200,11 +200,31 @@ public class TreeFileManagerFragment extends Fragment {
 		libraryProjects.setText(libraries);
 		
 		new MaterialAlertDialogBuilder(requireContext()).setTitle("Project " + "'" + root + "'")
-			.setPositiveButton(android.R.string.ok, null)
-			.setView(v)
+		.setView(v)
+		.setPositiveButton(android.R.string.ok, null)
+		.setNeutralButton(R.string.variants, (d, w) -> {
+			showBuildVariants();
+			})	
 			.show();
 	}
 
+	private void showBuildVariants() {
+		String[] option = {"Release", "Debug", "Aab"};
+		new MaterialAlertDialogBuilder(requireContext()).setTitle(R.string.build_variants)	
+		    .setSingleChoiceItems(option, -1, (dia,w) -> {			
+			switch (w) {
+			case 0:
+			break;
+			case 1:
+			break;
+			case 2:
+			break;		
+			}
+			})
+			.setPositiveButton(android.R.string.ok, (d, wh) -> {		
+			})	
+			.show();
+	}
 
     private void partialRefresh(Runnable callback) {
         ProgressManager.getInstance().runNonCancelableAsync(() -> {
