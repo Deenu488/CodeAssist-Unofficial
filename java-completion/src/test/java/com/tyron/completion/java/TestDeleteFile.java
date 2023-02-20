@@ -43,7 +43,7 @@ public class TestDeleteFile {
                 "classpath/core-lambda-stubs" + ".jar"));
 
         mRoot = new File(resolveBasePath(), "EmptyProject");
-        mProject = new Project(mRoot);
+        mProject = new Project(mRoot, "app");
         mFileManager = new MockFileManager(mRoot);
         mModule = new MockAndroidModule(new File(mRoot, "app"), mFileManager);
 
