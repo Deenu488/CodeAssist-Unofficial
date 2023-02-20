@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:nestedScrollingEnabled="true">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center|center_vertical"
+		android:orientation="vertical">
+
+		<TextView
+			android:id="@+id/run_actions"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="10dp"
+			android:text="@string/project_status"
+			android:textAppearance="@style/TextAppearance.Material3.ActionBar.Title"/>
+
+		<include
+			layout="@layout/layout_project_not_initialized"/>
+
+	</LinearLayout>
+
+</RelativeLayout>
+

@@ -224,7 +224,7 @@ public class TreeFileManagerFragment extends Fragment {
 		final String[] options = variants.toArray(new String[0]);
 
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
-		int defaultSelection = preferences.getInt(LAST_SELECTED_INDEX_KEY, 0);
+		int defaultSelection = preferences.getInt(LAST_SELECTED_INDEX_KEY, 1);
 		lastSelectedIndex = defaultSelection;
 
 		new MaterialAlertDialogBuilder(requireContext())
@@ -236,7 +236,7 @@ public class TreeFileManagerFragment extends Fragment {
 		.setPositiveButton(android.R.string.ok, (dialog, which) -> {
 			String selectedVariant = options[lastSelectedIndex];
 			if (defaultSelection != lastSelectedIndex) {
-				String message = getString(R.string.switched_to_variants) + " " + selectedVariant;
+				String message = getString(R.string.switched_to_variant) + " " + selectedVariant;
 				Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
 			}
 		})

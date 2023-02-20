@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import com.deenu143.gradle.utils.GradleUtils;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.card.MaterialCardView;
 import java.io.File;
 import java.util.List;
 import com.tyron.code.ui.main.MainViewModel;
@@ -47,6 +46,8 @@ import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.FileManager;
 import com.tyron.builder.project.api.Module;
 import java.nio.charset.StandardCharsets;
+import android.content.SharedPreferences;
+import androidx.preference.PreferenceManager;
 
 public class CompileActionGroup extends ActionGroup {
 
@@ -133,48 +134,37 @@ public class CompileActionGroup extends ActionGroup {
 		});
 
 	    BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context);
-		bottomSheetDialog.setContentView(R.layout.layout_dialog_run_actions);
-
-		LinearLayout appActions = bottomSheetDialog.findViewById(R.id.android_app_actions);
+		bottomSheetDialog.setContentView(R.layout.layout_dialog_project_status);
 		ConstraintLayout projectStatus = bottomSheetDialog.findViewById(R.id.project_status);
 
-		MaterialCardView buildRelease = bottomSheetDialog.findViewById(R.id.buildRelease);
-		MaterialCardView buildDebug = bottomSheetDialog.findViewById(R.id.buildDebug);
-		MaterialCardView buildBundle = bottomSheetDialog.findViewById(R.id.buildBundle);
-
 		File gradleFile = project.getMainModule().getGradleFile();
+		
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+		int lastSelectedIndex = preferences.getInt("last_selected_index", 1);
+		
 		try {
 			List<String> plugins = GradleUtils.parsePlugins(gradleFile);
-			plugins.forEach(v -> {
-				if (plugins.contains("com.android.application")) {
-					appActions.setVisibility(View.VISIBLE);			
-					projectStatus.setVisibility(View.GONE);
+			if (!plugins.contains("com.android.application")) {
+				// Show the bottom sheet dialog only if the list of plugins doesn't contain "com.android.application"
+				projectStatus.setVisibility(View.VISIBLE);
+				bottomSheetDialog.show();
+			} else {
+				switch (lastSelectedIndex) {
+					case 0:
+						callback.compile(BuildType.RELEASE);
+						break;
+					case 1:
+						callback.compile(BuildType.DEBUG);
+						break;
+					case 2:
+						callback.compile(BuildType.AAB);
+						break;
 				}
-				if (plugins.contains("com.android.application") || plugins.contains("com.android.library")
-					|| plugins.contains("java-library")||plugins.contains("java")|| plugins.contains("groovy")) {
-				} else {
-					projectStatus.setVisibility(View.VISIBLE);
-				}
-			});
-
+			}
 		} catch (Exception e) {
 			projectStatus.setVisibility(View.VISIBLE);
-		}
-
-		bottomSheetDialog.show();
-
-		buildRelease.setOnClickListener(v -> {
-			callback.compile(BuildType.RELEASE);
-			bottomSheetDialog.dismiss();
-		});
-		buildDebug.setOnClickListener(v -> {	
-			callback.compile(BuildType.DEBUG);
-			bottomSheetDialog.dismiss();
-		});
-		buildBundle.setOnClickListener(v -> {
-			callback.compile(BuildType.AAB);
-			bottomSheetDialog.dismiss();
-		});	
+			bottomSheetDialog.show();
+		}	
     }	
 
     @Override

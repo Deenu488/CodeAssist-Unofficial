@@ -7,21 +7,7 @@
         android:icon="@drawable/round_play_arrow_24"
         android:title="@string/menu_run"
         app:showAsAction="always">
-
-        <menu>
-            <item
-                android:id="@+id/action_build_release"
-                android:title="@string/action_menu_build_release" />
-
-            <item
-                android:id="@+id/action_build_debug"
-                android:title="@string/action_menu_build_debug" />
-
-            <item
-                android:id="@+id/action_build_aab"
-                android:title="@string/action_menu_build_aab" />
-        </menu>
-    </item>
+</item>
 
     <item
         android:id="@+id/item_project"
