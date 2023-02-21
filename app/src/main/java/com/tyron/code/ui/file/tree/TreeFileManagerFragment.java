@@ -2,11 +2,16 @@ package com.tyron.code.ui.file.tree;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -22,6 +27,7 @@ import androidx.preference.PreferenceManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputLayout;
 import com.tyron.actions.ActionManager;
 import com.tyron.actions.ActionPlaces;
 import com.tyron.actions.CommonDataKeys;
@@ -42,6 +48,7 @@ import com.tyron.code.ui.file.tree.model.TreeFile;
 import com.tyron.code.ui.main.MainViewModel;
 import com.tyron.code.ui.project.ProjectManager;
 import com.tyron.code.util.UiUtilsKt;
+import com.tyron.common.util.SingleTextWatcher;
 import com.tyron.completion.progress.ProgressManager;
 import com.tyron.ui.treeview.TreeNode;
 import com.tyron.ui.treeview.TreeView;
@@ -202,16 +209,68 @@ public class TreeFileManagerFragment extends Fragment {
     LayoutInflater inflater = LayoutInflater.from(requireContext());
     View layout = inflater.inflate(R.layout.add_new_library_dialog, null);
 
-    MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(requireContext());
-    dialogBuilder.setTitle(R.string.new_library);
-    dialogBuilder.setPositiveButton(
-        R.string.create,
-        (dialog, which) -> {
-          // Handle positive button click
+    AlertDialog dialog =
+        new MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.new_library)
+            .setPositiveButton(R.string.create, null)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setView(layout)
+            .create();
+    dialog.setOnShowListener(
+        d -> {
+          TextInputLayout nameLayout = layout.findViewById(R.id.name);
+          TextInputLayout packageNameLayout = layout.findViewById(R.id.packageName);
+
+          EditText nameEditText = nameLayout.getEditText();
+          EditText packageNameEditText = packageNameLayout.getEditText();
+          final Button button = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+          
+          SingleTextWatcher textWatcher =
+              new SingleTextWatcher() {
+                @Override
+                public void afterTextChanged(Editable editable) {
+                  String name = nameEditText.getText().toString();
+                  String packageName = packageNameEditText.getText().toString();
+
+                  if (TextUtils.isEmpty(name) || TextUtils.isEmpty(packageName)) {
+                    button.setEnabled(false);
+                  } else {
+                    if (packageName.endsWith(".") || packageName.contains(" ")) {
+                      button.setEnabled(false);
+                    } else {
+                      button.setEnabled(true);
+                    }
+                  }
+                }
+              };
+
+          SingleTextWatcher textWatcher2 =
+              new SingleTextWatcher() {
+                @Override
+                public void afterTextChanged(Editable editable) {
+                  String name = nameEditText.getText().toString();
+                  String packageName = packageNameEditText.getText().toString();
+                  String package_name = editable.toString();
+
+                  if (TextUtils.isEmpty(name)
+                      || TextUtils.isEmpty(package_name)
+                      || packageName.endsWith(".")
+                      || package_name.contains(" ")) {
+                    button.setEnabled(false);
+                  } else {
+                    button.setEnabled(true);
+                  }
+                }
+              };
+
+          nameEditText.addTextChangedListener(textWatcher);
+          packageNameEditText.addTextChangedListener(textWatcher2);
+
+          button.setOnClickListener(
+              v -> {
+                dialog.dismiss();
+              });
         });
-    dialogBuilder.setNegativeButton(android.R.string.cancel, null);
-    dialogBuilder.setView(layout);
-    AlertDialog dialog = dialogBuilder.create();
     dialog.show();
   }
 
