@@ -1,304 +1,317 @@
 package com.tyron.code.ui.drawable.manager;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.View;
+import android.text.Editable;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentActivity;
-import com.tyron.code.R;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.MenuProvider;
-import androidx.core.view.ViewCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.transition.TransitionManager;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.transition.MaterialFade;
-import com.google.android.material.transition.MaterialFadeThrough;
-import com.google.android.material.transition.MaterialSharedAxis;
-import com.tyron.completion.progress.ProgressManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.tyron.common.util.AndroidUtilities;
 import com.google.android.material.textfield.TextInputLayout;
-import org.apache.commons.io.FileUtils;
-import com.tyron.common.SharedPreferenceKeys;
-import com.tyron.code.util.UiUtilsKt;
-import androidx.recyclerview.widget.RecyclerView;
-import android.content.SharedPreferences;
+import com.google.android.material.transition.MaterialFade;
+import com.tyron.code.R;
+import com.tyron.code.ui.drawable.Drawables;
+import com.tyron.code.ui.drawable.adapter.DrawableManagerAdapter;
+import com.tyron.code.ui.project.ProjectManager;
+import com.tyron.common.util.AndroidUtilities;
+import com.tyron.completion.progress.ProgressManager;
 import java.io.File;
-import com.tyron.code.ApplicationLoader;
-import androidx.recyclerview.widget.GridLayoutManager;
-import java.util.concurrent.Executors;
-import java.util.List;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import com.tyron.code.ui.drawable.adapter.DrawableManagerAdapter;
-import com.tyron.code.ui.drawable.Drawables;
-import com.tyron.code.ui.project.ProjectManager;
-import android.text.Editable;
-import java.io.IOException;
-import android.widget.Toast;
-import android.content.DialogInterface;
-import android.content.Context;
-import android.os.Build;
-import android.os.Environment;
+import java.util.List;
+import java.util.concurrent.Executors;
+import org.apache.commons.io.FileUtils;
 
 public class DrawableManagerFragment extends Fragment {
-    
-    public static final String TAG = DrawableManagerFragment.class.getSimpleName();
- 
-    private RecyclerView mRecyclerView;
-    private DrawableManagerAdapter mAdapter;
-    
-    public static DrawableManagerFragment newInstance( ) { 
-    DrawableManagerFragment fragment = new DrawableManagerFragment();   
+
+  public static final String TAG = DrawableManagerFragment.class.getSimpleName();
+
+  private RecyclerView mRecyclerView;
+  private DrawableManagerAdapter mAdapter;
+
+  public static DrawableManagerFragment newInstance() {
+    DrawableManagerFragment fragment = new DrawableManagerFragment();
     return fragment;
-    }
+  }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+  @Override
+  public void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+  }
 
-    }
+  @Nullable
+  @Override
+  public View onCreateView(
+      @NonNull LayoutInflater inflater,
+      @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
+    View view = inflater.inflate(R.layout.drawable_manager_fragment, container, false);
+    view.setClickable(true);
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.drawable_manager_fragment, container, false);
-        view.setClickable(true);
+    Toolbar toolbar = view.findViewById(R.id.toolbar);
+    toolbar.setNavigationOnClickListener(v -> getParentFragmentManager().popBackStack());
 
-        Toolbar toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setNavigationOnClickListener(v ->  getParentFragmentManager().popBackStack());
+    return view;
+  }
 
-        return view;
-    }
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    Toolbar toolbar = view.findViewById(R.id.toolbar);
+    toolbar.setOnMenuItemClickListener(menu -> getParentFragmentManager().popBackStackImmediate());
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        Toolbar toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setOnMenuItemClickListener(menu -> getParentFragmentManager().popBackStackImmediate());
-      
-        mAdapter = new DrawableManagerAdapter();
-        mAdapter.setOnDrawableSelectedListener(this::showDialog);
-        mRecyclerView = view.findViewById(R.id.recyclerView);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 4));
-        mRecyclerView.setAdapter(mAdapter);
-        loadDrwables();
-        }
-        
-    private void loadDrwables() {
-        toggleLoading(true);
+    mAdapter = new DrawableManagerAdapter();
+    mAdapter.setOnDrawableSelectedListener(this::showDialog);
+    mRecyclerView = view.findViewById(R.id.recyclerView);
+    mRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), 4));
+    mRecyclerView.setAdapter(mAdapter);
+    loadDrwables();
+  }
 
-        Executors.newSingleThreadExecutor().execute(() -> {
-            String path =  ProjectManager.getInstance().getCurrentProject().getRootFile().getAbsolutePath() + "/app/src/main/res/drawable/";
-            
+  private void loadDrwables() {
+    toggleLoading(true);
 
-            File drawableDir = new File(path);
-            if (drawableDir.exists()) {
+    Executors.newSingleThreadExecutor()
+        .execute(
+            () -> {
+              String path =
+                  ProjectManager.getInstance().getCurrentProject().getRootFile().getAbsolutePath()
+                      + "/app/src/main/res/drawable/";
 
-            } else {
+              File drawableDir = new File(path);
+              if (drawableDir.exists()) {
+
+              } else {
                 drawableDir.mkdirs();
-            }
-            File[] files = drawableDir.listFiles(File::isFile);
+              }
+              File[] files = drawableDir.listFiles(File::isFile);
 
-            List<Drawables> Drawables = new ArrayList<>();
-            if (files != null) {
+              List<Drawables> Drawables = new ArrayList<>();
+              if (files != null) {
                 Arrays.sort(files, Comparator.comparingLong(File::lastModified));
                 for (File file : files) {
 
-                    if (file.exists()) {
-                        Drawables drawable = new Drawables(new File(file.getAbsolutePath()
-                                                        .replaceAll("%20", " ")));
-                        if (drawable.getRootFile().getName().endsWith(".png")) {
-                            Drawables.add(drawable);
-                        } 
-                        if (drawable.getRootFile().getName().endsWith(".webp")) {
-                            Drawables.add(drawable);
-                        }  
-                        if (drawable.getRootFile().getName().endsWith(".xml")) {
-                            Drawables.add(drawable);
-                        }  
-                        if (drawable.getRootFile().getName().endsWith(".jpg")) {
-                            Drawables.add(drawable);
-                        }  
+                  if (file.exists()) {
+                    Drawables drawable =
+                        new Drawables(new File(file.getAbsolutePath().replaceAll("%20", " ")));
+                    if (drawable.getRootFile().getName().endsWith(".png")) {
+                      Drawables.add(drawable);
                     }
+                    if (drawable.getRootFile().getName().endsWith(".webp")) {
+                      Drawables.add(drawable);
+                    }
+                    if (drawable.getRootFile().getName().endsWith(".xml")) {
+                      Drawables.add(drawable);
+                    }
+                    if (drawable.getRootFile().getName().endsWith(".jpg")) {
+                      Drawables.add(drawable);
+                    }
+                  }
                 }
-            }
+              }
 
+              if (getActivity() != null) {
+                requireActivity()
+                    .runOnUiThread(
+                        () -> {
+                          toggleLoading(false);
+                          ProgressManager.getInstance()
+                              .runLater(
+                                  () -> {
+                                    mAdapter.submitList(Drawables);
+                                    toggleNullProject(Drawables);
+                                  },
+                                  300);
+                        });
+              }
+            });
+  }
 
-            if (getActivity() != null) {
-                requireActivity().runOnUiThread(() -> {
-                    toggleLoading(false);
-                    ProgressManager.getInstance().runLater(() -> {
-                        mAdapter.submitList(Drawables);
-                        toggleNullProject(Drawables);
-                    }, 300);
-                });
-            }
-        });
-    }
-
-    private void toggleNullProject(List<Drawables> drawables) {
-        ProgressManager.getInstance().runLater(() -> {
-            if (getActivity() == null || isDetached()) {
+  private void toggleNullProject(List<Drawables> drawables) {
+    ProgressManager.getInstance()
+        .runLater(
+            () -> {
+              if (getActivity() == null || isDetached()) {
                 return;
-            }
-            View view = getView();
-            if (view == null) {
+              }
+              View view = getView();
+              if (view == null) {
                 return;
-            }
+              }
 
-            View recycler = view.findViewById(R.id.recyclerView);
-            View empty = view.findViewById(R.id.empty_drawables);
+              View recycler = view.findViewById(R.id.recyclerView);
+              View empty = view.findViewById(R.id.empty_drawables);
 
-            TransitionManager.beginDelayedTransition(
-                (ViewGroup) recycler.getParent(), new MaterialFade());
-            if (drawables.size() == 0) {
+              TransitionManager.beginDelayedTransition(
+                  (ViewGroup) recycler.getParent(), new MaterialFade());
+              if (drawables.size() == 0) {
                 recycler.setVisibility(View.GONE);
                 empty.setVisibility(View.VISIBLE);
-            } else {
+              } else {
                 recycler.setVisibility(View.VISIBLE);
                 empty.setVisibility(View.GONE);
-            }
-        }, 300);
-    }
+              }
+            },
+            300);
+  }
 
-    private void toggleLoading(boolean show) {
-        ProgressManager.getInstance().runLater(() -> {
-            if (getActivity() == null || isDetached()) {
+  private void toggleLoading(boolean show) {
+    ProgressManager.getInstance()
+        .runLater(
+            () -> {
+              if (getActivity() == null || isDetached()) {
                 return;
-            }
-            View view = getView();
-            if (view == null) {
+              }
+              View view = getView();
+              if (view == null) {
                 return;
-            }
-            View recycler = view.findViewById(R.id.recyclerView);
-            View empty = view.findViewById(R.id.empty_container);
-            View empty_drawables = view.findViewById(R.id.empty_drawables);
-            empty_drawables.setVisibility(View.GONE);
+              }
+              View recycler = view.findViewById(R.id.recyclerView);
+              View empty = view.findViewById(R.id.empty_container);
+              View empty_drawables = view.findViewById(R.id.empty_drawables);
+              empty_drawables.setVisibility(View.GONE);
 
-            TransitionManager.beginDelayedTransition((ViewGroup) recycler.getParent(),
-                                                     new MaterialFade());
-            if (show) {
+              TransitionManager.beginDelayedTransition(
+                  (ViewGroup) recycler.getParent(), new MaterialFade());
+              if (show) {
                 recycler.setVisibility(View.GONE);
                 empty.setVisibility(View.VISIBLE);
-            } else {
+              } else {
                 recycler.setVisibility(View.VISIBLE);
                 empty.setVisibility(View.GONE);
-            }
-        }, 300);
-    }
-    
-    private boolean showDialog(final Drawables drawable) {
-        String[] option = {"Rename", "Delete"};        
-        new MaterialAlertDialogBuilder(requireContext())
-            .setItems(option, new DialogInterface.OnClickListener() {           
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch (which) {
-                        case 0:
-                            LayoutInflater inflater = (LayoutInflater) requireContext().getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-                            View v = inflater.inflate( R.layout.base_textinput_layout, null );
-                            TextInputLayout layout = v.findViewById(R.id.textinput_layout);
-                            layout.setHint(R.string.new_name);
-                            final Editable rename = layout.getEditText().getText();
+              }
+            },
+            300);
+  }
 
-                            new MaterialAlertDialogBuilder(requireContext())
-                                .setTitle(R.string.rename)
-                                .setView( v)
-                                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+  private boolean showDialog(final Drawables drawable) {
+    String[] option = {"Rename", "Delete"};
+    new MaterialAlertDialogBuilder(requireContext())
+        .setItems(
+            option,
+            new DialogInterface.OnClickListener() {
+              @Override
+              public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                  case 0:
+                    LayoutInflater inflater =
+                        (LayoutInflater)
+                            requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    View v = inflater.inflate(R.layout.base_textinput_layout, null);
+                    TextInputLayout layout = v.findViewById(R.id.textinput_layout);
+                    layout.setHint(R.string.new_name);
+                    final Editable rename = layout.getEditText().getText();
 
-                                    @Override
-                                    public void onClick(DialogInterface dia, int which) {
-                                        try {
-                                         
-                                            String path =  ProjectManager.getInstance().getCurrentProject().getRootFile().getAbsolutePath() + "/app/src/main/res/drawable";
-                                            
-                                            File oldDir = drawable.getRootFile();
-                                            File newDir = new File(path + "/" + rename);
-                                            if (newDir.exists()) {
-                                                throw new IllegalArgumentException();
-                                            }else{
-                                                oldDir.renameTo(newDir);
-                                            }
+                    new MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(R.string.rename)
+                        .setView(v)
+                        .setPositiveButton(
+                            android.R.string.ok,
+                            new DialogInterface.OnClickListener() {
 
-                                            if (getActivity() != null) {
-                                                requireActivity().runOnUiThread(() -> {
-                                                    AndroidUtilities.showSimpleAlert(
-                                                        requireContext(),
-                                                        getString(R.string.success),
-                                                        getString(R.string.rename_success));
-                                                    loadDrwables();
-                                                });
-                                            }
-                                        } catch (Exception e) {
-                                            if (getActivity() != null) {
-                                                requireActivity().runOnUiThread(() ->
-                                                AndroidUtilities.showSimpleAlert(requireContext(),
-                                                                                 getString(R.string.error),
-                                                                                 e.getMessage()));
-                                            }
-                                        }
-                                    }
-                                })
+                              @Override
+                              public void onClick(DialogInterface dia, int which) {
+                                try {
 
-                                .setNegativeButton(android.R.string.cancel, null)
-                                .show();
+                                  String path =
+                                      ProjectManager.getInstance()
+                                              .getCurrentProject()
+                                              .getRootFile()
+                                              .getAbsolutePath()
+                                          + "/app/src/main/res/drawable";
 
+                                  File oldDir = drawable.getRootFile();
+                                  File newDir = new File(path + "/" + rename);
+                                  if (newDir.exists()) {
+                                    throw new IllegalArgumentException();
+                                  } else {
+                                    oldDir.renameTo(newDir);
+                                  }
 
-                            break;
+                                  if (getActivity() != null) {
+                                    requireActivity()
+                                        .runOnUiThread(
+                                            () -> {
+                                              AndroidUtilities.showSimpleAlert(
+                                                  requireContext(),
+                                                  getString(R.string.success),
+                                                  getString(R.string.rename_success));
+                                              loadDrwables();
+                                            });
+                                  }
+                                } catch (Exception e) {
+                                  if (getActivity() != null) {
+                                    requireActivity()
+                                        .runOnUiThread(
+                                            () ->
+                                                AndroidUtilities.showSimpleAlert(
+                                                    requireContext(),
+                                                    getString(R.string.error),
+                                                    e.getMessage()));
+                                  }
+                                }
+                              }
+                            })
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show();
 
-                        case 1:
-                            String message = getString(R.string.dialog_confirm_delete,
-                                                       drawable.getRootFile().getName());
-                            new MaterialAlertDialogBuilder(requireContext())
-                                .setTitle(R.string.dialog_delete)
-                                .setMessage(message)
-                                .setPositiveButton(android.R.string.yes,
-                                                   (d, w) -> deleteDrawable(drawable))
-                            .setNegativeButton(android.R.string.no, null)
-                                .show();
-                            break;  
+                    break;
 
-                         
-                    }
+                  case 1:
+                    String message =
+                        getString(R.string.dialog_confirm_delete, drawable.getRootFile().getName());
+                    new MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(R.string.dialog_delete)
+                        .setMessage(message)
+                        .setPositiveButton(android.R.string.yes, (d, w) -> deleteDrawable(drawable))
+                        .setNegativeButton(android.R.string.no, null)
+                        .show();
+                    break;
                 }
+              }
             })
-            .show();        
+        .show();
 
-        return true;    
+    return true;
+  }
 
-    }
-    
-    private void deleteDrawable(Drawables drawable) {
+  private void deleteDrawable(Drawables drawable) {
 
-        Executors.newSingleThreadExecutor().execute(() -> {
-            try {
+    Executors.newSingleThreadExecutor()
+        .execute(
+            () -> {
+              try {
                 FileUtils.forceDelete(drawable.getRootFile());
                 if (getActivity() != null) {
-                    requireActivity().runOnUiThread(() -> {
-                        Toast toast = Toast.makeText(requireContext(), R.string.delete_success, Toast.LENGTH_LONG); 
-                        toast.show();
-                        loadDrwables();
-                    });
+                  requireActivity()
+                      .runOnUiThread(
+                          () -> {
+                            Toast toast =
+                                Toast.makeText(
+                                    requireContext(), R.string.delete_success, Toast.LENGTH_LONG);
+                            toast.show();
+                            loadDrwables();
+                          });
                 }
-            } catch (IOException e) {
+              } catch (IOException e) {
                 if (getActivity() != null) {
-                    requireActivity().runOnUiThread(() ->
-                    AndroidUtilities.showSimpleAlert(requireContext(),
-                                                     getString(R.string.error),
-                                                     e.getMessage()));
+                  requireActivity()
+                      .runOnUiThread(
+                          () ->
+                              AndroidUtilities.showSimpleAlert(
+                                  requireContext(), getString(R.string.error), e.getMessage()));
                 }
-            }
-        });
-    }
-
-    
-    }
+              }
+            });
+  }
+}

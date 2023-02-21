@@ -4,5 +4,5 @@ import com.tyron.builder.project.Project;
 
 public interface IndexCallback {
 
-    void index(Project project);
+  void index(Project project);
 }

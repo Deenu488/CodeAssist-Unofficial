@@ -8,22 +8,22 @@ import com.tyron.editor.Editor;
 
 public class TextInsertAction implements ShortcutAction {
 
-    public static final String KIND = "textInsert";
+  public static final String KIND = "textInsert";
 
-    @Override
-    public boolean isApplicable(String kind) {
-        return KIND.equals(kind);
+  @Override
+  public boolean isApplicable(String kind) {
+    return KIND.equals(kind);
+  }
+
+  @Override
+  public void apply(Editor editor, ShortcutItem item) {
+    Caret cursor = editor.getCaret();
+
+    // temporary solution
+    if (editor instanceof CodeEditorView) {
+      ((CodeEditorView) editor).commitText(item.label);
+    } else {
+      editor.insert(cursor.getStartLine(), cursor.getEndColumn(), item.label);
     }
-
-    @Override
-    public void apply(Editor editor, ShortcutItem item) {
-        Caret cursor = editor.getCaret();
-
-        // temporary solution
-        if (editor instanceof CodeEditorView) {
-            ((CodeEditorView) editor).commitText(item.label);
-        } else {
-            editor.insert(cursor.getStartLine(), cursor.getEndColumn(), item.label);
-        }
-    }
+  }
 }

@@ -6,13 +6,13 @@ import androidx.lifecycle.ViewModel;
 
 public class EditorViewModel extends ViewModel {
 
-    private final MutableLiveData<Boolean> mAnalyzeState = new MutableLiveData<>(false);
+  private final MutableLiveData<Boolean> mAnalyzeState = new MutableLiveData<>(false);
 
-    public void setAnalyzeState(boolean analyzing) {
-        mAnalyzeState.setValue(analyzing);
-    }
+  public void setAnalyzeState(boolean analyzing) {
+    mAnalyzeState.setValue(analyzing);
+  }
 
-    public LiveData<Boolean> getAnalyzeState() {
-        return mAnalyzeState;
-    }
+  public LiveData<Boolean> getAnalyzeState() {
+    return mAnalyzeState;
+  }
 }

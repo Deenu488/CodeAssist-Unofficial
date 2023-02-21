@@ -6,27 +6,27 @@ import com.tyron.lint.api.Severity;
 
 public class LintIssue {
 
-    private final Issue mIssue;
+  private final Issue mIssue;
 
-    private final Severity mSeverity;
+  private final Severity mSeverity;
 
-    private final Location mLocation;
+  private final Location mLocation;
 
-    public LintIssue(Issue mIssue, Severity mSeverity, Location mLocation) {
-        this.mIssue = mIssue;
-        this.mSeverity = mSeverity;
-        this.mLocation = mLocation;
-    }
+  public LintIssue(Issue mIssue, Severity mSeverity, Location mLocation) {
+    this.mIssue = mIssue;
+    this.mSeverity = mSeverity;
+    this.mLocation = mLocation;
+  }
 
-    public Issue getIssue() {
-        return mIssue;
-    }
+  public Issue getIssue() {
+    return mIssue;
+  }
 
-    public Severity getSeverity() {
-        return mSeverity;
-    }
+  public Severity getSeverity() {
+    return mSeverity;
+  }
 
-    public Location getLocation() {
-        return mLocation;
-    }
+  public Location getLocation() {
+    return mLocation;
+  }
 }

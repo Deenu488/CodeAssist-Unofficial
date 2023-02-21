@@ -1,13 +1,17 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.diffplug.spotless'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
 	
-	/*lint {
-        baseline = file("lint-baseline.xml")
-    }*/
+	spotless {
+		java {
+			target "**/*.java"
+			googleJavaFormat()
+			}
+		}
 	
     defaultConfig {
         applicationId rootProject.ext.applicationId
@@ -59,8 +63,10 @@ buildFeatures {
     }
 	
     packagingOptions {
+		jniLibs {
+            useLegacyPackaging = true
+        }
         resources.excludes += "license/*"
-
         exclude "plugin.properties"
         exclude "plugin.xml"
         exclude "about.html"

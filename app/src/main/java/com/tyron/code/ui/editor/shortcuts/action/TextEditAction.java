@@ -6,13 +6,11 @@ import com.tyron.editor.Editor;
 
 public class TextEditAction implements ShortcutAction {
 
-    @Override
-    public boolean isApplicable(String kind) {
-        return kind.equals("textedit");
-    }
+  @Override
+  public boolean isApplicable(String kind) {
+    return kind.equals("textedit");
+  }
 
-    @Override
-    public void apply(Editor editor, ShortcutItem item) {
-
-    }
+  @Override
+  public void apply(Editor editor, ShortcutItem item) {}
 }

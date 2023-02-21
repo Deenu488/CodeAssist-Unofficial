@@ -5,38 +5,38 @@ import org.eclipse.lemminx.dom.DOMNode;
 
 public class FakeDomElement extends DOMElement {
 
-    private DOMElement parent;
+  private DOMElement parent;
 
-    private String tagName;
+  private String tagName;
 
-    public FakeDomElement(int start, int end) {
-        super(start, end);
-    }
+  public FakeDomElement(int start, int end) {
+    super(start, end);
+  }
 
-    @Override
-    public String getTagName() {
-        return tagName;
-    }
+  @Override
+  public String getTagName() {
+    return tagName;
+  }
 
-    public void setTagName(String tagName) {
-        this.tagName = tagName;
-    }
+  public void setTagName(String tagName) {
+    this.tagName = tagName;
+  }
 
-    public DOMElement getParent() {
-        return parent;
-    }
+  public DOMElement getParent() {
+    return parent;
+  }
 
-    @Override
-    public DOMElement getParentElement() {
-        return getParent();
-    }
+  @Override
+  public DOMElement getParentElement() {
+    return getParent();
+  }
 
-    @Override
-    public DOMNode getParentNode() {
-        return getParent();
-    }
+  @Override
+  public DOMNode getParentNode() {
+    return getParent();
+  }
 
-    public void setParent(DOMElement parent) {
-        this.parent = parent;
-    }
+  public void setParent(DOMElement parent) {
+    this.parent = parent;
+  }
 }

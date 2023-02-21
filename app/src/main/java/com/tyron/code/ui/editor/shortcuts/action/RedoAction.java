@@ -6,17 +6,17 @@ import com.tyron.editor.Editor;
 
 public class RedoAction implements ShortcutAction {
 
-    public static final String KIND = "redoAction";
+  public static final String KIND = "redoAction";
 
-    @Override
-    public boolean isApplicable(String kind) {
-        return KIND.equals(kind);
-    }
+  @Override
+  public boolean isApplicable(String kind) {
+    return KIND.equals(kind);
+  }
 
-    @Override
-    public void apply(Editor editor, ShortcutItem item) {
-        if (editor.getContent().canRedo()) {
-            editor.getContent().redo();
-        }
+  @Override
+  public void apply(Editor editor, ShortcutItem item) {
+    if (editor.getContent().canRedo()) {
+      editor.getContent().redo();
     }
+  }
 }

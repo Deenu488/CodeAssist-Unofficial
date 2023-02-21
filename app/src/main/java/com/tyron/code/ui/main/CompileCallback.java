@@ -4,5 +4,5 @@ import com.tyron.builder.compiler.BuildType;
 
 public interface CompileCallback {
 
-    void compile(BuildType buildType);
+  void compile(BuildType buildType);
 }
