@@ -15,6 +15,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 import com.tyron.builder.project.api.JavaModule;
 import com.tyron.builder.project.api.Module;
+import androidx.appcompat.app.AlertDialog;
+import android.content.DialogInterface;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -185,10 +187,20 @@ public class TreeFileManagerFragment extends Fragment {
         });
     }
 
-	private void showNewLibrary() {
-		new MaterialAlertDialogBuilder(requireContext()).setTitle(R.string.new_library)
-			.setPositiveButton(android.R.string.ok, null)
-			.show();
+	private void showNewLibrary() {	
+		// Inflate the view
+		LayoutInflater inflater = LayoutInflater.from(requireContext());
+		View layout  = inflater.inflate(R.layout.add_new_library_dialog, null);
+
+		MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(requireContext());
+		dialogBuilder.setTitle(R.string.new_library);
+		dialogBuilder.setPositiveButton(R.string.create, (dialog, which) -> {
+			// Handle positive button click
+		});
+		dialogBuilder.setNegativeButton(android.R.string.cancel, null);
+		dialogBuilder.setView(layout);
+		AlertDialog dialog = dialogBuilder.create();
+		dialog.show();	
 	}
 
 	private void showProjectInfo() {
@@ -205,11 +217,10 @@ public class TreeFileManagerFragment extends Fragment {
 		TextView libraryProjects = v.findViewById(R.id.libraryProjects); 
 		TextView projectLibraries = v.findViewById(R.id.projectLibraries); 
 		
-		File prPath = new File(javaModule.getRootFile(), root);
+		File prPath = javaModule.getRootFile();
 		String pr = root.substring(0,1).toUpperCase() + root.substring(1) + " " + prPath.getAbsolutePath();
-		String libraries = "";
+		
 		projectPath.setText(pr);
-		libraryProjects.setText(libraries);	
 		
 		List<String> implementationProjects = javaModule.getImplementationProjects();
 		String implementationText = implementationProjects.isEmpty() ? "Implementation projects: <none>" :
