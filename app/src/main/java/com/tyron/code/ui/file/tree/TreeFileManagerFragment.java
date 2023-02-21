@@ -52,7 +52,12 @@ import com.tyron.common.util.SingleTextWatcher;
 import com.tyron.completion.progress.ProgressManager;
 import com.tyron.ui.treeview.TreeNode;
 import com.tyron.ui.treeview.TreeView;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -208,6 +213,10 @@ public class TreeFileManagerFragment extends Fragment {
     // Inflate the view
     LayoutInflater inflater = LayoutInflater.from(requireContext());
     View layout = inflater.inflate(R.layout.add_new_library_dialog, null);
+    ProjectManager manager = ProjectManager.getInstance();
+    Project project = manager.getCurrentProject();
+    Module module = project.getMainModule();
+    JavaModule javaModule = (JavaModule) module;
 
     AlertDialog dialog =
         new MaterialAlertDialogBuilder(requireContext())
@@ -224,7 +233,7 @@ public class TreeFileManagerFragment extends Fragment {
           EditText nameEditText = nameLayout.getEditText();
           EditText packageNameEditText = packageNameLayout.getEditText();
           final Button button = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-          
+
           SingleTextWatcher textWatcher =
               new SingleTextWatcher() {
                 @Override
@@ -268,6 +277,10 @@ public class TreeFileManagerFragment extends Fragment {
 
           button.setOnClickListener(
               v -> {
+                String name = nameEditText.getText().toString();
+                String dependencyLine = "\timplementation project(':" + name + "')\n";
+
+                addLibrary(javaModule.getGradleFile(), dependencyLine);
                 dialog.dismiss();
               });
         });
@@ -420,5 +433,37 @@ public class TreeFileManagerFragment extends Fragment {
 
   public FileViewModel getFileViewModel() {
     return mFileViewModel;
+  }
+
+  private void addLibrary(File gradleFile, String library) {
+
+    try {
+      // Read the contents of the build.gradle file
+      FileInputStream inputStream = new FileInputStream(gradleFile);
+      BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+      StringBuilder stringBuilder = new StringBuilder();
+      String line;
+      while ((line = reader.readLine()) != null) {
+        // Add the dependency line after the last line that starts with "dependencies {"
+        if (line.trim().startsWith("dependencies {")) {
+          stringBuilder.append(line).append("\n");
+          while ((line = reader.readLine()) != null) {
+            stringBuilder.append(line).append("\n");
+          }
+          stringBuilder.insert(stringBuilder.lastIndexOf("}"), library);
+          break;
+        } else {
+          stringBuilder.append(line).append("\n");
+        }
+      }
+      inputStream.close();
+
+      // Write the modified contents back to the build.gradle file
+      FileOutputStream outputStream = new FileOutputStream(gradleFile);
+      outputStream.write(stringBuilder.toString().getBytes());
+      outputStream.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 }
