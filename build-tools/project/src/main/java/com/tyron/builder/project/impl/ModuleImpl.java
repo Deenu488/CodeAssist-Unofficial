@@ -251,6 +251,8 @@ public class ModuleImpl implements Module {
 
 	public static List<String> parseImplementationProjects(String readString) throws IOException {
 		final Pattern PROJECT_PATTERN = Pattern.compile("implementation project\\(path:\\s*['\"]([^'\"]+)['\"]\\)");
+		final Pattern PROJECT_PATTERN_QUOT = Pattern.compile("implementation project\\(\\s*['\"]([^'\"]+)['\"]\\)");
+		
 		readString = readString.replaceAll("\\s*//.*", "");
 		List<String> projects = new ArrayList<>();
 		Matcher matcher = PROJECT_PATTERN.matcher(readString);
@@ -261,6 +263,15 @@ public class ModuleImpl implements Module {
 				projects.add(declaration);
 			}
 		}
+		
+		matcher = PROJECT_PATTERN_QUOT.matcher(readString);
+		while (matcher.find()) {
+			String declaration = matcher.group(1);
+			if (declaration != null) {
+				declaration = declaration.replaceAll(":", "/");
+				projects.add(declaration);
+			}
+			}
 		return projects;
 	}
 }
