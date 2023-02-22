@@ -454,6 +454,7 @@ public class TreeFileManagerFragment extends Fragment {
     View v = inflater.inflate(R.layout.dialog_project_information, null);
     TextView projectPath = v.findViewById(R.id.projectPath);
     TextView libraryProjects = v.findViewById(R.id.libraryProjects);
+    TextView includedProjects = v.findViewById(R.id.includedProjects);
     TextView projectLibraries = v.findViewById(R.id.projectLibraries);
 
     File prPath = javaModule.getRootFile();
@@ -463,6 +464,9 @@ public class TreeFileManagerFragment extends Fragment {
     projectPath.setText(pr);
 
     List<String> implementationProjects = javaModule.getImplementationProjects();
+    List<String> included = javaModule.getIncludedProjects();
+    includedProjects.setText(included.toString());
+
     String implementationText =
         implementationProjects.isEmpty()
             ? "Implementation projects: <none>"

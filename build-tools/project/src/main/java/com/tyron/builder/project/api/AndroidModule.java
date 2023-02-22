@@ -1,34 +1,30 @@
 package com.tyron.builder.project.api;
 
 import androidx.annotation.NonNull;
-
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 public interface AndroidModule extends JavaModule, KotlinModule {
 
-    /**
-     * @return The directory where android resource xml files are searched
-     */
-    File getAndroidResourcesDirectory();
+  /**
+   * @return The directory where android resource xml files are searched
+   */
+  File getAndroidResourcesDirectory();
 
-    File getNativeLibrariesDirectory();
+  File getNativeLibrariesDirectory();
 
-    File getAssetsDirectory();
+  File getAssetsDirectory();
 
-    String getPackageName();
+  String getPackageName();
 
-    File getManifestFile();
+  File getManifestFile();
 
-    int getTargetSdk();
+  int getTargetSdk();
 
-    int getMinSdk();
+  int getMinSdk();
 
-    /**
-     * Return a map of fully qualified name and the file object of an R.java class
-     */
-    Map<String, File> getResourceClasses();
+  /** Return a map of fully qualified name and the file object of an R.java class */
+  Map<String, File> getResourceClasses();
 
-    void addResourceClass(@NonNull File file);
+  void addResourceClass(@NonNull File file);
 }

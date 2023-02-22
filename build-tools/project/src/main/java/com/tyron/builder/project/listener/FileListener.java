@@ -4,5 +4,5 @@ import java.io.File;
 
 public interface FileListener {
 
-    void onSnapshotChanged(File file, CharSequence contents);
+  void onSnapshotChanged(File file, CharSequence contents);
 }

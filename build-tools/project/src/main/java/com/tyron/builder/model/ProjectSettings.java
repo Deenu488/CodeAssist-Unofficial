@@ -6,12 +6,12 @@ import java.util.Map;
 
 public class ProjectSettings extends ModuleSettings {
 
-    public ProjectSettings(File configFile) {
-        super(configFile);
-    }
+  public ProjectSettings(File configFile) {
+    super(configFile);
+  }
 
-    @Override
-    protected Map<String, Object> getDefaults() {
-        return new HashMap<>();
-    }
+  @Override
+  protected Map<String, Object> getDefaults() {
+    return new HashMap<>();
+  }
 }
