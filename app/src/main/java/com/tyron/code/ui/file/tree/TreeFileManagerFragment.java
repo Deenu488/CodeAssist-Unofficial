@@ -56,6 +56,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
@@ -310,15 +311,134 @@ public class TreeFileManagerFragment extends Fragment {
           button.setOnClickListener(
               v -> {
                 String name = nameEditText.getText().toString();
-
+                String packageName = packageNameEditText.getText().toString();
                 addLibrary(javaModule.getGradleFile(), name);
                 File root = new File(module.getRootProject(), "settings.gradle");
-
                 addToInclude(root, name);
+                createAndroidLibrary(module.getRootProject(), packageName, name);
                 dialog.dismiss();
               });
         });
     dialog.show();
+  }
+
+  private void createAndroidLibrary(File root, String packageName, String name) {
+    // Create the library directory structure
+    File libraryDir = new File(root, name);
+    File srcDir = new File(libraryDir, "src/main/java/" + packageName.replace(".", "/"));
+    File resDir = new File(libraryDir, "src/main/res");
+    File manifestFile = new File(libraryDir, "src/main/AndroidManifest.xml");
+
+    if (!libraryDir.exists()) {
+      libraryDir.mkdirs();
+    }
+
+    if (!srcDir.exists()) {
+      srcDir.mkdirs();
+    }
+
+    if (!resDir.exists()) {
+      resDir.mkdirs();
+    }
+
+    // Create the build.gradle file
+    String gradleCode =
+        "plugins {\n"
+            + "    id 'com.android.library'\n"
+            + "}\n"
+            + "\n"
+            + "android {\n"
+            + "    compileSdkVersion 33\n"
+            + "\n"
+            + "    defaultConfig {\n"
+            + "        minSdkVersion 21\n"
+            + "        targetSdkVersion 33\n"
+            + "        versionCode 1\n"
+            + "        versionName \"1.0\"\n"
+            + "    }\n"
+            + "\n"
+            + "    buildTypes {\n"
+            + "        release {\n"
+            + "            minifyEnabled false\n"
+            + "            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'\n"
+            + "        }\n"
+            + "    }\n"
+            + "\n"
+            + "    compileOptions {\n"
+            + "        sourceCompatibility JavaVersion.VERSION_1_8\n"
+            + "        targetCompatibility JavaVersion.VERSION_1_8\n"
+            + "    }\n"
+            + "}\n"
+            + "\n"
+            + "dependencies {\n"
+            + "    implementation fileTree(dir: 'libs', include: ['*.jar'])\n"
+            + "}";
+
+    File gradleFile = new File(libraryDir, "build.gradle");
+    try {
+      gradleFile.createNewFile();
+      FileWriter gradleWriter = new FileWriter(gradleFile);
+      gradleWriter.write(gradleCode);
+      gradleWriter.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    // Create the Android Manifest file
+    String manifestCode =
+        "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n"
+            + "    package=\""
+            + packageName
+            + "\"\n"
+            + "    android:versionCode=\"1\"\n"
+            + "    android:versionName=\"1.0\">\n"
+            + "\n"
+            + "</manifest>";
+
+    try {
+      manifestFile.createNewFile();
+      FileWriter manifestWriter = new FileWriter(manifestFile);
+      manifestWriter.write(manifestCode);
+      manifestWriter.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    // Create the strings.xml file
+    File resFile = new File(resDir, "values/strings.xml");
+    try {
+      resFile.getParentFile().mkdirs();
+      resFile.createNewFile();
+      FileWriter resWriter = new FileWriter(resFile);
+      resWriter.write(
+          "<resources>\n"
+              + "    <string name=\"library_name\">"
+              + name
+              + "</string>\n"
+              + "</resources>");
+      resWriter.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    // Create a sample Java file
+    File javaFile = new File(srcDir, "Library.java");
+    String javaCode =
+        "package "
+            + packageName
+            + ";\n\n"
+            + "public class Library {\n\n"
+            + "  public static String getMessage() {\n"
+            + "    return \"Hello from the library!\";\n"
+            + "  }\n\n"
+            + "}\n";
+    try {
+      FileWriter writer = new FileWriter(javaFile);
+      writer.write(javaCode);
+      writer.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   private void showProjectInfo() {
