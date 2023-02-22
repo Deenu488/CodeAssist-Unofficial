@@ -465,13 +465,18 @@ public class TreeFileManagerFragment extends Fragment {
 
     List<String> implementationProjects = javaModule.getImplementationProjects();
     List<String> included = javaModule.getIncludedProjects();
-    includedProjects.setText(included.toString());
 
     String implementationText =
         implementationProjects.isEmpty()
             ? "Implementation projects: <none>"
             : "Implementation projects:\n" + String.join("\n", implementationProjects);
     libraryProjects.setText(implementationText);
+
+    String includedText =
+        included.isEmpty()
+            ? "included projects: <none>"
+            : "included projects:\n" + String.join("\n", included);
+    includedProjects.setText(includedText);
 
     File[] fileLibraries = getProjectLibraries(javaModule.getLibraryDirectory());
 
