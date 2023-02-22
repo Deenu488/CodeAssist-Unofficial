@@ -43,7 +43,7 @@ public class DependencyManager {
   private static final String REPOSITORIES_JSON = "repositories.json";
 
   private final RepositoryManager mRepository;
-  private final DependencyResolver mResolver;
+  private List<Pom> resolvedPoms;
 
   public DependencyManager(JavaModule module, File cacheDir) throws IOException {
     extractCommonPomsIfNeeded();
@@ -54,7 +54,7 @@ public class DependencyManager {
       mRepository.addRepository(repository);
     }
     mRepository.initialize();
-    mResolver = new DependencyResolver(mRepository);
+    //   mResolver = new DependencyResolver(mRepository);
   }
 
   public static List<Repository> getFromModule(JavaModule module) throws IOException {
@@ -129,16 +129,6 @@ public class DependencyManager {
 
           logger.debug("> Task :" + root + ":" + "resolvingDependencies");
 
-          mResolver.setResolveListener(
-              new DependencyResolver.ResolveListener() {
-                @Override
-                public void onResolve(String message) {}
-
-                @Override
-                public void onFailure(String message) {
-                  logger.error(message);
-                }
-              });
           try {
             File gradleFile = new File(project.getRootProject(), root + "/build.gradle");
             File includeName = new File(project.getRootProject(), root);
@@ -160,7 +150,25 @@ public class DependencyManager {
       throws IOException {
     List<Dependency> declaredDependencies =
         DependencyUtils.parseDependencies(mRepository, gradleFile, logger);
-    List<Pom> resolvedPoms = mResolver.resolveDependencies(declaredDependencies);
+
+    DependencyResolver mResolver = new DependencyResolver(mRepository);
+
+    mResolver.setResolveListener(
+        new DependencyResolver.ResolveListener() {
+          @Override
+          public void onResolve(String message) {}
+
+          @Override
+          public void onFailure(String message) {
+            logger.error(message);
+          }
+        });
+    if (resolvedPoms != null) {
+      resolvedPoms.clear();
+    }
+
+    resolvedPoms = mResolver.resolveDependencies(declaredDependencies);
+
     listener.onTaskStarted("Downloading dependencies");
     logger.debug("> Task :" + root.getName() + ":" + "downloadingDependencies");
     List<Library> files = getFiles(resolvedPoms, logger);
@@ -168,6 +176,8 @@ public class DependencyManager {
     logger.debug("> Task :" + root.getName() + ":" + "checkingDependencies");
     File idea = new File(project.getRootProject(), ".idea");
     checkLibraries(project, root, idea, logger, files);
+    files.clear();
+
     logger.debug("> Task :" + root.getName() + ":" + "checkingLibraries");
   }
 
@@ -232,6 +242,8 @@ public class DependencyManager {
     }
 
     saveLibraryToProject(project, root, idea, md5Map, fileLibsHashes);
+    md5Map.clear();
+    fileLibsHashes.clear();
   }
 
   private void saveLibraryToProject(
