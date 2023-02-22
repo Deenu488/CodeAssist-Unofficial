@@ -227,26 +227,41 @@ public class TreeFileManagerFragment extends Fragment {
             .create();
     dialog.setOnShowListener(
         d -> {
-          TextInputLayout nameLayout = layout.findViewById(R.id.name);
-          TextInputLayout packageNameLayout = layout.findViewById(R.id.packageName);
+          final TextInputLayout nameLayout = layout.findViewById(R.id.name);
+          final TextInputLayout packageNameLayout = layout.findViewById(R.id.packageName);
 
-          EditText nameEditText = nameLayout.getEditText();
-          EditText packageNameEditText = packageNameLayout.getEditText();
+          final EditText nameEditText = nameLayout.getEditText();
+          final EditText packageNameEditText = packageNameLayout.getEditText();
           final Button button = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-
+          button.setEnabled(false);
           SingleTextWatcher textWatcher =
               new SingleTextWatcher() {
                 @Override
                 public void afterTextChanged(Editable editable) {
                   String name = nameEditText.getText().toString();
                   String packageName = packageNameEditText.getText().toString();
-
                   if (TextUtils.isEmpty(name) || TextUtils.isEmpty(packageName)) {
                     button.setEnabled(false);
+                  } else if (packageName.endsWith(".") || packageName.contains(" ")) {
+                    button.setEnabled(false);
                   } else {
-                    if (packageName.endsWith(".") || packageName.contains(" ")) {
+
+                    boolean isLibraryExists = false;
+                    List<String> implementationProjects = javaModule.getImplementationProjects();
+
+                    for (String implementationProject : implementationProjects) {
+                      if (implementationProject.contains(name)) {
+                        isLibraryExists = true;
+                        break;
+                      }
+                    }
+                    if (isLibraryExists) {
+                      nameLayout.setError("Library with this name already exists.");
                       button.setEnabled(false);
                     } else {
+
+                      nameLayout.setError(null);
+
                       button.setEnabled(true);
                     }
                   }
@@ -267,7 +282,24 @@ public class TreeFileManagerFragment extends Fragment {
                       || package_name.contains(" ")) {
                     button.setEnabled(false);
                   } else {
-                    button.setEnabled(true);
+                    boolean isLibraryExists = false;
+                    List<String> implementationProjects = javaModule.getImplementationProjects();
+
+                    for (String implementationProject : implementationProjects) {
+                      if (implementationProject.contains(name)) {
+                        isLibraryExists = true;
+                        break;
+                      }
+                    }
+                    if (isLibraryExists) {
+                      nameLayout.setError("Library with this name already exists.");
+                      button.setEnabled(false);
+                    } else {
+
+                      nameLayout.setError(null);
+
+                      button.setEnabled(true);
+                    }
                   }
                 }
               };
@@ -479,17 +511,20 @@ public class TreeFileManagerFragment extends Fragment {
       BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
       StringBuilder stringBuilder = new StringBuilder();
       String line;
-
+      boolean includeExists = false;
       while ((line = reader.readLine()) != null) {
         // Check if the include line already exists
-
+        if (line.trim().equals(includeLine.trim())) {
+          includeExists = true;
+        }
         stringBuilder.append(line).append("\n");
       }
       inputStream.close();
 
       // Add the include line if it does not already exist
-
-      stringBuilder.append(includeLine);
+      if (!includeExists) {
+        stringBuilder.append(includeLine);
+      }
 
       // Write the modified contents back to the settings.gradle file
       FileOutputStream outputStream = new FileOutputStream(gradleSettingsFile);
