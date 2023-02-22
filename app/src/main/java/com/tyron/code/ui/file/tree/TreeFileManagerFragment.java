@@ -278,9 +278,11 @@ public class TreeFileManagerFragment extends Fragment {
           button.setOnClickListener(
               v -> {
                 String name = nameEditText.getText().toString();
-                String dependencyLine = "\timplementation project(':" + name + "')\n";
 
-                addLibrary(javaModule.getGradleFile(), dependencyLine);
+                addLibrary(javaModule.getGradleFile(), name);
+                File root = new File(module.getRootProject(), "settings.gradle");
+
+                addToInclude(root, name);
                 dialog.dismiss();
               });
         });
@@ -435,7 +437,8 @@ public class TreeFileManagerFragment extends Fragment {
     return mFileViewModel;
   }
 
-  private void addLibrary(File gradleFile, String library) {
+  private void addLibrary(File gradleFile, String name) {
+    String dependencyLine = "\timplementation project(':" + name + "')\n";
 
     try {
       // Read the contents of the build.gradle file
@@ -450,7 +453,7 @@ public class TreeFileManagerFragment extends Fragment {
           while ((line = reader.readLine()) != null) {
             stringBuilder.append(line).append("\n");
           }
-          stringBuilder.insert(stringBuilder.lastIndexOf("}"), library);
+          stringBuilder.insert(stringBuilder.lastIndexOf("}"), dependencyLine);
           break;
         } else {
           stringBuilder.append(line).append("\n");
@@ -460,6 +463,36 @@ public class TreeFileManagerFragment extends Fragment {
 
       // Write the modified contents back to the build.gradle file
       FileOutputStream outputStream = new FileOutputStream(gradleFile);
+      outputStream.write(stringBuilder.toString().getBytes());
+      outputStream.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void addToInclude(File gradleSettingsFile, String name) {
+    String includeLine = "include ':" + name + "'\n";
+
+    try {
+      // Read the contents of the settings.gradle file
+      FileInputStream inputStream = new FileInputStream(gradleSettingsFile);
+      BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+      StringBuilder stringBuilder = new StringBuilder();
+      String line;
+
+      while ((line = reader.readLine()) != null) {
+        // Check if the include line already exists
+
+        stringBuilder.append(line).append("\n");
+      }
+      inputStream.close();
+
+      // Add the include line if it does not already exist
+
+      stringBuilder.append(includeLine);
+
+      // Write the modified contents back to the settings.gradle file
+      FileOutputStream outputStream = new FileOutputStream(gradleSettingsFile);
       outputStream.write(stringBuilder.toString().getBytes());
       outputStream.close();
     } catch (IOException e) {
