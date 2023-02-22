@@ -9,6 +9,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.tyron.builder.log.ILogger;
 import com.tyron.builder.model.Library;
+import com.tyron.builder.model.ModuleSettings;
 import com.tyron.builder.project.api.JavaModule;
 import com.tyron.builder.project.api.Module;
 import com.tyron.code.ApplicationLoader;
@@ -120,45 +121,65 @@ public class DependencyManager {
 
     listener.onTaskStarted("Resolving dependencies");
     logger.debug("> Configure project :" + project.getRootFile().getName());
-    logger.debug("> Task :" + project.getRootFile().getName() + ":" + "resolvingDependencies");
 
-    mResolver.setResolveListener(
-        new DependencyResolver.ResolveListener() {
-          @Override
-          public void onResolve(String message) {}
+    List<String> included = project.getIncludedProjects();
+    included.forEach(
+        include -> {
+          String root = include.replace("/", "");
 
-          @Override
-          public void onFailure(String message) {
-            logger.error(message);
+          logger.debug("> Task :" + root + ":" + "resolvingDependencies");
+
+          mResolver.setResolveListener(
+              new DependencyResolver.ResolveListener() {
+                @Override
+                public void onResolve(String message) {}
+
+                @Override
+                public void onFailure(String message) {
+                  logger.error(message);
+                }
+              });
+          try {
+            File gradleFile = new File(project.getRootProject(), root + "/build.gradle");
+            File includeName = new File(project.getRootProject(), root);
+            if (gradleFile.exists()) {
+              resolveMainDependency(project, includeName, listener, logger, gradleFile);
+            }
+          } catch (IOException e) {
+
           }
         });
-
-    resolveMainDependency(project, listener, logger);
   }
 
   private void resolveMainDependency(
-      JavaModule project, ProjectManager.TaskListener listener, ILogger logger) throws IOException {
+      JavaModule project,
+      File root,
+      ProjectManager.TaskListener listener,
+      ILogger logger,
+      File gradleFile)
+      throws IOException {
     List<Dependency> declaredDependencies =
-        DependencyUtils.parseDependencies(mRepository, project.getGradleFile(), logger);
+        DependencyUtils.parseDependencies(mRepository, gradleFile, logger);
     List<Pom> resolvedPoms = mResolver.resolveDependencies(declaredDependencies);
     listener.onTaskStarted("Downloading dependencies");
-    logger.debug("> Task :" + project.getRootFile().getName() + ":" + "downloadingDependencies");
+    logger.debug("> Task :" + root.getName() + ":" + "downloadingDependencies");
     List<Library> files = getFiles(resolvedPoms, logger);
     listener.onTaskStarted("Checking dependencies");
-    logger.debug("> Task :" + project.getRootFile().getName() + ":" + "checkingDependencies");
-    checkLibraries(project, logger, files);
-    logger.debug("> Task :" + project.getRootFile().getName() + ":" + "checkingLibraries");
+    logger.debug("> Task :" + root.getName() + ":" + "checkingDependencies");
+    File idea = new File(project.getRootProject(), ".idea");
+    checkLibraries(project, root, idea, logger, files);
+    logger.debug("> Task :" + root.getName() + ":" + "checkingLibraries");
   }
 
-  private void checkLibraries(JavaModule project, ILogger logger, List<Library> newLibraries)
+  private void checkLibraries(
+      JavaModule project, File root, File idea, ILogger logger, List<Library> newLibraries)
       throws IOException {
     Set<Library> libraries = new HashSet<>(newLibraries);
 
     Map<String, Library> fileLibsHashes = new HashMap<>();
+    File rootLibs = new File(root, "libs");
     File[] fileLibraries =
-        project
-            .getLibraryDirectory()
-            .listFiles(c -> c.getName().endsWith(".aar") || c.getName().endsWith(".jar"));
+        rootLibs.listFiles(c -> c.getName().endsWith(".aar") || c.getName().endsWith(".jar"));
     if (fileLibraries != null) {
       for (File fileLibrary : fileLibraries) {
         try {
@@ -173,7 +194,10 @@ public class DependencyManager {
       }
     }
 
-    String librariesString = project.getSettings().getString("libraries", "[]");
+    ModuleSettings myModuleSettings =
+        new ModuleSettings(new File(idea, root.getName() + "_config.json"));
+
+    String librariesString = myModuleSettings.getString("libraries", "[]");
     try {
       List<Library> parsedLibraries =
           new Gson().fromJson(librariesString, new TypeToken<List<Library>>() {}.getType());
@@ -192,7 +216,10 @@ public class DependencyManager {
 
     Map<String, Library> md5Map = new HashMap<>();
     libraries.forEach(it -> md5Map.put(AndroidUtilities.calculateMD5(it.getSourceFile()), it));
-    File buildLibs = new File(project.getBuildDirectory(), "libs");
+    File buildLibs = new File(root, "build/libs");
+    if (!buildLibs.exists()) {
+      if (!buildLibs.mkdirs()) {}
+    }
     File[] buildLibraryDirs = buildLibs.listFiles(File::isDirectory);
     if (buildLibraryDirs != null) {
       for (File libraryDir : buildLibraryDirs) {
@@ -204,11 +231,15 @@ public class DependencyManager {
       }
     }
 
-    saveLibraryToProject(project, md5Map, fileLibsHashes);
+    saveLibraryToProject(project, root, idea, md5Map, fileLibsHashes);
   }
 
   private void saveLibraryToProject(
-      Module module, Map<String, Library> libraries, Map<String, Library> fileLibraries)
+      Module module,
+      File root,
+      File idea,
+      Map<String, Library> libraries,
+      Map<String, Library> fileLibraries)
       throws IOException {
     Map<String, Library> combined = new HashMap<>();
     combined.putAll(libraries);
@@ -222,7 +253,7 @@ public class DependencyManager {
       String hash = entry.getKey();
       Library library = entry.getValue();
 
-      File libraryDir = new File(module.getBuildDirectory(), "libs/" + hash);
+      File libraryDir = new File(root, "build/libs/" + hash);
       if (!libraryDir.exists()) {
         libraryDir.mkdir();
       } else {
@@ -238,9 +269,11 @@ public class DependencyManager {
         Decompress.unzip(library.getSourceFile().getAbsolutePath(), libraryDir.getAbsolutePath());
       }
     }
+    ModuleSettings myModuleSettings =
+        new ModuleSettings(new File(idea, root.getName() + "_config.json"));
 
     String librariesString = new Gson().toJson(libraries.values());
-    module.getSettings().edit().putString("libraries", librariesString).apply();
+    myModuleSettings.edit().putString("libraries", librariesString).apply();
   }
 
   public List<Library> getFiles(List<Pom> resolvedPoms, ILogger logger) {
