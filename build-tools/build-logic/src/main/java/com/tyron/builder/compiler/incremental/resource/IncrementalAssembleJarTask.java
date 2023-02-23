@@ -44,7 +44,7 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
 	
 	public static final CacheHolder.CacheKey<String, List<File>> CACHE_KEY =
 	new CacheHolder.CacheKey<>("javaCache");
-    private static final String TAG = "assembleJar";
+    private static final String TAG = "checkJavaLibraries";
 	private Cache<String, List<File>> mClassCache;
 	
 	public IncrementalAssembleJarTask(Project project, JavaModule module, ILogger logger) {
