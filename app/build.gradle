@@ -91,21 +91,21 @@ dependencies {
     // TODO: completion providers should not be included on the main module
     implementation project(path: ':code-editor')
     implementation project(path: ':xml-completion')
-    implementation project(path: ':build-tools:viewbinding-inject')
-    implementation project(path: ':build-tools:xml-repository')
+    implementation project(path: ':viewbinding-inject')
+    implementation project(path: ':xml-repository')
     implementation project(path: ':java-completion')
     // not used for compilation, but for analysis
-    implementation project(path: ':build-tools:javac')
+    implementation project(path: ':javac')
 
     implementation project(path: ':language-api')
 
-    implementation project(path: ':build-tools:build-logic')
-    implementation project(path: ':build-tools:manifmerger')
-    implementation project(path: ':build-tools:project')
-    implementation project(path: ':build-tools:logging')
-    implementation project(path: ':build-tools:jaxp')
+    implementation project(path: ':build-logic')
+    implementation project(path: ':manifmerger')
+    implementation project(path: ':project')
+    implementation project(path: ':logging')
+    implementation project(path: ':jaxp')
     implementation project(path: ':common')
-    implementation project(path: ':build-tools:lint')
+    implementation project(path: ':lint')
     implementation project(path: ':layout-preview')
     implementation project(path: ':kotlin-completion')
     

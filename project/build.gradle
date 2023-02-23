@@ -7,13 +7,18 @@ java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
-
+		
 dependencies {
+    implementation 'androidx.annotation:annotation:1.3.0'
     implementation project(path: ':common')
-    implementation project(path: ':javac')
+    // for manifest  parsing
+    implementation project(path: ':manifmerger')
 
-    implementation 'com.google.auto.value:auto-value-annotations:1.9'
-    annotationProcessor 'com.google.auto.value:auto-value:1.9'
+    // user data holder
+    implementation project(path: ':kotlinc')
+    compileOnly project(path: ':android-stubs')
+
+    testImplementation 'junit:junit:4.13.2'
 }
 
 spotless {

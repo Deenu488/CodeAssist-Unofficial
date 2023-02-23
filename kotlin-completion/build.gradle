@@ -41,11 +41,11 @@ configurations.implementation {
 
 dependencies {
 
-    implementation project(path: ':build-tools:kotlinc')
-    implementation project(path: ':build-tools:javac')
-    implementation project(path: ':build-tools:project')
-    implementation project(path: ':build-tools:logging')
-    implementation project(path: ':build-tools:build-logic')
+    implementation project(path: ':kotlinc')
+    implementation project(path: ':javac')
+    implementation project(path: ':project')
+    implementation project(path: ':logging')
+    implementation project(path: ':build-logic')
     implementation project(path: ':completion-api')
     implementation project(path: ':actions-api')
     implementation project(path: ':editor-api')

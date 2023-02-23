@@ -1,0 +1,56 @@
+plugins {
+    id 'java-library'
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'com.diffplug.spotless'
+
+dependencies {
+    implementation 'androidx.annotation:annotation:1.3.0'
+    implementation 'com.android.tools:sdklib:25.3.0'
+    implementation project(path: ':common')
+    implementation project(path: ':eclipse-standalone')
+    implementation 'androidx.test:core:1.4.0'
+
+    // required so internal classes would be included 
+    api project(path: ':jaxp')
+    api project(path: ':kotlinc')
+
+    implementation project(path: ':logging')
+    implementation project(path: ':manifmerger')
+    implementation project(path: ':project')
+    implementation project(path: ':viewbinding-lib')
+
+    // javac
+    implementation project(path: ':javac')
+    implementation project(path: ':xml-repository')
+    // bundletool
+    implementation 'com.android.tools.build:bundletool:1.13.2'
+    
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation "com.google.truth:truth:1.1.3"
+    testImplementation "org.robolectric:robolectric:4.7.3"
+    testImplementation project(path: ':jaxp')
+
+    api 'com.android.tools:r8:4.0.48'
+
+
+
+    api files (
+            'libs/apksigner.jar'
+    )
+
+    compileOnly project(path: ':android-stubs')
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+spotless {
+		java {
+			target "**/*.java"
+			googleJavaFormat()
+			}
+}

@@ -10,10 +10,13 @@ java {
 
 dependencies {
     implementation project(path: ':common')
-    implementation project(path: ':javac')
+    implementation project(path: ':manifmerger')
 
-    implementation 'com.google.auto.value:auto-value-annotations:1.9'
-    annotationProcessor 'com.google.auto.value:auto-value:1.9'
+    api files('libs/org.eclipse.lemminx-0.11.0-uber.jar')
+    implementation project(path: ':project')
+
+    compileOnly project(path: ':android-stubs')
+    compileOnly project(path: ':kotlinc')
 }
 
 spotless {

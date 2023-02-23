@@ -6,7 +6,7 @@ apply plugin: 'com.diffplug.spotless'
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
-
+	
 	spotless {
 		java {
 			target "**/*.java"
@@ -35,28 +35,12 @@ android {
 }
 
 dependencies {
-    implementation project(path: ':actions-api')
-    implementation project(path: ':editor-api')
 
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.5.0'
+    compileOnly 'androidx.appcompat:appcompat:1.3.1'
+    compileOnly 'com.google.android.material:material:1.4.0'
+    compileOnly project(path: ':proteus-core')
 
-    // bytecode analysis
-    implementation 'org.apache.bcel:bcel:6.5.0'
-    implementation 'org.antlr:antlr4-runtime:4.9.2'
-    implementation 'org.jsoup:jsoup:1.14.3'
-
-    implementation project(path: ':language-api')
-    implementation project(path: ':completion-api')
-    implementation project(path: ':common')
-    implementation project(path: ':java-completion')
-    compileOnly project(path: ':javac')
-
-    implementation project(path: ':project')
-    implementation project(path: ':manifmerger')
-    implementation project(path: ':xml-repository')
-
-    testImplementation 'junit:junit:4.+'
+    testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }

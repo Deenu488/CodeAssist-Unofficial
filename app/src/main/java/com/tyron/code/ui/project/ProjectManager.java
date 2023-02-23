@@ -101,7 +101,7 @@ public class ProjectManager {
         if (plugins.isEmpty()) {
           logger.warning("No Plugins detected");
         } else {
-          logger.debug("NOTE:" + "Plugins detected: " + plugins);
+          logger.debug("NOTE: " + "Plugins detected: " + plugins);
         }
       }
       mCurrentProject.open();
