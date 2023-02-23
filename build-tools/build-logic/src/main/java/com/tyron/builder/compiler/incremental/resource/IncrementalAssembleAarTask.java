@@ -75,38 +75,43 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
     }
 
     public void run() throws IOException, CompilationFailedException {
-
-		String projects = getModule().getSettings().getString(ModuleSettings.INCLUDE, "[]");
-		String replace = projects.replace("[", "").replace("]", "").replace(",", " ");
-		String[] names = replace.split("\\s");
-
-		for (int i = 0; i < names.length; i++) {
-			File res = new File(getModule().getRootFile().getParentFile(), names[i] + "/src/main/res");
-			File bin_res = new File(getModule().getRootFile().getParentFile(), names[i] + "/build/bin/res");		
-			File build = new File(getModule().getRootFile().getParentFile(), names[i] + "/build");		
-			File manifest = new File(getModule().getRootFile().getParentFile(), names[i] + "/src/main/AndroidManifest.xml");
-			File assets = new File(getModule().getRootFile().getParentFile(), names[i] + "/src/main/assets");
-			File java = new File(getModule().getRootFile().getParentFile(), names[i] + "/src/main/java");
-			File classes = new File(getModule().getRootFile().getParentFile(), names[i] + "/build/bin/java/classes");		
-			File gen = new File(getModule().getRootFile().getParentFile(), names[i] + "/build/gen");
-			File aar = new File(getModule().getRootFile().getParentFile(), names[i] + "/build/bin/aar");		
-
+		List<String> implementationProjects = getModule().getImplementationProjects();
+		for (String implementationProject : implementationProjects) {
+		
+			File res = new File(getModule().getRootProject(), implementationProject + "/src/main/res");
+			File bin_res = new File(getModule().getRootProject(), implementationProject + "/build/bin/res");		
+			File build = new File(getModule().getRootProject(), implementationProject + "/build");		
+			File manifest = new File(getModule().getRootProject(), implementationProject + "/src/main/AndroidManifest.xml");
+			File assets = new File(getModule().getRootProject(), implementationProject + "/src/main/assets");
+			File java = new File(getModule().getRootProject(), implementationProject + "/src/main/java");
+			File classes = new File(getModule().getRootProject(), implementationProject + "/build/bin/java/classes");		
+			File gen = new File(getModule().getRootProject(), implementationProject + "/build/gen");
+			File aar = new File(getModule().getRootProject(), implementationProject + "/build/bin/aar");		
+			File outputs = new File(getModule().getRootProject(), implementationProject + "/build/outputs/aar");		
+			
 			if (res.exists() && manifest.exists()) {
-				if (build.exists()) {
-					FileUtils.deleteDirectory(build);
-				}	
-
-				compileRes(res, bin_res, names[i]);
-				linkRes(bin_res, names[i], manifest, assets);
-
+				if (classes.exists()) {
+					FileUtils.deleteDirectory(classes);
+				}
+				if (aar.exists()) {
+					FileUtils.deleteDirectory(aar);
+				}
+				if (outputs.exists()) {
+					FileUtils.deleteDirectory(outputs);
+				}
+				compileRes(res, bin_res, implementationProject);
+				linkRes(bin_res, implementationProject, manifest, assets);
+				String root = implementationProject.replace("/", "");
 				if (java.exists()) {
-					compileJava(java, gen , classes);	
+					getLogger().debug("> Task :" + root + ":" + "compileJava");			
+					compileJava(java, gen , classes, implementationProject);	
 				}
 				if (classes.exists()) {
-					assembleAar(classes, aar, build, names[i]);
+					getLogger().debug("> Task :" + root + ":" + "assembleAar");		
+					assembleAar(classes, aar, build, implementationProject);
 				}
 			}
-		}		
+		}	
 	}
 
 	private void assembleAar(File input, File aar, File build, String name) throws IOException, CompilationFailedException {
@@ -118,18 +123,18 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
 		AssembleJar assembleJar = new AssembleJar(false);
 		assembleJar.setOutputFile(new File(aar.getAbsolutePath(), "classes.jar"));
 		assembleJar.createJarArchive(input);
-
-		File libs = new File(build.getAbsolutePath() , "libs");
-		if (!libs.exists()) {
-			if (!libs.mkdirs()) {
+		File library = new File(getModule().getRootProject(), name + "/build/outputs/aar/");			
+		
+				if (!library.exists()) {
+			if (!library.mkdirs()) {
 				throw new IOException("Failed to create resource libs directory");
 			}
 		}
-		copyResources(new File(build.getParentFile().getAbsolutePath() , "src/main/AndroidManifest.xml"), aar.getAbsolutePath());
-		copyResources(new File(build.getParentFile().getAbsolutePath() , "src/main/res"), aar.getAbsolutePath());
+		copyResources(new File(getModule().getRootProject(), name +"/src/main/AndroidManifest.xml"), aar.getAbsolutePath());
+		copyResources(new File(getModule().getRootProject(), name + "/src/main/res"), aar.getAbsolutePath());
 
-		File assets = new File(build.getParentFile().getAbsolutePath() , "src/main/assets");
-		File jniLibs  = new File(build.getParentFile().getAbsolutePath() , "src/main/jniLibs");
+		File assets = new File(getModule().getRootProject(), name +"/src/main/assets");
+		File jniLibs  = new File(getModule().getRootProject(), name + "/src/main/jniLibs");
 
 		if (assets.exists()) {
 			copyResources(assets, aar.getAbsolutePath());
@@ -139,7 +144,7 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
 			File jni = new File(aar.getAbsolutePath(), "jniLibs");
 			jni.renameTo(new File(aar.getAbsolutePath(), "jni"));	
 		}
-		zipFolder(Paths.get(aar.getAbsolutePath()), Paths.get(libs.getAbsolutePath(), name + ".aar"));
+		zipFolder(Paths.get(aar.getAbsolutePath()), Paths.get(library.getAbsolutePath(), name + ".aar"));
 		if (aar.exists()) {
 			FileUtils.deleteDirectory(aar);
 		}	
@@ -147,7 +152,7 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
 
 	private boolean mHasErrors = false;
 
-	public void compileJava(File java, File gen, File out) throws IOException,
+	public void compileJava(File java, File gen, File out, String name) throws IOException,
 	CompilationFailedException {
 
 		if (!out.exists()) {
@@ -167,9 +172,12 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
             }
         }
 		
-		List<File> classpath = new ArrayList<>();		
+		File buildLibs = new File(getModule().getRootProject(), name + "/build/libs");
+		
+		List<File> classpath = new ArrayList<>(getJarFiles(buildLibs));		
+		
 		List<JavaFileObject> javaFileObjects = new ArrayList<>();
-
+		
 		mFilesToCompile.addAll(getJavaFiles(java));
 		mFilesToCompile.addAll(getJavaFiles(gen));
 
@@ -240,7 +248,8 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
 		args.add("--target-sdk-version");
 		args.add(String.valueOf(getModule().getTargetSdk()));
 		args.add("--proguard");
-		args.add(createNewFile(new File(in.getParentFile().getAbsolutePath(), "aar"), "proguard.txt").getAbsolutePath());
+		File buildAar = new File(getModule().getRootProject().getAbsolutePath(), name + "/build/bin/aar");
+		args.add(createNewFile((buildAar), "proguard.txt").getAbsolutePath());
 
 		File resource = new File(in.getAbsolutePath(), name + "_res.zip");			
 		if (!resource.exists()) {
@@ -250,7 +259,7 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
 		args.add(resource.getAbsolutePath());
 
 		args.add("--java");
-		File gen = new File(getModule().getRootFile().getParentFile(), name + "/build/gen");
+		File gen = new File(getModule().getRootProject(), name + "/build/gen");
 		if (!gen.exists()) {
 			if (!gen.mkdirs()) {
 				throw new CompilationFailedException("Failed to create gen folder");
@@ -265,11 +274,14 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
 		args.add(manifest.getAbsolutePath());
 
 		args.add("-o");
-		File out = new File(in.getParentFile().getAbsolutePath(), "generated.aar.res");	
+		
+		File buildBin = new File(getModule().getRootProject().getAbsolutePath(), name + "/build/bin");
+		
+		File out = new File(buildBin, "generated.aar.res");	
 		args.add(out.getAbsolutePath());			
 
 		args.add("--output-text-symbols");
-		File file = new File(new File(in.getParentFile().getAbsolutePath(), "aar"), "R.txt");
+		File file = new File(buildAar, "R.txt");
 		Files.deleteIfExists(file.toPath());
 		if (!file.createNewFile()) {
 			throw new IOException("Unable to create R.txt file");
@@ -395,5 +407,19 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
         if (classFile.exists()) {
             FileUtils.delete(classFile);
         }
+    }
+	public static List<File> getJarFiles(File dir) {
+        List<File> jarFiles = new ArrayList<>();
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile() && file.getName().endsWith(".jar")) {
+                    jarFiles.add(file);
+                } else if (file.isDirectory()) {
+                    jarFiles.addAll(getJarFiles(file));
+                }
+            }
+        }
+        return jarFiles;
     }
 }
