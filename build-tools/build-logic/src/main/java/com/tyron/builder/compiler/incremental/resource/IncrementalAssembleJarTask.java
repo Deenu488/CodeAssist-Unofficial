@@ -64,27 +64,31 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
 
     @Override
     public void run() throws IOException, CompilationFailedException {
-		String projects = getModule().getSettings().getString(ModuleSettings.INCLUDE, "[]");
-		String replace = projects.replace("[", "").replace("]", "").replace(",", " ");
-		String[] names = replace.split("\\s");
-
-		for (int i = 0; i < names.length; i++) {
-			File java = new File(getModule().getRootFile().getParentFile(), names[i] + "/src/main/java");
-			File classes = new File(getModule().getRootFile().getParentFile(), names[i] + "/build/bin/java/classes");		
-			File out = new File(getModule().getRootFile().getParentFile(), names[i] + "/build/libs/" + names[i] + ".jar");			
-			File build = new File(getModule().getRootFile().getParentFile(), names[i] + "/build");
-
-			if (build.exists()) {
-			FileUtils.deleteDirectory(build);
+		
+		List<String> implementationProjects = getModule().getImplementationProjects();
+		
+		for (String implementationProject : implementationProjects) {
+			File java = new File(getModule().getRootProject(), implementationProject + "/src/main/java");
+			File classes = new File(getModule().getRootProject(), implementationProject + "/build/bin/java/classes");		
+			File out = new File(getModule().getRootProject(), implementationProject + "/build/outputs/jar/" + implementationProject + ".jar");			
+			File build = new File(getModule().getRootProject(), implementationProject + "/build");
+			File jar = new File(getModule().getRootProject(), implementationProject + "/build/outputs/jar/");			
+			
+			if (classes.exists()) {
+				FileUtils.deleteDirectory(classes);
+			}
+			
+			if (jar.exists()) {
+				FileUtils.deleteDirectory(jar);
 			}
 
 			if (java.exists()) {
-			compileJava(java, classes);
+				compileJava(java, classes, implementationProject);
 			}
 			if (classes.exists()) {
 				assembleJar(classes,out);
 			}
-		}	
+		}
 	}
 
 	private void assembleJar(File input,File out) throws IOException, CompilationFailedException {
@@ -98,7 +102,7 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
 		assembleJar.createJarArchive(input);
 	}
 
-	public void compileJava(File java, File out) throws IOException,
+	public void compileJava(File java, File out, String name) throws IOException,
 	CompilationFailedException {
 		
 		if (!out.exists()) {
@@ -124,8 +128,9 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
             }
         }
 		
-		List<File> classpath = new ArrayList<>(getModule().getLibraries());	
-	
+		File buildLibs = new File(getModule().getRootProject(), name + "/build/libs");
+		List<File> classpath = new ArrayList<>(getJarFiles(buildLibs));		
+		
 		List<JavaFileObject> javaFileObjects = new ArrayList<>();
 
 		mFilesToCompile.addAll(getJavaFiles(java));
@@ -222,5 +227,20 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
         if (classFile.exists()) {
             FileUtils.delete(classFile);
         }
+    }
+	
+	public static List<File> getJarFiles(File dir) {
+        List<File> jarFiles = new ArrayList<>();
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile() && file.getName().endsWith(".jar")) {
+                    jarFiles.add(file);
+                } else if (file.isDirectory()) {
+                    jarFiles.addAll(getJarFiles(file));
+                }
+            }
+        }
+        return jarFiles;
     }
 }
