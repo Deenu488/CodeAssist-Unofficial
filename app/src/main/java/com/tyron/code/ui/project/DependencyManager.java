@@ -125,15 +125,13 @@ public class DependencyManager {
     List<String> included = project.getIncludedProjects();
     included.forEach(
         include -> {
-          String root = include.replace("/", "");
-
+          String root = include.replaceFirst("/", "").replaceAll("/", ":");
           logger.debug("> Task :" + root + ":" + "resolvingDependencies");
-
           try {
-            File gradleFile = new File(project.getRootProject(), root + "/build.gradle");
-            File includeName = new File(project.getRootProject(), root);
+            File gradleFile = new File(project.getRootProject(), include + "/build.gradle");
+            File includeName = new File(project.getRootProject(), include);
             if (gradleFile.exists()) {
-              resolveMainDependency(project, includeName, listener, logger, gradleFile);
+              resolveMainDependency(project, includeName, listener, logger, gradleFile, root);
             }
           } catch (IOException e) {
 
@@ -146,7 +144,8 @@ public class DependencyManager {
       File root,
       ProjectManager.TaskListener listener,
       ILogger logger,
-      File gradleFile)
+      File gradleFile,
+      String name)
       throws IOException {
     List<Dependency> declaredDependencies =
         DependencyUtils.parseDependencies(mRepository, gradleFile, logger);
@@ -170,15 +169,15 @@ public class DependencyManager {
     resolvedPoms = mResolver.resolveDependencies(declaredDependencies);
 
     listener.onTaskStarted("Downloading dependencies");
-    logger.debug("> Task :" + root.getName() + ":" + "downloadingDependencies");
+    logger.debug("> Task :" + name + ":" + "downloadingDependencies");
     List<Library> files = getFiles(resolvedPoms, logger);
     listener.onTaskStarted("Checking dependencies");
-    logger.debug("> Task :" + root.getName() + ":" + "checkingDependencies");
+    logger.debug("> Task :" + name + ":" + "checkingDependencies");
     File idea = new File(project.getRootProject(), ".idea");
     checkLibraries(project, root, idea, logger, files);
     files.clear();
 
-    logger.debug("> Task :" + root.getName() + ":" + "checkingLibraries");
+    logger.debug("> Task :" + name + ":" + "checkingLibraries");
   }
 
   private void checkLibraries(

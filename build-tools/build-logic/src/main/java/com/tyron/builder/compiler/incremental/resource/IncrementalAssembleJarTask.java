@@ -75,7 +75,7 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
       if (jar.exists()) {
         FileUtils.deleteDirectory(jar);
       }
-      String root = implementationProject.replace("/", "");
+      String root = implementationProject.replaceFirst("/", "").replaceAll("/", ":");
 
       if (java.exists()) {
         compileJava(java, classes, implementationProject);
@@ -113,7 +113,7 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
       return;
     }
 
-    String root = name.replace("/", "");
+	String root = name.replaceFirst("/", "").replaceAll("/", ":");
 
     getLogger().debug("> Task :" + root + ":" + "compileJava");
 

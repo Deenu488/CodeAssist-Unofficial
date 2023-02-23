@@ -94,7 +94,7 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
         }
         compileRes(res, bin_res, implementationProject);
         linkRes(bin_res, implementationProject, manifest, assets);
-        String root = implementationProject.replace("/", "");
+        String root = implementationProject.replaceFirst("/", "").replaceAll("/", ":");
         if (java.exists()) {
           getLogger().debug("> Task :" + root + ":" + "compileJava");
           compileJava(java, gen, classes, implementationProject);
