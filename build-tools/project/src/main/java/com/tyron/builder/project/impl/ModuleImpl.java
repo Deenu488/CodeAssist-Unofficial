@@ -46,7 +46,7 @@ public class ModuleImpl implements Module {
       if (!codeassist.mkdirs()) {}
     }
     myModuleSettings =
-        new ModuleSettings(new File(codeassist, getRootFile().getName() + "_config.json"));
+		  new ModuleSettings(new File(codeassist, getRootFile().getName() + "_libraries.json"));
   }
 
   @Override
