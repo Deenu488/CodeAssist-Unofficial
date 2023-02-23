@@ -1,6 +1,7 @@
 plugins {
     id 'java-library'
 }
+apply plugin: 'com.diffplug.spotless'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -15,4 +16,11 @@ dependencies {
     api files('libs/nb-javac-17.0.0.0-api.jar')
     api files('libs/nb-javac-17.0.0.0.jar')
     implementation files('libs/jrt-fs.jar')
+}
+
+spotless {
+		java {
+			target "**/*.java"
+			googleJavaFormat()
+			}
 }

@@ -1,6 +1,7 @@
 plugins {
     id 'java-library'
 }
+apply plugin: 'com.diffplug.spotless'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -17,4 +18,11 @@ dependencies {
     implementation 'com.android.tools:sdklib:25.3.0'
 
     implementation project(path: ':build-tools:jaxp')
+}
+
+spotless {
+		java {
+			target "**/*.java"
+			googleJavaFormat()
+			}
 }

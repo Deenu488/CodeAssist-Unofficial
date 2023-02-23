@@ -2,6 +2,7 @@ plugins {
     id 'java-library'
 }
 apply plugin: 'kotlin'
+apply plugin: 'com.diffplug.spotless'
 
 configurations.implementation {
     exclude group: "org.jetbrains", module: "annotations"
@@ -31,4 +32,11 @@ repositories {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+spotless {
+		java {
+			target "**/*.java"
+			googleJavaFormat()
+			}
 }

@@ -2,10 +2,18 @@ plugins {
     id 'com.android.library'
 }
 apply plugin: 'kotlin-android'
+apply plugin: 'com.diffplug.spotless'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
+	
+	spotless {
+		java {
+			target "**/*.java"
+			googleJavaFormat()
+			}
+		}
 
     defaultConfig {
         minSdk 26
