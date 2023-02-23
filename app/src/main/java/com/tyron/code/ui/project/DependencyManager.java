@@ -205,7 +205,7 @@ public class DependencyManager {
     }
 
     ModuleSettings myModuleSettings =
-			  new ModuleSettings(new File(idea, root.getName() + "_libraries.json"));
+        new ModuleSettings(new File(idea, root.getName() + "_libraries.json"));
 
     String librariesString = myModuleSettings.getString("libraries", "[]");
     try {
@@ -282,7 +282,7 @@ public class DependencyManager {
       }
     }
     ModuleSettings myModuleSettings =
-			  new ModuleSettings(new File(idea, root.getName() + "_libraries.json"));
+        new ModuleSettings(new File(idea, root.getName() + "_libraries.json"));
 
     String librariesString = new Gson().toJson(libraries.values());
     myModuleSettings.edit().putString("libraries", librariesString).apply();

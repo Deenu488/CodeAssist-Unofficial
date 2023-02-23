@@ -2,108 +2,105 @@ package com.tyron.builder.compiler;
 
 import android.os.Handler;
 import android.os.Looper;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-
 import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.log.ILogger;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.Module;
-
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.Instant;
 import java.util.concurrent.TimeUnit;
-import java.time.Duration;
 
 public abstract class BuilderImpl<T extends Module> implements Builder<T> {
 
-    private final Handler mMainHandler;
-    private final Project mProject;
-    private final T mModule;
-    private final ILogger mLogger;
-    private final List<Task<? super T>> mTasksRan;
-    private TaskListener mTaskListener;
-	private Instant now;
-	
-    public BuilderImpl(Project project, T module, ILogger logger) {
-        mProject = project;
-        mModule = module;
-        mLogger = logger;
-        mMainHandler = new Handler(Looper.getMainLooper());
-        mTasksRan = new ArrayList<>();
-    }
+  private final Handler mMainHandler;
+  private final Project mProject;
+  private final T mModule;
+  private final ILogger mLogger;
+  private final List<Task<? super T>> mTasksRan;
+  private TaskListener mTaskListener;
+  private Instant now;
 
-    @NonNull
-    @Override
-    public Project getProject() {
-        return mProject;
-    }
+  public BuilderImpl(Project project, T module, ILogger logger) {
+    mProject = project;
+    mModule = module;
+    mLogger = logger;
+    mMainHandler = new Handler(Looper.getMainLooper());
+    mTasksRan = new ArrayList<>();
+  }
 
-    @Override
-    public void setTaskListener(TaskListener taskListener) {
-        mTaskListener = taskListener;
-    }
+  @NonNull
+  @Override
+  public Project getProject() {
+    return mProject;
+  }
 
-    @Override
-    public T getModule() {
-        return mModule;
-    }
+  @Override
+  public void setTaskListener(TaskListener taskListener) {
+    mTaskListener = taskListener;
+  }
 
-    protected void updateProgress(String name, String message, int progress) {
-        if (mTaskListener != null) {
-            mTaskListener.onTaskStarted(name, message, progress);
+  @Override
+  public T getModule() {
+    return mModule;
+  }
+
+  protected void updateProgress(String name, String message, int progress) {
+    if (mTaskListener != null) {
+      mTaskListener.onTaskStarted(name, message, progress);
+    }
+  }
+
+  @Override
+  public final void build(BuildType type) throws CompilationFailedException, IOException {
+    now = Instant.now();
+    mTasksRan.clear();
+    List<Task<? super T>> tasks = getTasks(type);
+    for (int i = 0, tasksSize = tasks.size(); i < tasksSize; i++) {
+      Task<? super T> task = tasks.get(i);
+      final float current = i;
+      getLogger().info("> Task :" + getModule().getRootFile().getName() + ":" + task.getName());
+      try {
+        mMainHandler.post(
+            () ->
+                updateProgress(
+                    task.getName(),
+                    "Task started",
+                    (int) ((current / (float) tasks.size()) * 100f)));
+        task.prepare(type);
+        task.run();
+      } catch (Throwable e) {
+        if (e instanceof OutOfMemoryError) {
+          tasks.clear();
+          mTasksRan.clear();
+          throw new CompilationFailedException("Builder ran out of memory", e);
         }
-    }
-
-    @Override
-    public final void build(BuildType type) throws CompilationFailedException, IOException {
-		now = Instant.now();
-		mTasksRan.clear();
-        List<Task<? super T>> tasks = getTasks(type);
-        for (int i = 0, tasksSize = tasks.size(); i < tasksSize; i++) {
-            Task<? super T> task = tasks.get(i);
-            final float current = i;
-            getLogger().info("> Task :" + getModule().getRootFile().getName() + ":" + task.getName());
-            try {
-                mMainHandler.post(() -> updateProgress(task.getName(), "Task started",
-                        (int) ((current / (float) tasks.size()) * 100f)));
-                task.prepare(type);
-                task.run();
-            } catch (Throwable e) {
-                if (e instanceof OutOfMemoryError) {
-                    tasks.clear();
-                    mTasksRan.clear();
-                    throw new CompilationFailedException("Builder ran out of memory", e);
-                }
-                task.clean();
-                mTasksRan.forEach(Task::clean);
-                throw e;
-            }
-            mTasksRan.add(task);
-        }
+        task.clean();
         mTasksRan.forEach(Task::clean);
-		
-		long seconds = TimeUnit.MILLISECONDS.toSeconds(Duration.between(now, Instant.now())
-                                                       .toMillis());  
-        getLogger().info("TIME TOOK " +  seconds + "s");
-		
+        throw e;
+      }
+      mTasksRan.add(task);
     }
+    mTasksRan.forEach(Task::clean);
 
-    public abstract List<Task<? super T>> getTasks(BuildType type);
+    long seconds = TimeUnit.MILLISECONDS.toSeconds(Duration.between(now, Instant.now()).toMillis());
+    getLogger().info("TIME TOOK " + seconds + "s");
+  }
 
-    /**
-     * Used in tests to check the values of tasks that ran
-     */
-    @VisibleForTesting
-    public List<Task<? super T>> getTasksRan() {
-        return mTasksRan;
-    }
+  public abstract List<Task<? super T>> getTasks(BuildType type);
 
-    @Override
-    public ILogger getLogger() {
-        return mLogger;
-    }
+  /** Used in tests to check the values of tasks that ran */
+  @VisibleForTesting
+  public List<Task<? super T>> getTasksRan() {
+    return mTasksRan;
+  }
+
+  @Override
+  public ILogger getLogger() {
+    return mLogger;
+  }
 }

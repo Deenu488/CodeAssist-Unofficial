@@ -509,7 +509,7 @@ public class TreeFileManagerFragment extends Fragment {
   private void showBuildVariants() {
     List<String> variants = new ArrayList<>();
     variants.add("Release");
-    variants.add("Debug"); 
+    variants.add("Debug");
     final String[] options = variants.toArray(new String[0]);
 
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
