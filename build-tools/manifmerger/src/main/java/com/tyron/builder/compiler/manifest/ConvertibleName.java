@@ -6,13 +6,9 @@ package com.tyron.builder.compiler.manifest;
  */
 public interface ConvertibleName {
 
-    /**
-     * Returns a xml lower-hyphen separated name of itself.
-     */
-    String toXmlName();
+  /** Returns a xml lower-hyphen separated name of itself. */
+  String toXmlName();
 
-    /**
-     * Returns a camel case version of itself.
-     */
-    String toCamelCaseName();
+  /** Returns a camel case version of itself. */
+  String toCamelCaseName();
 }

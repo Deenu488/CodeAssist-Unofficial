@@ -2,13 +2,13 @@ package com.tyron.builder.compiler.manifest.xml;
 
 public interface IAbstractResource {
 
-    String getName();
+  String getName();
 
-    String getLocation();
+  String getLocation();
 
-    boolean exists();
+  boolean exists();
 
-    IAbstractFolder getParentFolder();
+  IAbstractFolder getParentFolder();
 
-    boolean delete();
+  boolean delete();
 }

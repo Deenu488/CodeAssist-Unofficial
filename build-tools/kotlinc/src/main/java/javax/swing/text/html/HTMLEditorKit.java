@@ -26,27 +26,18 @@ package javax.swing.text.html;
 
 public class HTMLEditorKit {
 
+  /** Constructs an HTMLEditorKit, creates a StyleContext, and loads the style sheet. */
+  public HTMLEditorKit() {}
 
-    /**
-     * Constructs an HTMLEditorKit, creates a StyleContext,
-     * and loads the style sheet.
-     */
-    public HTMLEditorKit() {
+  /**
+   * Get the MIME type of the data that this kit represents support for. This kit supports the type
+   * <code>text/html</code>.
+   *
+   * @return the type
+   */
+  public String getContentType() {
+    return "text/html";
+  }
 
-    }
-
-    /**
-     * Get the MIME type of the data that this
-     * kit represents support for.  This kit supports
-     * the type <code>text/html</code>.
-     *
-     * @return the type
-     */
-    public String getContentType() {
-        return "text/html";
-    }
-
-    public static class ParserCallback {
-    
-    }
+  public static class ParserCallback {}
 }

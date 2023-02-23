@@ -6,9 +6,9 @@ package com.tyron.builder.compiler.manifest;
  */
 public enum OtherOperationType {
 
-    // used to direct lint
-    ignore,
+  // used to direct lint
+  ignore,
 
-    // used to direct lint
-    targetApi
+  // used to direct lint
+  targetApi
 }

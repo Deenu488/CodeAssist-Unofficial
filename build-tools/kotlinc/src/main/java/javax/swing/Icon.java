@@ -2,9 +2,9 @@ package javax.swing;
 
 public interface Icon {
 
-    int getIconHeight();
+  int getIconHeight();
 
-    int getIconWidth();
+  int getIconWidth();
 
-    void paintIcon(Component component, Graphics graphics);
+  void paintIcon(Component component, Graphics graphics);
 }

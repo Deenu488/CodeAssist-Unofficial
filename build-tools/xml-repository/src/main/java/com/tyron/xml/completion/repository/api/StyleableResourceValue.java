@@ -1,8 +1,7 @@
 package com.tyron.xml.completion.repository.api;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A resource value representing a declare-styleable resource.
@@ -11,7 +10,6 @@ import java.util.List;
  * of attributes defined in the declare-styleable.
  */
 public interface StyleableResourceValue extends ResourceValue {
-    @NotNull
-    List<AttrResourceValue> getAllAttributes();
+  @NotNull
+  List<AttrResourceValue> getAllAttributes();
 }
-

@@ -44,33 +44,33 @@ import org.jetbrains.annotations.NotNull;
  * case when we are not generating the public and private R class.
  */
 public enum ResourceVisibility {
-    PRIVATE_XML_ONLY("default"),
-    PRIVATE("private"),
-    PUBLIC("public"),
-    UNDEFINED("undefined");
+  PRIVATE_XML_ONLY("default"),
+  PRIVATE("private"),
+  PUBLIC("public"),
+  UNDEFINED("undefined");
 
-    private final String qualifier;
+  private final String qualifier;
 
-    ResourceVisibility(String qualifier) {
-        this.qualifier = qualifier;
+  ResourceVisibility(String qualifier) {
+    this.qualifier = qualifier;
+  }
+
+  public String getName() {
+    return qualifier;
+  }
+
+  public static ResourceVisibility getEnum(@NotNull String qualifier) {
+    for (ResourceVisibility accessibility : values()) {
+      if (accessibility.qualifier.equals(qualifier)) {
+        return accessibility;
+      }
     }
 
-    public String getName() {
-        return qualifier;
-    }
+    return null;
+  }
 
-    public static ResourceVisibility getEnum(@NotNull String qualifier) {
-        for (ResourceVisibility accessibility : values()) {
-            if (accessibility.qualifier.equals(qualifier)) {
-                return accessibility;
-            }
-        }
-
-        return null;
-    }
-
-    public static ResourceVisibility max(
-            @NotNull ResourceVisibility v1, @NotNull ResourceVisibility v2) {
-        return v1.compareTo(v2) <= 0 ? v2 : v1;
-    }
+  public static ResourceVisibility max(
+      @NotNull ResourceVisibility v1, @NotNull ResourceVisibility v2) {
+    return v1.compareTo(v2) <= 0 ? v2 : v1;
+  }
 }

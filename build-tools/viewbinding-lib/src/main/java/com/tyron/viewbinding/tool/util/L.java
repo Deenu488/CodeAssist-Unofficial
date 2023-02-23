@@ -17,133 +17,129 @@
 package com.tyron.viewbinding.tool.util;
 
 import com.tyron.viewbinding.tool.processing.ScopedException;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
-
 import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
 
 public class L {
-    private static boolean sEnableDebug = false;
-    private static final Client sSystemClient = (kind, message, element) -> {
+  private static boolean sEnableDebug = false;
+  private static final Client sSystemClient =
+      (kind, message, element) -> {
         if (kind == Kind.ERROR) {
-            System.err.println(message);
+          System.err.println(message);
         } else {
-            System.out.println(message);
+          System.out.println(message);
         }
-    };
+      };
 
-    private static Client sClient = sSystemClient;
+  private static Client sClient = sSystemClient;
 
-    public static void setClient(Client client) {
-        if (client == null) {
-            sClient = sSystemClient;
-        } else {
-            sClient = client;
-        }
+  public static void setClient(Client client) {
+    if (client == null) {
+      sClient = sSystemClient;
+    } else {
+      sClient = client;
     }
+  }
 
-    public static void setDebugLog(boolean enabled) {
-        sEnableDebug = enabled;
-    }
+  public static void setDebugLog(boolean enabled) {
+    sEnableDebug = enabled;
+  }
 
-    public static void d(String msg, Object... args) {
-        if (sEnableDebug) {
-            printMessage(null, Diagnostic.Kind.NOTE, String.format(msg, args));
-        }
+  public static void d(String msg, Object... args) {
+    if (sEnableDebug) {
+      printMessage(null, Diagnostic.Kind.NOTE, String.format(msg, args));
     }
+  }
 
-    public static void d(Element element, String msg, Object... args) {
-        if (sEnableDebug) {
-            printMessage(element, Diagnostic.Kind.NOTE, String.format(msg, args));
-        }
+  public static void d(Element element, String msg, Object... args) {
+    if (sEnableDebug) {
+      printMessage(element, Diagnostic.Kind.NOTE, String.format(msg, args));
     }
+  }
 
-    public static void d(Throwable t, String msg, Object... args) {
-        if (sEnableDebug) {
-            printMessage(null, Diagnostic.Kind.NOTE,
-                    String.format(msg, args) + " " + getStackTrace(t));
-        }
+  public static void d(Throwable t, String msg, Object... args) {
+    if (sEnableDebug) {
+      printMessage(null, Diagnostic.Kind.NOTE, String.format(msg, args) + " " + getStackTrace(t));
     }
+  }
 
-    public static void w(String msg, Object... args) {
-        printMessage(null, Kind.WARNING, String.format(msg, args));
-    }
+  public static void w(String msg, Object... args) {
+    printMessage(null, Kind.WARNING, String.format(msg, args));
+  }
 
-    public static void w(Element element, String msg, Object... args) {
-        printMessage(element, Kind.WARNING, String.format(msg, args));
-    }
+  public static void w(Element element, String msg, Object... args) {
+    printMessage(element, Kind.WARNING, String.format(msg, args));
+  }
 
-    public static void w(Throwable t, String msg, Object... args) {
-        printMessage(null, Kind.WARNING,
-                String.format(msg, args) + " " + getStackTrace(t));
-    }
+  public static void w(Throwable t, String msg, Object... args) {
+    printMessage(null, Kind.WARNING, String.format(msg, args) + " " + getStackTrace(t));
+  }
 
-    private static void tryToThrowScoped(Throwable t, String fullMessage) {
-        if (t instanceof ScopedException) {
-            ScopedException ex = (ScopedException) t;
-            if (ex.isValid()) {
-                throw ex;
-            }
-        }
-        ScopedException ex = new ScopedException(t, fullMessage);
-        if (ex.isValid()) {
-            throw ex;
-        }
+  private static void tryToThrowScoped(Throwable t, String fullMessage) {
+    if (t instanceof ScopedException) {
+      ScopedException ex = (ScopedException) t;
+      if (ex.isValid()) {
+        throw ex;
+      }
     }
+    ScopedException ex = new ScopedException(t, fullMessage);
+    if (ex.isValid()) {
+      throw ex;
+    }
+  }
 
-    public static void e(String msg, Object... args) {
-        String fullMsg = String.format(msg, args);
-        tryToThrowScoped(null, fullMsg);
-        printMessage(null, Diagnostic.Kind.ERROR, fullMsg);
-    }
+  public static void e(String msg, Object... args) {
+    String fullMsg = String.format(msg, args);
+    tryToThrowScoped(null, fullMsg);
+    printMessage(null, Diagnostic.Kind.ERROR, fullMsg);
+  }
 
-    public static void e(Element element, String msg, Object... args) {
-        String fullMsg = String.format(msg, args);
-        tryToThrowScoped(null, fullMsg);
-        printMessage(element, Diagnostic.Kind.ERROR, fullMsg);
-    }
+  public static void e(Element element, String msg, Object... args) {
+    String fullMsg = String.format(msg, args);
+    tryToThrowScoped(null, fullMsg);
+    printMessage(element, Diagnostic.Kind.ERROR, fullMsg);
+  }
 
-    public static void e(Throwable t, String msg, Object... args) {
-        String fullMsg = String.format(msg, args);
-        tryToThrowScoped(t, fullMsg);
-        printMessage(null, Diagnostic.Kind.ERROR,
-                fullMsg + " " + getStackTrace(t));
-    }
+  public static void e(Throwable t, String msg, Object... args) {
+    String fullMsg = String.format(msg, args);
+    tryToThrowScoped(t, fullMsg);
+    printMessage(null, Diagnostic.Kind.ERROR, fullMsg + " " + getStackTrace(t));
+  }
 
-    private static void printMessage(Element element, Diagnostic.Kind kind, String message) {
-        if (kind == Kind.WARNING) {
-            // try to convert it to a scoped message
-            ScopedException ex = new ScopedException(message);
-            if (ex.isValid()) {
-                sClient.printMessage(kind, ex.createHumanReadableMessage(), element);
-                return;
-            }
-        }
-        sClient.printMessage(kind, message, element);
-        if (kind == Diagnostic.Kind.ERROR) {
-            throw new LoggedErrorException("failure, see logs for details.\n" + message);
-        }
+  private static void printMessage(Element element, Diagnostic.Kind kind, String message) {
+    if (kind == Kind.WARNING) {
+      // try to convert it to a scoped message
+      ScopedException ex = new ScopedException(message);
+      if (ex.isValid()) {
+        sClient.printMessage(kind, ex.createHumanReadableMessage(), element);
+        return;
+      }
     }
+    sClient.printMessage(kind, message, element);
+    if (kind == Diagnostic.Kind.ERROR) {
+      throw new LoggedErrorException("failure, see logs for details.\n" + message);
+    }
+  }
 
-    public static boolean isDebugEnabled() {
-        return sEnableDebug;
-    }
+  public static boolean isDebugEnabled() {
+    return sEnableDebug;
+  }
 
-    public interface Client {
-        void printMessage(Diagnostic.Kind kind, String message, Element element);
-    }
+  public interface Client {
+    void printMessage(Diagnostic.Kind kind, String message, Element element);
+  }
 
-    private static String getStackTrace(Throwable t) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        try {
-            t.printStackTrace(pw);
-        } finally {
-            pw.close();
-        }
-        return sw.toString();
+  private static String getStackTrace(Throwable t) {
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    try {
+      t.printStackTrace(pw);
+    } finally {
+      pw.close();
     }
+    return sw.toString();
+  }
 }

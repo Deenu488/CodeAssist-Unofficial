@@ -4,8 +4,6 @@ import org.junit.Test;
 
 public class EcjParserTest {
 
-    @Test
-    public void test() {
-
-    }
+  @Test
+  public void test() {}
 }

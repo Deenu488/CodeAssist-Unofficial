@@ -14,7 +14,7 @@ import java.io.IOException;
 /**
  * Class to handle json serialization and deserialization of messages.
  *
- * Reads json objects of the form:
+ * <p>Reads json objects of the form:
  *
  * <pre>
  * {
@@ -53,13 +53,15 @@ import java.io.IOException;
  * </table>
  *
  * <b>Notes</b>
+ *
  * <ul>
- *     <li>Offset need not be included, if needed by the consumer of the message it can
- *         be derived from the file, line and column.</li>
- *     <li>If line is included and column is not the message will be considered to apply
- *         to the whole line.</li>
- *     <li>A message can have multiple sources.</li>
+ *   <li>Offset need not be included, if needed by the consumer of the message it can be derived
+ *       from the file, line and column.
+ *   <li>If line is included and column is not the message will be considered to apply to the whole
+ *       line.
+ *   <li>A message can have multiple sources.
  * </ul>
+ *
  * It also can read legacy serialized objects of the form:
  *
  * <pre>{
@@ -81,129 +83,131 @@ import java.io.IOException;
  */
 public class MessageJsonSerializer extends TypeAdapter<Message> {
 
-    private static final String KIND = "kind";
+  private static final String KIND = "kind";
 
-    private static final String TEXT = "text";
+  private static final String TEXT = "text";
 
-    private static final String SOURCE_FILE_POSITIONS = "sources";
+  private static final String SOURCE_FILE_POSITIONS = "sources";
 
-    private static final String RAW_MESSAGE = "original";
+  private static final String RAW_MESSAGE = "original";
 
-    private static final String TOOL_NAME = "tool";
+  private static final String TOOL_NAME = "tool";
 
-    private static final String LEGACY_SOURCE_PATH = "sourcePath";
+  private static final String LEGACY_SOURCE_PATH = "sourcePath";
 
-    private static final String LEGACY_POSITION = "position";
+  private static final String LEGACY_POSITION = "position";
 
-    private static final BiMap<Message.Kind, String> KIND_STRING_ENUM_MAP;
+  private static final BiMap<Message.Kind, String> KIND_STRING_ENUM_MAP;
 
-    static {
-        EnumHashBiMap<Message.Kind, String> map = EnumHashBiMap.create(Message.Kind.class);
-        map.put(Message.Kind.ERROR, "error");
-        map.put(Message.Kind.WARNING, "warning");
-        map.put(Message.Kind.INFO, "info");
-        map.put(Message.Kind.STATISTICS, "statistics");
-        map.put(Message.Kind.UNKNOWN, "unknown");
-        map.put(Message.Kind.SIMPLE, "simple");
-        KIND_STRING_ENUM_MAP = Maps.unmodifiableBiMap(map);
+  static {
+    EnumHashBiMap<Message.Kind, String> map = EnumHashBiMap.create(Message.Kind.class);
+    map.put(Message.Kind.ERROR, "error");
+    map.put(Message.Kind.WARNING, "warning");
+    map.put(Message.Kind.INFO, "info");
+    map.put(Message.Kind.STATISTICS, "statistics");
+    map.put(Message.Kind.UNKNOWN, "unknown");
+    map.put(Message.Kind.SIMPLE, "simple");
+    KIND_STRING_ENUM_MAP = Maps.unmodifiableBiMap(map);
+  }
+
+  private final SourceFilePositionJsonSerializer mSourceFilePositionTypeAdapter;
+  private final SourcePositionJsonTypeAdapter mSourcePositionTypeAdapter;
+
+  public MessageJsonSerializer() {
+    mSourceFilePositionTypeAdapter = new SourceFilePositionJsonSerializer();
+    mSourcePositionTypeAdapter = mSourceFilePositionTypeAdapter.getSourcePositionTypeAdapter();
+  }
+
+  @Override
+  public void write(JsonWriter out, Message message) throws IOException {
+    out.beginObject()
+        .name(KIND)
+        .value(KIND_STRING_ENUM_MAP.get(message.getKind()))
+        .name(TEXT)
+        .value(message.getText())
+        .name(SOURCE_FILE_POSITIONS)
+        .beginArray();
+    for (SourceFilePosition position : message.getSourceFilePositions()) {
+      mSourceFilePositionTypeAdapter.write(out, position);
     }
-
-    private final SourceFilePositionJsonSerializer mSourceFilePositionTypeAdapter;
-    private final SourcePositionJsonTypeAdapter mSourcePositionTypeAdapter;
-
-    public MessageJsonSerializer() {
-        mSourceFilePositionTypeAdapter = new SourceFilePositionJsonSerializer();
-        mSourcePositionTypeAdapter = mSourceFilePositionTypeAdapter.getSourcePositionTypeAdapter();
+    out.endArray();
+    if (!message.getRawMessage().equals(message.getText())) {
+      out.name(RAW_MESSAGE).value(message.getRawMessage());
     }
-
-    @Override
-    public void write(JsonWriter out, Message message) throws IOException {
-        out.beginObject()
-                .name(KIND).value(KIND_STRING_ENUM_MAP.get(message.getKind()))
-                .name(TEXT).value(message.getText())
-                .name(SOURCE_FILE_POSITIONS).beginArray();
-        for (SourceFilePosition position : message.getSourceFilePositions()) {
-            mSourceFilePositionTypeAdapter.write(out, position);
-        }
-        out.endArray();
-        if (!message.getRawMessage().equals(message.getText())) {
-            out.name(RAW_MESSAGE).value(message.getRawMessage());
-        }
-        if (message.getToolName() != null) {
-            out.name(TOOL_NAME).value(message.getToolName());
-        }
-        out.endObject();
+    if (message.getToolName() != null) {
+      out.name(TOOL_NAME).value(message.getToolName());
     }
+    out.endObject();
+  }
 
-    @Override
-    public Message read(JsonReader in) throws IOException {
-        in.beginObject();
-        Message.Kind kind = Message.Kind.UNKNOWN;
-        String text = "";
-        String rawMessage = null;
-        String toolName = null;
-        ImmutableList.Builder<SourceFilePosition> positions =
-                new ImmutableList.Builder<SourceFilePosition>();
-        SourceFile legacyFile = SourceFile.UNKNOWN;
-        SourcePosition legacyPosition = SourcePosition.UNKNOWN;
-        while (in.hasNext()) {
-            String name = in.nextName();
-            if (name.equals(KIND)) {
-                //noinspection StringToUpperCaseOrToLowerCaseWithoutLocale
-                Message.Kind theKind = KIND_STRING_ENUM_MAP.inverse()
-                        .get(in.nextString().toLowerCase());
-                kind = (theKind != null) ? theKind : Message.Kind.UNKNOWN;
-            } else if (name.equals(TEXT)) {
-                text = in.nextString();
-            } else if (name.equals(RAW_MESSAGE)) {
-                rawMessage = in.nextString();
-            } else if (name.equals(TOOL_NAME)) {
-                toolName = in.nextString();
-            } else if (name.equals(SOURCE_FILE_POSITIONS)) {
-                switch (in.peek()) {
-                    case BEGIN_ARRAY:
-                        in.beginArray();
-                        while(in.hasNext()) {
-                            positions.add(mSourceFilePositionTypeAdapter.read(in));
-                        }
-                        in.endArray();
-                        break;
-                    case BEGIN_OBJECT:
-                        positions.add(mSourceFilePositionTypeAdapter.read(in));
-                        break;
-                    default:
-                        in.skipValue();
-                        break;
-                }
-            } else if (name.equals(LEGACY_SOURCE_PATH)) {
-                legacyFile = new SourceFile(new File(in.nextString()));
-            } else if (name.equals(LEGACY_POSITION)) {
-                legacyPosition = mSourcePositionTypeAdapter.read(in);
-            } else {
-                in.skipValue();
+  @Override
+  public Message read(JsonReader in) throws IOException {
+    in.beginObject();
+    Message.Kind kind = Message.Kind.UNKNOWN;
+    String text = "";
+    String rawMessage = null;
+    String toolName = null;
+    ImmutableList.Builder<SourceFilePosition> positions =
+        new ImmutableList.Builder<SourceFilePosition>();
+    SourceFile legacyFile = SourceFile.UNKNOWN;
+    SourcePosition legacyPosition = SourcePosition.UNKNOWN;
+    while (in.hasNext()) {
+      String name = in.nextName();
+      if (name.equals(KIND)) {
+        //noinspection StringToUpperCaseOrToLowerCaseWithoutLocale
+        Message.Kind theKind = KIND_STRING_ENUM_MAP.inverse().get(in.nextString().toLowerCase());
+        kind = (theKind != null) ? theKind : Message.Kind.UNKNOWN;
+      } else if (name.equals(TEXT)) {
+        text = in.nextString();
+      } else if (name.equals(RAW_MESSAGE)) {
+        rawMessage = in.nextString();
+      } else if (name.equals(TOOL_NAME)) {
+        toolName = in.nextString();
+      } else if (name.equals(SOURCE_FILE_POSITIONS)) {
+        switch (in.peek()) {
+          case BEGIN_ARRAY:
+            in.beginArray();
+            while (in.hasNext()) {
+              positions.add(mSourceFilePositionTypeAdapter.read(in));
             }
+            in.endArray();
+            break;
+          case BEGIN_OBJECT:
+            positions.add(mSourceFilePositionTypeAdapter.read(in));
+            break;
+          default:
+            in.skipValue();
+            break;
         }
-        in.endObject();
-
-        if (legacyFile != SourceFile.UNKNOWN || legacyPosition != SourcePosition.UNKNOWN) {
-            positions.add(new SourceFilePosition(legacyFile, legacyPosition));
-        }
-        if (rawMessage == null) {
-            rawMessage = text;
-        }
-        ImmutableList<SourceFilePosition> sourceFilePositions = positions.build();
-        if (!sourceFilePositions.isEmpty()) {
-            return new Message(kind, text, rawMessage, toolName, sourceFilePositions);
-        } else {
-            return new Message(kind, text, rawMessage, toolName, ImmutableList.of(SourceFilePosition.UNKNOWN));
-        }
+      } else if (name.equals(LEGACY_SOURCE_PATH)) {
+        legacyFile = new SourceFile(new File(in.nextString()));
+      } else if (name.equals(LEGACY_POSITION)) {
+        legacyPosition = mSourcePositionTypeAdapter.read(in);
+      } else {
+        in.skipValue();
+      }
     }
+    in.endObject();
 
-    public static void registerTypeAdapters(GsonBuilder builder) {
-        builder.registerTypeAdapter(SourceFile.class, new SourceFileJsonTypeAdapter());
-        builder.registerTypeAdapter(SourcePosition.class, new SourcePositionJsonTypeAdapter());
-        builder.registerTypeAdapter(SourceFilePosition.class,
-                new SourceFilePositionJsonSerializer());
-        builder.registerTypeAdapter(Message.class, new MessageJsonSerializer());
+    if (legacyFile != SourceFile.UNKNOWN || legacyPosition != SourcePosition.UNKNOWN) {
+      positions.add(new SourceFilePosition(legacyFile, legacyPosition));
     }
+    if (rawMessage == null) {
+      rawMessage = text;
+    }
+    ImmutableList<SourceFilePosition> sourceFilePositions = positions.build();
+    if (!sourceFilePositions.isEmpty()) {
+      return new Message(kind, text, rawMessage, toolName, sourceFilePositions);
+    } else {
+      return new Message(
+          kind, text, rawMessage, toolName, ImmutableList.of(SourceFilePosition.UNKNOWN));
+    }
+  }
+
+  public static void registerTypeAdapters(GsonBuilder builder) {
+    builder.registerTypeAdapter(SourceFile.class, new SourceFileJsonTypeAdapter());
+    builder.registerTypeAdapter(SourcePosition.class, new SourcePositionJsonTypeAdapter());
+    builder.registerTypeAdapter(SourceFilePosition.class, new SourceFilePositionJsonSerializer());
+    builder.registerTypeAdapter(Message.class, new MessageJsonSerializer());
+  }
 }

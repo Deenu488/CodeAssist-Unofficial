@@ -14,33 +14,33 @@
 package com.tyron.viewbinding.tool.writer;
 
 import com.squareup.javapoet.JavaFile;
-import org.apache.commons.io.FileUtils;
-
 import com.tyron.viewbinding.tool.util.L;
 import com.tyron.viewbinding.tool.util.LoggedErrorException;
-
 import java.io.File;
 import java.io.IOException;
+import org.apache.commons.io.FileUtils;
 
 public abstract class JavaFileWriter {
-    public abstract void writeToFile(String canonicalName, String contents);
-    public abstract void deleteFile(String canonicalName);
-    public void writeToFile(File exactPath, String contents) {
-        try {
-            File parent = exactPath.getParentFile();
-            parent.mkdirs();
-            try {
-                L.d("writing file %s", exactPath.getAbsoluteFile());
-                FileUtils.writeStringToFile(exactPath, contents, "utf-8");
-            } catch (IOException e) {
-                L.e(e, "Could not write to %s", exactPath);
-            }
-        } catch (LoggedErrorException e) {
-            // This will be logged later
-        }
-    }
+  public abstract void writeToFile(String canonicalName, String contents);
 
-    public final void writeToFile(JavaFile javafile) {
-        writeToFile(javafile.packageName + "." + javafile.typeSpec.name, javafile.toString());
+  public abstract void deleteFile(String canonicalName);
+
+  public void writeToFile(File exactPath, String contents) {
+    try {
+      File parent = exactPath.getParentFile();
+      parent.mkdirs();
+      try {
+        L.d("writing file %s", exactPath.getAbsoluteFile());
+        FileUtils.writeStringToFile(exactPath, contents, "utf-8");
+      } catch (IOException e) {
+        L.e(e, "Could not write to %s", exactPath);
+      }
+    } catch (LoggedErrorException e) {
+      // This will be logged later
     }
+  }
+
+  public final void writeToFile(JavaFile javafile) {
+    writeToFile(javafile.packageName + "." + javafile.typeSpec.name, javafile.toString());
+  }
 }
