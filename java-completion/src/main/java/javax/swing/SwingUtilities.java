@@ -4,7 +4,7 @@ import android.os.Looper;
 
 public class SwingUtilities {
 
-    public static boolean isEventDispatchThread() {
-        return Looper.myLooper() == Looper.getMainLooper();
-    }
+  public static boolean isEventDispatchThread() {
+    return Looper.myLooper() == Looper.getMainLooper();
+  }
 }

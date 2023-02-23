@@ -15,6 +15,10 @@
  */
 package com.squareup.javapoet;
 
+import static com.squareup.javapoet.Util.checkArgument;
+import static com.squareup.javapoet.Util.checkNotNull;
+import static com.squareup.javapoet.Util.checkState;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -34,10 +38,6 @@ import org.openjdk.javax.lang.model.type.TypeMirror;
 import org.openjdk.javax.lang.model.type.TypeVariable;
 import org.openjdk.javax.lang.model.util.Types;
 
-import static com.squareup.javapoet.Util.checkArgument;
-import static com.squareup.javapoet.Util.checkNotNull;
-import static com.squareup.javapoet.Util.checkState;
-
 /** A generated constructor or method declaration. */
 public final class MethodSpec {
   static final String CONSTRUCTOR = "<init>";
@@ -56,10 +56,14 @@ public final class MethodSpec {
 
   private MethodSpec(Builder builder) {
     CodeBlock code = builder.code.build();
-    checkArgument(code.isEmpty() || !builder.modifiers.contains(Modifier.ABSTRACT),
-        "abstract method %s cannot have code", builder.name);
-    checkArgument(!builder.varargs || lastParameterIsArray(builder.parameters),
-        "last parameter of varargs method %s must be an array", builder.name);
+    checkArgument(
+        code.isEmpty() || !builder.modifiers.contains(Modifier.ABSTRACT),
+        "abstract method %s cannot have code",
+        builder.name);
+    checkArgument(
+        !builder.varargs || lastParameterIsArray(builder.parameters),
+        "last parameter of varargs method %s must be an array",
+        builder.name);
 
     this.name = checkNotNull(builder.name, "name == null");
     this.javadoc = builder.javadoc.build();
@@ -146,18 +150,21 @@ public final class MethodSpec {
     return name.equals(CONSTRUCTOR);
   }
 
-  @Override public boolean equals(Object o) {
+  @Override
+  public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null) return false;
     if (getClass() != o.getClass()) return false;
     return toString().equals(o.toString());
   }
 
-  @Override public int hashCode() {
+  @Override
+  public int hashCode() {
     return toString().hashCode();
   }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     StringBuilder out = new StringBuilder();
     try {
       CodeWriter codeWriter = new CodeWriter(out);
@@ -233,8 +240,7 @@ public final class MethodSpec {
    * <p>Note that in JavaPoet 1.2 through 1.7 this method retained annotations from the method and
    * parameters of the overridden method. Since JavaPoet 1.8 annotations must be added separately.
    */
-  public static Builder overriding(
-      ExecutableElement method, DeclaredType enclosing, Types types) {
+  public static Builder overriding(ExecutableElement method, DeclaredType enclosing, Types types) {
     ExecutableType executableType = (ExecutableType) types.asMemberOf(enclosing, method);
     List<? extends TypeMirror> resolvedParameterTypes = executableType.getParameterTypes();
     TypeMirror resolvedReturnType = executableType.getReturnType();
@@ -281,8 +287,8 @@ public final class MethodSpec {
 
     private Builder(String name) {
       checkNotNull(name, "name == null");
-      checkArgument(name.equals(CONSTRUCTOR) || SourceVersion.isName(name),
-          "not a valid name: %s", name);
+      checkArgument(
+          name.equals(CONSTRUCTOR) || SourceVersion.isName(name), "not a valid name: %s", name);
       this.name = name;
       this.returnType = name.equals(CONSTRUCTOR) ? null : TypeName.VOID;
     }
@@ -435,7 +441,7 @@ public final class MethodSpec {
 
     /**
      * @param controlFlow the control flow construct and its code, such as "if (foo == 5)".
-     * Shouldn't contain braces or newline characters.
+     *     Shouldn't contain braces or newline characters.
      */
     public Builder beginControlFlow(String controlFlow, Object... args) {
       code.beginControlFlow(controlFlow, args);
@@ -457,8 +463,8 @@ public final class MethodSpec {
     }
 
     /**
-     * @param controlFlow the optional control flow construct and its code, such as
-     *     "while(foo == 20)". Only used for "do/while" control flows.
+     * @param controlFlow the optional control flow construct and its code, such as "while(foo ==
+     *     20)". Only used for "do/while" control flows.
      */
     public Builder endControlFlow(String controlFlow, Object... args) {
       code.endControlFlow(controlFlow, args);

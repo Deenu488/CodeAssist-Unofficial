@@ -2,9 +2,6 @@ package com.tyron.resolver.model;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.google.common.collect.ImmutableList;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,168 +11,166 @@ import java.util.Objects;
 
 public class Pom {
 
-    private String artifactId;
-    private String groupId;
-    private String versionName;
-    private String packaging;
+  private String artifactId;
+  private String groupId;
+  private String versionName;
+  private String packaging;
 
-    private boolean userDefined;
+  private boolean userDefined;
 
-    private List<Dependency> dependencies;
-    private List<Dependency> excludes;
+  private List<Dependency> dependencies;
+  private List<Dependency> excludes;
 
-    private final Map<String, String> properties = new HashMap<>();
-    private Pom parent;
+  private final Map<String, String> properties = new HashMap<>();
+  private Pom parent;
 
-    private List<Dependency> managedDependencies;
+  private List<Dependency> managedDependencies;
 
-    public Pom() {
+  public Pom() {}
 
+  public static Pom valueOf(String groupId, String artifactId, String versionName) {
+    Pom pom = new Pom();
+    pom.setGroupId(groupId);
+    pom.setArtifactId(artifactId);
+    pom.setVersionName(versionName);
+    return pom;
+  }
+
+  public static Pom valueOf(String declaration) {
+    String[] names = declaration.split(":");
+    if (names.length < 3) {
+      throw new IllegalStateException("Unknown format: " + declaration);
     }
+    return valueOf(names[0], names[1], names[2]);
+  }
 
-    public static Pom valueOf(String groupId, String artifactId, String versionName) {
-        Pom pom = new Pom();
-        pom.setGroupId(groupId);
-        pom.setArtifactId(artifactId);
-        pom.setVersionName(versionName);
-        return pom;
-    }
+  public String getVersionName() {
+    return versionName;
+  }
 
-    public static Pom valueOf(String declaration) {
-        String[] names = declaration.split(":");
-        if (names.length < 3) {
-            throw new IllegalStateException("Unknown format: " + declaration);
-        }
-        return valueOf(names[0], names[1], names[2]);
-    }
+  public void setVersionName(String versionName) {
+    this.versionName = versionName;
+  }
 
-    public String getVersionName() {
-        return versionName;
-    }
+  public String getGroupId() {
+    return groupId;
+  }
 
-    public void setVersionName(String versionName) {
-        this.versionName = versionName;
-    }
+  public void setGroupId(String groupId) {
+    this.groupId = groupId;
+  }
 
-    public String getGroupId() {
-        return groupId;
-    }
+  public String getArtifactId() {
+    return artifactId;
+  }
 
-    public void setGroupId(String groupId) {
-        this.groupId = groupId;
-    }
+  public void setArtifactId(String artifactId) {
+    this.artifactId = artifactId;
+  }
 
-    public String getArtifactId() {
-        return artifactId;
+  public List<Dependency> getDependencies() {
+    if (dependencies == null) {
+      return Collections.emptyList();
     }
+    return dependencies;
+  }
 
-    public void setArtifactId(String artifactId) {
-        this.artifactId = artifactId;
+  public List<Dependency> getExcludes() {
+    if (excludes == null) {
+      return Collections.emptyList();
     }
+    return excludes;
+  }
 
-    public List<Dependency> getDependencies() {
-        if (dependencies == null) {
-            return Collections.emptyList();
-        }
-        return dependencies;
-    }
+  public void setDependencies(List<Dependency> dependencies) {
+    this.dependencies = dependencies;
+  }
 
-    public List<Dependency> getExcludes() {
-        if (excludes == null) {
-            return Collections.emptyList();
-        }
-        return excludes;
-    }
+  public void setExcludes(List<Dependency> excludes) {
+    this.excludes = excludes;
+  }
 
-    public void setDependencies(List<Dependency> dependencies) {
-        this.dependencies = dependencies;
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Pom pom = (Pom) o;
+    return Objects.equals(artifactId, pom.artifactId) && Objects.equals(groupId, pom.groupId);
+  }
 
-    public void setExcludes(List<Dependency> excludes) {
-        this.excludes = excludes;
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(artifactId, groupId);
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Pom pom = (Pom) o;
-        return Objects.equals(artifactId, pom.artifactId) && Objects.equals(groupId, pom.groupId);
-    }
+  public String getDeclarationString() {
+    return groupId + ":" + artifactId + ":" + versionName;
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(artifactId, groupId);
-    }
+  public String getFileName() {
+    return artifactId + "-" + versionName;
+  }
 
-    public String getDeclarationString() {
-        return groupId + ":" + artifactId + ":" + versionName;
-    }
+  public String getPath() {
+    String path = groupId.replace('.', '/');
+    return path + "/" + artifactId + "/" + versionName;
+  }
 
-    public String getFileName() {
-        return artifactId + "-" + versionName;
-    }
+  @NonNull
+  @Override
+  public String toString() {
+    return getDeclarationString();
+  }
 
-    public String getPath() {
-        String path = groupId.replace('.', '/');
-        return path + "/" + artifactId + "/" + versionName;
-    }
+  public String getPackaging() {
+    return packaging;
+  }
 
-    @NonNull
-    @Override
-    public String toString() {
-        return getDeclarationString();
-    }
+  public void setUserDefined(boolean val) {
+    userDefined = val;
+  }
 
-    public String getPackaging() {
-        return packaging;
-    }
+  public boolean isUserDefined() {
+    return userDefined;
+  }
 
-    public void setUserDefined(boolean val) {
-        userDefined = val;
-    }
+  public void setPackaging(String packaging) {
+    this.packaging = packaging;
+  }
 
-    public boolean isUserDefined() {
-        return userDefined;
+  public void addExcludes(List<Dependency> excludes) {
+    if (this.excludes == null) {
+      this.excludes = new ArrayList<>();
     }
+    this.excludes.addAll(excludes);
+  }
 
-    public void setPackaging(String packaging) {
-        this.packaging = packaging;
-    }
+  public void addProperty(String key, String value) {
+    properties.put(key, value);
+  }
 
-    public void addExcludes(List<Dependency> excludes) {
-        if (this.excludes == null) {
-            this.excludes = new ArrayList<>();
-        }
-        this.excludes.addAll(excludes);
-    }
+  @Nullable
+  public String getProperty(String key) {
+    return properties.get(key);
+  }
 
-    public void addProperty(String key, String value) {
-        properties.put(key, value);
-    }
+  @Nullable
+  public Pom getParent() {
+    return parent;
+  }
 
-    @Nullable
-    public String getProperty(String key) {
-        return properties.get(key);
-    }
+  public void setParent(Pom parent) {
+    this.parent = parent;
+  }
 
-    @Nullable
-    public Pom getParent() {
-        return parent;
+  public List<Dependency> getManagedDependencies() {
+    if (managedDependencies == null) {
+      managedDependencies = new ArrayList<>();
     }
+    return managedDependencies;
+  }
 
-    public void setParent(Pom parent) {
-        this.parent = parent;
-    }
-
-    public List<Dependency> getManagedDependencies() {
-        if (managedDependencies == null) {
-            managedDependencies = new ArrayList<>();
-        }
-        return managedDependencies;
-    }
-
-    public void setManagedDependencies(List<Dependency> dependencies) {
-        managedDependencies = dependencies;
-    }
+  public void setManagedDependencies(List<Dependency> dependencies) {
+    managedDependencies = dependencies;
+  }
 }

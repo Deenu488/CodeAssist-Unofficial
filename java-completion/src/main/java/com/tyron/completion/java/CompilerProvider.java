@@ -1,43 +1,40 @@
 package com.tyron.completion.java;
 
-
 import com.tyron.completion.java.compiler.CompilerContainer;
 import com.tyron.completion.java.compiler.ParseTask;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import javax.tools.JavaFileObject;
 
 public interface CompilerProvider {
 
-    Set<String> imports();
-    
-    Set<String> publicTopLevelTypes();
+  Set<String> imports();
 
-    List<String> packagePrivateTopLevelTypes(String packageName);
+  Set<String> publicTopLevelTypes();
 
-    Iterable<Path> search(String query);
+  List<String> packagePrivateTopLevelTypes(String packageName);
 
-    Optional<JavaFileObject> findAnywhere(String className);
+  Iterable<Path> search(String query);
 
-    Path findTypeDeclaration(String className);
+  Optional<JavaFileObject> findAnywhere(String className);
 
-    Path[] findTypeReferences(String className);
+  Path findTypeDeclaration(String className);
 
-    Path[] findMemberReferences(String className, String memberName);
+  Path[] findTypeReferences(String className);
 
-    ParseTask parse(Path file);
+  Path[] findMemberReferences(String className, String memberName);
 
-    ParseTask parse(JavaFileObject file);
+  ParseTask parse(Path file);
 
-    CompilerContainer compile(Path... files);
+  ParseTask parse(JavaFileObject file);
 
-    CompilerContainer compile(Collection<? extends JavaFileObject> sources);
+  CompilerContainer compile(Path... files);
 
-    Path NOT_FOUND = Paths.get("");
+  CompilerContainer compile(Collection<? extends JavaFileObject> sources);
+
+  Path NOT_FOUND = Paths.get("");
 }

@@ -179,4 +179,3 @@ public final class JavaCommentsHelper implements CommentsHelper {
     return true;
   }
 }
-

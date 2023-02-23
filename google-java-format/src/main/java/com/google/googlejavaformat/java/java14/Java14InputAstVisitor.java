@@ -22,8 +22,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.googlejavaformat.OpsBuilder;
 import com.google.googlejavaformat.OpsBuilder.BlankLineWanted;
 import com.google.googlejavaformat.java.JavaInputAstVisitor;
-
-import javax.lang.model.element.Name;
 import com.sun.source.tree.AnnotationTree;
 import com.sun.source.tree.CaseTree;
 import com.sun.source.tree.ClassTree;
@@ -33,29 +31,29 @@ import com.sun.source.tree.ModifiersTree;
 import com.sun.source.tree.ModuleTree;
 import com.sun.source.tree.Tree;
 import com.sun.tools.javac.tree.JCTree.JCVariableDecl;
-
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import javax.lang.model.element.Name;
 
 /**
  * Extends {@link JavaInputAstVisitor} with support for AST nodes that were added or modified for
  * Java 14.
  *
- * CodeAssist changed: removed unsupported codes
+ * <p>CodeAssist changed: removed unsupported codes
  */
 public class Java14InputAstVisitor extends JavaInputAstVisitor {
   private static final Method COMPILATION_UNIT_TREE_GET_MODULE =
       maybeGetMethod(CompilationUnitTree.class, "getModule");
   private static final Method CLASS_TREE_GET_PERMITS_CLAUSE =
       maybeGetMethod(ClassTree.class, "getPermitsClause");
-//  private static final Method BINDING_PATTERN_TREE_GET_VARIABLE =
-//      maybeGetMethod(BindingPatternTree.class, "getVariable");
-//  private static final Method BINDING_PATTERN_TREE_GET_TYPE =
-//      maybeGetMethod(BindingPatternTree.class, "getType");
-//  private static final Method BINDING_PATTERN_TREE_GET_BINDING =
-//      maybeGetMethod(BindingPatternTree.class, "getBinding");
+  //  private static final Method BINDING_PATTERN_TREE_GET_VARIABLE =
+  //      maybeGetMethod(BindingPatternTree.class, "getVariable");
+  //  private static final Method BINDING_PATTERN_TREE_GET_TYPE =
+  //      maybeGetMethod(BindingPatternTree.class, "getType");
+  //  private static final Method BINDING_PATTERN_TREE_GET_BINDING =
+  //      maybeGetMethod(BindingPatternTree.class, "getBinding");
   private static final Method CASE_TREE_GET_LABELS = maybeGetMethod(CaseTree.class, "getLabels");
 
   public Java14InputAstVisitor(OpsBuilder builder, int indentMultiplier) {
@@ -89,24 +87,27 @@ public class Java14InputAstVisitor extends JavaInputAstVisitor {
     }
   }
 
-//  @Override
-//  public Void visitBindingPattern(BindingPatternTree node, Void unused) {
-//    sync(node);
-//    if (BINDING_PATTERN_TREE_GET_VARIABLE != null) {
-//      VariableTree variableTree = (VariableTree) invoke(BINDING_PATTERN_TREE_GET_VARIABLE, node);
-//      visitBindingPattern(
-//          variableTree.getModifiers(), variableTree.getType(), variableTree.getName());
-//    } else if (BINDING_PATTERN_TREE_GET_TYPE != null && BINDING_PATTERN_TREE_GET_BINDING != null) {
-//      Tree type = (Tree) invoke(BINDING_PATTERN_TREE_GET_TYPE, node);
-//      Name name = (Name) invoke(BINDING_PATTERN_TREE_GET_BINDING, node);
-//      visitBindingPattern(/* modifiers= */ null, type, name);
-//    } else {
-//      throw new LinkageError(
-//          "BindingPatternTree must have either getVariable() or both getType() and getBinding(),"
-//              + " but does not");
-//    }
-//    return null;
-//  }
+  //  @Override
+  //  public Void visitBindingPattern(BindingPatternTree node, Void unused) {
+  //    sync(node);
+  //    if (BINDING_PATTERN_TREE_GET_VARIABLE != null) {
+  //      VariableTree variableTree = (VariableTree) invoke(BINDING_PATTERN_TREE_GET_VARIABLE,
+  // node);
+  //      visitBindingPattern(
+  //          variableTree.getModifiers(), variableTree.getType(), variableTree.getName());
+  //    } else if (BINDING_PATTERN_TREE_GET_TYPE != null && BINDING_PATTERN_TREE_GET_BINDING !=
+  // null) {
+  //      Tree type = (Tree) invoke(BINDING_PATTERN_TREE_GET_TYPE, node);
+  //      Name name = (Name) invoke(BINDING_PATTERN_TREE_GET_BINDING, node);
+  //      visitBindingPattern(/* modifiers= */ null, type, name);
+  //    } else {
+  //      throw new LinkageError(
+  //          "BindingPatternTree must have either getVariable() or both getType() and
+  // getBinding(),"
+  //              + " but does not");
+  //    }
+  //    return null;
+  //  }
 
   private void visitBindingPattern(ModifiersTree modifiers, Tree type, Name name) {
     if (modifiers != null) {
@@ -119,22 +120,22 @@ public class Java14InputAstVisitor extends JavaInputAstVisitor {
     visit(name);
   }
 
-//  @Override
-//  public Void visitYield(YieldTree node, Void aVoid) {
-//    sync(node);
-//    token("yield");
-//    builder.space();
-//    scan(node.getValue(), null);
-//    token(";");
-//    return null;
-//  }
-//
-//  @Override
-//  public Void visitSwitchExpression(SwitchExpressionTree node, Void aVoid) {
-//    sync(node);
-//    visitSwitch(node.getExpression(), node.getCases());
-//    return null;
-//  }
+  //  @Override
+  //  public Void visitYield(YieldTree node, Void aVoid) {
+  //    sync(node);
+  //    token("yield");
+  //    builder.space();
+  //    scan(node.getValue(), null);
+  //    token(";");
+  //    return null;
+  //  }
+  //
+  //  @Override
+  //  public Void visitSwitchExpression(SwitchExpressionTree node, Void aVoid) {
+  //    sync(node);
+  //    visitSwitch(node.getExpression(), node.getCases());
+  //    return null;
+  //  }
 
   @Override
   public Void visitClass(ClassTree tree, Void unused) {
@@ -149,9 +150,9 @@ public class Java14InputAstVisitor extends JavaInputAstVisitor {
       case ENUM:
         visitEnumDeclaration(tree);
         break;
-//      case RECORD:
-//        visitRecordDeclaration(tree);
-//        break;
+        //      case RECORD:
+        //        visitRecordDeclaration(tree);
+        //        break;
       default:
         throw new AssertionError(tree.getKind());
     }
@@ -206,8 +207,9 @@ public class Java14InputAstVisitor extends JavaInputAstVisitor {
     } else {
       List<Tree> members =
           node.getMembers().stream()
-                  .filter(t -> false)
-//              .filter(t -> (TreeInfo.flags((JCTree) t) & Flags.GENERATED_MEMMBER) == 0)
+              .filter(t -> false)
+              //              .filter(t -> (TreeInfo.flags((JCTree) t) & Flags.GENERATED_MEMMBER) ==
+              // 0)
               .collect(toImmutableList());
       addBodyDeclarations(members, BracesOrNot.YES, FirstDeclarationsOrNot.YES);
     }
@@ -231,11 +233,11 @@ public class Java14InputAstVisitor extends JavaInputAstVisitor {
     builder.open(ZERO);
     token("instanceof");
     builder.breakOp(" ");
-//    if (node.getPattern() != null) {
-//      scan(node.getPattern(), null);
-//    } else {
-      scan(node.getType(), null);
-//    }
+    //    if (node.getPattern() != null) {
+    //      scan(node.getPattern(), null);
+    //    } else {
+    scan(node.getType(), null);
+    //    }
     builder.close();
     builder.close();
     return null;
@@ -254,7 +256,7 @@ public class Java14InputAstVisitor extends JavaInputAstVisitor {
           labels.size() == 1
               && getOnlyElement(labels).getKind().name().equals("DEFAULT_CASE_LABEL");
     } else {
-      labels = Collections.emptyList(); //node.getExpressions();
+      labels = Collections.emptyList(); // node.getExpressions();
       isDefault = labels.isEmpty();
     }
     if (isDefault) {
@@ -274,33 +276,33 @@ public class Java14InputAstVisitor extends JavaInputAstVisitor {
       }
       builder.close();
     }
-//    switch (node.getCaseKind()) {
-//      case STATEMENT:
-//        token(":");
-//        builder.open(plusTwo);
-//        visitStatements(node.getStatements());
-//        builder.close();
-//        break;
-//      case RULE:
-//        builder.space();
-//        token("-");
-//        token(">");
-//        builder.space();
-//        if (node.getBody().getKind() == Tree.Kind.BLOCK) {
-//          // Explicit call with {@link CollapseEmptyOrNot.YES} to handle empty case blocks.
-//          visitBlock(
-//              (BlockTree) node.getBody(),
-//              CollapseEmptyOrNot.YES,
-//              AllowLeadingBlankLine.NO,
-//              AllowTrailingBlankLine.NO);
-//        } else {
-//          scan(node.getBody(), null);
-//        }
-//        builder.guessToken(";");
-//        break;
-//      default:
-//        throw new AssertionError(node.getCaseKind());
-//    }
+    //    switch (node.getCaseKind()) {
+    //      case STATEMENT:
+    //        token(":");
+    //        builder.open(plusTwo);
+    //        visitStatements(node.getStatements());
+    //        builder.close();
+    //        break;
+    //      case RULE:
+    //        builder.space();
+    //        token("-");
+    //        token(">");
+    //        builder.space();
+    //        if (node.getBody().getKind() == Tree.Kind.BLOCK) {
+    //          // Explicit call with {@link CollapseEmptyOrNot.YES} to handle empty case blocks.
+    //          visitBlock(
+    //              (BlockTree) node.getBody(),
+    //              CollapseEmptyOrNot.YES,
+    //              AllowLeadingBlankLine.NO,
+    //              AllowTrailingBlankLine.NO);
+    //        } else {
+    //          scan(node.getBody(), null);
+    //        }
+    //        builder.guessToken(";");
+    //        break;
+    //      default:
+    //        throw new AssertionError(node.getCaseKind());
+    //    }
     return null;
   }
 

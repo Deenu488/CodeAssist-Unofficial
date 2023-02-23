@@ -2,17 +2,17 @@ package com.tyron.editor;
 
 public interface Caret {
 
-    int getStart();
+  int getStart();
 
-    int getEnd();
+  int getEnd();
 
-    int getStartLine();
+  int getStartLine();
 
-    int getStartColumn();
+  int getStartColumn();
 
-    int getEndLine();
+  int getEndLine();
 
-    int getEndColumn();
+  int getEndColumn();
 
-    boolean isSelected();
+  boolean isSelected();
 }

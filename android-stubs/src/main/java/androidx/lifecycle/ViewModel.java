@@ -1,4 +1,3 @@
 package androidx.lifecycle;
 
-public class ViewModel {
-}
+public class ViewModel {}

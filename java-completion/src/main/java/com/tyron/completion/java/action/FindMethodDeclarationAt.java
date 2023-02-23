@@ -9,36 +9,37 @@ import com.sun.source.util.Trees;
 
 public class FindMethodDeclarationAt extends TreeScanner<MethodTree, Long> {
 
-    private final SourcePositions mPos;
-    private CompilationUnitTree mCompilationUnit;
+  private final SourcePositions mPos;
+  private CompilationUnitTree mCompilationUnit;
 
-    public FindMethodDeclarationAt(JavacTask task) {
-        mPos = Trees.instance(task).getSourcePositions();
+  public FindMethodDeclarationAt(JavacTask task) {
+    mPos = Trees.instance(task).getSourcePositions();
+  }
+
+  @Override
+  public MethodTree visitCompilationUnit(CompilationUnitTree compilationUnitTree, Long aLong) {
+    mCompilationUnit = compilationUnitTree;
+    return super.visitCompilationUnit(compilationUnitTree, aLong);
+  }
+
+  @Override
+  public MethodTree visitMethod(MethodTree methodTree, Long find) {
+    MethodTree smaller = super.visitMethod(methodTree, find);
+    if (smaller != null) {
+      return smaller;
     }
 
-    @Override
-    public MethodTree visitCompilationUnit(CompilationUnitTree compilationUnitTree, Long aLong) {
-        mCompilationUnit = compilationUnitTree;
-        return super.visitCompilationUnit(compilationUnitTree, aLong);
+    if (mPos.getStartPosition(mCompilationUnit, methodTree) <= find
+        && find < mPos.getEndPosition(mCompilationUnit, methodTree)) {
+      return methodTree;
     }
 
-    @Override
-    public MethodTree visitMethod(MethodTree methodTree, Long find) {
-        MethodTree smaller = super.visitMethod(methodTree, find);
-        if (smaller != null) {
-            return smaller;
-        }
-        
-        if (mPos.getStartPosition(mCompilationUnit, methodTree) <= find && find < mPos.getEndPosition(mCompilationUnit, methodTree)) {
-            return methodTree;
-        }
+    return null;
+  }
 
-        return null;
-    }
-
-    @Override
-    public MethodTree reduce(MethodTree r1, MethodTree r2) {
-        if (r1 != null) return r1;
-        return r2;
-    }
+  @Override
+  public MethodTree reduce(MethodTree r1, MethodTree r2) {
+    if (r1 != null) return r1;
+    return r2;
+  }
 }

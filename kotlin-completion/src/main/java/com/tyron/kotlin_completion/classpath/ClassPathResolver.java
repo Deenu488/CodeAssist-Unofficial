@@ -5,33 +5,32 @@ import java.util.Set;
 
 public interface ClassPathResolver {
 
-    ClassPathResolver EMPTY = new ClassPathResolver() {
+  ClassPathResolver EMPTY =
+      new ClassPathResolver() {
         @Override
         public String getResolveType() {
-            return "[]";
+          return "[]";
         }
 
         @Override
         public Set<ClassPathEntry> getClassPath() {
-            return Collections.emptySet();
+          return Collections.emptySet();
         }
-    };
+      };
 
-    String getResolveType();
+  String getResolveType();
 
-    Set<ClassPathEntry> getClassPath();
+  Set<ClassPathEntry> getClassPath();
 
-    default Set<ClassPathEntry> getClassPathOrEmpty() {
-        try {
-            return getClassPath();
-        } catch (Exception e) {
-            return Collections.emptySet();
-        }
+  default Set<ClassPathEntry> getClassPathOrEmpty() {
+    try {
+      return getClassPath();
+    } catch (Exception e) {
+      return Collections.emptySet();
     }
+  }
 
-    default Set<ClassPathEntry> getClassPathWithSources() {
-        return getClassPath();
-    }
-
-
+  default Set<ClassPathEntry> getClassPathWithSources() {
+    return getClassPath();
+  }
 }

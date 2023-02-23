@@ -1,9 +1,11 @@
 package com.tyron.test;
 
 public class CompleteIdentifier {
-    private static final Object IDENTIFIER = new Object();
+  private static final Object IDENTIFIER = new Object();
 
-    public static void main() {
-        /** @insert */
-    }
+  public static void main() {
+    /**
+     * @insert
+     */
+  }
 }

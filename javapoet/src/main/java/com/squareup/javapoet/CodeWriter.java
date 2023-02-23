@@ -15,6 +15,12 @@
  */
 package com.squareup.javapoet;
 
+import static com.squareup.javapoet.Util.checkArgument;
+import static com.squareup.javapoet.Util.checkNotNull;
+import static com.squareup.javapoet.Util.checkState;
+import static com.squareup.javapoet.Util.join;
+import static com.squareup.javapoet.Util.stringLiteralWithDoubleQuotes;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,12 +35,6 @@ import java.util.Objects;
 import java.util.Set;
 import org.openjdk.javax.lang.model.SourceVersion;
 import org.openjdk.javax.lang.model.element.Modifier;
-
-import static com.squareup.javapoet.Util.checkArgument;
-import static com.squareup.javapoet.Util.checkNotNull;
-import static com.squareup.javapoet.Util.checkState;
-import static com.squareup.javapoet.Util.join;
-import static com.squareup.javapoet.Util.stringLiteralWithDoubleQuotes;
 
 /**
  * Converts a {@link JavaFile} to a string suitable to both human- and javac-consumption. This
@@ -74,7 +74,10 @@ final class CodeWriter {
     this(out, indent, Collections.<String, ClassName>emptyMap(), staticImports);
   }
 
-  CodeWriter(Appendable out, String indent, Map<String, ClassName> importedTypes,
+  CodeWriter(
+      Appendable out,
+      String indent,
+      Map<String, ClassName> importedTypes,
       Set<String> staticImports) {
     this.out = new LineWrapper(out, indent, 100);
     this.indent = checkNotNull(indent, "indent == null");
@@ -229,9 +232,7 @@ final class CodeWriter {
         case "$S":
           String string = (String) codeBlock.args.get(a++);
           // Emit null as a literal null: no quotes.
-          emitAndIndent(string != null
-              ? stringLiteralWithDoubleQuotes(string, indent)
-              : "null");
+          emitAndIndent(string != null ? stringLiteralWithDoubleQuotes(string, indent) : "null");
           break;
 
         case "$T":
@@ -366,8 +367,8 @@ final class CodeWriter {
 
       if (resolved != null && Objects.equals(resolved.canonicalName, c.canonicalName)) {
         int suffixOffset = c.simpleNames().size() - 1;
-        return join(".", className.simpleNames().subList(
-            suffixOffset, className.simpleNames().size()));
+        return join(
+            ".", className.simpleNames().subList(suffixOffset, className.simpleNames().size()));
       }
     }
 

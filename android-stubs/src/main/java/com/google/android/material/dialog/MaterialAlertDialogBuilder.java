@@ -27,7 +27,6 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
-
 import androidx.annotation.ArrayRes;
 import androidx.annotation.AttrRes;
 import androidx.annotation.DrawableRes;
@@ -49,292 +48,292 @@ import androidx.appcompat.app.AlertDialog;
  */
 public class MaterialAlertDialogBuilder extends AlertDialog.Builder {
 
-    public MaterialAlertDialogBuilder(@NonNull Context context) {
-        throw new RuntimeException("Stub!");
-    }
+  public MaterialAlertDialogBuilder(@NonNull Context context) {
+    throw new RuntimeException("Stub!");
+  }
 
-    public MaterialAlertDialogBuilder(@NonNull Context context, int overrideThemeResId) {
-        throw new RuntimeException("Stub!");
-    }
+  public MaterialAlertDialogBuilder(@NonNull Context context, int overrideThemeResId) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public AlertDialog create() {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public AlertDialog create() {
+    throw new RuntimeException("Stub!");
+  }
 
-    @Nullable
-    public Drawable getBackground() {
-        throw new RuntimeException("Stub!");
-    }
+  @Nullable
+  public Drawable getBackground() {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    public MaterialAlertDialogBuilder setBackground(@Nullable Drawable background) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  public MaterialAlertDialogBuilder setBackground(@Nullable Drawable background) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    public MaterialAlertDialogBuilder setBackgroundInsetStart(@Px int backgroundInsetStart) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  public MaterialAlertDialogBuilder setBackgroundInsetStart(@Px int backgroundInsetStart) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    public MaterialAlertDialogBuilder setBackgroundInsetTop(@Px int backgroundInsetTop) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  public MaterialAlertDialogBuilder setBackgroundInsetTop(@Px int backgroundInsetTop) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    public MaterialAlertDialogBuilder setBackgroundInsetEnd(@Px int backgroundInsetEnd) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  public MaterialAlertDialogBuilder setBackgroundInsetEnd(@Px int backgroundInsetEnd) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    public MaterialAlertDialogBuilder setBackgroundInsetBottom(@Px int backgroundInsetBottom) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  public MaterialAlertDialogBuilder setBackgroundInsetBottom(@Px int backgroundInsetBottom) {
+    throw new RuntimeException("Stub!");
+  }
 
-    // The following methods are all pass-through methods used to specify the return type for the
-    // builder chain.
+  // The following methods are all pass-through methods used to specify the return type for the
+  // builder chain.
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setTitle(@StringRes int titleId) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setTitle(@StringRes int titleId) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setTitle(@Nullable CharSequence title) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setTitle(@Nullable CharSequence title) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setCustomTitle(@Nullable View customTitleView) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setCustomTitle(@Nullable View customTitleView) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setMessage(@StringRes int messageId) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setMessage(@StringRes int messageId) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setMessage(@Nullable CharSequence message) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setMessage(@Nullable CharSequence message) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setIcon(@DrawableRes int iconId) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setIcon(@DrawableRes int iconId) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setIcon(@Nullable Drawable icon) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setIcon(@Nullable Drawable icon) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setIconAttribute(@AttrRes int attrId) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setIconAttribute(@AttrRes int attrId) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setPositiveButton(
-            @StringRes int textId, @Nullable final OnClickListener listener) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setPositiveButton(
+      @StringRes int textId, @Nullable final OnClickListener listener) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setPositiveButton(
-            @Nullable CharSequence text, @Nullable final OnClickListener listener) {
-        return (MaterialAlertDialogBuilder) super.setPositiveButton(text, listener);
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setPositiveButton(
+      @Nullable CharSequence text, @Nullable final OnClickListener listener) {
+    return (MaterialAlertDialogBuilder) super.setPositiveButton(text, listener);
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setPositiveButtonIcon(@Nullable Drawable icon) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setPositiveButtonIcon(@Nullable Drawable icon) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setNegativeButton(
-            @StringRes int textId, @Nullable final OnClickListener listener) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setNegativeButton(
+      @StringRes int textId, @Nullable final OnClickListener listener) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setNegativeButton(
-            @Nullable CharSequence text, @Nullable final OnClickListener listener) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setNegativeButton(
+      @Nullable CharSequence text, @Nullable final OnClickListener listener) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setNegativeButtonIcon(@Nullable Drawable icon) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setNegativeButtonIcon(@Nullable Drawable icon) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setNeutralButton(
-            @StringRes int textId, @Nullable final OnClickListener listener) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setNeutralButton(
+      @StringRes int textId, @Nullable final OnClickListener listener) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setNeutralButton(
-            @Nullable CharSequence text, @Nullable final OnClickListener listener) {
-        return (MaterialAlertDialogBuilder) super.setNeutralButton(text, listener);
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setNeutralButton(
+      @Nullable CharSequence text, @Nullable final OnClickListener listener) {
+    return (MaterialAlertDialogBuilder) super.setNeutralButton(text, listener);
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setNeutralButtonIcon(@Nullable Drawable icon) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setNeutralButtonIcon(@Nullable Drawable icon) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setCancelable(boolean cancelable) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setCancelable(boolean cancelable) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setOnCancelListener(
-            @Nullable OnCancelListener onCancelListener) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setOnCancelListener(
+      @Nullable OnCancelListener onCancelListener) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setOnDismissListener(
-            @Nullable OnDismissListener onDismissListener) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setOnDismissListener(
+      @Nullable OnDismissListener onDismissListener) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setOnKeyListener(@Nullable OnKeyListener onKeyListener) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setOnKeyListener(@Nullable OnKeyListener onKeyListener) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setItems(
-            @ArrayRes int itemsId, @Nullable final OnClickListener listener) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setItems(
+      @ArrayRes int itemsId, @Nullable final OnClickListener listener) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setItems(
-            @Nullable CharSequence[] items, @Nullable final OnClickListener listener) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setItems(
+      @Nullable CharSequence[] items, @Nullable final OnClickListener listener) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setAdapter(
-            @Nullable final ListAdapter adapter, @Nullable final OnClickListener listener) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setAdapter(
+      @Nullable final ListAdapter adapter, @Nullable final OnClickListener listener) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setCursor(
-            @Nullable final Cursor cursor,
-            @Nullable final OnClickListener listener,
-            @NonNull String labelColumn) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setCursor(
+      @Nullable final Cursor cursor,
+      @Nullable final OnClickListener listener,
+      @NonNull String labelColumn) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setMultiChoiceItems(
-            @ArrayRes int itemsId,
-            @Nullable boolean[] checkedItems,
-            @Nullable final OnMultiChoiceClickListener listener) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setMultiChoiceItems(
+      @ArrayRes int itemsId,
+      @Nullable boolean[] checkedItems,
+      @Nullable final OnMultiChoiceClickListener listener) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setMultiChoiceItems(
-            @Nullable CharSequence[] items,
-            @Nullable boolean[] checkedItems,
-            @Nullable final OnMultiChoiceClickListener listener) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setMultiChoiceItems(
+      @Nullable CharSequence[] items,
+      @Nullable boolean[] checkedItems,
+      @Nullable final OnMultiChoiceClickListener listener) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setMultiChoiceItems(
-            @Nullable Cursor cursor,
-            @NonNull String isCheckedColumn,
-            @NonNull String labelColumn,
-            @Nullable final OnMultiChoiceClickListener listener) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setMultiChoiceItems(
+      @Nullable Cursor cursor,
+      @NonNull String isCheckedColumn,
+      @NonNull String labelColumn,
+      @Nullable final OnMultiChoiceClickListener listener) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setSingleChoiceItems(
-            @ArrayRes int itemsId, int checkedItem, @Nullable final OnClickListener listener) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setSingleChoiceItems(
+      @ArrayRes int itemsId, int checkedItem, @Nullable final OnClickListener listener) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setSingleChoiceItems(
-            @Nullable Cursor cursor,
-            int checkedItem,
-            @NonNull String labelColumn,
-            @Nullable final OnClickListener listener) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setSingleChoiceItems(
+      @Nullable Cursor cursor,
+      int checkedItem,
+      @NonNull String labelColumn,
+      @Nullable final OnClickListener listener) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setSingleChoiceItems(
-            @Nullable CharSequence[] items, int checkedItem, @Nullable final OnClickListener listener) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setSingleChoiceItems(
+      @Nullable CharSequence[] items, int checkedItem, @Nullable final OnClickListener listener) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setSingleChoiceItems(
-            @Nullable ListAdapter adapter, int checkedItem, @Nullable final OnClickListener listener) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setSingleChoiceItems(
+      @Nullable ListAdapter adapter, int checkedItem, @Nullable final OnClickListener listener) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setOnItemSelectedListener(
-            @Nullable final AdapterView.OnItemSelectedListener listener) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setOnItemSelectedListener(
+      @Nullable final AdapterView.OnItemSelectedListener listener) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setView(int layoutResId) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setView(int layoutResId) {
+    throw new RuntimeException("Stub!");
+  }
 
-    @NonNull
-    @Override
-    public MaterialAlertDialogBuilder setView(@Nullable View view) {
-        throw new RuntimeException("Stub!");
-    }
+  @NonNull
+  @Override
+  public MaterialAlertDialogBuilder setView(@Nullable View view) {
+    throw new RuntimeException("Stub!");
+  }
 }

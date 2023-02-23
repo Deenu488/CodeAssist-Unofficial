@@ -1,36 +1,32 @@
 package com.tyron.resolver;
 
-/**
- * Representation of JSON repository declaration
- */
+/** Representation of JSON repository declaration */
 public class RepositoryModel {
 
-    private String name;
+  private String name;
 
-    private String url;
+  private String url;
 
-    public RepositoryModel() {
+  public RepositoryModel() {}
 
-    }
+  public RepositoryModel(String name, String url) {
+    this.name = name;
+    this.url = url;
+  }
 
-    public RepositoryModel(String name, String url) {
-        this.name = name;
-        this.url = url;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getUrl() {
-        return url;
-    }
+  public String getUrl() {
+    return url;
+  }
 }

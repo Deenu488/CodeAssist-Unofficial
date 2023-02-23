@@ -1,4 +1,3 @@
 package androidx.fragment.app;
 
-public class Fragment {
-}
+public class Fragment {}

@@ -1,5 +1,5 @@
 package com.test;
 
 public class MainSecond {
-    public static Object mTestField;
+  public static Object mTestField;
 }

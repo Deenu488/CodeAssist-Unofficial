@@ -15,6 +15,9 @@
  */
 package com.squareup.javapoet;
 
+import static com.squareup.javapoet.Util.checkArgument;
+import static com.squareup.javapoet.Util.checkNotNull;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -25,9 +28,6 @@ import org.openjdk.javax.lang.model.SourceVersion;
 import org.openjdk.javax.lang.model.element.ExecutableElement;
 import org.openjdk.javax.lang.model.element.Modifier;
 import org.openjdk.javax.lang.model.element.VariableElement;
-
-import static com.squareup.javapoet.Util.checkArgument;
-import static com.squareup.javapoet.Util.checkNotNull;
 
 /** A generated parameter declaration. */
 public final class ParameterSpec {
@@ -57,18 +57,21 @@ public final class ParameterSpec {
     }
   }
 
-  @Override public boolean equals(Object o) {
+  @Override
+  public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null) return false;
     if (getClass() != o.getClass()) return false;
     return toString().equals(o.toString());
   }
 
-  @Override public int hashCode() {
+  @Override
+  public int hashCode() {
     return toString().hashCode();
   }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     StringBuilder out = new StringBuilder();
     try {
       CodeWriter codeWriter = new CodeWriter(out);
@@ -82,9 +85,7 @@ public final class ParameterSpec {
   public static ParameterSpec get(VariableElement element) {
     TypeName type = TypeName.get(element.asType());
     String name = element.getSimpleName().toString();
-    return ParameterSpec.builder(type, name)
-        .addModifiers(element.getModifiers())
-        .build();
+    return ParameterSpec.builder(type, name).addModifiers(element.getModifiers()).build();
   }
 
   static List<ParameterSpec> parametersOf(ExecutableElement method) {
@@ -98,8 +99,7 @@ public final class ParameterSpec {
   public static Builder builder(TypeName type, String name, Modifier... modifiers) {
     checkNotNull(type, "type == null");
     checkArgument(SourceVersion.isName(name), "not a valid name: %s", name);
-    return new Builder(type, name)
-        .addModifiers(modifiers);
+    return new Builder(type, name).addModifiers(modifiers);
   }
 
   public static Builder builder(Type type, String name, Modifier... modifiers) {

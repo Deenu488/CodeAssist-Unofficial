@@ -1,4 +1,3 @@
 package com.tyron.fileeditor.api;
 
-public interface TextEditor extends FileEditor {
-}
+public interface TextEditor extends FileEditor {}

@@ -15,6 +15,8 @@
  */
 package com.squareup.javapoet;
 
+import static java.lang.Character.isISOControl;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,18 +28,16 @@ import java.util.Map;
 import java.util.Set;
 import org.openjdk.javax.lang.model.element.Modifier;
 
-import static java.lang.Character.isISOControl;
-
 /**
  * Like Guava, but worse and standalone. This makes it easier to mix JavaPoet with libraries that
  * bring their own version of Guava.
  */
 final class Util {
-  private Util() {
-  }
+  private Util() {}
 
   /** Modifier.DEFAULT doesn't exist until Java 8, but we want to run on earlier releases. */
   static final Modifier DEFAULT;
+
   static {
     Modifier def = null;
     try {
@@ -104,8 +104,11 @@ final class Util {
       if (modifier == null && Util.DEFAULT == null) continue; // Skip 'DEFAULT' if it doesn't exist!
       if (modifiers.contains(modifier)) count++;
     }
-    checkArgument(count == 1, "modifiers %s must contain one of %s",
-        modifiers, Arrays.toString(mutuallyExclusive));
+    checkArgument(
+        count == 1,
+        "modifiers %s must contain one of %s",
+        modifiers,
+        Arrays.toString(mutuallyExclusive));
   }
 
   static boolean hasDefaultModifier(Collection<Modifier> modifiers) {
@@ -115,14 +118,22 @@ final class Util {
   static String characterLiteralWithoutSingleQuotes(char c) {
     // see https://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html#jls-3.10.6
     switch (c) {
-      case '\b': return "\\b"; /* \u0008: backspace (BS) */
-      case '\t': return "\\t"; /* \u0009: horizontal tab (HT) */
-      case '\n': return "\\n"; /* \u000a: linefeed (LF) */
-      case '\f': return "\\f"; /* \u000c: form feed (FF) */
-      case '\r': return "\\r"; /* \u000d: carriage return (CR) */
-      case '\"': return "\"";  /* \u0022: double quote (") */
-      case '\'': return "\\'"; /* \u0027: single quote (') */
-      case '\\': return "\\\\";  /* \u005c: backslash (\) */
+      case '\b':
+        return "\\b"; /* \u0008: backspace (BS) */
+      case '\t':
+        return "\\t"; /* \u0009: horizontal tab (HT) */
+      case '\n':
+        return "\\n"; /* \u000a: linefeed (LF) */
+      case '\f':
+        return "\\f"; /* \u000c: form feed (FF) */
+      case '\r':
+        return "\\r"; /* \u000d: carriage return (CR) */
+      case '\"':
+        return "\""; /* \u0022: double quote (") */
+      case '\'':
+        return "\\'"; /* \u0027: single quote (') */
+      case '\\':
+        return "\\\\"; /* \u005c: backslash (\) */
       default:
         return isISOControl(c) ? String.format("\\u%04x", (int) c) : Character.toString(c);
     }

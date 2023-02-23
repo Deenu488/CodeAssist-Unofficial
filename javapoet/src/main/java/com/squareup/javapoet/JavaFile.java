@@ -15,6 +15,10 @@
  */
 package com.squareup.javapoet;
 
+import static com.squareup.javapoet.Util.checkArgument;
+import static com.squareup.javapoet.Util.checkNotNull;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -37,23 +41,25 @@ import org.openjdk.javax.tools.JavaFileObject;
 import org.openjdk.javax.tools.JavaFileObject.Kind;
 import org.openjdk.javax.tools.SimpleJavaFileObject;
 
-import static com.squareup.javapoet.Util.checkArgument;
-import static com.squareup.javapoet.Util.checkNotNull;
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 /** A Java file containing a single top level class. */
 public final class JavaFile {
-  private static final Appendable NULL_APPENDABLE = new Appendable() {
-    @Override public Appendable append(CharSequence charSequence) {
-      return this;
-    }
-    @Override public Appendable append(CharSequence charSequence, int start, int end) {
-      return this;
-    }
-    @Override public Appendable append(char c) {
-      return this;
-    }
-  };
+  private static final Appendable NULL_APPENDABLE =
+      new Appendable() {
+        @Override
+        public Appendable append(CharSequence charSequence) {
+          return this;
+        }
+
+        @Override
+        public Appendable append(CharSequence charSequence, int start, int end) {
+          return this;
+        }
+
+        @Override
+        public Appendable append(char c) {
+          return this;
+        }
+      };
 
   public final CodeBlock fileComment;
   public final String packageName;
@@ -84,8 +90,10 @@ public final class JavaFile {
 
   /** Writes this to {@code directory} as UTF-8 using the standard directory structure. */
   public void writeTo(Path directory) throws IOException {
-    checkArgument(Files.notExists(directory) || Files.isDirectory(directory),
-        "path %s exists but is not a directory.", directory);
+    checkArgument(
+        Files.notExists(directory) || Files.isDirectory(directory),
+        "path %s exists but is not a directory.",
+        directory);
     Path outputDirectory = directory;
     if (!packageName.isEmpty()) {
       for (String packageComponent : packageName.split("\\.")) {
@@ -107,12 +115,11 @@ public final class JavaFile {
 
   /** Writes this to {@code filer}. */
   public void writeTo(Filer filer) throws IOException {
-    String fileName = packageName.isEmpty()
-        ? typeSpec.name
-        : packageName + "." + typeSpec.name;
+    String fileName = packageName.isEmpty() ? typeSpec.name : packageName + "." + typeSpec.name;
     List<Element> originatingElements = typeSpec.originatingElements;
-    JavaFileObject filerSourceFile = filer.createSourceFile(fileName,
-        originatingElements.toArray(new Element[originatingElements.size()]));
+    JavaFileObject filerSourceFile =
+        filer.createSourceFile(
+            fileName, originatingElements.toArray(new Element[originatingElements.size()]));
     try (Writer writer = filerSourceFile.openWriter()) {
       writeTo(writer);
     } catch (Exception e) {
@@ -159,18 +166,21 @@ public final class JavaFile {
     codeWriter.popPackage();
   }
 
-  @Override public boolean equals(Object o) {
+  @Override
+  public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null) return false;
     if (getClass() != o.getClass()) return false;
     return toString().equals(o.toString());
   }
 
-  @Override public int hashCode() {
+  @Override
+  public int hashCode() {
     return toString().hashCode();
   }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     try {
       StringBuilder result = new StringBuilder();
       writeTo(result);
@@ -181,19 +191,27 @@ public final class JavaFile {
   }
 
   public JavaFileObject toJavaFileObject() {
-    URI uri = URI.create((packageName.isEmpty()
-        ? typeSpec.name
-        : packageName.replace('.', '/') + '/' + typeSpec.name)
-        + Kind.SOURCE.extension);
+    URI uri =
+        URI.create(
+            (packageName.isEmpty()
+                    ? typeSpec.name
+                    : packageName.replace('.', '/') + '/' + typeSpec.name)
+                + Kind.SOURCE.extension);
     return new SimpleJavaFileObject(uri, Kind.SOURCE) {
       private final long lastModified = System.currentTimeMillis();
-      @Override public String getCharContent(boolean ignoreEncodingErrors) {
+
+      @Override
+      public String getCharContent(boolean ignoreEncodingErrors) {
         return JavaFile.this.toString();
       }
-      @Override public InputStream openInputStream() throws IOException {
+
+      @Override
+      public InputStream openInputStream() throws IOException {
         return new ByteArrayInputStream(getCharContent(true).getBytes(UTF_8));
       }
-      @Override public long getLastModified() {
+
+      @Override
+      public long getLastModified() {
         return lastModified;
       }
     };

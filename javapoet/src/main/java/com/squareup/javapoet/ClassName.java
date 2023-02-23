@@ -15,6 +15,11 @@
  */
 package com.squareup.javapoet;
 
+import static com.squareup.javapoet.Util.checkArgument;
+import static com.squareup.javapoet.Util.checkNotNull;
+import static org.openjdk.javax.lang.model.element.NestingKind.MEMBER;
+import static org.openjdk.javax.lang.model.element.NestingKind.TOP_LEVEL;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,17 +31,13 @@ import org.openjdk.javax.lang.model.element.ElementKind;
 import org.openjdk.javax.lang.model.element.PackageElement;
 import org.openjdk.javax.lang.model.element.TypeElement;
 
-import static com.squareup.javapoet.Util.checkArgument;
-import static com.squareup.javapoet.Util.checkNotNull;
-import static org.openjdk.javax.lang.model.element.NestingKind.MEMBER;
-import static org.openjdk.javax.lang.model.element.NestingKind.TOP_LEVEL;
-
 /** A fully-qualified class name for top-level and member classes. */
 public final class ClassName extends TypeName implements Comparable<ClassName> {
   public static final ClassName OBJECT = ClassName.get(Object.class);
 
   /** From top to bottom. This will be ["java.util", "Map", "Entry"] for {@link Map.Entry}. */
   final List<String> names;
+
   final String canonicalName;
 
   private ClassName(List<String> names) {
@@ -49,16 +50,19 @@ public final class ClassName extends TypeName implements Comparable<ClassName> {
       checkArgument(SourceVersion.isName(names.get(i)), "part '%s' is keyword", names.get(i));
     }
     this.names = Util.immutableList(names);
-    this.canonicalName = (names.get(0).isEmpty()
-        ? Util.join(".", names.subList(1, names.size()))
-        : Util.join(".", names));
+    this.canonicalName =
+        (names.get(0).isEmpty()
+            ? Util.join(".", names.subList(1, names.size()))
+            : Util.join(".", names));
   }
 
-  @Override public ClassName annotated(List<AnnotationSpec> annotations) {
+  @Override
+  public ClassName annotated(List<AnnotationSpec> annotations) {
     return new ClassName(names, concatAnnotations(annotations));
   }
 
-  @Override public ClassName withoutAnnotations() {
+  @Override
+  public ClassName withoutAnnotations() {
     return new ClassName(names);
   }
 
@@ -161,11 +165,11 @@ public final class ClassName extends TypeName implements Comparable<ClassName> {
 
   /**
    * Returns a new {@link ClassName} instance for the given fully-qualified class name string. This
-   * method assumes that the input is ASCII and follows typical Java style (lowercase package
-   * names, UpperCamelCase class names) and may produce incorrect results or throw
-   * {@link IllegalArgumentException} otherwise. For that reason, {@link #get(Class)} and
-   * {@link #get(Class)} should be preferred as they can correctly create {@link ClassName}
-   * instances without such restrictions.
+   * method assumes that the input is ASCII and follows typical Java style (lowercase package names,
+   * UpperCamelCase class names) and may produce incorrect results or throw {@link
+   * IllegalArgumentException} otherwise. For that reason, {@link #get(Class)} and {@link
+   * #get(Class)} should be preferred as they can correctly create {@link ClassName} instances
+   * without such restrictions.
    */
   public static ClassName bestGuess(String classNameString) {
     List<String> names = new ArrayList<>();
@@ -180,8 +184,10 @@ public final class ClassName extends TypeName implements Comparable<ClassName> {
 
     // Add the class names, like "Map" and "Entry".
     for (String part : classNameString.substring(p).split("\\.", -1)) {
-      checkArgument(!part.isEmpty() && Character.isUpperCase(part.codePointAt(0)),
-          "couldn't make a guess for %s", classNameString);
+      checkArgument(
+          !part.isEmpty() && Character.isUpperCase(part.codePointAt(0)),
+          "couldn't make a guess for %s",
+          classNameString);
       names.add(part);
     }
 
@@ -206,7 +212,8 @@ public final class ClassName extends TypeName implements Comparable<ClassName> {
     checkNotNull(element, "element == null");
     List<String> names = new ArrayList<>();
     for (Element e = element; isClassOrInterface(e); e = e.getEnclosingElement()) {
-      checkArgument(element.getNestingKind() == TOP_LEVEL || element.getNestingKind() == MEMBER,
+      checkArgument(
+          element.getNestingKind() == TOP_LEVEL || element.getNestingKind() == MEMBER,
           "unexpected type testing");
       names.add(e.getSimpleName().toString());
     }
@@ -226,11 +233,13 @@ public final class ClassName extends TypeName implements Comparable<ClassName> {
     return (PackageElement) type;
   }
 
-  @Override public int compareTo(ClassName o) {
+  @Override
+  public int compareTo(ClassName o) {
     return canonicalName.compareTo(o.canonicalName);
   }
 
-  @Override CodeWriter emit(CodeWriter out) throws IOException {
+  @Override
+  CodeWriter emit(CodeWriter out) throws IOException {
     return out.emitAndIndent(out.lookupName(this));
   }
 }

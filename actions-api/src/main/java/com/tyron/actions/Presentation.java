@@ -1,146 +1,131 @@
 package com.tyron.actions;
 
 import android.graphics.drawable.Drawable;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.Objects;
 import java.util.function.Supplier;
 
-/**
- * Controls how an action would look in the UI
- */
+/** Controls how an action would look in the UI */
 public class Presentation {
 
-    public static final Supplier<String> NULL_STRING = () -> null;
+  public static final Supplier<String> NULL_STRING = () -> null;
 
-    /**
-     * value: String
-     */
-    public static final String PROP_DESCRIPTION = " description";
-    /**
-     * value: Drawable
-     */
-    public static final String PROP_ICON = "icon";
-    /**
-     * value: Boolean
-     */
-    public static final String PROP_VISIBLE = "visible";
-    /**
-     * value: Boolean
-     */
-    public static final String PROP_ENABLED = "enabled";
+  /** value: String */
+  public static final String PROP_DESCRIPTION = " description";
+  /** value: Drawable */
+  public static final String PROP_ICON = "icon";
+  /** value: Boolean */
+  public static final String PROP_VISIBLE = "visible";
+  /** value: Boolean */
+  public static final String PROP_ENABLED = "enabled";
 
-    private Drawable mIcon;
-    private boolean mIsVisible;
-    private boolean mIsEnabled = true;
+  private Drawable mIcon;
+  private boolean mIsVisible;
+  private boolean mIsEnabled = true;
 
-    private Supplier<String> mTextSupplier = NULL_STRING;
-    private Supplier<String> mDescriptionSupplier = NULL_STRING;
+  private Supplier<String> mTextSupplier = NULL_STRING;
+  private Supplier<String> mDescriptionSupplier = NULL_STRING;
 
-    private PropertyChangeSupport mChangeSupport;
+  private PropertyChangeSupport mChangeSupport;
 
-    public Presentation() {
+  public Presentation() {}
 
+  public Presentation(Supplier<String> dynamicText) {
+    mTextSupplier = dynamicText;
+  }
+
+  public static Presentation createTemplatePresentation() {
+    return new Presentation();
+  }
+
+  public void addPropertyChangeListener(@NonNull PropertyChangeListener listener) {
+    PropertyChangeSupport support = mChangeSupport;
+    if (support == null) {
+      mChangeSupport = support = new PropertyChangeSupport(this);
     }
+    support.addPropertyChangeListener(listener);
+  }
 
-    public Presentation(Supplier<String> dynamicText) {
-        mTextSupplier = dynamicText;
+  public void removePropertyChangeListener(@NonNull PropertyChangeListener listener) {
+    PropertyChangeSupport support = mChangeSupport;
+    if (support != null) {
+      mChangeSupport.removePropertyChangeListener(listener);
     }
+  }
 
-    public static Presentation createTemplatePresentation() {
-        return new Presentation();
-    }
+  public String getText() {
+    return mTextSupplier.get();
+  }
 
-    public void addPropertyChangeListener(@NonNull PropertyChangeListener listener) {
-        PropertyChangeSupport support = mChangeSupport;
-        if (support == null) {
-            mChangeSupport = support = new PropertyChangeSupport(this);
-        }
-        support.addPropertyChangeListener(listener);
-    }
+  public void setText(@Nullable String text) {
+    setText(() -> text);
+  }
 
-    public void removePropertyChangeListener(@NonNull PropertyChangeListener listener) {
-        PropertyChangeSupport support = mChangeSupport;
-        if (support != null) {
-            mChangeSupport.removePropertyChangeListener(listener);
-        }
-    }
+  public void setText(@NonNull Supplier<String> text) {
+    mTextSupplier = text;
+  }
 
-    public String getText() {
-        return mTextSupplier.get();
-    }
+  public void setDescription(@NonNull Supplier<String> description) {
+    Supplier<String> oldDescription = mDescriptionSupplier;
+    mDescriptionSupplier = description;
+    fireObjectPropertyChange(PROP_DESCRIPTION, oldDescription, mDescriptionSupplier);
+  }
 
-    public void setText(@Nullable String text) {
-        setText(() -> text);
-    }
+  private void fireObjectPropertyChange(String propertyName, Object oldValue, Object newValue) {
+    //        PropertyChangeSupport support = mChangeSupport;
+    //        if (support != null && !Objects.equals(oldValue, newValue)) {
+    //            support.firePropertyChange(propertyName, oldValue, newValue);
+    //        }
+  }
 
-    public void setText(@NonNull Supplier<String> text) {
-        mTextSupplier = text;
-    }
+  private void fireBooleanPropertyChange(String propertyName, boolean oldValue, boolean newValue) {
+    //        PropertyChangeSupport support = mChangeSupport;
+    //        if (support != null && oldValue != newValue) {
+    //            support.firePropertyChange(propertyName, oldValue, newValue);
+    //        }
+  }
 
-    public void setDescription(@NonNull Supplier<String> description) {
-        Supplier<String> oldDescription = mDescriptionSupplier;
-        mDescriptionSupplier = description;
-        fireObjectPropertyChange(PROP_DESCRIPTION, oldDescription, mDescriptionSupplier);
+  @NonNull
+  @Override
+  public Presentation clone() {
+    try {
+      return (Presentation) super.clone();
+    } catch (CloneNotSupportedException e) {
+      throw new RuntimeException(e);
     }
+  }
 
-    private void fireObjectPropertyChange(String propertyName, Object oldValue, Object newValue) {
-//        PropertyChangeSupport support = mChangeSupport;
-//        if (support != null && !Objects.equals(oldValue, newValue)) {
-//            support.firePropertyChange(propertyName, oldValue, newValue);
-//        }
-    }
+  public void setIcon(Drawable icon) {
+    mIcon = icon;
+  }
 
-    private void fireBooleanPropertyChange(String propertyName, boolean oldValue, boolean newValue) {
-//        PropertyChangeSupport support = mChangeSupport;
-//        if (support != null && oldValue != newValue) {
-//            support.firePropertyChange(propertyName, oldValue, newValue);
-//        }
-    }
+  public Drawable getIcon() {
+    return mIcon;
+  }
 
-    @NonNull
-    @Override
-    public Presentation clone() {
-        try {
-            return (Presentation) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-    }
+  public boolean isVisible() {
+    return mIsVisible;
+  }
 
-    public void setIcon(Drawable icon) {
-        mIcon = icon;
-    }
+  public boolean isEnabled() {
+    return mIsEnabled;
+  }
 
-    public Drawable getIcon() {
-        return mIcon;
-    }
+  public void setEnabled(boolean enabled) {
+    boolean old = mIsEnabled;
+    fireBooleanPropertyChange(PROP_ENABLED, old, enabled);
+    mIsEnabled = enabled;
+  }
 
-    public boolean isVisible() {
-        return mIsVisible;
-    }
+  public void setVisible(boolean visible) {
+    boolean old = mIsVisible;
+    fireBooleanPropertyChange(PROP_VISIBLE, old, visible);
+    mIsVisible = visible;
+  }
 
-    public boolean isEnabled() {
-        return mIsEnabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        boolean old = mIsEnabled;
-        fireBooleanPropertyChange(PROP_ENABLED, old, enabled);
-        mIsEnabled = enabled;
-    }
-
-    public void setVisible(boolean visible) {
-        boolean old = mIsVisible;
-        fireBooleanPropertyChange(PROP_VISIBLE, old, visible);
-        mIsVisible = visible;
-    }
-
-    public String getDescription() {
-        return mDescriptionSupplier.get();
-    }
+  public String getDescription() {
+    return mDescriptionSupplier.get();
+  }
 }

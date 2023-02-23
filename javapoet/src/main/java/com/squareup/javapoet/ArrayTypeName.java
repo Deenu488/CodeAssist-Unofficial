@@ -15,6 +15,8 @@
  */
 package com.squareup.javapoet;
 
+import static com.squareup.javapoet.Util.checkNotNull;
+
 import java.io.IOException;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
@@ -24,8 +26,6 @@ import java.util.List;
 import java.util.Map;
 import org.openjdk.javax.lang.model.element.TypeParameterElement;
 import org.openjdk.javax.lang.model.type.ArrayType;
-
-import static com.squareup.javapoet.Util.checkNotNull;
 
 public final class ArrayTypeName extends TypeName {
   public final TypeName componentType;
@@ -39,15 +39,18 @@ public final class ArrayTypeName extends TypeName {
     this.componentType = checkNotNull(componentType, "rawType == null");
   }
 
-  @Override public ArrayTypeName annotated(List<AnnotationSpec> annotations) {
+  @Override
+  public ArrayTypeName annotated(List<AnnotationSpec> annotations) {
     return new ArrayTypeName(componentType, concatAnnotations(annotations));
   }
 
-  @Override public TypeName withoutAnnotations() {
+  @Override
+  public TypeName withoutAnnotations() {
     return new ArrayTypeName(componentType);
   }
 
-  @Override CodeWriter emit(CodeWriter out) throws IOException {
+  @Override
+  CodeWriter emit(CodeWriter out) throws IOException {
     return out.emit("$T[]", componentType);
   }
 

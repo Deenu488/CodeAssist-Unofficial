@@ -15,9 +15,9 @@
  */
 package com.squareup.javapoet;
 
-import java.io.IOException;
-
 import static com.squareup.javapoet.Util.checkNotNull;
+
+import java.io.IOException;
 
 /**
  * Implements soft line wrapping on an appendable. To use, append characters using {@link #append}
@@ -74,9 +74,7 @@ final class LineWrapper {
 
     out.append(s);
     int lastNewline = s.lastIndexOf('\n');
-    column = lastNewline != -1
-        ? s.length() - lastNewline - 1
-        : column + s.length();
+    column = lastNewline != -1 ? s.length() - lastNewline - 1 : column + s.length();
   }
 
   /** Emit either a space or a newline character. */
@@ -131,6 +129,8 @@ final class LineWrapper {
   }
 
   private enum FlushType {
-    WRAP, SPACE, EMPTY;
+    WRAP,
+    SPACE,
+    EMPTY;
   }
 }
