@@ -81,11 +81,14 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
 			if (jar.exists()) {
 				FileUtils.deleteDirectory(jar);
 			}
-
+			String root = implementationProject.replace("/", "");
+			
 			if (java.exists()) {
+				getLogger().debug("> Task :" + root + ":" + "compileJava");			
 				compileJava(java, classes, implementationProject);
 			}
 			if (classes.exists()) {
+				getLogger().debug("> Task :" + root + ":" + "assembleJar");			
 				assembleJar(classes,out);
 			}
 		}
