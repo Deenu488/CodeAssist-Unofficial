@@ -17,28 +17,27 @@ import com.tyron.layout.appcompat.widget.VisibilityAwareImageButtonParser;
 
 public class AppCompatModule implements ProteusBuilder.Module {
 
-    private AppCompatModule() {
-    }
+  private AppCompatModule() {}
 
-    public static AppCompatModule create() {
-        return new AppCompatModule();
-    }
+  public static AppCompatModule create() {
+    return new AppCompatModule();
+  }
 
-    @Override
-    public void registerWith(ProteusBuilder builder) {
-        builder.register(new AppBarLayoutParser<>());
-        builder.register(new CollapsingToolbarLayoutParser<>());
-        builder.register(new CoordinatorLayoutParser<>());
-        builder.register(new MaterialCardViewParser<>());
-        builder.register(new VisibilityAwareImageButtonParser<>());
-        builder.register(new FloatingActionButtonParser<>());
-        builder.register(new RecyclerViewParser<>());
-        builder.register(new AppCompatButtonParser<>());
-        builder.register(new MaterialButtonParser<>());
-        builder.register(new AppCompatToolbarParser<>());
-        builder.register(new TextInputLayoutParser());
-        builder.register(new AppCompatEditTextParser());
-        builder.register(new TextInputEditTextParser());
-        AppCompatModuleAttributeHelper.register(builder);
-    }
+  @Override
+  public void registerWith(ProteusBuilder builder) {
+    builder.register(new AppBarLayoutParser<>());
+    builder.register(new CollapsingToolbarLayoutParser<>());
+    builder.register(new CoordinatorLayoutParser<>());
+    builder.register(new MaterialCardViewParser<>());
+    builder.register(new VisibilityAwareImageButtonParser<>());
+    builder.register(new FloatingActionButtonParser<>());
+    builder.register(new RecyclerViewParser<>());
+    builder.register(new AppCompatButtonParser<>());
+    builder.register(new MaterialButtonParser<>());
+    builder.register(new AppCompatToolbarParser<>());
+    builder.register(new TextInputLayoutParser());
+    builder.register(new AppCompatEditTextParser());
+    builder.register(new TextInputEditTextParser());
+    AppCompatModuleAttributeHelper.register(builder);
+  }
 }

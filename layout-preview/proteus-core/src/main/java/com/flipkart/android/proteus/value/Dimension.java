@@ -20,17 +20,14 @@ import android.content.Context;
 import android.util.LruCache;
 import android.util.TypedValue;
 import android.view.ViewGroup;
-
 import com.flipkart.android.proteus.parser.ParseHelper;
 import com.flipkart.android.proteus.toolbox.BiMap;
 import com.flipkart.android.proteus.toolbox.HashBiMap;
 
 /**
- * <p>
- * Dimension is a type of {@link Value} which hosts dimensions.
- * Any android dimension string can be parsed into a {@code Dimension}
- * object. Eg. "12dp", "16sp", etc.  A {@code Dimension} object is immutable.
- * </p>
+ * Dimension is a type of {@link Value} which hosts dimensions. Any android dimension string can be
+ * parsed into a {@code Dimension} object. Eg. "12dp", "16sp", etc. A {@code Dimension} object is
+ * immutable.
  *
  * @author aditya.sharat
  */
@@ -93,7 +90,8 @@ public class Dimension extends Value {
       if (length < 2) {
         value = 0;
         unit = DIMENSION_UNIT_PX;
-      } else { // find the units and value by splitting at the second-last character of the dimension
+      } else { // find the units and value by splitting at the second-last character of the
+        // dimension
         Integer u = sDimensionsUnitsMap.getValue(dimension.substring(length - 2));
         String stringValue = dimension.substring(0, length - 2);
         if (u != null) {
@@ -111,8 +109,8 @@ public class Dimension extends Value {
   }
 
   /**
-   * This function returns a {@code Dimension} object holding the
-   * value extracted from the specified {@code String}
+   * This function returns a {@code Dimension} object holding the value extracted from the specified
+   * {@code String}
    *
    * @param dimension the value to be parsed.
    */
@@ -145,7 +143,9 @@ public class Dimension extends Value {
       case DIMENSION_UNIT_PT:
       case DIMENSION_UNIT_MM:
       case DIMENSION_UNIT_IN:
-        result = TypedValue.applyDimension(unit, (float) value, context.getResources().getDisplayMetrics());
+        result =
+            TypedValue.applyDimension(
+                unit, (float) value, context.getResources().getDisplayMetrics());
         break;
     }
 

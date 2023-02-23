@@ -16,39 +16,35 @@
 
 package com.flipkart.android.proteus.processor;
 
-import android.content.res.TypedArray;
-import android.view.View;
-
-import com.flipkart.android.proteus.ProteusContext;
-import com.flipkart.android.proteus.parser.ParseHelper;
-import com.flipkart.android.proteus.value.AttributeResource;
-import com.flipkart.android.proteus.value.Resource;
-import com.flipkart.android.proteus.value.Style;
-import com.flipkart.android.proteus.value.Value;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
-
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.LOCAL_VARIABLE;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.ElementType.TYPE;
 
+import android.content.res.TypedArray;
+import android.view.View;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import com.flipkart.android.proteus.ProteusContext;
+import com.flipkart.android.proteus.parser.ParseHelper;
+import com.flipkart.android.proteus.value.AttributeResource;
+import com.flipkart.android.proteus.value.Resource;
+import com.flipkart.android.proteus.value.Style;
+import com.flipkart.android.proteus.value.Value;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * GravityAttributeProcessor
  *
  * @author aditya.sharat
  */
-
 public abstract class GravityAttributeProcessor<V extends View> extends AttributeProcessor<V> {
 
   public static final com.flipkart.android.proteus.value.Gravity NO_GRAVITY =
-          new com.flipkart.android.proteus.value.Gravity(android.view.Gravity.NO_GRAVITY);
+      new com.flipkart.android.proteus.value.Gravity(android.view.Gravity.NO_GRAVITY);
 
   @Override
   public void handleValue(View parent, V view, Value value) {
@@ -81,8 +77,8 @@ public abstract class GravityAttributeProcessor<V extends View> extends Attribut
 
   @Override
   public void handleStyle(View parent, V view, Style style) {
-//    TypedArray a = style.apply(view.getContext());
-//    set(view, a);
+    //    TypedArray a = style.apply(view.getContext());
+    //    set(view, a);
   }
 
   private void set(V view, TypedArray a) {
@@ -99,7 +95,8 @@ public abstract class GravityAttributeProcessor<V extends View> extends Attribut
     return ParseHelper.getGravity(value.getAsString());
   }
 
-  @IntDef({android.view.Gravity.NO_GRAVITY,
+  @IntDef({
+    android.view.Gravity.NO_GRAVITY,
     android.view.Gravity.TOP,
     android.view.Gravity.BOTTOM,
     android.view.Gravity.LEFT,
@@ -111,10 +108,9 @@ public abstract class GravityAttributeProcessor<V extends View> extends Attribut
     android.view.Gravity.CENTER_HORIZONTAL,
     android.view.Gravity.FILL_HORIZONTAL,
     android.view.Gravity.CENTER,
-    android.view.Gravity.FILL})
+    android.view.Gravity.FILL
+  })
   @Retention(RetentionPolicy.SOURCE)
   @Target({FIELD, METHOD, PARAMETER, LOCAL_VARIABLE, TYPE})
-  public @interface Gravity {
-  }
-
+  public @interface Gravity {}
 }

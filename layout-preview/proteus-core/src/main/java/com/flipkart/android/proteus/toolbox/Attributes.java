@@ -59,7 +59,8 @@ public class Attributes {
     public static final String FitsSystemWindows = "android:fitsSystemWindows";
     public static final String Focusable = "android:focusable";
     public static final String FocusableInTouchMode = "android:focusableInTouchMode";
-    public static final String ForceHasOverlappingRendering = "android:forceHasOverlappingRendering";
+    public static final String ForceHasOverlappingRendering =
+        "android:forceHasOverlappingRendering";
     public static final String Foreground = "android:foreground";
     public static final String ForegroundGravity = "android:foregroundGravity";
     public static final String ForegroundTint = "android:foregroundTint";
@@ -104,7 +105,8 @@ public class Attributes {
     public static final String ScaleX = "android:scaleX";
     public static final String ScaleY = "android:scaleY";
     public static final String ScrollIndicators = "android:scrollIndicators";
-    public static final String ScrollbarDefaultDelayBeforeFade = "android:scrollbarDefaultDelayBeforeFade";
+    public static final String ScrollbarDefaultDelayBeforeFade =
+        "android:scrollbarDefaultDelayBeforeFade";
     public static final String ScrollbarFadeDuration = "android:scrollbarFadeDuration";
     public static final String ScrollbarSize = "android:scrollbarSize";
     public static final String ScrollbarStyle = "android:scrollbarStyle";

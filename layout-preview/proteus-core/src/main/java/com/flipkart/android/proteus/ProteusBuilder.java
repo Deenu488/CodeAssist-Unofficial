@@ -16,6 +16,8 @@
 
 package com.flipkart.android.proteus;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.flipkart.android.proteus.parser.IncludeParser;
 import com.flipkart.android.proteus.parser.ViewParser;
 import com.flipkart.android.proteus.parser.custom.ButtonParser;
@@ -36,88 +38,82 @@ import com.flipkart.android.proteus.parser.custom.TextViewParser;
 import com.flipkart.android.proteus.parser.custom.ViewGroupParser;
 import com.flipkart.android.proteus.parser.custom.WebViewParser;
 import com.flipkart.android.proteus.processor.AttributeProcessor;
-
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * ProteusBuilder
  *
  * @author aditya.sharat
  */
-
 public class ProteusBuilder {
 
-  /**
-   * The Default Module of Proteus.
-   */
-  public static final Module DEFAULT_MODULE = new Module() {
+  /** The Default Module of Proteus. */
+  public static final Module DEFAULT_MODULE =
+      new Module() {
 
-    @Override
-    public void registerWith(ProteusBuilder builder) {
+        @Override
+        public void registerWith(ProteusBuilder builder) {
 
-      // register the default parsers
-      builder.register(new ViewParser<>());
-      builder.register(new IncludeParser<>());
-      builder.register(new ViewGroupParser<>());
-      builder.register(new RelativeLayoutParser<>());
-      builder.register(new LinearLayoutParser<>());
-      builder.register(new FrameLayoutParser<>());
-      builder.register(new ScrollViewParser<>());
-      builder.register(new HorizontalScrollViewParser<>());
-      builder.register(new ImageViewParser<>());
-      builder.register(new TextViewParser<>());
-      builder.register(new EditTextParser<>());
-      builder.register(new ButtonParser<>());
-      builder.register(new ImageButtonParser<>());
-      builder.register(new WebViewParser<>());
-      builder.register(new RatingBarParser<>());
-      builder.register(new CheckBoxParser<>());
-      builder.register(new ProgressBarParser<>());
-      builder.register(new HorizontalProgressBarParser<>());
-      builder.register(new ListViewParser<>());
+          // register the default parsers
+          builder.register(new ViewParser<>());
+          builder.register(new IncludeParser<>());
+          builder.register(new ViewGroupParser<>());
+          builder.register(new RelativeLayoutParser<>());
+          builder.register(new LinearLayoutParser<>());
+          builder.register(new FrameLayoutParser<>());
+          builder.register(new ScrollViewParser<>());
+          builder.register(new HorizontalScrollViewParser<>());
+          builder.register(new ImageViewParser<>());
+          builder.register(new TextViewParser<>());
+          builder.register(new EditTextParser<>());
+          builder.register(new ButtonParser<>());
+          builder.register(new ImageButtonParser<>());
+          builder.register(new WebViewParser<>());
+          builder.register(new RatingBarParser<>());
+          builder.register(new CheckBoxParser<>());
+          builder.register(new ProgressBarParser<>());
+          builder.register(new HorizontalProgressBarParser<>());
+          builder.register(new ListViewParser<>());
 
-      // register the default functions
-      builder.register(Function.DATE);
-      builder.register(Function.FORMAT);
-      builder.register(Function.JOIN);
-      builder.register(Function.NUMBER);
+          // register the default functions
+          builder.register(Function.DATE);
+          builder.register(Function.FORMAT);
+          builder.register(Function.JOIN);
+          builder.register(Function.NUMBER);
 
-      builder.register(Function.ADD);
-      builder.register(Function.SUBTRACT);
-      builder.register(Function.MULTIPLY);
-      builder.register(Function.DIVIDE);
-      builder.register(Function.MODULO);
+          builder.register(Function.ADD);
+          builder.register(Function.SUBTRACT);
+          builder.register(Function.MULTIPLY);
+          builder.register(Function.DIVIDE);
+          builder.register(Function.MODULO);
 
-      builder.register(Function.AND);
-      builder.register(Function.OR);
+          builder.register(Function.AND);
+          builder.register(Function.OR);
 
-      builder.register(Function.NOT);
+          builder.register(Function.NOT);
 
-      builder.register(Function.EQUALS);
-      builder.register(Function.LESS_THAN);
-      builder.register(Function.GREATER_THAN);
-      builder.register(Function.LESS_THAN_OR_EQUALS);
-      builder.register(Function.GREATER_THAN_OR_EQUALS);
+          builder.register(Function.EQUALS);
+          builder.register(Function.LESS_THAN);
+          builder.register(Function.GREATER_THAN);
+          builder.register(Function.LESS_THAN_OR_EQUALS);
+          builder.register(Function.GREATER_THAN_OR_EQUALS);
 
-      builder.register(Function.TERNARY);
+          builder.register(Function.TERNARY);
 
-      builder.register(Function.CHAR_AT);
-      builder.register(Function.CONTAINS);
-      builder.register(Function.IS_EMPTY);
-      builder.register(Function.LENGTH);
-      builder.register(Function.TRIM);
+          builder.register(Function.CHAR_AT);
+          builder.register(Function.CONTAINS);
+          builder.register(Function.IS_EMPTY);
+          builder.register(Function.LENGTH);
+          builder.register(Function.TRIM);
 
-      builder.register(Function.MAX);
-      builder.register(Function.MIN);
+          builder.register(Function.MAX);
+          builder.register(Function.MIN);
 
-      builder.register(Function.SLICE);
-    }
-  };
+          builder.register(Function.SLICE);
+        }
+      };
 
   private static final int ID = -1;
   private Map<String, Map<String, AttributeProcessor>> processors = new LinkedHashMap<>();
@@ -128,13 +124,15 @@ public class ProteusBuilder {
     DEFAULT_MODULE.registerWith(this);
   }
 
-  public ProteusBuilder register(@NonNull String type, @NonNull Map<String, AttributeProcessor> processors) {
+  public ProteusBuilder register(
+      @NonNull String type, @NonNull Map<String, AttributeProcessor> processors) {
     Map<String, AttributeProcessor> map = getExtraAttributeProcessors(type);
     map.putAll(processors);
     return this;
   }
 
-  public ProteusBuilder register(@NonNull String type, @NonNull String name, @NonNull AttributeProcessor processor) {
+  public ProteusBuilder register(
+      @NonNull String type, @NonNull String name, @NonNull AttributeProcessor processor) {
     Map<String, AttributeProcessor> map = getExtraAttributeProcessors(type);
     map.put(name, processor);
     return this;
@@ -196,6 +194,5 @@ public class ProteusBuilder {
      * @param builder
      */
     void registerWith(ProteusBuilder builder);
-
   }
 }

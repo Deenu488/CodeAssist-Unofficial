@@ -17,205 +17,198 @@ package com.tyron.ui.treeview;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
-
 import com.tyron.ui.treeview.base.BaseNodeViewFactory;
 import com.tyron.ui.treeview.base.SelectableTreeAction;
 import com.tyron.ui.treeview.helper.TreeHelper;
-
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Created by xinyuanzhong on 2017/4/20.
- */
-
+/** Created by xinyuanzhong on 2017/4/20. */
 public class TreeView<D> implements SelectableTreeAction<D> {
 
-    public interface OnTreeNodeClickListener<D> {
-        void onTreeNodeClicked(TreeNode<D> treeNode, boolean expand);
+  public interface OnTreeNodeClickListener<D> {
+    void onTreeNodeClicked(TreeNode<D> treeNode, boolean expand);
+  }
+
+  private final Context context;
+
+  private TreeNode<D> root;
+  private RecyclerView rootView;
+  private TreeViewAdapter<D> adapter;
+  private BaseNodeViewFactory<D> baseNodeViewFactory;
+
+  private boolean itemSelectable = true;
+
+  public TreeView(@NonNull Context context, @NonNull TreeNode<D> root) {
+    this.context = context;
+    this.root = root;
+  }
+
+  public View getView() {
+    if (rootView == null) {
+      this.rootView = buildRootView();
     }
 
-    private final Context context;
+    return rootView;
+  }
 
-    private TreeNode<D> root;
-    private RecyclerView rootView;
-    private TreeViewAdapter<D> adapter;
-    private BaseNodeViewFactory<D> baseNodeViewFactory;
-
-    private boolean itemSelectable = true;
-
-    public TreeView(@NonNull Context context, @NonNull TreeNode<D> root) {
-        this.context = context;
-        this.root = root;
+  @Nullable
+  public TreeNode<D> getRoot() {
+    List<TreeNode<D>> allNodes = getAllNodes();
+    if (allNodes.isEmpty()) {
+      return null;
     }
+    return allNodes.get(0);
+  }
 
-    public View getView() {
-        if (rootView == null) {
-            this.rootView = buildRootView();
-        }
+  @NonNull
+  private RecyclerView buildRootView() {
+    RecyclerView recyclerView = new RecyclerView(context);
 
-        return rootView;
+    recyclerView.setMotionEventSplittingEnabled(
+        false); // disable multi touch event to prevent terrible data set error when calculate list.
+    ((SimpleItemAnimator) Objects.requireNonNull(recyclerView.getItemAnimator()))
+        .setSupportsChangeAnimations(false);
+    recyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+    return recyclerView;
+  }
+
+  public void setAdapter(@NonNull BaseNodeViewFactory<D> baseNodeViewFactory) {
+    this.baseNodeViewFactory = baseNodeViewFactory;
+
+    adapter = new TreeViewAdapter<>(context, root, baseNodeViewFactory);
+    adapter.setTreeView(this);
+
+    rootView.setAdapter(adapter);
+  }
+
+  @Override
+  public void expandAll() {
+    TreeHelper.expandAll(root);
+
+    refreshTreeView();
+  }
+
+  public void refreshTreeView() {
+    if (rootView != null) {
+      ((TreeViewAdapter<?>) rootView.getAdapter()).refreshView();
     }
+  }
 
-    @Nullable
-    public TreeNode<D> getRoot() {
-        List<TreeNode<D>> allNodes = getAllNodes();
-        if (allNodes.isEmpty()) {
-            return null;
-        }
-        return allNodes.get(0);
+  public void refreshTreeView(@NonNull TreeNode<D> root) {
+    this.root = root;
+
+    setAdapter(baseNodeViewFactory);
+  }
+
+  @SuppressLint("NotifyDataSetChanged")
+  public void updateTreeView() {
+    if (rootView != null) {
+      rootView.getAdapter().notifyDataSetChanged();
     }
+  }
 
-    @NonNull
-    private RecyclerView buildRootView() {
-        RecyclerView recyclerView = new RecyclerView(context);
+  @Override
+  public void expandNode(TreeNode<D> treeNode) {
+    adapter.expandNode(treeNode);
+  }
 
-        recyclerView.setMotionEventSplittingEnabled(false); // disable multi touch event to prevent terrible data set error when calculate list.
-        ((SimpleItemAnimator) Objects.requireNonNull(
-                recyclerView.getItemAnimator())).setSupportsChangeAnimations(false);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+  @Override
+  public void expandLevel(int level) {
+    TreeHelper.expandLevel(root, level);
 
-        return recyclerView;
+    refreshTreeView();
+  }
+
+  @Override
+  public void collapseAll() {
+    TreeHelper.collapseAll(root);
+
+    refreshTreeView();
+  }
+
+  @Override
+  public void collapseNode(TreeNode<D> treeNode) {
+    adapter.collapseNode(treeNode);
+  }
+
+  @Override
+  public void collapseLevel(int level) {
+    TreeHelper.collapseLevel(root, level);
+
+    refreshTreeView();
+  }
+
+  @Override
+  public void toggleNode(TreeNode<D> treeNode) {
+    if (treeNode.isExpanded()) {
+      collapseNode(treeNode);
+    } else {
+      expandNode(treeNode);
     }
+  }
 
-    public void setAdapter(@NonNull BaseNodeViewFactory<D> baseNodeViewFactory) {
-        this.baseNodeViewFactory = baseNodeViewFactory;
+  @Override
+  public void deleteNode(TreeNode<D> node) {
+    adapter.deleteNode(node);
+  }
 
-        adapter = new TreeViewAdapter<>(context, root, baseNodeViewFactory);
-        adapter.setTreeView(this);
+  @Override
+  public void addNode(TreeNode<D> parent, TreeNode<D> treeNode) {
+    parent.addChild(treeNode);
 
-        rootView.setAdapter(adapter);
+    refreshTreeView();
+  }
+
+  @Override
+  public List<TreeNode<D>> getAllNodes() {
+    return TreeHelper.getAllNodes(root);
+  }
+
+  @Override
+  public void selectNode(TreeNode<D> treeNode) {
+    if (treeNode != null) {
+      adapter.selectNode(true, treeNode);
     }
+  }
 
-    @Override
-    public void expandAll() {
-        TreeHelper.expandAll(root);
-
-        refreshTreeView();
+  @Override
+  public void deselectNode(TreeNode<D> treeNode) {
+    if (treeNode != null) {
+      adapter.selectNode(false, treeNode);
     }
+  }
 
+  @Override
+  public void selectAll() {
+    TreeHelper.selectNodeAndChild(root, true);
 
-    public void refreshTreeView() {
-        if (rootView != null) {
-            ((TreeViewAdapter<?>) rootView.getAdapter()).refreshView();
-        }
-    }
+    refreshTreeView();
+  }
 
-    public void refreshTreeView(@NonNull TreeNode<D> root) {
-        this.root = root;
+  @Override
+  public void deselectAll() {
+    TreeHelper.selectNodeAndChild(root, false);
 
-        setAdapter(baseNodeViewFactory);
-    }
+    refreshTreeView();
+  }
 
-    @SuppressLint("NotifyDataSetChanged")
-    public void updateTreeView() {
-        if (rootView != null) {
-            rootView.getAdapter().notifyDataSetChanged();
-        }
-    }
+  @Override
+  public List<TreeNode<D>> getSelectedNodes() {
+    return TreeHelper.getSelectedNodes(root);
+  }
 
-    @Override
-    public void expandNode(TreeNode<D> treeNode) {
-        adapter.expandNode(treeNode);
-    }
+  public boolean isItemSelectable() {
+    return itemSelectable;
+  }
 
-    @Override
-    public void expandLevel(int level) {
-        TreeHelper.expandLevel(root, level);
-
-        refreshTreeView();
-    }
-
-    @Override
-    public void collapseAll() {
-        TreeHelper.collapseAll(root);
-
-        refreshTreeView();
-    }
-
-    @Override
-    public void collapseNode(TreeNode<D> treeNode) {
-        adapter.collapseNode(treeNode);
-    }
-
-    @Override
-    public void collapseLevel(int level) {
-        TreeHelper.collapseLevel(root, level);
-
-        refreshTreeView();
-    }
-
-    @Override
-    public void toggleNode(TreeNode<D> treeNode) {
-        if (treeNode.isExpanded()) {
-            collapseNode(treeNode);
-        } else {
-            expandNode(treeNode);
-        }
-    }
-
-    @Override
-    public void deleteNode(TreeNode<D> node) {
-        adapter.deleteNode(node);
-    }
-
-    @Override
-    public void addNode(TreeNode<D> parent, TreeNode<D> treeNode) {
-        parent.addChild(treeNode);
-
-        refreshTreeView();
-    }
-
-    @Override
-    public List<TreeNode<D>> getAllNodes() {
-        return TreeHelper.getAllNodes(root);
-    }
-
-    @Override
-    public void selectNode(TreeNode<D> treeNode) {
-        if (treeNode != null) {
-            adapter.selectNode(true, treeNode);
-        }
-    }
-
-    @Override
-    public void deselectNode(TreeNode<D> treeNode) {
-        if (treeNode != null) {
-            adapter.selectNode(false, treeNode);
-        }
-    }
-
-    @Override
-    public void selectAll() {
-        TreeHelper.selectNodeAndChild(root, true);
-
-        refreshTreeView();
-    }
-
-    @Override
-    public void deselectAll() {
-        TreeHelper.selectNodeAndChild(root, false);
-
-        refreshTreeView();
-    }
-
-    @Override
-    public List<TreeNode<D>> getSelectedNodes() {
-        return TreeHelper.getSelectedNodes(root);
-    }
-
-    public boolean isItemSelectable() {
-        return itemSelectable;
-    }
-
-    public void setItemSelectable(boolean itemSelectable) {
-        this.itemSelectable = itemSelectable;
-    }
-
+  public void setItemSelectable(boolean itemSelectable) {
+    this.itemSelectable = itemSelectable;
+  }
 }

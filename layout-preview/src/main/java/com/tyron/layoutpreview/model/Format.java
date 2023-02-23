@@ -1,22 +1,17 @@
 package com.tyron.layoutpreview.model;
 
 public enum Format {
-    BOOLEAN,
-    STRING,
-    FLOAT,
-    DIMENSION,
-    INTEGER,
+  BOOLEAN,
+  STRING,
+  FLOAT,
+  DIMENSION,
+  INTEGER,
 
-    COLOR,
+  COLOR,
 
-    /**
-     * Used to allow valued that are references
-     */
-    REFERENCE,
+  /** Used to allow valued that are references */
+  REFERENCE,
 
-    /**
-     * Used to only allow certain values
-     */
-    ENUM,
-
+  /** Used to only allow certain values */
+  ENUM,
 }

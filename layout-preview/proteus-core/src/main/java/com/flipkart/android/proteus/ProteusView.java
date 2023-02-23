@@ -17,27 +17,21 @@
 package com.flipkart.android.proteus;
 
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.flipkart.android.proteus.value.Layout;
 import com.flipkart.android.proteus.value.ObjectValue;
 import com.flipkart.android.proteus.value.Style;
 import com.flipkart.android.proteus.value.Value;
-
 import java.util.Collections;
 import java.util.Map;
 
 /**
  * ProteusView
- * <p>
- * This interface is just to add behaviour to Android views
- * so they can host the Proteus View Managers. Since Java &lt; JDK 8
- * do not have default implementations for interfaces all Views
- * which need to be inflated via proteus need to implement this
- * interface.
- * </p>
+ *
+ * <p>This interface is just to add behaviour to Android views so they can host the Proteus View
+ * Managers. Since Java &lt; JDK 8 do not have default implementations for interfaces all Views
+ * which need to be inflated via proteus need to implement this interface.
  *
  * @author adtityasharat
  */
@@ -73,22 +67,17 @@ public interface ProteusView {
       return null;
     }
 
-    default void setOnClickListener(View.OnClickListener listener) {
-
-    }
+    default void setOnClickListener(View.OnClickListener listener) {}
 
     default View.OnClickListener getOnClickListener() {
       return null;
     }
 
-    default void setOnLongClickListener(View.OnLongClickListener listener) {
-
-    }
+    default void setOnLongClickListener(View.OnLongClickListener listener) {}
 
     default View.OnLongClickListener getOnLongClickListener() {
       return null;
     }
-
 
     default <T extends View> ViewTypeParser<T> getViewTypeParser() {
       return null;
@@ -101,26 +90,15 @@ public interface ProteusView {
      */
     void update(@Nullable ObjectValue data);
 
+    default void updateAttribute(String name, Value value) {}
 
-    default void updateAttribute(String name, Value value) {
+    default void updateAttribute(String name, String value) {}
 
-    }
+    default void removeAttribute(String name) {}
 
-    default void updateAttribute(String name, String value) {
+    default void setStyle(Style style) {}
 
-    }
-
-    default void removeAttribute(String name) {
-
-    }
-
-    default void setStyle(Style style) {
-
-    }
-
-    default void setTheme(Style theme) {
-
-    }
+    default void setTheme(Style theme) {}
 
     default Style getTheme() {
       return null;
@@ -143,12 +121,11 @@ public interface ProteusView {
     }
 
     /**
-     * Look for a child view with the given id.  If this view has the given
-     * id, return this view. Similar to {@link View#findViewById(int)}. Since
-     * Proteus is a runtime inflater, layouts use String ids instead of int and it
-     * generates unique int ids using the {@link IdGenerator}.
+     * Look for a child view with the given id. If this view has the given id, return this view.
+     * Similar to {@link View#findViewById(int)}. Since Proteus is a runtime inflater, layouts use
+     * String ids instead of int and it generates unique int ids using the {@link IdGenerator}.
      *
-     * @param id The  string id to search for.
+     * @param id The string id to search for.
      * @return The view that has the given id in the hierarchy or null
      */
     @Nullable
@@ -184,13 +161,12 @@ public interface ProteusView {
     /**
      * Sets the extra associated with this view. A extra can be used to mark a view in its hierarchy
      * and does not have to be unique within the hierarchy. Extras can also be used to store data
-     * within a proteus view without resorting to another data structure.
-     * It is similar to {@link View#setTag(Object)}
+     * within a proteus view without resorting to another data structure. It is similar to {@link
+     * View#setTag(Object)}
      *
      * @param extras The object to set as the extra.
      * @see #setExtras(Object)
      */
     void setExtras(@Nullable Object extras);
-
   }
 }

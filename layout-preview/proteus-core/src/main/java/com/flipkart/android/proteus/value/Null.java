@@ -23,7 +23,6 @@ import com.flipkart.android.proteus.ProteusConstants;
  *
  * @author aditya.sharat
  */
-
 public class Null extends Value {
   /**
    * singleton for JsonNull
@@ -49,18 +48,13 @@ public class Null extends Value {
     return ProteusConstants.EMPTY;
   }
 
-  /**
-   * All instances of Null have the same hash code
-   * since they are indistinguishable
-   */
+  /** All instances of Null have the same hash code since they are indistinguishable */
   @Override
   public int hashCode() {
     return Null.class.hashCode();
   }
 
-  /**
-   * All instances of JsonNull are the same
-   */
+  /** All instances of JsonNull are the same */
   @Override
   public boolean equals(java.lang.Object other) {
     return this == other || other instanceof Null;

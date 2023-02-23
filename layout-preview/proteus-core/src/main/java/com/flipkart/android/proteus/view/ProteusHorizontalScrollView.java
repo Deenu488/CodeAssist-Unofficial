@@ -21,17 +21,16 @@ import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
-
-import com.flipkart.android.proteus.ProteusView;
-
 import androidx.annotation.NonNull;
+import com.flipkart.android.proteus.ProteusView;
 
 /**
  * HorizontalScrollView
  *
  * @author aditya.sharat
  */
-public class ProteusHorizontalScrollView extends android.widget.HorizontalScrollView implements ProteusView {
+public class ProteusHorizontalScrollView extends android.widget.HorizontalScrollView
+    implements ProteusView {
 
   private Manager viewManager;
 
@@ -48,7 +47,8 @@ public class ProteusHorizontalScrollView extends android.widget.HorizontalScroll
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  public ProteusHorizontalScrollView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+  public ProteusHorizontalScrollView(
+      Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
     super(context, attrs, defStyleAttr, defStyleRes);
   }
 

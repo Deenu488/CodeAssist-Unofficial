@@ -1,11 +1,19 @@
 plugins {
     id 'com.android.library'
 }
+apply plugin: 'com.diffplug.spotless'
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
-
+	
+	spotless {
+		java {
+			target "**/*.java"
+			googleJavaFormat()
+			}
+		}
+	
     defaultConfig {
         minSdk 21
         targetSdk 31

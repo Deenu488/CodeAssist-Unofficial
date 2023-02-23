@@ -20,7 +20,7 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
-
+import androidx.annotation.Nullable;
 import com.flipkart.android.proteus.ProteusContext;
 import com.flipkart.android.proteus.ProteusLayoutInflater;
 import com.flipkart.android.proteus.toolbox.ProteusHelper;
@@ -31,10 +31,9 @@ import com.flipkart.android.proteus.value.Resource;
 import com.flipkart.android.proteus.value.Style;
 import com.flipkart.android.proteus.value.Value;
 
-import androidx.annotation.Nullable;
-
 /**
- * Use this as the base processor for references like @drawable or remote resources with http:// urls.
+ * Use this as the base processor for references like @drawable or remote resources with http://
+ * urls.
  */
 public abstract class DrawableResourceProcessor<V extends View> extends AttributeProcessor<V> {
 
@@ -44,12 +43,13 @@ public abstract class DrawableResourceProcessor<V extends View> extends Attribut
       return null;
     }
     final Drawable[] d = new Drawable[1];
-    DrawableResourceProcessor<View> processor = new DrawableResourceProcessor<View>() {
-      @Override
-      public void setDrawable(View view, Drawable drawable) {
-        d[0] = drawable;
-      }
-    };
+    DrawableResourceProcessor<View> processor =
+        new DrawableResourceProcessor<View>() {
+          @Override
+          public void setDrawable(View view, Drawable drawable) {
+            d[0] = drawable;
+          }
+        };
     processor.process((View) view.getParent(), view, value);
     return d[0];
   }
@@ -61,7 +61,8 @@ public abstract class DrawableResourceProcessor<V extends View> extends Attribut
     if (value.isDrawable()) {
       return value;
     } else if (value.isPrimitive()) {
-      Value precompiled = AttributeProcessor.staticPreCompile(value.getAsPrimitive(), context, null);
+      Value precompiled =
+          AttributeProcessor.staticPreCompile(value.getAsPrimitive(), context, null);
       if (null != precompiled) {
         return precompiled;
       }
@@ -80,15 +81,25 @@ public abstract class DrawableResourceProcessor<V extends View> extends Attribut
       if (null != d) {
         ProteusContext context = ProteusHelper.getProteusContext(view);
         ProteusLayoutInflater.ImageLoader loader = context.getLoader();
-        d.apply(view, context, loader, drawable -> {
-          setDrawable(view, drawable);
-        });
+        d.apply(
+            view,
+            context,
+            loader,
+            drawable -> {
+              setDrawable(view, drawable);
+            });
       }
     } else {
       if (value.isPrimitive() && value.toString().equals("@null")) {
         setDrawable(view, null);
       } else {
-        process(parent, view, precompile(value, ProteusHelper.getProteusContext(view), (ProteusHelper.getProteusContext(view)).getFunctionManager()));
+        process(
+            parent,
+            view,
+            precompile(
+                value,
+                ProteusHelper.getProteusContext(view),
+                (ProteusHelper.getProteusContext(view)).getFunctionManager()));
       }
     }
   }
@@ -109,9 +120,13 @@ public abstract class DrawableResourceProcessor<V extends View> extends Attribut
         setDrawable(view, d);
       }
     } else {
-      drawableValue.apply(view, context, context.getLoader(), drawable -> {
-        setDrawable(view, drawable);
-      });
+      drawableValue.apply(
+          view,
+          context,
+          context.getLoader(),
+          drawable -> {
+            setDrawable(view, drawable);
+          });
     }
   }
 
@@ -123,8 +138,8 @@ public abstract class DrawableResourceProcessor<V extends View> extends Attribut
 
   @Override
   public void handleStyle(View parent, V view, Style style) {
-//    TypedArray a = style.apply(view.getContext());
-//    set(view, a);
+    //    TypedArray a = style.apply(view.getContext());
+    //    set(view, a);
   }
 
   private void set(V view, TypedArray a) {

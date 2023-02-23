@@ -22,9 +22,7 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
-/**
- * Created by kiran.kumar on 13/05/14.
- */
+/** Created by kiran.kumar on 13/05/14. */
 public class AspectRatioFrameLayout extends FrameLayout {
 
   private int mAspectRatioWidth;
@@ -43,7 +41,8 @@ public class AspectRatioFrameLayout extends FrameLayout {
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  public AspectRatioFrameLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+  public AspectRatioFrameLayout(
+      Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
     super(context, attrs, defStyleAttr, defStyleRes);
   }
 
@@ -69,10 +68,9 @@ public class AspectRatioFrameLayout extends FrameLayout {
         finalWidth = originalWidth;
       }
 
-
       super.onMeasure(
-        MeasureSpec.makeMeasureSpec(finalWidth, MeasureSpec.EXACTLY),
-        MeasureSpec.makeMeasureSpec(finalHeight, MeasureSpec.EXACTLY));
+          MeasureSpec.makeMeasureSpec(finalWidth, MeasureSpec.EXACTLY),
+          MeasureSpec.makeMeasureSpec(finalHeight, MeasureSpec.EXACTLY));
     } else {
       super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }

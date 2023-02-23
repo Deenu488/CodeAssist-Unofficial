@@ -16,13 +16,10 @@
 
 package com.flipkart.android.proteus;
 
-import com.flipkart.android.proteus.value.Style;
-import com.flipkart.android.proteus.value.Value;
-
-import java.util.Map;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.flipkart.android.proteus.value.Style;
+import java.util.Map;
 
 /**
  * StyleManager

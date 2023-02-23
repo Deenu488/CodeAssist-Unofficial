@@ -27,16 +27,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-
+import androidx.annotation.Nullable;
 import com.flipkart.android.proteus.ProteusConstants;
 import com.flipkart.android.proteus.value.Primitive;
 import com.flipkart.android.proteus.value.Value;
-
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-
-import androidx.annotation.Nullable;
 
 /**
  * @author kiran.kumar
@@ -90,7 +87,6 @@ public class ParseHelper {
   private static final Map<String, ImageView.ScaleType> sImageScaleType = new HashMap<>();
 
   static {
-
     sVisibilityMap.put(View.VISIBLE, new Primitive(View.VISIBLE));
     sVisibilityMap.put(View.INVISIBLE, new Primitive(View.INVISIBLE));
     sVisibilityMap.put(View.GONE, new Primitive(View.GONE));
@@ -260,14 +256,16 @@ public class ParseHelper {
     if (null != value && value.isPrimitive()) {
       String attributeValue = value.getAsString();
       returnValue = sVisibilityMode.get(attributeValue);
-      if (null == returnValue &&
-        (attributeValue.isEmpty() || FALSE.equals(attributeValue) || ProteusConstants.DATA_NULL.equals(attributeValue))) {
+      if (null == returnValue
+          && (attributeValue.isEmpty()
+              || FALSE.equals(attributeValue)
+              || ProteusConstants.DATA_NULL.equals(attributeValue))) {
         returnValue = View.GONE;
       }
     } else //noinspection ConstantConditions
-      if (value.isNull()) {
-        returnValue = View.GONE;
-      }
+    if (value.isNull()) {
+      returnValue = View.GONE;
+    }
     return returnValue == null ? View.VISIBLE : returnValue;
   }
 
@@ -289,7 +287,9 @@ public class ParseHelper {
 
   public static boolean parseBoolean(@Nullable Value value) {
     // TODO: we should consider 0 as false too.
-    return null != value && value.isPrimitive() && value.getAsPrimitive().isBoolean() ? value.getAsBoolean() : null != value && !value.isNull() && Boolean.parseBoolean(value.getAsString());
+    return null != value && value.isPrimitive() && value.getAsPrimitive().isBoolean()
+        ? value.getAsBoolean()
+        : null != value && !value.isNull() && Boolean.parseBoolean(value.getAsString());
   }
 
   public static int parseRelativeLayoutBoolean(boolean value) {
@@ -336,11 +336,11 @@ public class ParseHelper {
   }
 
   /**
-   * Uses reflection to fetch the R.id from the given class.
-   * This method is faster than using {@link android.content.res.Resources#getResourceName(int)}
+   * Uses reflection to fetch the R.id from the given class. This method is faster than using {@link
+   * android.content.res.Resources#getResourceName(int)}
    *
    * @param variableName the name of the variable
-   * @param с            The class
+   * @param с The class
    * @return resource id
    */
   public static int getResId(String variableName, Class<?> с) {
@@ -353,12 +353,11 @@ public class ParseHelper {
       e.printStackTrace();
     }
     return resId;
-
   }
 
   /**
-   * Get int resource id, by just passing the string value of android:id from xml file.
-   * Note : This method only works for @android:id or @+android:id right now
+   * Get int resource id, by just passing the string value of android:id from xml file. Note : This
+   * method only works for @android:id or @+android:id right now
    *
    * @param fullResIdString the string id of the view
    * @return the number id of the view
@@ -395,8 +394,7 @@ public class ParseHelper {
   }
 
   public static class IntResult {
-    @Nullable
-    public final String error;
+    @Nullable public final String error;
     public final int result;
 
     public IntResult(@Nullable String error, int result) {

@@ -17,7 +17,6 @@
 package com.flipkart.android.proteus.value;
 
 import com.flipkart.android.proteus.toolbox.LazilyParsedNumber;
-
 import java.math.BigInteger;
 
 /**
@@ -25,12 +24,26 @@ import java.math.BigInteger;
  *
  * @author aditya.sharat
  */
-
 public class Primitive extends Value {
 
-  private static final Class<?>[] PRIMITIVE_TYPES = {int.class, long.class, short.class,
-    float.class, double.class, byte.class, boolean.class, char.class, Integer.class, Long.class,
-    Short.class, Float.class, Double.class, Byte.class, Boolean.class, Character.class};
+  private static final Class<?>[] PRIMITIVE_TYPES = {
+    int.class,
+    long.class,
+    short.class,
+    float.class,
+    double.class,
+    byte.class,
+    boolean.class,
+    char.class,
+    Integer.class,
+    Long.class,
+    Short.class,
+    Float.class,
+    Double.class,
+    Byte.class,
+    Boolean.class,
+    Character.class
+  };
 
   private java.lang.Object value;
 
@@ -95,13 +108,17 @@ public class Primitive extends Value {
   }
 
   /**
-   * Returns true if the specified number is an integral type
-   * (Long, Integer, Short, Byte, BigInteger)
+   * Returns true if the specified number is an integral type (Long, Integer, Short, Byte,
+   * BigInteger)
    */
   private static boolean isIntegral(Primitive primitive) {
     if (primitive.value instanceof Number) {
       Number number = (Number) primitive.value;
-      return number instanceof BigInteger || number instanceof Long || number instanceof Integer || number instanceof Short || number instanceof Byte;
+      return number instanceof BigInteger
+          || number instanceof Long
+          || number instanceof Integer
+          || number instanceof Short
+          || number instanceof Byte;
     }
     return false;
   }

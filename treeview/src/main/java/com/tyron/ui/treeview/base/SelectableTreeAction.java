@@ -14,22 +14,18 @@
 
 package com.tyron.ui.treeview.base;
 
+import com.tyron.ui.treeview.TreeNode;
 import java.util.List;
 
-import com.tyron.ui.treeview.TreeNode;
-
-/**
- * Created by xinyuanzhong on 2017/4/27.
- */
-
+/** Created by xinyuanzhong on 2017/4/27. */
 public interface SelectableTreeAction<D> extends BaseTreeAction<D> {
-    void selectNode(TreeNode<D> treeNode);
+  void selectNode(TreeNode<D> treeNode);
 
-    void deselectNode(TreeNode<D> treeNode);
+  void deselectNode(TreeNode<D> treeNode);
 
-    void selectAll();
+  void selectAll();
 
-    void deselectAll();
+  void deselectAll();
 
-    List<TreeNode<D>> getSelectedNodes();
+  List<TreeNode<D>> getSelectedNodes();
 }

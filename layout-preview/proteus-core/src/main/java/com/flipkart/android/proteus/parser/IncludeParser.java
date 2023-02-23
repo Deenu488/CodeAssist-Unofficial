@@ -18,10 +18,8 @@ package com.flipkart.android.proteus.parser;
 
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.flipkart.android.proteus.ProteusConstants;
 import com.flipkart.android.proteus.ProteusContext;
 import com.flipkart.android.proteus.ProteusView;
@@ -34,61 +32,61 @@ import com.flipkart.android.proteus.view.UnknownView;
 
 /**
  * IncludeParser
- * <p>
- * TODO: merge the attributes into the included layout
- * </p>
+ *
+ * <p>TODO: merge the attributes into the included layout
  *
  * @author aditya.sharat
  */
-
 public class IncludeParser<V extends View> extends ViewTypeParser<V> {
 
-    @NonNull
-    @Override
-    public String getType() {
-        return "include";
+  @NonNull
+  @Override
+  public String getType() {
+    return "include";
+  }
+
+  @Nullable
+  @Override
+  public String getParentType() {
+    return "android.view.View";
+  }
+
+  @NonNull
+  @Override
+  public ProteusView createView(
+      @NonNull ProteusContext context,
+      @NonNull Layout include,
+      @NonNull ObjectValue data,
+      @Nullable ViewGroup parent,
+      int dataIndex) {
+
+    if (include.extras == null) {
+      throw new IllegalArgumentException("required attribute 'layout' missing.");
     }
 
-    @Nullable
-    @Override
-    public String getParentType() {
-        return "android.view.View";
+    Value type = include.extras.get(ProteusConstants.LAYOUT);
+    if (null == type || !type.isPrimitive()) {
+      throw new ProteusInflateException("required attribute 'layout' missing or is not a string");
     }
 
-    @NonNull
-    @Override
-    public ProteusView createView(@NonNull ProteusContext context, @NonNull Layout include, @NonNull ObjectValue data, @Nullable ViewGroup parent, int dataIndex) {
+    String layoutName = type.getAsString();
+    if (layoutName.startsWith("@layout/")) {
+      layoutName = layoutName.substring("@layout/".length());
+      if (layoutName.equals(data.getAsString("layout_name"))) {
+        return new UnknownView(context, layoutName);
+      }
 
-        if (include.extras == null) {
-            throw new IllegalArgumentException("required attribute 'layout' missing.");
-        }
+      Layout layout = context.getLayout(layoutName);
+      if (null == layout) {
+        throw new ProteusInflateException("Layout '" + layoutName + "' not found");
+      }
 
-        Value type = include.extras.get(ProteusConstants.LAYOUT);
-        if (null == type || !type.isPrimitive()) {
-            throw new ProteusInflateException("required attribute 'layout' missing or is not a string");
-        }
-
-        String layoutName = type.getAsString();
-        if (layoutName.startsWith("@layout/")) {
-            layoutName = layoutName.substring("@layout/".length());
-            if (layoutName.equals(data.getAsString("layout_name"))) {
-                return new UnknownView(context, layoutName);
-            }
-
-            Layout layout = context.getLayout(layoutName);
-            if (null == layout) {
-                throw new ProteusInflateException("Layout '" + layoutName + "' not found");
-            }
-
-            return context.getInflater().inflate(layout.merge(include), data, parent, dataIndex);
-        } else {
-            throw new ProteusInflateException("Unknown value: " + layoutName);
-        }
+      return context.getInflater().inflate(layout.merge(include), data, parent, dataIndex);
+    } else {
+      throw new ProteusInflateException("Unknown value: " + layoutName);
     }
+  }
 
-    @Override
-    protected void addAttributeProcessors() {
-
-    }
-
+  @Override
+  protected void addAttributeProcessors() {}
 }

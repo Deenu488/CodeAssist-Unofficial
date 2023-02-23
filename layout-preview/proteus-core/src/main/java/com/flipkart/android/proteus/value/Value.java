@@ -24,8 +24,7 @@ package com.flipkart.android.proteus.value;
 public abstract class Value {
 
   /**
-   * Returns a deep copy of this value. Immutable elements
-   * like primitives and nulls are not copied.
+   * Returns a deep copy of this value. Immutable elements like primitives and nulls are not copied.
    */
   public abstract Value copy();
 
@@ -127,10 +126,9 @@ public abstract class Value {
   }
 
   /**
-   * convenience method to get this value as a {@link ObjectValue}. If the value is of some
-   * other type, a {@link IllegalStateException} will result. Hence it is best to use this method
-   * after ensuring that this value is of the desired type by calling {@link #isObject()}
-   * first.
+   * convenience method to get this value as a {@link ObjectValue}. If the value is of some other
+   * type, a {@link IllegalStateException} will result. Hence it is best to use this method after
+   * ensuring that this value is of the desired type by calling {@link #isObject()} first.
    *
    * @return get this value as a {@link ObjectValue}.
    * @throws IllegalStateException if the value is of another type.
@@ -143,10 +141,9 @@ public abstract class Value {
   }
 
   /**
-   * convenience method to get this value as a {@link Array}. If the value is of some
-   * other type, a {@link IllegalStateException} will result. Hence it is best to use this method
-   * after ensuring that this value is of the desired type by calling {@link #isArray()}
-   * first.
+   * convenience method to get this value as a {@link Array}. If the value is of some other type, a
+   * {@link IllegalStateException} will result. Hence it is best to use this method after ensuring
+   * that this value is of the desired type by calling {@link #isArray()} first.
    *
    * @return get this value as a {@link Array}.
    * @throws IllegalStateException if the value is of another type.
@@ -159,10 +156,9 @@ public abstract class Value {
   }
 
   /**
-   * convenience method to get this value as a {@link Primitive}. If the value is of some
-   * other type, a {@link IllegalStateException} will result. Hence it is best to use this method
-   * after ensuring that this value is of the desired type by calling {@link #isPrimitive()}
-   * first.
+   * convenience method to get this value as a {@link Primitive}. If the value is of some other
+   * type, a {@link IllegalStateException} will result. Hence it is best to use this method after
+   * ensuring that this value is of the desired type by calling {@link #isPrimitive()} first.
    *
    * @return get this value as a {@link Primitive}.
    * @throws IllegalStateException if the value is of another type.
@@ -175,10 +171,9 @@ public abstract class Value {
   }
 
   /**
-   * convenience method to get this value as a {@link Null}. If the value is of some
-   * other type, a {@link IllegalStateException} will result. Hence it is best to use this method
-   * after ensuring that this value is of the desired type by calling {@link #isNull()}
-   * first.
+   * convenience method to get this value as a {@link Null}. If the value is of some other type, a
+   * {@link IllegalStateException} will result. Hence it is best to use this method after ensuring
+   * that this value is of the desired type by calling {@link #isNull()} first.
    *
    * @return get this value as a {@link Null}.
    * @throws IllegalStateException if the value is of another type.
@@ -283,7 +278,7 @@ public abstract class Value {
    *
    * @return get this value as a primitive boolean value.
    * @throws ClassCastException if the value is of not a {@link Primitive} and is not a valid
-   *                            boolean value.
+   *     boolean value.
    */
   public boolean getAsBoolean() {
     throw new UnsupportedOperationException(getClass().getSimpleName());
@@ -293,8 +288,8 @@ public abstract class Value {
    * convenience method to get this value as a string value.
    *
    * @return get this value as a string value.
-   * @throws ClassCastException if the value is of not a {@link Primitive} and is not a valid
-   *                            string value.
+   * @throws ClassCastException if the value is of not a {@link Primitive} and is not a valid string
+   *     value.
    */
   public String getAsString() {
     throw new UnsupportedOperationException(getClass().getSimpleName());
@@ -304,8 +299,8 @@ public abstract class Value {
    * convenience method to get this value as a primitive double value.
    *
    * @return get this value as a primitive double value.
-   * @throws ClassCastException if the value is of not a {@link Primitive} and is not a valid
-   *                            double value.
+   * @throws ClassCastException if the value is of not a {@link Primitive} and is not a valid double
+   *     value.
    */
   public double getAsDouble() {
     throw new UnsupportedOperationException(getClass().getSimpleName());
@@ -315,8 +310,8 @@ public abstract class Value {
    * convenience method to get this value as a primitive float value.
    *
    * @return get this value as a primitive float value.
-   * @throws ClassCastException if the value is of not a {@link Primitive} and is not a valid
-   *                            float value.
+   * @throws ClassCastException if the value is of not a {@link Primitive} and is not a valid float
+   *     value.
    */
   public float getAsFloat() {
     throw new UnsupportedOperationException(getClass().getSimpleName());
@@ -326,8 +321,8 @@ public abstract class Value {
    * convenience method to get this value as a primitive long value.
    *
    * @return get this value as a primitive long value.
-   * @throws ClassCastException if the value is of not a {@link Primitive} and is not a valid
-   *                            long value.
+   * @throws ClassCastException if the value is of not a {@link Primitive} and is not a valid long
+   *     value.
    */
   public long getAsLong() {
     throw new UnsupportedOperationException(getClass().getSimpleName());
@@ -338,7 +333,7 @@ public abstract class Value {
    *
    * @return get this value as a primitive integer value.
    * @throws ClassCastException if the value is of not a {@link Primitive} and is not a valid
-   *                            integer value.
+   *     integer value.
    */
   public int getAsInt() {
     throw new UnsupportedOperationException(getClass().getSimpleName());
@@ -348,11 +343,10 @@ public abstract class Value {
    * convenience method to get this value as a primitive character value.
    *
    * @return get this value as a primitive char value.
-   * @throws ClassCastException if the value is of not a {@link Primitive} and is not a valid
-   *                            char value.
+   * @throws ClassCastException if the value is of not a {@link Primitive} and is not a valid char
+   *     value.
    */
   public char getAsCharacter() {
     throw new UnsupportedOperationException(getClass().getSimpleName());
   }
-
 }

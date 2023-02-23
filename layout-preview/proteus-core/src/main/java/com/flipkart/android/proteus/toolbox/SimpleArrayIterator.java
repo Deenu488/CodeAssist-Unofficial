@@ -23,7 +23,6 @@ import java.util.Iterator;
  *
  * @author adityasharat
  */
-
 public class SimpleArrayIterator<E> implements Iterator<E> {
 
   private final E[] elements;
@@ -69,5 +68,4 @@ public class SimpleArrayIterator<E> implements Iterator<E> {
   public void remove() {
     throw new UnsupportedOperationException("remove() is not allowed.");
   }
-
 }

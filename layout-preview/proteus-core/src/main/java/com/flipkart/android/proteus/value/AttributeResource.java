@@ -20,18 +20,15 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.LruCache;
 import android.view.View;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.flipkart.android.proteus.ProteusConstants;
 import com.flipkart.android.proteus.ProteusContext;
-
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * AttributeResource
@@ -44,7 +41,8 @@ public class AttributeResource extends Value {
 
   private static final String ATTR_START_LITERAL = "?";
   private static final String ATTR_LITERAL = "attr/";
-  private static final Pattern sAttributePattern = Pattern.compile("(\\?)(\\S*)(:?)(attr/?)(\\S*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+  private static final Pattern sAttributePattern =
+      Pattern.compile("(\\?)(\\S*)(:?)(attr/?)(\\S*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
   private static final Map<String, Class> sHashMap = new HashMap<>();
 
   public final int attributeId;
@@ -60,7 +58,8 @@ public class AttributeResource extends Value {
     value = String.valueOf(attributeId);
   }
 
-  private AttributeResource(String value, Context context) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
+  private AttributeResource(String value, Context context)
+      throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
     this.value = value;
     String attributeName;
     String packageName = null;
@@ -113,6 +112,7 @@ public class AttributeResource extends Value {
   public static AttributeResource valueOf(String value) {
     return new AttributeResource(value);
   }
+
   @Nullable
   public static AttributeResource valueOf(String value, Context context) {
     AttributeResource attribute = AttributeCache.cache.get(value);
@@ -136,7 +136,7 @@ public class AttributeResource extends Value {
   }
 
   public TypedArray apply(@NonNull Context context) {
-    return context.obtainStyledAttributes(new int[]{attributeId});
+    return context.obtainStyledAttributes(new int[] {attributeId});
   }
 
   public Value resolve(View parent, View view, ProteusContext context) {
@@ -155,5 +155,4 @@ public class AttributeResource extends Value {
   private static class AttributeCache {
     static final LruCache<String, AttributeResource> cache = new LruCache<>(16);
   }
-
 }

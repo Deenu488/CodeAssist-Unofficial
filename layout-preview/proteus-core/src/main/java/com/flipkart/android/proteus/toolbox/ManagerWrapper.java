@@ -17,23 +17,20 @@
 package com.flipkart.android.proteus.toolbox;
 
 import android.view.View;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.flipkart.android.proteus.DataContext;
 import com.flipkart.android.proteus.ProteusContext;
 import com.flipkart.android.proteus.ProteusView;
 import com.flipkart.android.proteus.value.Layout;
 import com.flipkart.android.proteus.value.ObjectValue;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * ManagerWrapper
- * <p>
- * Proxies the implementation of {@link ProteusView.Manager} that simply delegates
- * all of its calls to another Manager. Can be subclassed to modify or to add new behavior
- * without changing the original Manager.
- * </p>
+ *
+ * <p>Proxies the implementation of {@link ProteusView.Manager} that simply delegates all of its
+ * calls to another Manager. Can be subclassed to modify or to add new behavior without changing the
+ * original Manager.
  *
  * @author adityasharat
  */

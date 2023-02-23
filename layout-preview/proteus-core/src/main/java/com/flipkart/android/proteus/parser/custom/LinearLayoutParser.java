@@ -22,7 +22,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.flipkart.android.proteus.ProteusConstants;
 import com.flipkart.android.proteus.ProteusContext;
 import com.flipkart.android.proteus.ProteusView;
@@ -37,12 +38,7 @@ import com.flipkart.android.proteus.value.Layout;
 import com.flipkart.android.proteus.value.ObjectValue;
 import com.flipkart.android.proteus.view.ProteusLinearLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-/**
- * Created by kiran.kumar on 12/05/14.
- */
+/** Created by kiran.kumar on 12/05/14. */
 public class LinearLayoutParser<T extends View> extends ViewTypeParser<T> {
 
   @NonNull
@@ -59,93 +55,111 @@ public class LinearLayoutParser<T extends View> extends ViewTypeParser<T> {
 
   @NonNull
   @Override
-  public ProteusView createView(@NonNull ProteusContext context, @NonNull Layout layout, @NonNull ObjectValue data,
-                                @Nullable ViewGroup parent, int dataIndex) {
+  public ProteusView createView(
+      @NonNull ProteusContext context,
+      @NonNull Layout layout,
+      @NonNull ObjectValue data,
+      @Nullable ViewGroup parent,
+      int dataIndex) {
     return new ProteusLinearLayout(context);
   }
 
   @Override
   protected void addAttributeProcessors() {
 
-    addAttributeProcessor(Attributes.LinearLayout.Orientation, new StringAttributeProcessor<T>() {
-      @Override
-      public void setString(T view, String value) {
-        if (view instanceof LinearLayout) {
-          if ("horizontal".equals(value)) {
-            ((LinearLayout) view).setOrientation(ProteusLinearLayout.HORIZONTAL);
-          } else {
-            ((LinearLayout) view).setOrientation(ProteusLinearLayout.VERTICAL);
+    addAttributeProcessor(
+        Attributes.LinearLayout.Orientation,
+        new StringAttributeProcessor<T>() {
+          @Override
+          public void setString(T view, String value) {
+            if (view instanceof LinearLayout) {
+              if ("horizontal".equals(value)) {
+                ((LinearLayout) view).setOrientation(ProteusLinearLayout.HORIZONTAL);
+              } else {
+                ((LinearLayout) view).setOrientation(ProteusLinearLayout.VERTICAL);
+              }
+            }
           }
-        }
-      }
-    });
+        });
 
-    addAttributeProcessor(Attributes.View.Gravity, new GravityAttributeProcessor<T>() {
-      @Override
-      public void setGravity(T view, @Gravity int gravity) {
-        if (view instanceof LinearLayout) {
-          ((LinearLayout) view).setGravity(gravity);
-        }
-      }
-    });
-
-    addAttributeProcessor(Attributes.LinearLayout.Divider, new DrawableResourceProcessor<T>() {
-      @SuppressLint("NewApi")
-      @Override
-      public void setDrawable(T view, Drawable drawable) {
-        if (view instanceof LinearLayout) {
-          ((LinearLayout) view).setDividerDrawable(drawable);
-        }
-      }
-    });
-
-    addAttributeProcessor(Attributes.LinearLayout.DividerPadding, new DimensionAttributeProcessor<T>() {
-      @SuppressLint("NewApi")
-      @Override
-      public void setDimension(T view, float dimension) {
-        if (view instanceof LinearLayout) {
-          ((LinearLayout) view).setDividerPadding((int) dimension);
-        }
-      }
-    });
-
-    addAttributeProcessor(Attributes.LinearLayout.ShowDividers, new StringAttributeProcessor<T>() {
-      @SuppressLint("NewApi")
-      @Override
-      public void setString(T view, String value) {
-
-        int dividerMode = ParseHelper.parseDividerMode(value);
-        // noinspection ResourceType
-        if (view instanceof LinearLayout) {
-          ((LinearLayout) view).setShowDividers(dividerMode);
-        }
-      }
-    });
-
-    addAttributeProcessor(Attributes.LinearLayout.WeightSum, new StringAttributeProcessor<T>() {
-      @SuppressLint("NewApi")
-      @Override
-      public void setString(T view, String value) {
-        if (view instanceof LinearLayout) {
-          ((LinearLayout) view).setWeightSum(ParseHelper.parseFloat(value));
-        }
-      }
-    });
-
-    addLayoutParamsAttributeProcessor(Attributes.View.Weight, new StringAttributeProcessor<T>() {
-      @Override
-      public void setString(View view, String value) {
-        LinearLayout.LayoutParams layoutParams;
-        if (view.getLayoutParams() instanceof LinearLayout.LayoutParams) {
-          layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
-          layoutParams.weight = ParseHelper.parseFloat(value);
-          view.setLayoutParams(layoutParams);
-        } else {
-          if (ProteusConstants.isLoggingEnabled()) {
-            Log.e("LinearLayoutParser", "'weight' is only supported for LinearLayouts");
+    addAttributeProcessor(
+        Attributes.View.Gravity,
+        new GravityAttributeProcessor<T>() {
+          @Override
+          public void setGravity(T view, @Gravity int gravity) {
+            if (view instanceof LinearLayout) {
+              ((LinearLayout) view).setGravity(gravity);
+            }
           }
-        }
-      }
-    });
+        });
+
+    addAttributeProcessor(
+        Attributes.LinearLayout.Divider,
+        new DrawableResourceProcessor<T>() {
+          @SuppressLint("NewApi")
+          @Override
+          public void setDrawable(T view, Drawable drawable) {
+            if (view instanceof LinearLayout) {
+              ((LinearLayout) view).setDividerDrawable(drawable);
+            }
+          }
+        });
+
+    addAttributeProcessor(
+        Attributes.LinearLayout.DividerPadding,
+        new DimensionAttributeProcessor<T>() {
+          @SuppressLint("NewApi")
+          @Override
+          public void setDimension(T view, float dimension) {
+            if (view instanceof LinearLayout) {
+              ((LinearLayout) view).setDividerPadding((int) dimension);
+            }
+          }
+        });
+
+    addAttributeProcessor(
+        Attributes.LinearLayout.ShowDividers,
+        new StringAttributeProcessor<T>() {
+          @SuppressLint("NewApi")
+          @Override
+          public void setString(T view, String value) {
+
+            int dividerMode = ParseHelper.parseDividerMode(value);
+            // noinspection ResourceType
+            if (view instanceof LinearLayout) {
+              ((LinearLayout) view).setShowDividers(dividerMode);
+            }
+          }
+        });
+
+    addAttributeProcessor(
+        Attributes.LinearLayout.WeightSum,
+        new StringAttributeProcessor<T>() {
+          @SuppressLint("NewApi")
+          @Override
+          public void setString(T view, String value) {
+            if (view instanceof LinearLayout) {
+              ((LinearLayout) view).setWeightSum(ParseHelper.parseFloat(value));
+            }
+          }
+        });
+
+    addLayoutParamsAttributeProcessor(
+        Attributes.View.Weight,
+        new StringAttributeProcessor<T>() {
+          @Override
+          public void setString(View view, String value) {
+            LinearLayout.LayoutParams layoutParams;
+            if (view.getLayoutParams() instanceof LinearLayout.LayoutParams) {
+              layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
+              layoutParams.weight = ParseHelper.parseFloat(value);
+              view.setLayoutParams(layoutParams);
+            } else {
+              if (ProteusConstants.isLoggingEnabled()) {
+                Log.e("LinearLayoutParser", "'weight' is only supported for LinearLayouts");
+              }
+            }
+          }
+        });
   }
 }

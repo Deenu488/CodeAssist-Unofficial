@@ -15,62 +15,55 @@
 package com.tyron.ui.treeview.base;
 
 import android.view.View;
-
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.tyron.ui.treeview.TreeNode;
 import com.tyron.ui.treeview.TreeView;
 
-/**
- * Created by zxy on 17/4/23.
- */
-
+/** Created by zxy on 17/4/23. */
 public abstract class BaseNodeViewBinder<D> extends RecyclerView.ViewHolder {
-    /**
-     * This reference of TreeView make BaseNodeViewBinder has the ability
-     * to expand node or select node.
-     */
-    protected TreeView<D> treeView;
+  /**
+   * This reference of TreeView make BaseNodeViewBinder has the ability to expand node or select
+   * node.
+   */
+  protected TreeView<D> treeView;
 
-    public BaseNodeViewBinder(View itemView) {
-        super(itemView);
-    }
+  public BaseNodeViewBinder(View itemView) {
+    super(itemView);
+  }
 
-    public void setTreeView(TreeView<D> treeView) {
-        this.treeView = treeView;
-    }
+  public void setTreeView(TreeView<D> treeView) {
+    this.treeView = treeView;
+  }
 
-    /**
-     * Bind your data to view,you can get the data from treeNode by getValue()
-     *
-     * @param treeNode Node data
-     */
-    public abstract void bindView(TreeNode<D> treeNode);
+  /**
+   * Bind your data to view,you can get the data from treeNode by getValue()
+   *
+   * @param treeNode Node data
+   */
+  public abstract void bindView(TreeNode<D> treeNode);
 
-    /**
-     * if you do not want toggle the node when click whole item view,then you can assign a view to
-     * trigger the toggle action
-     *
-     * @return The assigned view id to trigger expand or collapse.
-     */
-    public int getToggleTriggerViewId() {
-        return 0;
-    }
+  /**
+   * if you do not want toggle the node when click whole item view,then you can assign a view to
+   * trigger the toggle action
+   *
+   * @return The assigned view id to trigger expand or collapse.
+   */
+  public int getToggleTriggerViewId() {
+    return 0;
+  }
 
-    /**
-     * Callback when a toggle action happened (only by clicked)
-     *
-     * @param treeNode The toggled node
-     * @param expand   Expanded or collapsed
-     */
-    public void onNodeToggled(TreeNode<D> treeNode, boolean expand) {
-        //empty
-    }
+  /**
+   * Callback when a toggle action happened (only by clicked)
+   *
+   * @param treeNode The toggled node
+   * @param expand Expanded or collapsed
+   */
+  public void onNodeToggled(TreeNode<D> treeNode, boolean expand) {
+    // empty
+  }
 
-    /**
-     * Callback when a node is long clicked.
-     */
-    public boolean onNodeLongClicked(View view, TreeNode<D> treeNode, boolean expanded) {
-        return false;
-    }
+  /** Callback when a node is long clicked. */
+  public boolean onNodeLongClicked(View view, TreeNode<D> treeNode, boolean expanded) {
+    return false;
+  }
 }

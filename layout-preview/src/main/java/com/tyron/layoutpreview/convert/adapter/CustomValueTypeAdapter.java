@@ -10,10 +10,9 @@ import com.google.gson.TypeAdapter;
  */
 public abstract class CustomValueTypeAdapter<V extends Value> extends TypeAdapter<V> {
 
-    public final int type;
+  public final int type;
 
-    protected CustomValueTypeAdapter(int type) {
-        this.type = type;
-    }
-
+  protected CustomValueTypeAdapter(int type) {
+    this.type = type;
+  }
 }

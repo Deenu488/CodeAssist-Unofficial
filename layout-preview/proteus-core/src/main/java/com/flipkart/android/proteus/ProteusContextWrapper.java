@@ -18,15 +18,13 @@ package com.flipkart.android.proteus;
 
 /**
  * ProteusContextWrapper
- * <p>
- * A wrapper for {@link ProteusContext} that simply delegates all of its calls to
- * another ProteusContext. Can be subclassed to modify or to add new behavior
- * without changing the original ProteusContext.
- * </p>
+ *
+ * <p>A wrapper for {@link ProteusContext} that simply delegates all of its calls to another
+ * ProteusContext. Can be subclassed to modify or to add new behavior without changing the original
+ * ProteusContext.
  *
  * @author adityasharat
  */
-
 public class ProteusContextWrapper extends ProteusContext {
 
   public ProteusContextWrapper(ProteusContext context) {

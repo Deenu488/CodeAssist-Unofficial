@@ -18,9 +18,7 @@ package com.flipkart.android.proteus;
 
 import com.flipkart.android.proteus.value.Primitive;
 
-/**
- * Contains data binding constants
- */
+/** Contains data binding constants */
 public class ProteusConstants {
 
   public static final String TYPE = "type";

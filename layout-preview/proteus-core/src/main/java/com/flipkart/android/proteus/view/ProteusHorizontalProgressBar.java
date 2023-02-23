@@ -18,17 +18,16 @@ package com.flipkart.android.proteus.view;
 
 import android.content.Context;
 import android.view.View;
-
-import com.flipkart.android.proteus.ProteusView;
-
 import androidx.annotation.NonNull;
+import com.flipkart.android.proteus.ProteusView;
 
 /**
  * HorizontalProgressBar
  *
  * @author aditya.sharat
  */
-public class ProteusHorizontalProgressBar extends com.flipkart.android.proteus.view.custom.HorizontalProgressBar implements ProteusView {
+public class ProteusHorizontalProgressBar
+    extends com.flipkart.android.proteus.view.custom.HorizontalProgressBar implements ProteusView {
 
   private Manager viewManager;
 

@@ -1,6 +1,7 @@
 plugins {
     id 'java-library'
 }
+apply plugin: 'com.diffplug.spotless'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -11,4 +12,11 @@ dependencies {
     implementation 'org.jetbrains:annotations:23.0.0'
 
     compileOnly project(path: ':android-stubs')
+}
+
+spotless {
+		java {
+			target "**/*.java"
+			googleJavaFormat()
+			}
 }

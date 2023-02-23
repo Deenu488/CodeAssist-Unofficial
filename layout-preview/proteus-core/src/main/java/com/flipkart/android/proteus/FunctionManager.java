@@ -16,9 +16,8 @@
 
 package com.flipkart.android.proteus;
 
-import java.util.Map;
-
 import androidx.annotation.NonNull;
+import java.util.Map;
 
 /**
  * FunctionManager
@@ -27,8 +26,7 @@ import androidx.annotation.NonNull;
  */
 public class FunctionManager {
 
-  @NonNull
-  private final Map<String, Function> functions;
+  @NonNull private final Map<String, Function> functions;
 
   public FunctionManager(@NonNull Map<String, Function> functions) {
     this.functions = functions;

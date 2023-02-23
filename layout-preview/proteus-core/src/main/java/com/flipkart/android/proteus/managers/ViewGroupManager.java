@@ -18,17 +18,14 @@ package com.flipkart.android.proteus.managers;
 
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.flipkart.android.proteus.DataContext;
 import com.flipkart.android.proteus.ProteusContext;
 import com.flipkart.android.proteus.ProteusView;
 import com.flipkart.android.proteus.ViewTypeParser;
 import com.flipkart.android.proteus.value.Layout;
 import com.flipkart.android.proteus.value.ObjectValue;
-
 import java.util.Map;
 
 /**
@@ -36,13 +33,16 @@ import java.util.Map;
  *
  * @author adityasharat
  */
-
 public class ViewGroupManager extends ViewManager {
 
   public boolean hasDataBoundChildren;
 
-  public ViewGroupManager(@NonNull ProteusContext context, @NonNull ViewTypeParser parser,
-                          @NonNull View view, @NonNull Layout layout, @NonNull DataContext dataContext) {
+  public ViewGroupManager(
+      @NonNull ProteusContext context,
+      @NonNull ViewTypeParser parser,
+      @NonNull View view,
+      @NonNull Layout layout,
+      @NonNull DataContext dataContext) {
     super(context, parser, view, layout, dataContext);
     hasDataBoundChildren = false;
   }

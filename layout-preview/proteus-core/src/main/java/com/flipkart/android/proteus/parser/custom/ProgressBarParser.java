@@ -16,7 +16,6 @@
 
 package com.flipkart.android.proteus.parser.custom;
 
-
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -30,7 +29,8 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.flipkart.android.proteus.ProteusContext;
 import com.flipkart.android.proteus.ProteusView;
 import com.flipkart.android.proteus.ViewTypeParser;
@@ -47,9 +47,6 @@ import com.flipkart.android.proteus.value.Resource;
 import com.flipkart.android.proteus.value.Style;
 import com.flipkart.android.proteus.value.Value;
 import com.flipkart.android.proteus.view.ProteusProgressBar;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * @author Aditya Sharat
@@ -70,94 +67,102 @@ public class ProgressBarParser<T extends ProgressBar> extends ViewTypeParser<T> 
 
   @NonNull
   @Override
-  public ProteusView createView(@NonNull ProteusContext context, @NonNull Layout layout, @NonNull ObjectValue data,
-                                @Nullable ViewGroup parent, int dataIndex) {
+  public ProteusView createView(
+      @NonNull ProteusContext context,
+      @NonNull Layout layout,
+      @NonNull ObjectValue data,
+      @Nullable ViewGroup parent,
+      int dataIndex) {
     return new ProteusProgressBar(context);
   }
 
   @Override
   protected void addAttributeProcessors() {
 
-    addAttributeProcessor(Attributes.ProgressBar.Max, new StringAttributeProcessor<T>() {
-      @Override
-      public void setString(T view, String value) {
-        view.setMax((int) ParseHelper.parseDouble(value));
-      }
-    });
-    addAttributeProcessor(Attributes.ProgressBar.Progress, new StringAttributeProcessor<T>() {
-      @Override
-      public void setString(T view, String value) {
-        view.setProgress((int) ParseHelper.parseDouble(value));
-      }
-    });
+    addAttributeProcessor(
+        Attributes.ProgressBar.Max,
+        new StringAttributeProcessor<T>() {
+          @Override
+          public void setString(T view, String value) {
+            view.setMax((int) ParseHelper.parseDouble(value));
+          }
+        });
+    addAttributeProcessor(
+        Attributes.ProgressBar.Progress,
+        new StringAttributeProcessor<T>() {
+          @Override
+          public void setString(T view, String value) {
+            view.setProgress((int) ParseHelper.parseDouble(value));
+          }
+        });
 
-    addAttributeProcessor(Attributes.ProgressBar.ProgressTint, new AttributeProcessor<T>() {
-      @Override
-      public void handleValue(View parent, T view, Value value) {
-        if (!value.isObject()) {
-          return;
-        }
-        int background = Color.TRANSPARENT;
-        int progress = Color.TRANSPARENT;
-        ObjectValue object = value.getAsObject();
-        String string = object.getAsString("background");
-        if (string != null) {
-          background = ParseHelper.parseColor(string);
-        }
-        string = object.getAsString("progress");
-        if (string != null) {
-          progress = ParseHelper.parseColor(string);
-        }
+    addAttributeProcessor(
+        Attributes.ProgressBar.ProgressTint,
+        new AttributeProcessor<T>() {
+          @Override
+          public void handleValue(View parent, T view, Value value) {
+            if (!value.isObject()) {
+              return;
+            }
+            int background = Color.TRANSPARENT;
+            int progress = Color.TRANSPARENT;
+            ObjectValue object = value.getAsObject();
+            String string = object.getAsString("background");
+            if (string != null) {
+              background = ParseHelper.parseColor(string);
+            }
+            string = object.getAsString("progress");
+            if (string != null) {
+              progress = ParseHelper.parseColor(string);
+            }
 
-        view.setProgressDrawable(getLayerDrawable(progress, background));
-      }
+            view.setProgressDrawable(getLayerDrawable(progress, background));
+          }
 
-      @Override
-      public void handleResource(View parent, T view, Resource resource) {
-        Drawable d = resource.getDrawable(ProteusHelper.getProteusContext(view));
-        view.setProgressDrawable(d);
-      }
+          @Override
+          public void handleResource(View parent, T view, Resource resource) {
+            Drawable d = resource.getDrawable(ProteusHelper.getProteusContext(view));
+            view.setProgressDrawable(d);
+          }
 
-      @Override
-      public void handleAttributeResource(View parent, T view, AttributeResource attribute) {
-        TypedArray a = attribute.apply(view.getContext());
-        view.setProgressDrawable(a.getDrawable(0));
-      }
+          @Override
+          public void handleAttributeResource(View parent, T view, AttributeResource attribute) {
+            TypedArray a = attribute.apply(view.getContext());
+            view.setProgressDrawable(a.getDrawable(0));
+          }
 
-      @Override
-      public void handleStyle(View parent, T view, Style style) {
-
-      }
-    });
+          @Override
+          public void handleStyle(View parent, T view, Style style) {}
+        });
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      addAttributeProcessor(Attributes.ProgressBar.SecondaryProgressTint, new ColorResourceProcessor<T>() {
-        @Override
-        public void setColor(T view, int color) {
+      addAttributeProcessor(
+          Attributes.ProgressBar.SecondaryProgressTint,
+          new ColorResourceProcessor<T>() {
+            @Override
+            public void setColor(T view, int color) {}
 
-        }
-
-        @Override
-        public void setColor(T view, ColorStateList colors) {
-          //noinspection AndroidLintNewApi
-          view.setSecondaryProgressTintList(colors);
-        }
-      });
+            @Override
+            public void setColor(T view, ColorStateList colors) {
+              //noinspection AndroidLintNewApi
+              view.setSecondaryProgressTintList(colors);
+            }
+          });
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      addAttributeProcessor(Attributes.ProgressBar.IndeterminateTint, new ColorResourceProcessor<T>() {
-        @Override
-        public void setColor(T view, int color) {
+      addAttributeProcessor(
+          Attributes.ProgressBar.IndeterminateTint,
+          new ColorResourceProcessor<T>() {
+            @Override
+            public void setColor(T view, int color) {}
 
-        }
-
-        @Override
-        public void setColor(T view, ColorStateList colors) {
-          //noinspection AndroidLintNewApi
-          view.setIndeterminateTintList(colors);
-        }
-      });
+            @Override
+            public void setColor(T view, ColorStateList colors) {
+              //noinspection AndroidLintNewApi
+              view.setIndeterminateTintList(colors);
+            }
+          });
     }
   }
 
@@ -171,6 +176,6 @@ public class ProgressBarParser<T extends ProgressBar> extends ViewTypeParser<T> 
     shapeD.getPaint().setColor(progress);
     ClipDrawable clipDrawable = new ClipDrawable(shapeD, Gravity.LEFT, ClipDrawable.HORIZONTAL);
 
-    return new LayerDrawable(new Drawable[]{shape, clipDrawable});
+    return new LayerDrawable(new Drawable[] {shape, clipDrawable});
   }
 }

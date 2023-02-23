@@ -14,36 +14,32 @@
 
 package com.tyron.ui.treeview.base;
 
+import com.tyron.ui.treeview.TreeNode;
 import java.util.List;
 
-import com.tyron.ui.treeview.TreeNode;
-
-/**
- * Created by xinyuanzhong on 2017/4/20.
- */
-
+/** Created by xinyuanzhong on 2017/4/20. */
 public interface BaseTreeAction<D> {
-    void expandAll();
+  void expandAll();
 
-    void expandNode(TreeNode<D> treeNode);
+  void expandNode(TreeNode<D> treeNode);
 
-    void expandLevel(int level);
+  void expandLevel(int level);
 
-    void collapseAll();
+  void collapseAll();
 
-    void collapseNode(TreeNode<D> treeNode);
+  void collapseNode(TreeNode<D> treeNode);
 
-    void collapseLevel(int level);
+  void collapseLevel(int level);
 
-    void toggleNode(TreeNode<D> treeNode);
+  void toggleNode(TreeNode<D> treeNode);
 
-    void deleteNode(TreeNode<D> node);
+  void deleteNode(TreeNode<D> node);
 
-    void addNode(TreeNode<D> parent, TreeNode<D> treeNode);
+  void addNode(TreeNode<D> parent, TreeNode<D> treeNode);
 
-    List<TreeNode<D>> getAllNodes();
+  List<TreeNode<D>> getAllNodes();
 
-    // 1.add node at position
-    // 2.add slide delete or other operations
+  // 1.add node at position
+  // 2.add slide delete or other operations
 
 }

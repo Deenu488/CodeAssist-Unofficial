@@ -17,30 +17,24 @@
 package com.flipkart.android.proteus;
 
 import android.content.Context;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Size;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Proteus
  *
  * @author aditya.sharat
  */
-
 public final class Proteus {
 
-  @NonNull
-  public final FunctionManager functions;
+  @NonNull public final FunctionManager functions;
 
-  @NonNull
-  private final Map<String, Type> types;
+  @NonNull private final Map<String, Type> types;
 
-  @NonNull
-  private final Map<String, ViewTypeParser> parsers;
+  @NonNull private final Map<String, ViewTypeParser> parsers;
 
   Proteus(@NonNull Map<String, Type> types, @NonNull final Map<String, Function> functions) {
     this.types = types;
@@ -53,7 +47,8 @@ public final class Proteus {
   }
 
   @Nullable
-  public ViewTypeParser.AttributeSet.Attribute getAttributeId(@NonNull @Size(min = 1) String name, @NonNull @Size(min = 1) String type) {
+  public ViewTypeParser.AttributeSet.Attribute getAttributeId(
+      @NonNull @Size(min = 1) String name, @NonNull @Size(min = 1) String type) {
     return types.get(type).getAttributeId(name);
   }
 
@@ -83,7 +78,11 @@ public final class Proteus {
 
     private final ViewTypeParser.AttributeSet attributes;
 
-    Type(int id, @NonNull String type, @NonNull ViewTypeParser parser, @NonNull ViewTypeParser.AttributeSet attributes) {
+    Type(
+        int id,
+        @NonNull String type,
+        @NonNull ViewTypeParser parser,
+        @NonNull ViewTypeParser.AttributeSet attributes) {
       this.id = id;
       this.type = type;
       this.parser = parser;

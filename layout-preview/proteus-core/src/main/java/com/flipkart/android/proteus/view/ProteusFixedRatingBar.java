@@ -19,17 +19,16 @@ package com.flipkart.android.proteus.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
-
-import com.flipkart.android.proteus.ProteusView;
-
 import androidx.annotation.NonNull;
+import com.flipkart.android.proteus.ProteusView;
 
 /**
  * FixedRatingBar
  *
  * @author aditya.sharat
  */
-public class ProteusFixedRatingBar extends com.flipkart.android.proteus.view.custom.FixedRatingBar implements ProteusView {
+public class ProteusFixedRatingBar extends com.flipkart.android.proteus.view.custom.FixedRatingBar
+    implements ProteusView {
 
   private Manager viewManager;
 

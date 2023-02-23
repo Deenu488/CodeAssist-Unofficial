@@ -1,6 +1,7 @@
 plugins {
     id 'java-library'
 }
+apply plugin: 'com.diffplug.spotless'
 
 dependencies {
     implementation 'org.jetbrains:annotations:23.0.0'
@@ -15,4 +16,11 @@ dependencies {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+spotless {
+		java {
+			target "**/*.java"
+			googleJavaFormat()
+			}
 }

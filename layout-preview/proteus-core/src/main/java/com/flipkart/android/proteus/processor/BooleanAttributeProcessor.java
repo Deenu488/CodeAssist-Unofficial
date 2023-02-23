@@ -18,7 +18,7 @@ package com.flipkart.android.proteus.processor;
 
 import android.content.res.TypedArray;
 import android.view.View;
-
+import androidx.annotation.Nullable;
 import com.flipkart.android.proteus.ProteusConstants;
 import com.flipkart.android.proteus.ProteusContext;
 import com.flipkart.android.proteus.parser.ParseHelper;
@@ -28,14 +28,11 @@ import com.flipkart.android.proteus.value.Resource;
 import com.flipkart.android.proteus.value.Style;
 import com.flipkart.android.proteus.value.Value;
 
-import androidx.annotation.Nullable;
-
 /**
  * BooleanAttributeProcessor
  *
  * @author aditya.sharat
  */
-
 public abstract class BooleanAttributeProcessor<V extends View> extends AttributeProcessor<V> {
 
   @Override
@@ -43,7 +40,13 @@ public abstract class BooleanAttributeProcessor<V extends View> extends Attribut
     if (value.isPrimitive() && value.getAsPrimitive().isBoolean()) {
       setBoolean(view, value.getAsPrimitive().getAsBoolean());
     } else {
-      process(parent, view, precompile(value, (ProteusContext) view.getContext(), ProteusHelper.getProteusContext(view).getFunctionManager()));
+      process(
+          parent,
+          view,
+          precompile(
+              value,
+              (ProteusContext) view.getContext(),
+              ProteusHelper.getProteusContext(view).getFunctionManager()));
     }
   }
 
@@ -61,8 +64,8 @@ public abstract class BooleanAttributeProcessor<V extends View> extends Attribut
 
   @Override
   public void handleStyle(View parent, V view, Style style) {
-//    TypedArray a = style.apply(view.getContext());
-//    setBoolean(view, a.getBoolean(0, false));
+    //    TypedArray a = style.apply(view.getContext());
+    //    setBoolean(view, a.getBoolean(0, false));
   }
 
   public abstract void setBoolean(V view, boolean value);

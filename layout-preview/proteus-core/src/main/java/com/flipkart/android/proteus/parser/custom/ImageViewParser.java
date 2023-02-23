@@ -19,10 +19,8 @@ package com.flipkart.android.proteus.parser.custom;
 import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.flipkart.android.proteus.ProteusContext;
 import com.flipkart.android.proteus.ProteusView;
 import com.flipkart.android.proteus.ViewTypeParser;
@@ -34,10 +32,7 @@ import com.flipkart.android.proteus.value.Layout;
 import com.flipkart.android.proteus.value.ObjectValue;
 import com.flipkart.android.proteus.view.ProteusImageView;
 
-
-/**
- * Created by kiran.kumar on 12/05/14.
- */
+/** Created by kiran.kumar on 12/05/14. */
 public class ImageViewParser<T extends ImageView> extends ViewTypeParser<T> {
 
   @NonNull
@@ -54,47 +49,58 @@ public class ImageViewParser<T extends ImageView> extends ViewTypeParser<T> {
 
   @NonNull
   @Override
-  public ProteusView createView(@NonNull ProteusContext context, @NonNull Layout layout, @NonNull ObjectValue data,
-                                @Nullable ViewGroup parent, int dataIndex) {
+  public ProteusView createView(
+      @NonNull ProteusContext context,
+      @NonNull Layout layout,
+      @NonNull ObjectValue data,
+      @Nullable ViewGroup parent,
+      int dataIndex) {
     return new ProteusImageView(context);
   }
 
   @Override
   protected void addAttributeProcessors() {
 
-    addAttributeProcessor(Attributes.ImageView.Src, new DrawableResourceProcessor<T>() {
-      @Override
-      public void setDrawable(T view, Drawable drawable) {
-        view.setImageDrawable(drawable);
-      }
-    });
+    addAttributeProcessor(
+        Attributes.ImageView.Src,
+        new DrawableResourceProcessor<T>() {
+          @Override
+          public void setDrawable(T view, Drawable drawable) {
+            view.setImageDrawable(drawable);
+          }
+        });
 
-    addAttributeProcessor("app:srcCompat", new DrawableResourceProcessor<T>() {
-      @Override
-      public void setDrawable(T view, Drawable drawable) {
-        view.setImageDrawable(drawable);
-      }
-    });
+    addAttributeProcessor(
+        "app:srcCompat",
+        new DrawableResourceProcessor<T>() {
+          @Override
+          public void setDrawable(T view, Drawable drawable) {
+            view.setImageDrawable(drawable);
+          }
+        });
 
-    addAttributeProcessor(Attributes.ImageView.ScaleType, new StringAttributeProcessor<T>() {
-      @Override
-      public void setString(T view, String value) {
-        ProteusImageView.ScaleType scaleType;
-        scaleType = ParseHelper.parseScaleType(value);
-        if (scaleType != null)
-          view.setScaleType(scaleType);
-      }
-    });
+    addAttributeProcessor(
+        Attributes.ImageView.ScaleType,
+        new StringAttributeProcessor<T>() {
+          @Override
+          public void setString(T view, String value) {
+            ProteusImageView.ScaleType scaleType;
+            scaleType = ParseHelper.parseScaleType(value);
+            if (scaleType != null) view.setScaleType(scaleType);
+          }
+        });
 
-    addAttributeProcessor(Attributes.ImageView.AdjustViewBounds, new StringAttributeProcessor<T>() {
-      @Override
-      public void setString(T view, String value) {
-        if ("true".equals(value)) {
-          view.setAdjustViewBounds(true);
-        } else {
-          view.setAdjustViewBounds(false);
-        }
-      }
-    });
+    addAttributeProcessor(
+        Attributes.ImageView.AdjustViewBounds,
+        new StringAttributeProcessor<T>() {
+          @Override
+          public void setString(T view, String value) {
+            if ("true".equals(value)) {
+              view.setAdjustViewBounds(true);
+            } else {
+              view.setAdjustViewBounds(false);
+            }
+          }
+        });
   }
 }

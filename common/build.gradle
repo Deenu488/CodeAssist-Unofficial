@@ -3,6 +3,7 @@ plugins {
 }
 
 apply plugin: 'kotlin'
+apply plugin: 'com.diffplug.spotless'
 
 dependencies {
     testImplementation 'junit:junit:4.+'
@@ -19,4 +20,11 @@ dependencies {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+spotless {
+		java {
+			target "**/*.java"
+			googleJavaFormat()
+			}
 }

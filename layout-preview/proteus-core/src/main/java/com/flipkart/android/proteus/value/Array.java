@@ -18,7 +18,6 @@ package com.flipkart.android.proteus.value;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -30,14 +29,11 @@ import java.util.stream.Collectors;
  *
  * @author aditya.sharat
  */
-
 public class Array extends Value {
 
   private final List<Value> values;
 
-  /**
-   * Creates an empty Array.
-   */
+  /** Creates an empty Array. */
   public Array() {
     values = new ArrayList<>();
   }
@@ -46,9 +42,7 @@ public class Array extends Value {
     this.values = Arrays.asList(values);
   }
 
-  /**
-   * Creates an empty Array with a given capacity.
-   */
+  /** Creates an empty Array with a given capacity. */
   public Array(int capacity) {
     values = new ArrayList<>(capacity);
   }
@@ -132,8 +126,8 @@ public class Array extends Value {
   }
 
   /**
-   * Replaces the value at the specified position in this array with the specified value.
-   * value can be null.
+   * Replaces the value at the specified position in this array with the specified value. value can
+   * be null.
    *
    * @param index index of the value to replace
    * @param value value to be stored at the specified position
@@ -145,8 +139,8 @@ public class Array extends Value {
   }
 
   /**
-   * Removes the first occurrence of the specified value from this array, if it is present.
-   * If the array does not contain the value, it is unchanged.
+   * Removes the first occurrence of the specified value from this array, if it is present. If the
+   * array does not contain the value, it is unchanged.
    *
    * @param value value to be removed from this array, if present
    * @return true if this array contained the specified value, false otherwise
@@ -157,9 +151,8 @@ public class Array extends Value {
   }
 
   /**
-   * Removes the value at the specified position in this array. Shifts any subsequent values
-   * to the left (subtracts one from their indices). Returns the value that was removed from
-   * the array.
+   * Removes the value at the specified position in this array. Shifts any subsequent values to the
+   * left (subtracts one from their indices). Returns the value that was removed from the array.
    *
    * @param index index the index of the value to be removed
    * @return the value previously at the specified position
@@ -205,8 +198,8 @@ public class Array extends Value {
    *
    * @param i the index of the value that is being sought.
    * @return the value present at the ith index.
-   * @throws IndexOutOfBoundsException if i is negative or greater than or equal to the
-   *                                   {@link #size()} of the array.
+   * @throws IndexOutOfBoundsException if i is negative or greater than or equal to the {@link
+   *     #size()} of the array.
    */
   public Value get(int i) {
     return values.get(i);
@@ -215,9 +208,7 @@ public class Array extends Value {
   @NonNull
   @Override
   public String toString() {
-    String items = values.stream()
-            .map(Value::toString)
-            .collect(Collectors.joining(", "));
+    String items = values.stream().map(Value::toString).collect(Collectors.joining(", "));
     return "[" + items + "]";
   }
 

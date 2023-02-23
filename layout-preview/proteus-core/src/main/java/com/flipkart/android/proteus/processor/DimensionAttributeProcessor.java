@@ -16,10 +16,9 @@
 
 package com.flipkart.android.proteus.processor;
 
-
 import android.content.res.TypedArray;
 import android.view.View;
-
+import androidx.annotation.Nullable;
 import com.flipkart.android.proteus.ProteusContext;
 import com.flipkart.android.proteus.toolbox.ProteusHelper;
 import com.flipkart.android.proteus.value.AttributeResource;
@@ -28,11 +27,7 @@ import com.flipkart.android.proteus.value.Resource;
 import com.flipkart.android.proteus.value.Style;
 import com.flipkart.android.proteus.value.Value;
 
-import androidx.annotation.Nullable;
-
-/**
- *
- */
+/** */
 public abstract class DimensionAttributeProcessor<T extends View> extends AttributeProcessor<T> {
 
   public static float evaluate(Value value, View view) {
@@ -41,12 +36,13 @@ public abstract class DimensionAttributeProcessor<T extends View> extends Attrib
     }
 
     final float[] result = new float[1];
-    DimensionAttributeProcessor<View> processor = new DimensionAttributeProcessor<View>() {
-      @Override
-      public void setDimension(View view, float dimension) {
-        result[0] = dimension;
-      }
-    };
+    DimensionAttributeProcessor<View> processor =
+        new DimensionAttributeProcessor<View>() {
+          @Override
+          public void setDimension(View view, float dimension) {
+            result[0] = dimension;
+          }
+        };
     processor.process((View) view.getParent(), view, value);
 
     return result[0];
@@ -71,14 +67,21 @@ public abstract class DimensionAttributeProcessor<T extends View> extends Attrib
     if (value.isDimension()) {
       setDimension(view, value.getAsDimension().apply(view.getContext()));
     } else if (value.isPrimitive()) {
-      process(parent, view, precompile(value, ProteusHelper.getProteusContext(view), (ProteusHelper.getProteusContext(view)).getFunctionManager()));
+      process(
+          parent,
+          view,
+          precompile(
+              value,
+              ProteusHelper.getProteusContext(view),
+              (ProteusHelper.getProteusContext(view)).getFunctionManager()));
     }
   }
 
   @Override
   public void handleResource(View parent, T view, Resource resource) {
     Dimension dimension = resource.getDimension(ProteusHelper.getProteusContext(view));
-    setDimension(view, null == dimension ? 0 : dimension.apply(ProteusHelper.getProteusContext(view)));
+    setDimension(
+        view, null == dimension ? 0 : dimension.apply(ProteusHelper.getProteusContext(view)));
   }
 
   @Override
@@ -90,8 +93,8 @@ public abstract class DimensionAttributeProcessor<T extends View> extends Attrib
   @Override
   public void handleStyle(View parent, T view, Style style) {
     System.out.println("Handle style: " + style);
-//    TypedArray a = style.apply(view.getContext());
-//    setDimension(view, a.getDimensionPixelSize(0, 0));
+    //    TypedArray a = style.apply(view.getContext());
+    //    setDimension(view, a.getDimensionPixelSize(0, 0));
   }
 
   /**
@@ -103,5 +106,4 @@ public abstract class DimensionAttributeProcessor<T extends View> extends Attrib
   public Value compile(@Nullable Value value, ProteusContext context) {
     return staticCompile(value, context);
   }
-
 }

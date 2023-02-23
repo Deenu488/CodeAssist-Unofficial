@@ -16,17 +16,15 @@
 
 package com.flipkart.android.proteus.toolbox;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import com.flipkart.android.proteus.value.Array;
 import com.flipkart.android.proteus.value.ObjectValue;
 import com.flipkart.android.proteus.value.Primitive;
 import com.flipkart.android.proteus.value.Value;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
-
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 
 /**
  * @author Aditya Sharat
@@ -40,7 +38,8 @@ public class Utils {
   public static final int STYLE_SINGLE = 1;
   public static final int STYLE_DOUBLE = 2;
 
-  public static ObjectValue addAllEntries(@NonNull ObjectValue destination, @NonNull ObjectValue source) {
+  public static ObjectValue addAllEntries(
+      @NonNull ObjectValue destination, @NonNull ObjectValue source) {
     for (Map.Entry<String, Value> entry : source.entrySet()) {
       if (destination.get(entry.getKey()) != null) {
         continue;
@@ -111,6 +110,5 @@ public class Utils {
 
   @Retention(RetentionPolicy.SOURCE)
   @IntDef({STYLE_NONE, STYLE_SINGLE, STYLE_DOUBLE})
-  public @interface QuoteStyle {
-  }
+  public @interface QuoteStyle {}
 }

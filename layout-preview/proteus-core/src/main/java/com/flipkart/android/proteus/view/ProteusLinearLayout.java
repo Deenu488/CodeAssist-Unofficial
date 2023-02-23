@@ -21,10 +21,8 @@ import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
-
-import com.flipkart.android.proteus.ProteusView;
-
 import androidx.annotation.NonNull;
+import com.flipkart.android.proteus.ProteusView;
 
 /**
  * LinearLayout
@@ -48,7 +46,8 @@ public class ProteusLinearLayout extends android.widget.LinearLayout implements 
   }
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-  public ProteusLinearLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+  public ProteusLinearLayout(
+      Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
     super(context, attrs, defStyleAttr, defStyleRes);
   }
 

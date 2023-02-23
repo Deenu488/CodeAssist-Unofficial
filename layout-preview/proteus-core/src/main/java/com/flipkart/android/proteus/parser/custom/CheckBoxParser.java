@@ -19,7 +19,8 @@ package com.flipkart.android.proteus.parser.custom;
 import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.flipkart.android.proteus.ProteusContext;
 import com.flipkart.android.proteus.ProteusView;
 import com.flipkart.android.proteus.ViewTypeParser;
@@ -30,12 +31,7 @@ import com.flipkart.android.proteus.value.Layout;
 import com.flipkart.android.proteus.value.ObjectValue;
 import com.flipkart.android.proteus.view.ProteusCheckBox;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-/**
- * Created by prateek.dixit on 1/8/15.
- */
+/** Created by prateek.dixit on 1/8/15. */
 public class CheckBoxParser<T extends CheckBox> extends ViewTypeParser<T> {
 
   @NonNull
@@ -52,26 +48,34 @@ public class CheckBoxParser<T extends CheckBox> extends ViewTypeParser<T> {
 
   @NonNull
   @Override
-  public ProteusView createView(@NonNull ProteusContext context, @NonNull Layout layout, @NonNull ObjectValue data,
-                                @Nullable ViewGroup parent, int dataIndex) {
+  public ProteusView createView(
+      @NonNull ProteusContext context,
+      @NonNull Layout layout,
+      @NonNull ObjectValue data,
+      @Nullable ViewGroup parent,
+      int dataIndex) {
     return new ProteusCheckBox(context);
   }
 
   @Override
   protected void addAttributeProcessors() {
 
-    addAttributeProcessor(Attributes.CheckBox.Button, new DrawableResourceProcessor<T>() {
-      @Override
-      public void setDrawable(T view, Drawable drawable) {
-        view.setButtonDrawable(drawable);
-      }
-    });
+    addAttributeProcessor(
+        Attributes.CheckBox.Button,
+        new DrawableResourceProcessor<T>() {
+          @Override
+          public void setDrawable(T view, Drawable drawable) {
+            view.setButtonDrawable(drawable);
+          }
+        });
 
-    addAttributeProcessor(Attributes.CheckBox.Checked, new StringAttributeProcessor<T>() {
-      @Override
-      public void setString(T view, String value) {
-        view.setChecked(Boolean.parseBoolean(value));
-      }
-    });
+    addAttributeProcessor(
+        Attributes.CheckBox.Checked,
+        new StringAttributeProcessor<T>() {
+          @Override
+          public void setString(T view, String value) {
+            view.setChecked(Boolean.parseBoolean(value));
+          }
+        });
   }
 }

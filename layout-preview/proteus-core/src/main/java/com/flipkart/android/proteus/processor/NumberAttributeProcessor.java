@@ -17,20 +17,17 @@
 package com.flipkart.android.proteus.processor;
 
 import android.view.View;
-
+import androidx.annotation.NonNull;
 import com.flipkart.android.proteus.value.AttributeResource;
 import com.flipkart.android.proteus.value.Resource;
 import com.flipkart.android.proteus.value.Style;
 import com.flipkart.android.proteus.value.Value;
-
-import androidx.annotation.NonNull;
 
 /**
  * NumberAttributeProcessor
  *
  * @author adityasharat
  */
-
 public abstract class NumberAttributeProcessor<V extends View> extends AttributeProcessor<V> {
 
   @Override
@@ -53,7 +50,7 @@ public abstract class NumberAttributeProcessor<V extends View> extends Attribute
 
   @Override
   public void handleStyle(View parent, V view, Style style) {
-//    setNumber(view, style.apply(view.getContext()).getFloat(0, 0f));
+    //    setNumber(view, style.apply(view.getContext()).getFloat(0, 0f));
   }
 
   public abstract void setNumber(V view, @NonNull Number value);

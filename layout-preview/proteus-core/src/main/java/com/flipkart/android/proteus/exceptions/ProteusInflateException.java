@@ -23,7 +23,6 @@ import android.view.InflateException;
  *
  * @author adityasharat
  */
-
 public class ProteusInflateException extends InflateException {
 
   public ProteusInflateException(String message) {

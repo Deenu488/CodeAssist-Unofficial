@@ -16,19 +16,17 @@
 
 package com.flipkart.android.proteus.toolbox;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 /**
  * HashBiMap
  *
  * @author adityasharat
  */
-
 public class HashBiMap<K, V> implements BiMap<K, V> {
 
   private final HashMap<K, V> map;

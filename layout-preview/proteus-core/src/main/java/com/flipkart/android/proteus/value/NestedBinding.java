@@ -17,20 +17,16 @@
 package com.flipkart.android.proteus.value;
 
 import android.content.Context;
-
+import androidx.annotation.NonNull;
+import com.flipkart.android.proteus.ProteusContext;
 import java.util.Iterator;
 import java.util.Map;
-
-import androidx.annotation.NonNull;
-
-import com.flipkart.android.proteus.ProteusContext;
 
 /**
  * NestedBinding
  *
  * @author adityasharat
  */
-
 public class NestedBinding extends Binding {
 
   public static final String NESTED_BINDING_KEY = "@";

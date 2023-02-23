@@ -34,9 +34,9 @@ import android.view.Gravity;
 import android.widget.RatingBar;
 
 /**
- * Rating bar code is full of bugs. For width of rating bar to be set correctly, sample tile width should be set
- * But since tilefy method is private and we are doing tile-fication ourselves, sample tile should be maintained by us
- * Created by kirankumar on 04/12/14.
+ * Rating bar code is full of bugs. For width of rating bar to be set correctly, sample tile width
+ * should be set But since tilefy method is private and we are doing tile-fication ourselves, sample
+ * tile should be maintained by us Created by kirankumar on 04/12/14.
  */
 public class FixedRatingBar extends RatingBar {
   private Bitmap sampleTile;
@@ -71,13 +71,12 @@ public class FixedRatingBar extends RatingBar {
   }
 
   Shape getDrawableShape() {
-    final float[] roundedCorners = new float[]{5, 5, 5, 5, 5, 5, 5, 5};
+    final float[] roundedCorners = new float[] {5, 5, 5, 5, 5, 5, 5, 5};
     return new RoundRectShape(roundedCorners, null, null);
   }
 
   /**
-   * Taken from AOSP !!
-   * Converts a drawable to a tiled version of itself. It will recursively
+   * Taken from AOSP !! Converts a drawable to a tiled version of itself. It will recursively
    * traverse layer and state list drawables.
    */
   public Drawable getTiledDrawable(Drawable drawable, boolean clip) {
@@ -89,8 +88,10 @@ public class FixedRatingBar extends RatingBar {
 
       for (int i = 0; i < N; i++) {
         int id = background.getId(i);
-        outDrawables[i] = getTiledDrawable(background.getDrawable(i),
-          (id == android.R.id.progress || id == android.R.id.secondaryProgress));
+        outDrawables[i] =
+            getTiledDrawable(
+                background.getDrawable(i),
+                (id == android.R.id.progress || id == android.R.id.secondaryProgress));
       }
 
       LayerDrawable newBg = new LayerDrawable(outDrawables);
@@ -109,12 +110,13 @@ public class FixedRatingBar extends RatingBar {
       }
       final ShapeDrawable shapeDrawable = new ShapeDrawable(getDrawableShape());
 
-      final BitmapShader bitmapShader = new BitmapShader(tileBitmap,
-        Shader.TileMode.REPEAT, Shader.TileMode.CLAMP);
+      final BitmapShader bitmapShader =
+          new BitmapShader(tileBitmap, Shader.TileMode.REPEAT, Shader.TileMode.CLAMP);
       shapeDrawable.getPaint().setShader(bitmapShader);
 
-      return (clip) ? new ClipDrawable(shapeDrawable, Gravity.LEFT,
-        ClipDrawable.HORIZONTAL) : shapeDrawable;
+      return (clip)
+          ? new ClipDrawable(shapeDrawable, Gravity.LEFT, ClipDrawable.HORIZONTAL)
+          : shapeDrawable;
     }
 
     return drawable;

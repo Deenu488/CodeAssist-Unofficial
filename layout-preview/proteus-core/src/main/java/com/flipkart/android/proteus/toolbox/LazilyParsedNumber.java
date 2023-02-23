@@ -20,15 +20,13 @@ import java.math.BigDecimal;
 
 /**
  * LazilyParsedNumber
- * <p>
- * This class is copied from Google's implementation of
- * LazilyParsedNumber which can be found at the following
- * link @{link https://github.com/google/gson/blob/master/gson/src/main/java/com/google/gson/internal/LazilyParsedNumber.java}
- * </p>
+ *
+ * <p>This class is copied from Google's implementation of LazilyParsedNumber which can be found at
+ * the following link @{link
+ * https://github.com/google/gson/blob/master/gson/src/main/java/com/google/gson/internal/LazilyParsedNumber.java}
  *
  * @author adityasharat
  */
-
 public class LazilyParsedNumber extends Number {
 
   private final String value;

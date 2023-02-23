@@ -19,7 +19,8 @@ package com.flipkart.android.proteus.parser.custom;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.flipkart.android.proteus.DataContext;
 import com.flipkart.android.proteus.ProteusConstants;
 import com.flipkart.android.proteus.ProteusContext;
@@ -42,11 +43,7 @@ import com.flipkart.android.proteus.value.Resource;
 import com.flipkart.android.proteus.value.Style;
 import com.flipkart.android.proteus.value.Value;
 import com.flipkart.android.proteus.view.ProteusAspectRatioFrameLayout;
-
 import java.util.Iterator;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class ViewGroupParser<T extends ViewGroup> extends ViewTypeParser<T> {
 
@@ -67,83 +64,103 @@ public class ViewGroupParser<T extends ViewGroup> extends ViewTypeParser<T> {
 
   @NonNull
   @Override
-  public ProteusView createView(@NonNull ProteusContext context, @NonNull Layout layout, @NonNull ObjectValue data,
-                                @Nullable ViewGroup parent, int dataIndex) {
+  public ProteusView createView(
+      @NonNull ProteusContext context,
+      @NonNull Layout layout,
+      @NonNull ObjectValue data,
+      @Nullable ViewGroup parent,
+      int dataIndex) {
     return new ProteusAspectRatioFrameLayout(context);
   }
 
   @NonNull
   @Override
-  public ProteusView.Manager createViewManager(@NonNull ProteusContext context, @NonNull ProteusView view, @NonNull Layout layout,
-                                               @NonNull ObjectValue data, @Nullable ViewTypeParser caller, @Nullable ViewGroup parent,
-                                               int dataIndex) {
+  public ProteusView.Manager createViewManager(
+      @NonNull ProteusContext context,
+      @NonNull ProteusView view,
+      @NonNull Layout layout,
+      @NonNull ObjectValue data,
+      @Nullable ViewTypeParser caller,
+      @Nullable ViewGroup parent,
+      int dataIndex) {
     DataContext dataContext = createDataContext(context, layout, data, parent, dataIndex);
-    return new ViewGroupManager(context, null != caller ? caller : this, view.getAsView(), layout, dataContext);
+    return new ViewGroupManager(
+        context, null != caller ? caller : this, view.getAsView(), layout, dataContext);
   }
 
   @Override
   protected void addAttributeProcessors() {
 
-    addAttributeProcessor(Attributes.ViewGroup.ClipChildren, new BooleanAttributeProcessor<T>() {
-      @Override
-      public void setBoolean(T view, boolean value) {
-        view.setClipChildren(value);
-      }
-    });
-
-    addAttributeProcessor(Attributes.ViewGroup.ClipToPadding, new BooleanAttributeProcessor<T>() {
-      @Override
-      public void setBoolean(T view, boolean value) {
-        view.setClipToPadding(value);
-      }
-    });
-
-    addAttributeProcessor(Attributes.ViewGroup.LayoutMode, new StringAttributeProcessor<T>() {
-      @Override
-      public void setString(T view, String value) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-          if (LAYOUT_MODE_CLIP_BOUNDS.equals(value)) {
-            view.setLayoutMode(ViewGroup.LAYOUT_MODE_CLIP_BOUNDS);
-          } else if (LAYOUT_MODE_OPTICAL_BOUNDS.equals(value)) {
-            view.setLayoutMode(ViewGroup.LAYOUT_MODE_OPTICAL_BOUNDS);
+    addAttributeProcessor(
+        Attributes.ViewGroup.ClipChildren,
+        new BooleanAttributeProcessor<T>() {
+          @Override
+          public void setBoolean(T view, boolean value) {
+            view.setClipChildren(value);
           }
-        }
-      }
-    });
+        });
 
-    addAttributeProcessor(Attributes.ViewGroup.SplitMotionEvents, new BooleanAttributeProcessor<T>() {
-      @Override
-      public void setBoolean(T view, boolean value) {
-        view.setMotionEventSplittingEnabled(value);
-      }
-    });
+    addAttributeProcessor(
+        Attributes.ViewGroup.ClipToPadding,
+        new BooleanAttributeProcessor<T>() {
+          @Override
+          public void setBoolean(T view, boolean value) {
+            view.setClipToPadding(value);
+          }
+        });
 
-    addAttributeProcessor(Attributes.ViewGroup.Children, new AttributeProcessor<T>() {
-      @Override
-      public void handleBinding(View parent, T view, Binding value) {
-        handleDataBoundChildren(view, value);
-      }
+    addAttributeProcessor(
+        Attributes.ViewGroup.LayoutMode,
+        new StringAttributeProcessor<T>() {
+          @Override
+          public void setString(T view, String value) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+              if (LAYOUT_MODE_CLIP_BOUNDS.equals(value)) {
+                view.setLayoutMode(ViewGroup.LAYOUT_MODE_CLIP_BOUNDS);
+              } else if (LAYOUT_MODE_OPTICAL_BOUNDS.equals(value)) {
+                view.setLayoutMode(ViewGroup.LAYOUT_MODE_OPTICAL_BOUNDS);
+              }
+            }
+          }
+        });
 
-      @Override
-      public void handleValue(View parent, T view, Value value) {
-        handleChildren(view, value);
-      }
+    addAttributeProcessor(
+        Attributes.ViewGroup.SplitMotionEvents,
+        new BooleanAttributeProcessor<T>() {
+          @Override
+          public void setBoolean(T view, boolean value) {
+            view.setMotionEventSplittingEnabled(value);
+          }
+        });
 
-      @Override
-      public void handleResource(View parent, T view, Resource resource) {
-        throw new IllegalArgumentException("children cannot be a resource");
-      }
+    addAttributeProcessor(
+        Attributes.ViewGroup.Children,
+        new AttributeProcessor<T>() {
+          @Override
+          public void handleBinding(View parent, T view, Binding value) {
+            handleDataBoundChildren(view, value);
+          }
 
-      @Override
-      public void handleAttributeResource(View parent, T view, AttributeResource attribute) {
-        throw new IllegalArgumentException("children cannot be a resource");
-      }
+          @Override
+          public void handleValue(View parent, T view, Value value) {
+            handleChildren(view, value);
+          }
 
-      @Override
-      public void handleStyle(View parent, T view, Style style) {
-        throw new IllegalArgumentException("children cannot be a style attribute");
-      }
-    });
+          @Override
+          public void handleResource(View parent, T view, Resource resource) {
+            throw new IllegalArgumentException("children cannot be a resource");
+          }
+
+          @Override
+          public void handleAttributeResource(View parent, T view, AttributeResource attribute) {
+            throw new IllegalArgumentException("children cannot be a resource");
+          }
+
+          @Override
+          public void handleStyle(View parent, T view, Style style) {
+            throw new IllegalArgumentException("children cannot be a style attribute");
+          }
+        });
   }
 
   @Override
@@ -167,11 +184,12 @@ public class ViewGroupParser<T extends ViewGroup> extends ViewTypeParser<T> {
       while (iterator.hasNext()) {
         element = iterator.next();
         if (!element.isLayout()) {
-          throw new ProteusInflateException("attribute  'children' must be an array of 'Layout' objects");
+          throw new ProteusInflateException(
+              "attribute  'children' must be an array of 'Layout' objects");
         }
         child = layoutInflater.inflate(element.getAsLayout(), data, view, dataIndex);
 
-       addView(view, child.getAsView());
+        addView(view, child.getAsView());
       }
     }
 
@@ -190,16 +208,22 @@ public class ViewGroupParser<T extends ViewGroup> extends ViewTypeParser<T> {
     manager.hasDataBoundChildren = true;
 
     if (null == layout || null == collection) {
-      throw new ProteusInflateException("'collection' and 'layout' are mandatory for attribute:'children'");
+      throw new ProteusInflateException(
+          "'collection' and 'layout' are mandatory for attribute:'children'");
     }
 
-    Value dataset = collection.getAsBinding().evaluate((ProteusContext) view.getContext(), dataContext.getData(), dataContext.getIndex());
+    Value dataset =
+        collection
+            .getAsBinding()
+            .evaluate(
+                (ProteusContext) view.getContext(), dataContext.getData(), dataContext.getIndex());
     if (dataset.isNull()) {
       return;
     }
 
     if (!dataset.isArray()) {
-      throw new ProteusInflateException("'collection' in attribute:'children' must be NULL or Array");
+      throw new ProteusInflateException(
+          "'collection' in attribute:'children' must be NULL or Array");
     }
 
     int length = dataset.getAsArray().size();

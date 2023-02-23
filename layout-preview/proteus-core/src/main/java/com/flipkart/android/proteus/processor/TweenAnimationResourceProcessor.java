@@ -19,7 +19,6 @@ package com.flipkart.android.proteus.processor;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
-
 import com.flipkart.android.proteus.ProteusConstants;
 import com.flipkart.android.proteus.toolbox.AnimationUtils;
 import com.flipkart.android.proteus.value.AttributeResource;
@@ -29,13 +28,13 @@ import com.flipkart.android.proteus.value.Value;
 
 /**
  * TweenAnimationResourceProcessor
- * <p>
- * TODO: implement pre compiling animation blocks
- * </p>
+ *
+ * <p>TODO: implement pre compiling animation blocks
  *
  * @author yasirmhd
  */
-public abstract class TweenAnimationResourceProcessor<V extends View> extends AttributeProcessor<V> {
+public abstract class TweenAnimationResourceProcessor<V extends View>
+    extends AttributeProcessor<V> {
 
   private static final String TAG = "TweenAnimationResource";
 
@@ -46,25 +45,21 @@ public abstract class TweenAnimationResourceProcessor<V extends View> extends At
       setAnimation(view, animation);
     } else {
       if (ProteusConstants.isLoggingEnabled()) {
-        Log.e(TAG, "Animation Resource must be a primitive or an object. value -> " + value.toString());
+        Log.e(
+            TAG,
+            "Animation Resource must be a primitive or an object. value -> " + value.toString());
       }
     }
   }
 
   @Override
-  public void handleResource(View parent, V view, Resource resource) {
-
-  }
+  public void handleResource(View parent, V view, Resource resource) {}
 
   @Override
-  public void handleAttributeResource(View parent, V view, AttributeResource attribute) {
-
-  }
+  public void handleAttributeResource(View parent, V view, AttributeResource attribute) {}
 
   @Override
-  public void handleStyle(View parent, V view, Style style) {
-
-  }
+  public void handleStyle(View parent, V view, Style style) {}
 
   public abstract void setAnimation(V view, Animation animation);
 }

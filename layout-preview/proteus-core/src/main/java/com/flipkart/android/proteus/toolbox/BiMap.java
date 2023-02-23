@@ -16,18 +16,16 @@
 
 package com.flipkart.android.proteus.toolbox;
 
-import java.util.Map;
-import java.util.Set;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * BiMap
  *
  * @author adityasharat
  */
-
 public interface BiMap<K, V> {
 
   @Nullable

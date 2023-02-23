@@ -38,17 +38,13 @@ import android.view.animation.PathInterpolator;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
-
 import com.flipkart.android.proteus.ProteusConstants;
 import com.flipkart.android.proteus.parser.ParseHelper;
 import com.flipkart.android.proteus.value.ObjectValue;
 import com.flipkart.android.proteus.value.Value;
-
 import java.util.Iterator;
 
-/**
- * Defines common utilities for working with animations.
- */
+/** Defines common utilities for working with animations. */
 public class AnimationUtils {
 
   private static final String TAG = "AnimationUtils";
@@ -56,14 +52,14 @@ public class AnimationUtils {
   private static final String LINEAR_INTERPOLATOR = "linearInterpolator";
   private static final String ACCELERATE_INTERPOLATOR = "accelerateInterpolator";
   private static final String DECELERATE_INTERPOLATOR = "decelerateInterpolator";
-  private static final String ACCELERATE_DECELERATE_INTERPOLATOR = "accelerateDecelerateInterpolator";
+  private static final String ACCELERATE_DECELERATE_INTERPOLATOR =
+      "accelerateDecelerateInterpolator";
   private static final String CYCLE_INTERPOLATOR = "cycleInterpolator";
   private static final String ANTICIPATE_INTERPOLATOR = "anticipateInterpolator";
   private static final String OVERSHOOT_INTERPOLATOR = "overshootInterpolator";
   private static final String ANTICIPATE_OVERSHOOT_INTERPOLATOR = "anticipateOvershootInterpolator";
   private static final String BOUNCE_INTERPOLATOR = "bounceInterpolator";
   private static final String PATH_INTERPOLATOR = "pathInterpolator";
-
 
   private static final String TYPE = "type";
   private static final String SET = "set";
@@ -79,11 +75,12 @@ public class AnimationUtils {
    * Loads an {@link Animation} object from a resource
    *
    * @param context Application context used to access resources
-   * @param value   JSON representation of the Animation
+   * @param value JSON representation of the Animation
    * @return The animation object reference by the specified id
    * @throws android.content.res.Resources.NotFoundException when the animation cannot be loaded
    */
-  public static Animation loadAnimation(Context context, Value value) throws Resources.NotFoundException {
+  public static Animation loadAnimation(Context context, Value value)
+      throws Resources.NotFoundException {
     Animation anim = null;
     if (value.isPrimitive()) {
       anim = handleString(context, value.getAsPrimitive().getAsString());
@@ -138,11 +135,12 @@ public class AnimationUtils {
    * Loads an {@link Interpolator} object from a resource
    *
    * @param context Application context used to access resources
-   * @param value   Json representation of the Interpolator
+   * @param value Json representation of the Interpolator
    * @return The animation object reference by the specified id
    * @throws android.content.res.Resources.NotFoundException
    */
-  public static Interpolator loadInterpolator(Context context, Value value) throws Resources.NotFoundException {
+  public static Interpolator loadInterpolator(Context context, Value value)
+      throws Resources.NotFoundException {
     Interpolator interpolator = null;
     if (value.isPrimitive()) {
       interpolator = handleStringInterpolator(context, value.getAsString());
@@ -209,29 +207,23 @@ public class AnimationUtils {
     return interpolator;
   }
 
-  /**
-   * Utility class to parse a string description of a size.
-   */
+  /** Utility class to parse a string description of a size. */
   private static class Description {
-    /**
-     * One of Animation.ABSOLUTE, Animation.RELATIVE_TO_SELF, or
-     * Animation.RELATIVE_TO_PARENT.
-     */
+    /** One of Animation.ABSOLUTE, Animation.RELATIVE_TO_SELF, or Animation.RELATIVE_TO_PARENT. */
     public int type;
 
-    /**
-     * The absolute or relative dimension for this Description.
-     */
+    /** The absolute or relative dimension for this Description. */
     public float value;
 
     /**
      * Size descriptions can appear in three forms:
+     *
      * <ol>
-     * <li>An absolute size. This is represented by a number.</li>
-     * <li>A size relative to the size of the object being animated. This
-     * is represented by a number followed by "%".</li> *
-     * <li>A size relative to the size of the parent of object being
-     * animated. This is represented by a number followed by "%p".</li>
+     *   <li>An absolute size. This is represented by a number.
+     *   <li>A size relative to the size of the object being animated. This is represented by a
+     *       number followed by "%". *
+     *   <li>A size relative to the size of the parent of object being animated. This is represented
+     *       by a number followed by "%p".
      * </ol>
      *
      * @param value The Json value to parse
@@ -252,7 +244,8 @@ public class AnimationUtils {
             d.value = Float.parseFloat(stringValue) / 100;
             d.type = Animation.RELATIVE_TO_SELF;
           } else if (stringValue.endsWith(PERCENT_RELATIVE_PARENT)) {
-            stringValue = stringValue.substring(0, stringValue.length() - PERCENT_RELATIVE_PARENT.length());
+            stringValue =
+                stringValue.substring(0, stringValue.length() - PERCENT_RELATIVE_PARENT.length());
             d.value = Float.parseFloat(stringValue) / 100;
             d.type = Animation.RELATIVE_TO_PARENT;
           } else {
@@ -371,7 +364,8 @@ public class AnimationUtils {
 
     @Override
     Animation createAnimation(Context c) {
-      AnimationSet animationSet = new AnimationSet(shareInterpolator == null ? true : shareInterpolator);
+      AnimationSet animationSet =
+          new AnimationSet(shareInterpolator == null ? true : shareInterpolator);
 
       if (null != children) {
         if (children.isArray()) {
@@ -444,7 +438,15 @@ public class AnimationUtils {
       if (pivotX != null && pivotY != null) {
         Description pivotXDesc = Description.parseValue(pivotX);
         Description pivotYDesc = Description.parseValue(pivotY);
-        return new ScaleAnimation(fromXScale, toXScale, fromYScale, toYScale, pivotXDesc.type, pivotXDesc.value, pivotYDesc.type, pivotYDesc.value);
+        return new ScaleAnimation(
+            fromXScale,
+            toXScale,
+            fromYScale,
+            toYScale,
+            pivotXDesc.type,
+            pivotXDesc.value,
+            pivotYDesc.type,
+            pivotYDesc.value);
       } else {
         return new ScaleAnimation(fromXScale, toXScale, fromYScale, toYScale);
       }
@@ -478,7 +480,15 @@ public class AnimationUtils {
       Description fromYDeltaDescription = Description.parseValue(fromYDelta);
       Description toYDeltaDescription = Description.parseValue(toYDelta);
 
-      return new TranslateAnimation(fromXDeltaDescription.type, fromXDeltaDescription.value, toXDeltaDescription.type, toXDeltaDescription.value, fromYDeltaDescription.type, fromYDeltaDescription.value, toYDeltaDescription.type, toYDeltaDescription.value);
+      return new TranslateAnimation(
+          fromXDeltaDescription.type,
+          fromXDeltaDescription.value,
+          toXDeltaDescription.type,
+          toXDeltaDescription.value,
+          fromYDeltaDescription.type,
+          fromYDeltaDescription.value,
+          toYDeltaDescription.type,
+          toYDeltaDescription.value);
     }
   }
 
@@ -507,7 +517,13 @@ public class AnimationUtils {
       if (null != pivotX && null != pivotY) {
         Description pivotXDesc = Description.parseValue(pivotX);
         Description pivotYDesc = Description.parseValue(pivotY);
-        return new RotateAnimation(fromDegrees, toDegrees, pivotXDesc.type, pivotXDesc.value, pivotYDesc.type, pivotYDesc.value);
+        return new RotateAnimation(
+            fromDegrees,
+            toDegrees,
+            pivotXDesc.type,
+            pivotXDesc.value,
+            pivotYDesc.type,
+            pivotYDesc.value);
       } else {
         return new RotateAnimation(fromDegrees, toDegrees);
       }
@@ -516,11 +532,9 @@ public class AnimationUtils {
 
   private abstract static class InterpolatorProperties {
 
-    public InterpolatorProperties(Value value) {
-    }
+    public InterpolatorProperties(Value value) {}
 
     abstract Interpolator createInterpolator(Context c);
-
   }
 
   private static class PathInterpolatorProperties extends InterpolatorProperties {
@@ -600,7 +614,11 @@ public class AnimationUtils {
     }
 
     Interpolator createInterpolator(Context c) {
-      return null == tension ? new AnticipateOvershootInterpolator() : (null == extraTension ? new AnticipateOvershootInterpolator(tension) : new AnticipateOvershootInterpolator(tension, extraTension));
+      return null == tension
+          ? new AnticipateOvershootInterpolator()
+          : (null == extraTension
+              ? new AnticipateOvershootInterpolator(tension)
+              : new AnticipateOvershootInterpolator(tension, extraTension));
     }
   }
 

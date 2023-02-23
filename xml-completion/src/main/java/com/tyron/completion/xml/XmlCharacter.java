@@ -5,15 +5,15 @@ import java.util.Set;
 
 public class XmlCharacter {
 
-    public static final Set<Character> sNonXmlCharacters = new HashSet<>();
+  public static final Set<Character> sNonXmlCharacters = new HashSet<>();
 
-    static {
-        sNonXmlCharacters.add('\t');
-        sNonXmlCharacters.add('\n');
-        sNonXmlCharacters.add(' ');
-    }
+  static {
+    sNonXmlCharacters.add('\t');
+    sNonXmlCharacters.add('\n');
+    sNonXmlCharacters.add(' ');
+  }
 
-    public static boolean isNonXmlCharacterPart(char c) {
-        return sNonXmlCharacters.contains(c);
-    }
+  public static boolean isNonXmlCharacterPart(char c) {
+    return sNonXmlCharacters.contains(c);
+  }
 }

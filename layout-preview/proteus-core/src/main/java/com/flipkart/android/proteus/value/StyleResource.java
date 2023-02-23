@@ -19,21 +19,17 @@ package com.flipkart.android.proteus.value;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.LruCache;
-
-import com.flipkart.android.proteus.ProteusConstants;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import com.flipkart.android.proteus.ProteusConstants;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * StyleResource
  *
  * @author aditya.sharat
  */
-
 public class StyleResource extends Value {
 
   public static final StyleResource NULL = new StyleResource(-1, -1);
@@ -45,7 +41,9 @@ public class StyleResource extends Value {
   public final int styleId;
   public final int attributeId;
 
-  private StyleResource(String value, Context context) throws IllegalArgumentException, NoSuchFieldException, IllegalAccessException, ClassNotFoundException {
+  private StyleResource(String value, Context context)
+      throws IllegalArgumentException, NoSuchFieldException, IllegalAccessException,
+          ClassNotFoundException {
     String[] tokens = value.substring(1).split(":");
     String style = tokens[0];
     String attr = tokens[1];
@@ -109,7 +107,7 @@ public class StyleResource extends Value {
   }
 
   public TypedArray apply(Context context) {
-    return context.obtainStyledAttributes(styleId, new int[]{attributeId});
+    return context.obtainStyledAttributes(styleId, new int[] {attributeId});
   }
 
   @Override

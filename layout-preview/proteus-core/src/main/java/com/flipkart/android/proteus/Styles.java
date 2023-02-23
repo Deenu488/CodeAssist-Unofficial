@@ -17,7 +17,6 @@
 package com.flipkart.android.proteus;
 
 import com.flipkart.android.proteus.value.Value;
-
 import java.util.HashMap;
 import java.util.Map;
 

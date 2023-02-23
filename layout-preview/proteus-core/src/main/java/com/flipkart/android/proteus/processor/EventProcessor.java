@@ -16,9 +16,7 @@
 
 package com.flipkart.android.proteus.processor;
 
-
 import android.view.View;
-
 import com.flipkart.android.proteus.ProteusLayoutInflater;
 import com.flipkart.android.proteus.ProteusView;
 import com.flipkart.android.proteus.value.AttributeResource;
@@ -28,15 +26,14 @@ import com.flipkart.android.proteus.value.Value;
 
 /**
  * EventProcessor
+ *
  * <p>
- * <p>
- * Use this Attribute Processor to get event callbacks
- * on the {@link com.flipkart.android.proteus.ProteusLayoutInflater.Callback#onEvent(String, Value, ProteusView)}
- * </p>
+ *
+ * <p>Use this Attribute Processor to get event callbacks on the {@link
+ * com.flipkart.android.proteus.ProteusLayoutInflater.Callback#onEvent(String, Value, ProteusView)}
  *
  * @author adityasharat
  */
-
 public abstract class EventProcessor<T extends View> extends AttributeProcessor<T> {
 
   @Override

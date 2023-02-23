@@ -23,18 +23,15 @@ import android.util.Log;
 import android.util.LruCache;
 import android.util.StateSet;
 import android.view.View;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.flipkart.android.proteus.ProteusContext;
 import com.flipkart.android.proteus.processor.ColorResourceProcessor;
 import com.flipkart.android.proteus.toolbox.ProteusHelper;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * ColorValue
@@ -154,7 +151,6 @@ public abstract class Color extends Value {
 
               final int color = modulateColorAlpha(baseColor, alphaMod);
 
-
               colorList[listSize] = color;
               stateSpecList[listSize] = stateSpec;
               listSize++;
@@ -259,8 +255,7 @@ public abstract class Color extends Value {
       return BLACK;
     }
 
-    @ColorInt
-    public final int value;
+    @ColorInt public final int value;
 
     Int(@ColorInt int value) {
       this.value = value;
@@ -338,7 +333,8 @@ public abstract class Color extends Value {
       return 0;
     }
 
-    private int getColor(View parent, View view, ProteusContext context, AttributeResource attributeResource) {
+    private int getColor(
+        View parent, View view, ProteusContext context, AttributeResource attributeResource) {
       String name = attributeResource.getName();
       Value value = context.obtainStyledAttribute(parent, view, name);
       if (value != null) {
@@ -411,8 +407,7 @@ public abstract class Color extends Value {
 
     public final int color;
 
-    @Nullable
-    public final ColorStateList colors;
+    @Nullable public final ColorStateList colors;
 
     private Result(int color, @Nullable ColorStateList colors) {
       this.color = color;
@@ -431,5 +426,4 @@ public abstract class Color extends Value {
       return new Result(color, colors);
     }
   }
-
 }

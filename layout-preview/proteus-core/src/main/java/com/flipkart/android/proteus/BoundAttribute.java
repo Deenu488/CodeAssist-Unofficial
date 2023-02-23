@@ -16,33 +16,25 @@
 
 package com.flipkart.android.proteus;
 
+import androidx.annotation.NonNull;
 import com.flipkart.android.proteus.managers.ViewManager;
 import com.flipkart.android.proteus.value.Binding;
 import com.flipkart.android.proteus.value.ObjectValue;
 
-import androidx.annotation.NonNull;
-
 /**
- * BoundAttribute holds the attribute id to binding pair
- * which is used in the update flow of a {@link ProteusView}
- * which is executed when {@link ViewManager#update(ObjectValue)}
- * is invoked.
+ * BoundAttribute holds the attribute id to binding pair which is used in the update flow of a
+ * {@link ProteusView} which is executed when {@link ViewManager#update(ObjectValue)} is invoked.
  *
  * @author kirankumar
  * @author adityasharat
  */
 public class BoundAttribute {
 
-  /**
-   * The {@code int} attribute id of the pair.
-   */
+  /** The {@code int} attribute id of the pair. */
   public final int attributeId;
 
-  /**
-   * The {@link Binding} for the layout attributes value.
-   */
-  @NonNull
-  public final Binding binding;
+  /** The {@link Binding} for the layout attributes value. */
+  @NonNull public final Binding binding;
 
   public BoundAttribute(int attributeId, @NonNull Binding binding) {
     this.attributeId = attributeId;

@@ -1,6 +1,7 @@
 plugins {
     id 'java-library'
 }
+apply plugin: 'com.diffplug.spotless'
 
 dependencies {
     implementation project (path: ':build-tools:eclipse-standalone')
@@ -10,4 +11,11 @@ dependencies {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+spotless {
+		java {
+			target "**/*.java"
+			googleJavaFormat()
+			}
 }
