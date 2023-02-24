@@ -225,6 +225,8 @@ public class ModuleImpl implements Module {
   }
 
   private String getPlugins(String readString) {
+    Pattern APPLY_PLUGINS = Pattern.compile("\\s*apply\\s+plugin:\\s+[\"'](.+?)[\"']");
+
     readString = readString.replaceAll("\\s*//.*", "");
     Matcher matcher = PLUGINS_ID.matcher(readString);
     List<String> plugins = new ArrayList<>();
@@ -237,6 +239,13 @@ public class ModuleImpl implements Module {
     matcher = PLUGINS_ID_QUOT.matcher(readString);
     while (matcher.find()) {
       String declaration = matcher.group(3);
+      if (declaration != null) {
+        plugins.add(String.valueOf(declaration));
+      }
+    }
+    matcher = APPLY_PLUGINS.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(1);
       if (declaration != null) {
         plugins.add(String.valueOf(declaration));
       }

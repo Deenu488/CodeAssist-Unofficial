@@ -13,8 +13,6 @@
 	<string name="choose_project">Choose project</string>
 	
 	<!-- main fragment -->
-	<string name="project_not_initialized">Project is not initialized</string>
-	<string name="project_status">Project status</string>
   	<string name="title_confirm_project_close">Close project</string>
 	<string name="msg_confirm_project_close">Are you sure you want to close this project? All running actions will be stopped after this project is closed.</string>
 	

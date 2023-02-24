@@ -2,16 +2,13 @@ package com.tyron.code.ui.main.action.compile;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.view.View;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 import com.deenu143.gradle.utils.GradleUtils;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.tyron.actions.ActionGroup;
 import com.tyron.actions.ActionPlaces;
@@ -127,22 +124,13 @@ public class CompileActionGroup extends ActionGroup {
               }
             });
 
-    BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context);
-    bottomSheetDialog.setContentView(R.layout.layout_dialog_project_status);
-    ConstraintLayout projectStatus = bottomSheetDialog.findViewById(R.id.project_status);
-
     File gradleFile = project.getMainModule().getGradleFile();
-
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
     int lastSelectedIndex = preferences.getInt("last_selected_index", 1);
 
     try {
       List<String> plugins = GradleUtils.parsePlugins(gradleFile);
       if (!plugins.contains("com.android.application")) {
-        // Show the bottom sheet dialog only if the list of plugins doesn't contain
-        // "com.android.application"
-        projectStatus.setVisibility(View.VISIBLE);
-        bottomSheetDialog.show();
       } else {
         switch (lastSelectedIndex) {
           case 0:
@@ -151,14 +139,9 @@ public class CompileActionGroup extends ActionGroup {
           case 1:
             callback.compile(BuildType.DEBUG);
             break;
-          case 2:
-            callback.compile(BuildType.AAB);
-            break;
         }
       }
     } catch (Exception e) {
-      projectStatus.setVisibility(View.VISIBLE);
-      bottomSheetDialog.show();
     }
   }
 
