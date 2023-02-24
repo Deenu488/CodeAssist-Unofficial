@@ -9,7 +9,6 @@ import com.tyron.builder.project.api.JavaModule;
 import com.tyron.builder.project.api.Module;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 public class ProjectBuilder {
 
@@ -34,25 +33,24 @@ public class ProjectBuilder {
       module.open();
       module.index();
 
-      Builder<? extends Module> builder;
-      AndroidModule androidModule = (AndroidModule) module;
-      String moduleType = module.getPlugins();
+		Builder<? extends Module> builder = null;
+		AndroidModule androidModule = (AndroidModule) module;
+		String moduleType = module.getPlugins();
 
-      switch (Objects.requireNonNull(moduleType)) {
-        case "java-library":
-          builder = new JarBuilder(mProject, (JavaModule) module, mLogger);
-          break;
-        default:
-        case "com.android.application":
-          if (type == BuildType.AAB) {
-            builder = new AndroidAppBundleBuilder(mProject, androidModule, mLogger);
-          } else {
-            builder = new AndroidAppBuilder(mProject, androidModule, mLogger);
-          }
-          break;
-      }
-      builder.setTaskListener(mTaskListener);
-      builder.build(type);
+		if (moduleType.contains("java-library")) {
+			builder = new JarBuilder(mProject, (JavaModule) module, mLogger);
+		} else if (moduleType.contains("com.android.application")) {
+			if (type == BuildType.AAB) {
+				builder = new AndroidAppBundleBuilder(mProject, androidModule, mLogger);
+			} else {
+				builder = new AndroidAppBuilder(mProject, androidModule, mLogger);
+			}
+		} else {
+			throw new CompilationFailedException("Unabled to find any plugins, check project plugins and refresh module");
+		}
+
+		builder.setTaskListener(mTaskListener);
+		builder.build(type);
     }
   }
 }
