@@ -56,7 +56,8 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
   @Override
   public void run() throws IOException, CompilationFailedException {
 
-    List<String> implementationProjects = getModule().getImplementationProjects();
+    List<String> implementationProjects =
+        getModule().getImplementationProjects(getModule().getGradleFile());
 
     for (String implementationProject : implementationProjects) {
       File java = new File(getModule().getRootProject(), implementationProject + "/src/main/java");

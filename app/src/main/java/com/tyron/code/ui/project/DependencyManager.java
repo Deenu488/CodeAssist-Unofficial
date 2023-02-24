@@ -122,7 +122,8 @@ public class DependencyManager {
     listener.onTaskStarted("Resolving dependencies");
     logger.debug("> Configure project :" + project.getRootFile().getName());
 
-    List<String> included = project.getIncludedProjects();
+    List<String> included = project.getImplementationProjects(project.getGradleFile());
+
     included.forEach(
         include -> {
           String root = include.replaceFirst("/", "").replaceAll("/", ":");

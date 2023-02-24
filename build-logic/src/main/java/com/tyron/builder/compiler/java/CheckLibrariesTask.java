@@ -73,6 +73,7 @@ public class CheckLibrariesTask extends Task<JavaModule> {
     Set<Library> libraries = new HashSet<>();
 
     Map<String, Library> fileLibsHashes = new HashMap<>();
+
     File rootLibs = new File(root, "libs");
     File[] fileLibraries =
         rootLibs.listFiles(c -> c.getName().endsWith(".aar") || c.getName().endsWith(".jar"));

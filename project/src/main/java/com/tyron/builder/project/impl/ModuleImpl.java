@@ -116,6 +116,11 @@ public class ModuleImpl implements Module {
   }
 
   @Override
+  public List<String> getImplementationProjects(File gradleFile) {
+    return parseImplementationProjects(gradleFile);
+  }
+
+  @Override
   public List<String> getIncludedProjects() {
     return parseIncludedProjects(getSettingsGradleFile());
   }

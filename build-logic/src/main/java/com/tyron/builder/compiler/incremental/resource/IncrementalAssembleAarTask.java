@@ -63,7 +63,8 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
   public void prepare(BuildType type) throws IOException {}
 
   public void run() throws IOException, CompilationFailedException {
-    List<String> implementationProjects = getModule().getImplementationProjects();
+    List<String> implementationProjects =
+        getModule().getImplementationProjects(getModule().getGradleFile());
     for (String implementationProject : implementationProjects) {
 
       File res = new File(getModule().getRootProject(), implementationProject + "/src/main/res");
