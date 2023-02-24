@@ -8,6 +8,7 @@ import com.tyron.builder.compiler.Task;
 import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.log.ILogger;
 import com.tyron.builder.model.Library;
+import com.tyron.builder.model.ModuleSettings;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.JavaModule;
 import com.tyron.builder.project.api.Module;
@@ -46,18 +47,35 @@ public class CheckLibrariesTask extends Task<JavaModule> {
 
   @Override
   public void run() throws IOException, CompilationFailedException {
-    checkLibraries(getModule(), getLogger(), Collections.emptyList());
+
+    List<String> included = getModule().getIncludedProjects();
+    File idea = new File(getModule().getRootProject(), ".idea");
+
+    included.forEach(
+        include -> {
+          String root = include.replaceFirst("/", "").replaceAll("/", ":");
+          getLogger().debug("> Task :" + root + ":" + "checkingLibraries");
+          try {
+            File gradleFile = new File(getModule().getRootProject(), include + "/build.gradle");
+            File includeName = new File(getModule().getRootProject(), include);
+            if (gradleFile.exists()) {
+              checkLibraries(getModule(), includeName, idea, getLogger(), Collections.emptyList());
+            }
+          } catch (IOException e) {
+
+          }
+        });
   }
 
-  private void checkLibraries(JavaModule project, ILogger logger, List<File> newLibraries)
+  private void checkLibraries(
+      JavaModule project, File root, File idea, ILogger logger, List<File> newLibraries)
       throws IOException {
     Set<Library> libraries = new HashSet<>();
 
     Map<String, Library> fileLibsHashes = new HashMap<>();
+    File rootLibs = new File(root, "libs");
     File[] fileLibraries =
-        project
-            .getLibraryDirectory()
-            .listFiles(c -> c.getName().endsWith(".aar") || c.getName().endsWith(".jar"));
+        rootLibs.listFiles(c -> c.getName().endsWith(".aar") || c.getName().endsWith(".jar"));
     if (fileLibraries != null) {
       for (File fileLibrary : fileLibraries) {
         try {
@@ -79,7 +97,10 @@ public class CheckLibrariesTask extends Task<JavaModule> {
           libraries.add(library);
         });
 
-    String librariesString = project.getSettings().getString("libraries", "[]");
+    ModuleSettings myModuleSettings =
+        new ModuleSettings(new File(idea, root.getName() + "_libraries.json"));
+
+    String librariesString = myModuleSettings.getString("libraries", "[]");
     try {
       List<Library> parsedLibraries =
           new Gson().fromJson(librariesString, new TypeToken<List<Library>>() {}.getType());
@@ -92,7 +113,7 @@ public class CheckLibrariesTask extends Task<JavaModule> {
 
     Map<String, Library> md5Map = new HashMap<>();
     libraries.forEach(it -> md5Map.put(calculateMD5(it.getSourceFile()), it));
-    File buildLibs = new File(project.getBuildDirectory(), "libs");
+    File buildLibs = new File(root, "build/libs");
     File[] buildLibraryDirs = buildLibs.listFiles(File::isDirectory);
     if (buildLibraryDirs != null) {
       for (File libraryDir : buildLibraryDirs) {
@@ -104,11 +125,15 @@ public class CheckLibrariesTask extends Task<JavaModule> {
       }
     }
 
-    saveLibraryToProject(project, md5Map, fileLibsHashes);
+    saveLibraryToProject(project, root, idea, md5Map, fileLibsHashes);
   }
 
   private void saveLibraryToProject(
-      Module module, Map<String, Library> libraries, Map<String, Library> fileLibraries)
+      Module module,
+      File root,
+      File idea,
+      Map<String, Library> libraries,
+      Map<String, Library> fileLibraries)
       throws IOException {
     Map<String, Library> combined = new HashMap<>();
     combined.putAll(libraries);
@@ -120,7 +145,7 @@ public class CheckLibrariesTask extends Task<JavaModule> {
       String hash = entry.getKey();
       Library library = entry.getValue();
 
-      File libraryDir = new File(module.getBuildDirectory(), "libs/" + hash);
+      File libraryDir = new File(root, "build/libs/" + hash);
       if (!libraryDir.exists()) {
         libraryDir.mkdir();
       } else {
@@ -137,8 +162,11 @@ public class CheckLibrariesTask extends Task<JavaModule> {
       }
     }
 
+    ModuleSettings myModuleSettings =
+        new ModuleSettings(new File(idea, root.getName() + "_libraries.json"));
+
     String librariesString = new Gson().toJson(libraries.values());
-    module.getSettings().edit().putString("libraries", librariesString).apply();
+    myModuleSettings.edit().putString("libraries", librariesString).apply();
   }
 
   public static String calculateMD5(File updateFile) {

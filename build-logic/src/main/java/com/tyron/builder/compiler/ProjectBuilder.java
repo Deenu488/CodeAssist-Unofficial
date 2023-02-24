@@ -33,24 +33,25 @@ public class ProjectBuilder {
       module.open();
       module.index();
 
-		Builder<? extends Module> builder = null;
-		AndroidModule androidModule = (AndroidModule) module;
-		String moduleType = module.getPlugins();
+      Builder<? extends Module> builder = null;
+      AndroidModule androidModule = (AndroidModule) module;
+      String moduleType = module.getPlugins();
 
-		if (moduleType.contains("java-library")) {
-			builder = new JarBuilder(mProject, (JavaModule) module, mLogger);
-		} else if (moduleType.contains("com.android.application")) {
-			if (type == BuildType.AAB) {
-				builder = new AndroidAppBundleBuilder(mProject, androidModule, mLogger);
-			} else {
-				builder = new AndroidAppBuilder(mProject, androidModule, mLogger);
-			}
-		} else {
-			throw new CompilationFailedException("Unabled to find any plugins, check project plugins and refresh module");
-		}
+      if (moduleType.contains("java-library")) {
+        builder = new JarBuilder(mProject, (JavaModule) module, mLogger);
+      } else if (moduleType.contains("com.android.application")) {
+        if (type == BuildType.AAB) {
+          builder = new AndroidAppBundleBuilder(mProject, androidModule, mLogger);
+        } else {
+          builder = new AndroidAppBuilder(mProject, androidModule, mLogger);
+        }
+      } else {
+        throw new CompilationFailedException(
+            "Unabled to find any plugins, check project plugins and refresh module");
+      }
 
-		builder.setTaskListener(mTaskListener);
-		builder.build(type);
+      builder.setTaskListener(mTaskListener);
+      builder.build(type);
     }
   }
 }
