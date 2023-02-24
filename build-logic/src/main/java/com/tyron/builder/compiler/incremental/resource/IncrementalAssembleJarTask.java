@@ -24,6 +24,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.jar.JarFile;
+import java.util.zip.ZipException;
 import javax.tools.DiagnosticListener;
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
@@ -232,18 +234,41 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
     }
   }
 
-  public static List<File> getJarFiles(File dir) {
+  public List<File> getJarFiles(File dir) {
     List<File> jarFiles = new ArrayList<>();
     File[] files = dir.listFiles();
     if (files != null) {
       for (File file : files) {
         if (file.isFile() && file.getName().endsWith(".jar")) {
-          jarFiles.add(file);
+          // Check if the JarFile is valid before adding it to the list
+          if (isJarFileValid(file)) {
+            jarFiles.add(file);
+          }
         } else if (file.isDirectory()) {
+          // Recursively add JarFiles from subdirectories
           jarFiles.addAll(getJarFiles(file));
         }
       }
     }
     return jarFiles;
+  }
+
+  public boolean isJarFileValid(File file) {
+    String message = "File " + file.getParentFile().getName() + " is corrupt! Ignoring.";
+    try {
+      // Try to open the JarFile
+      JarFile jarFile = new JarFile(file);
+      // If it opens successfully, close it and return true
+      jarFile.close();
+      return true;
+    } catch (ZipException e) {
+      // If the JarFile is invalid, it will throw a ZipException
+      getLogger().warning(message);
+      return false;
+    } catch (IOException e) {
+      // If there is some other error reading the JarFile, return false
+      getLogger().warning(message);
+      return false;
+    }
   }
 }

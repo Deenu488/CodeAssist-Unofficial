@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
-import com.deenu143.gradle.utils.GradleUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.tyron.actions.ActionGroup;
 import com.tyron.actions.ActionPlaces;
@@ -128,20 +127,13 @@ public class CompileActionGroup extends ActionGroup {
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
     int lastSelectedIndex = preferences.getInt("last_selected_index", 1);
 
-    try {
-      List<String> plugins = GradleUtils.parsePlugins(gradleFile);
-      if (!plugins.contains("com.android.application")) {
-      } else {
-        switch (lastSelectedIndex) {
-          case 0:
-            callback.compile(BuildType.RELEASE);
-            break;
-          case 1:
-            callback.compile(BuildType.DEBUG);
-            break;
-        }
-      }
-    } catch (Exception e) {
+    switch (lastSelectedIndex) {
+      case 0:
+        callback.compile(BuildType.RELEASE);
+        break;
+      case 1:
+        callback.compile(BuildType.DEBUG);
+        break;
     }
   }
 
