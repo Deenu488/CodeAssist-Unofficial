@@ -14,11 +14,6 @@ import org.apache.commons.io.FileUtils;
 
 public class DependencyUtils {
 
-  private static final Pattern DEPENDENCIES =
-      Pattern.compile("\\s*(implementation)\\s*(')([a-zA-Z0-9.'/-:\\-]+)(')");
-  private static final Pattern DEPENDENCIES_QUOT =
-      Pattern.compile("\\s*(implementation)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
-
   public static List<Dependency> parseDependencies(
       RepositoryManager repository, File file, ILogger logger) throws IOException {
     String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
@@ -27,16 +22,12 @@ public class DependencyUtils {
 
   public static List<Dependency> parseDependencies(
       RepositoryManager repositoryManager, String readString, ILogger logger) throws IOException {
+    final Pattern DEPENDENCIES =
+        Pattern.compile("\\s*(implementation)\\s*([\"'])([a-zA-Z0-9.'/-:\\-]+)\\2");
+
     readString = readString.replaceAll("\\s*//.*", "");
     List<Dependency> dependencies = new ArrayList<>();
     Matcher matcher = DEPENDENCIES.matcher(readString);
-    while (matcher.find()) {
-      String declaration = matcher.group(3);
-      if (declaration != null) {
-        dependencies.add(Dependency.valueOf(declaration));
-      }
-    }
-    matcher = DEPENDENCIES_QUOT.matcher(readString);
     while (matcher.find()) {
       String declaration = matcher.group(3);
       if (declaration != null) {
