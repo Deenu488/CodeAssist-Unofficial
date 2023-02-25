@@ -122,22 +122,26 @@ public class DependencyManager {
     listener.onTaskStarted("Resolving dependencies");
     logger.debug("> Configure project :" + project.getRootFile().getName());
 
-    List<String> included = project.getImplementationProjects(project.getGradleFile());
+    List<String> projects = new ArrayList<>();
+    projects.add(project.getRootFile().getName());
 
-    included.forEach(
-        include -> {
-          String root = include.replaceFirst("/", "").replaceAll("/", ":");
-          logger.debug("> Task :" + root + ":" + "resolvingDependencies");
-          try {
-            File gradleFile = new File(project.getRootProject(), include + "/build.gradle");
-            File includeName = new File(project.getRootProject(), include);
-            if (gradleFile.exists()) {
-              resolveMainDependency(project, includeName, listener, logger, gradleFile, root);
-            }
-          } catch (IOException e) {
-
-          }
-        });
+    while (!projects.isEmpty()) {
+      String include = projects.remove(0);
+      File gradleFile = new File(project.getRootProject(), include + "/build.gradle");
+      if (gradleFile.exists()) {
+        List<String> includedInBuildGradle = project.getImplementationProjects(gradleFile);
+        if (!includedInBuildGradle.isEmpty()) {
+          projects.addAll(includedInBuildGradle);
+        }
+        File includeName = new File(project.getRootProject(), include);
+        String root = include.replaceFirst("/", "").replaceAll("/", ":");
+        logger.debug("> Task :" + root + ":" + "resolvingDependencies");
+        try {
+          resolveMainDependency(project, includeName, listener, logger, gradleFile, root);
+        } catch (IOException e) {
+        }
+      }
+    }
   }
 
   private void resolveMainDependency(
