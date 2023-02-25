@@ -99,9 +99,9 @@ public class ProjectManager {
       if (gradleFile.exists()) {
         logger.debug("> Task :" + module.getRootFile().getName() + ":" + "checkingPlugins");
         if (plugins.isEmpty()) {
-          logger.warning("No Plugins detected");
+          logger.warning("No plugins applied");
         } else {
-          logger.debug("NOTE: " + "Plugins detected: " + plugins);
+          logger.debug("NOTE: " + "Plugins applied: " + plugins);
         }
       }
       mCurrentProject.open();

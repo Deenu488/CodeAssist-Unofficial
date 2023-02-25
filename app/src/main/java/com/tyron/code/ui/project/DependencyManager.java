@@ -125,8 +125,14 @@ public class DependencyManager {
     List<String> projects = new ArrayList<>();
     projects.add(project.getRootFile().getName());
 
+    Set<String> resolvedProjects = new HashSet<>();
+
     while (!projects.isEmpty()) {
       String include = projects.remove(0);
+      if (resolvedProjects.contains(include)) {
+        continue;
+      }
+      resolvedProjects.add(include);
       File gradleFile = new File(project.getRootProject(), include + "/build.gradle");
       if (gradleFile.exists()) {
         List<String> includedInBuildGradle = project.getImplementationProjects(gradleFile);
@@ -181,7 +187,6 @@ public class DependencyManager {
     File idea = new File(project.getRootProject(), ".idea");
     checkLibraries(project, root, idea, logger, files);
     files.clear();
-
     logger.debug("> Task :" + name + ":" + "checkingLibraries");
   }
 
