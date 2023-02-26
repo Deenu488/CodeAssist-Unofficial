@@ -14,13 +14,13 @@ import org.apache.commons.io.FileUtils;
 
 public class DependencyUtils {
 
-  public static List<Dependency> parseDependencies(
+  public static List<Dependency> parseImplementationDependencies(
       RepositoryManager repository, File file, ILogger logger) throws IOException {
     String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
-    return parseDependencies(repository, readString, logger);
+    return parseImplementationDependencies(repository, readString, logger);
   }
 
-  public static List<Dependency> parseDependencies(
+  public static List<Dependency> parseImplementationDependencies(
       RepositoryManager repositoryManager, String readString, ILogger logger) throws IOException {
     final Pattern DEPENDENCIES =
         Pattern.compile("\\s*(implementation)\\s*([\"'])([a-zA-Z0-9.'/-:\\-]+)\\2");

@@ -54,7 +54,6 @@ public class DependencyManager {
       mRepository.addRepository(repository);
     }
     mRepository.initialize();
-    //   mResolver = new DependencyResolver(mRepository);
   }
 
   public static List<Repository> getFromModule(JavaModule module) throws IOException {
@@ -124,9 +123,7 @@ public class DependencyManager {
 
     List<String> projects = new ArrayList<>();
     projects.add(project.getRootFile().getName());
-
     Set<String> resolvedProjects = new HashSet<>();
-
     while (!projects.isEmpty()) {
       String include = projects.remove(0);
       if (resolvedProjects.contains(include)) {
@@ -159,7 +156,7 @@ public class DependencyManager {
       String name)
       throws IOException {
     List<Dependency> declaredDependencies =
-        DependencyUtils.parseDependencies(mRepository, gradleFile, logger);
+        DependencyUtils.parseImplementationDependencies(mRepository, gradleFile, logger);
 
     DependencyResolver mResolver = new DependencyResolver(mRepository);
 

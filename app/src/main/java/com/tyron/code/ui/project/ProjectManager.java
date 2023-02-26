@@ -154,24 +154,27 @@ public class ProjectManager {
         } catch (IOException | CompilationFailedException e) {
         }
       }
-      if (module instanceof JavaModule) {
-        if (module instanceof AndroidModule) {
-          mListener.onTaskStarted("Indexing XML files.");
 
-          XmlIndexProvider index = CompilerService.getInstance().getIndex(XmlIndexProvider.KEY);
-          index.clear();
+      if (res.exists()) {
+        if (module instanceof JavaModule) {
+          if (module instanceof AndroidModule) {
+            mListener.onTaskStarted("Indexing XML files.");
 
-          XmlRepository xmlRepository = index.get(project, module);
-          try {
-            logger.debug("> Task :" + module.getRootFile().getName() + ":" + "indexingResources");
-            xmlRepository.initialize((AndroidModule) module);
-          } catch (IOException e) {
-            String message =
-                "Unable to initialize resource repository. "
-                    + "Resource code completion might be incomplete or unavailable. \n"
-                    + "Reason: "
-                    + e.getMessage();
-            LOG.warning(message);
+            XmlIndexProvider index = CompilerService.getInstance().getIndex(XmlIndexProvider.KEY);
+            index.clear();
+
+            XmlRepository xmlRepository = index.get(project, module);
+            try {
+              logger.debug("> Task :" + module.getRootFile().getName() + ":" + "indexingResources");
+              xmlRepository.initialize((AndroidModule) module);
+            } catch (IOException e) {
+              String message =
+                  "Unable to initialize resource repository. "
+                      + "Resource code completion might be incomplete or unavailable. \n"
+                      + "Reason: "
+                      + e.getMessage();
+              LOG.warning(message);
+            }
           }
         }
 
@@ -180,13 +183,14 @@ public class ProjectManager {
           JavaCompilerProvider provider =
               CompilerService.getInstance().getIndex(JavaCompilerProvider.KEY);
           JavaCompilerService service = provider.get(project, module);
-
-          if (module instanceof AndroidModule) {
-            InjectResourcesTask.inject(project, (AndroidModule) module);
-            InjectViewBindingTask.inject(project, (AndroidModule) module);
-            logger.debug("> Task :" + module.getRootFile().getName() + ":" + "injectingResources");
+          if (res.exists()) {
+            if (module instanceof AndroidModule) {
+              InjectResourcesTask.inject(project, (AndroidModule) module);
+              InjectViewBindingTask.inject(project, (AndroidModule) module);
+              logger.debug(
+                  "> Task :" + module.getRootFile().getName() + ":" + "injectingResources");
+            }
           }
-
           Collection<File> files = javaModule.getJavaFiles().values();
           File first = CollectionsKt.firstOrNull(files);
           if (first != null) {
