@@ -14,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 
 public class DependencyUtils {
 
+  // parseImplementationDependencies
   public static List<Dependency> parseImplementationDependencies(
       RepositoryManager repository, File file, ILogger logger) throws IOException {
     String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
@@ -24,6 +25,89 @@ public class DependencyUtils {
       RepositoryManager repositoryManager, String readString, ILogger logger) throws IOException {
     final Pattern DEPENDENCIES =
         Pattern.compile("\\s*(implementation)\\s*([\"'])([a-zA-Z0-9.'/-:\\-]+)\\2");
+
+    readString = readString.replaceAll("\\s*//.*", "");
+    List<Dependency> dependencies = new ArrayList<>();
+    Matcher matcher = DEPENDENCIES.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null) {
+        try {
+          dependencies.add(Dependency.valueOf(declaration));
+        } catch (IllegalArgumentException e) {
+          logger.warning("Failed to add dependency " + e.getMessage());
+        }
+      }
+    }
+    return dependencies;
+  }
+
+  // parseApiDependencies
+  public static List<Dependency> parseApiDependencies(
+      RepositoryManager repository, File file, ILogger logger) throws IOException {
+    String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
+    return parseApiDependencies(repository, readString, logger);
+  }
+
+  public static List<Dependency> parseApiDependencies(
+      RepositoryManager repositoryManager, String readString, ILogger logger) throws IOException {
+    final Pattern DEPENDENCIES = Pattern.compile("\\s*(api)\\s*([\"'])([a-zA-Z0-9.'/-:\\-]+)\\2");
+
+    readString = readString.replaceAll("\\s*//.*", "");
+    List<Dependency> dependencies = new ArrayList<>();
+    Matcher matcher = DEPENDENCIES.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null) {
+        try {
+          dependencies.add(Dependency.valueOf(declaration));
+        } catch (IllegalArgumentException e) {
+          logger.warning("Failed to add dependency " + e.getMessage());
+        }
+      }
+    }
+    return dependencies;
+  }
+
+  // parseCompileOnlyDependencies
+  public static List<Dependency> parseCompileOnlyDependencies(
+      RepositoryManager repository, File file, ILogger logger) throws IOException {
+    String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
+    return parseCompileOnlyDependencies(repository, readString, logger);
+  }
+
+  public static List<Dependency> parseCompileOnlyDependencies(
+      RepositoryManager repositoryManager, String readString, ILogger logger) throws IOException {
+    final Pattern DEPENDENCIES =
+        Pattern.compile("\\s*(compileOnly)\\s*([\"'])([a-zA-Z0-9.'/-:\\-]+)\\2");
+
+    readString = readString.replaceAll("\\s*//.*", "");
+    List<Dependency> dependencies = new ArrayList<>();
+    Matcher matcher = DEPENDENCIES.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null) {
+        try {
+          dependencies.add(Dependency.valueOf(declaration));
+        } catch (IllegalArgumentException e) {
+          logger.warning("Failed to add dependency " + e.getMessage());
+        }
+      }
+    }
+    return dependencies;
+  }
+
+  // parseRuntimeOnlyDependencies
+  public static List<Dependency> parseRuntimeOnlyDependencies(
+      RepositoryManager repository, File file, ILogger logger) throws IOException {
+    String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
+    return parseRuntimeOnlyDependencies(repository, readString, logger);
+  }
+
+  public static List<Dependency> parseRuntimeOnlyDependencies(
+      RepositoryManager repositoryManager, String readString, ILogger logger) throws IOException {
+    final Pattern DEPENDENCIES =
+        Pattern.compile("\\s*(runtimeOnly)\\s*([\"'])([a-zA-Z0-9.'/-:\\-]+)\\2");
 
     readString = readString.replaceAll("\\s*//.*", "");
     List<Dependency> dependencies = new ArrayList<>();

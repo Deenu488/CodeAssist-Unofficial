@@ -155,8 +155,14 @@ public class DependencyManager {
       File gradleFile,
       String name)
       throws IOException {
-    List<Dependency> declaredDependencies =
+    List<Dependency> declaredImplementationDependencies =
         DependencyUtils.parseImplementationDependencies(mRepository, gradleFile, logger);
+    List<Dependency> declaredApiDependencies =
+        DependencyUtils.parseApiDependencies(mRepository, gradleFile, logger);
+    List<Dependency> declaredCompileOnlyDependencies =
+        DependencyUtils.parseCompileOnlyDependencies(mRepository, gradleFile, logger);
+    List<Dependency> declaredRuntimeOnlyDependencies =
+        DependencyUtils.parseRuntimeOnlyDependencies(mRepository, gradleFile, logger);
 
     DependencyResolver mResolver = new DependencyResolver(mRepository);
 
@@ -174,7 +180,10 @@ public class DependencyManager {
       resolvedPoms.clear();
     }
 
-    resolvedPoms = mResolver.resolveDependencies(declaredDependencies);
+    resolvedPoms = mResolver.resolveDependencies(declaredImplementationDependencies);
+    resolvedPoms = mResolver.resolveDependencies(declaredApiDependencies);
+    resolvedPoms = mResolver.resolveDependencies(declaredCompileOnlyDependencies);
+    resolvedPoms = mResolver.resolveDependencies(declaredRuntimeOnlyDependencies);
 
     listener.onTaskStarted("Downloading dependencies");
     logger.debug("> Task :" + name + ":" + "downloadingDependencies");
