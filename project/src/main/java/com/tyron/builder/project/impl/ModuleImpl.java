@@ -4,11 +4,14 @@ import androidx.annotation.Nullable;
 import com.tyron.builder.model.ModuleSettings;
 import com.tyron.builder.project.api.FileManager;
 import com.tyron.builder.project.api.Module;
+import com.tyron.builder.project.cache.CacheHolder.CacheKey;
 import com.tyron.common.util.Cache;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -129,6 +132,17 @@ public class ModuleImpl implements Module {
   @Override
   public List<String> getIncludedProjects() {
     return parseIncludedProjects(getSettingsGradleFile());
+  }
+
+  @Override
+  public AbstractMap.SimpleEntry<String, ArrayList<String>> extractDirAndIncludes(String scope) {
+    return parseDirAndIncludes(getGradleFile(), scope);
+  }
+
+  @Override
+  public AbstractMap.SimpleEntry<String, ArrayList<String>> extractDirAndIncludes(
+      File gradleFile, String scope) {
+    return parseDirAndIncludes(gradleFile, scope);
   }
 
   @Nullable
@@ -422,5 +436,35 @@ public class ModuleImpl implements Module {
       }
     }
     return included;
+  }
+
+  private AbstractMap.SimpleEntry<String, ArrayList<String>> parseDirAndIncludes(
+      File file, String scope) {
+    try {
+      String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
+      return parseDirAndIncludes(readString, scope);
+    } catch (IOException e) {
+    }
+    return null;
+  }
+
+  public static AbstractMap.SimpleEntry<String, ArrayList<String>> parseDirAndIncludes(
+      String readString, String scope) throws IOException {
+    Pattern pattern =
+        Pattern.compile(scope + " fileTree\\(dir:\\s*'([^']*)',\\s*include:\\s*\\[([^\\]]*)\\]\\)");
+    Matcher matcher = pattern.matcher(readString);
+    if (matcher.find()) {
+      String dirValue = matcher.group(1);
+      ArrayList<String> includeValues =
+          new ArrayList<String>(Arrays.asList(matcher.group(2).split(",\\s*")));
+      for (int i = 0; i < includeValues.size(); i++) {
+        includeValues.set(i, includeValues.get(i).trim().replace("'", ""));
+      }
+      for (int i = 0; i < includeValues.size(); i++) {
+        includeValues.set(i, includeValues.get(i).replace("*", " "));
+      }
+      return new AbstractMap.SimpleEntry<String, ArrayList<String>>(dirValue, includeValues);
+    }
+    return null;
   }
 }

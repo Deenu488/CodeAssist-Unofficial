@@ -4,6 +4,8 @@ import com.tyron.builder.model.ModuleSettings;
 import com.tyron.builder.project.cache.CacheHolder;
 import java.io.File;
 import java.io.IOException;
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.kotlin.com.intellij.openapi.util.UserDataHolderEx;
 
@@ -32,6 +34,10 @@ public interface Module extends UserDataHolderEx, CacheHolder {
   List<String> getAllProjects(File file);
 
   List<String> getIncludedProjects();
+
+  AbstractMap.SimpleEntry<String, ArrayList<String>> extractDirAndIncludes(String scope);
+
+  AbstractMap.SimpleEntry<String, ArrayList<String>> extractDirAndIncludes(File file, String scope);
 
   default String getName() {
     return getRootFile().getName();
