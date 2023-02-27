@@ -22,6 +22,8 @@ public class DependencyUtils {
     final Pattern DEPENDENCIES =
         Pattern.compile(
             "\\s*(" + scopeType.getStringValue() + ")\\s*([\"'])([a-zA-Z0-9.'/-:\\-]+)\\2");
+    final Pattern DEPENDENCIES_QUOTE =
+        Pattern.compile("\\s*(" + scopeType.getStringValue() + ")\\s*\\([\"']([^'\"]+)[\"']\\)");
 
     readString = readString.replaceAll("\\s*//.*", "");
     List<Dependency> dependencies = new ArrayList<>();
@@ -31,11 +33,24 @@ public class DependencyUtils {
       if (declaration != null) {
         try {
           dependencies.add(Dependency.valueOf(declaration));
-        } catch (IllegalArgumentException e) {
-          logger.warning("Failed to add dependency " + e.getMessage());
+        } catch (Exception e) {
+          logger.warning("Failed to add dependency " + declaration);
         }
       }
     }
+
+    matcher = DEPENDENCIES_QUOTE.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(2);
+      if (declaration != null) {
+        try {
+          dependencies.add(Dependency.valueOf(declaration));
+        } catch (Exception e) {
+          logger.warning("Failed to add dependency " + declaration);
+        }
+      }
+    }
+
     return dependencies;
   }
 
