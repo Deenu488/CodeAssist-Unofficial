@@ -17,6 +17,7 @@ import com.tyron.common.util.AndroidUtilities;
 import com.tyron.common.util.Decompress;
 import com.tyron.resolver.DependencyResolver;
 import com.tyron.resolver.RepositoryModel;
+import com.tyron.resolver.ScopeType;
 import com.tyron.resolver.model.Dependency;
 import com.tyron.resolver.model.Pom;
 import com.tyron.resolver.repository.LocalRepository;
@@ -57,7 +58,7 @@ public class DependencyManager {
   }
 
   public static List<Repository> getFromModule(JavaModule module) throws IOException {
-    File repositoriesFile = new File(module.getRootProject(), ".idea/" + REPOSITORIES_JSON);
+	  File repositoriesFile = new File(module.getProjectDir(), ".idea/" + REPOSITORIES_JSON);
     List<RepositoryModel> repositoryModels = parseFile(repositoriesFile);
     List<Repository> repositories = new ArrayList<>();
     for (RepositoryModel model : repositoryModels) {
@@ -130,13 +131,13 @@ public class DependencyManager {
         continue;
       }
       resolvedProjects.add(include);
-      File gradleFile = new File(project.getRootProject(), include + "/build.gradle");
+		File gradleFile = new File(project.getProjectDir(), include + "/build.gradle");
       if (gradleFile.exists()) {
-        List<String> includedInBuildGradle = project.getImplementationProjects(gradleFile);
+        List<String> includedInBuildGradle = project.getProjects(gradleFile);
         if (!includedInBuildGradle.isEmpty()) {
           projects.addAll(includedInBuildGradle);
         }
-        File includeName = new File(project.getRootProject(), include);
+		  File includeName = new File(project.getProjectDir(), include);
         String root = include.replaceFirst("/", "").replaceAll("/", ":");
         logger.debug("> Task :" + root + ":" + "resolvingDependencies");
         try {
@@ -156,13 +157,14 @@ public class DependencyManager {
       String name)
       throws IOException {
     List<Dependency> declaredImplementationDependencies =
-        DependencyUtils.parseImplementationDependencies(mRepository, gradleFile, logger);
+        DependencyUtils.parseDependencies(mRepository, gradleFile, logger, ScopeType.API);
     List<Dependency> declaredApiDependencies =
-        DependencyUtils.parseApiDependencies(mRepository, gradleFile, logger);
+        DependencyUtils.parseDependencies(
+            mRepository, gradleFile, logger, ScopeType.IMPLEMENTATION);
     List<Dependency> declaredCompileOnlyDependencies =
-        DependencyUtils.parseCompileOnlyDependencies(mRepository, gradleFile, logger);
+        DependencyUtils.parseDependencies(mRepository, gradleFile, logger, ScopeType.COMPILE_ONLY);
     List<Dependency> declaredRuntimeOnlyDependencies =
-        DependencyUtils.parseRuntimeOnlyDependencies(mRepository, gradleFile, logger);
+        DependencyUtils.parseDependencies(mRepository, gradleFile, logger, ScopeType.RUNTIME_ONLY);
 
     DependencyResolver mResolver = new DependencyResolver(mRepository);
 
@@ -180,20 +182,41 @@ public class DependencyManager {
       resolvedPoms.clear();
     }
 
-    resolvedPoms = mResolver.resolveDependencies(declaredImplementationDependencies);
-    resolvedPoms = mResolver.resolveDependencies(declaredApiDependencies);
-    resolvedPoms = mResolver.resolveDependencies(declaredCompileOnlyDependencies);
-    resolvedPoms = mResolver.resolveDependencies(declaredRuntimeOnlyDependencies);
-
+		  File idea = new File(project.getProjectDir(), ".idea");
     listener.onTaskStarted("Downloading dependencies");
     logger.debug("> Task :" + name + ":" + "downloadingDependencies");
-    List<Library> files = getFiles(resolvedPoms, logger);
-    listener.onTaskStarted("Checking dependencies");
-    logger.debug("> Task :" + name + ":" + "checkingDependencies");
-    File idea = new File(project.getRootProject(), ".idea");
-    checkLibraries(project, root, idea, logger, files);
-    files.clear();
-    logger.debug("> Task :" + name + ":" + "checkingLibraries");
+
+    resolvedPoms = mResolver.resolveDependencies(declaredImplementationDependencies);
+    List<Library> implementationLibraries = getFiles(resolvedPoms, logger);
+    checkLibraries(project, root, idea, logger, implementationLibraries);
+    if (resolvedPoms != null) {
+      resolvedPoms.clear();
+    }
+    implementationLibraries.clear();
+
+    resolvedPoms = mResolver.resolveDependencies(declaredApiDependencies);
+    List<Library> apiLibraries = getFiles(resolvedPoms, logger);
+    //  checkLibraries(project, root, idea, logger, apiLibraries);
+    if (resolvedPoms != null) {
+      resolvedPoms.clear();
+    }
+    apiLibraries.clear();
+
+    resolvedPoms = mResolver.resolveDependencies(declaredCompileOnlyDependencies);
+    List<Library> compileOnlyLibraries = getFiles(resolvedPoms, logger);
+    //  checkLibraries(project, root, idea, logger, compileOnlyLibraries);
+    if (resolvedPoms != null) {
+      resolvedPoms.clear();
+    }
+    compileOnlyLibraries.clear();
+
+    resolvedPoms = mResolver.resolveDependencies(declaredRuntimeOnlyDependencies);
+    List<Library> runtimeOnlyLibraries = getFiles(resolvedPoms, logger);
+    // checkLibraries(project, root, idea, logger, runtimeOnlyLibraries);
+    if (resolvedPoms != null) {
+      resolvedPoms.clear();
+    }
+    runtimeOnlyLibraries.clear();
   }
 
   private void checkLibraries(

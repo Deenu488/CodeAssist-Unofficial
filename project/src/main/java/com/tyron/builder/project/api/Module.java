@@ -19,13 +19,13 @@ public interface Module extends UserDataHolderEx, CacheHolder {
 
   File getSettingsGradleFile();
 
-  File getRootProject();
+  File getProjectDir();
 
   String getPlugins();
 
-  List<String> getImplementationProjects();
+  List<String> getProjects();
 
-  List<String> getImplementationProjects(File file);
+  List<String> getProjects(File file);
 
   List<String> getIncludedProjects();
 

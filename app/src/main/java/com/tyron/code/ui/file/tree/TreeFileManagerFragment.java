@@ -248,7 +248,7 @@ public class TreeFileManagerFragment extends Fragment {
                   } else {
 
                     boolean isLibraryExists = false;
-                    List<String> implementationProjects = javaModule.getImplementationProjects();
+                    List<String> implementationProjects = javaModule.getProjects();
 
                     for (String implementationProject : implementationProjects) {
                       if (implementationProject.contains(name)) {
@@ -284,7 +284,7 @@ public class TreeFileManagerFragment extends Fragment {
                     button.setEnabled(false);
                   } else {
                     boolean isLibraryExists = false;
-                    List<String> implementationProjects = javaModule.getImplementationProjects();
+                    List<String> implementationProjects = javaModule.getProjects();
 
                     for (String implementationProject : implementationProjects) {
                       if (implementationProject.contains(name)) {
@@ -313,9 +313,9 @@ public class TreeFileManagerFragment extends Fragment {
                 String name = nameEditText.getText().toString();
                 String packageName = packageNameEditText.getText().toString();
                 addLibrary(javaModule.getGradleFile(), name);
-                File root = new File(module.getRootProject(), "settings.gradle");
+				  File root = new File(module.getProjectDir(), "settings.gradle");
                 addToInclude(root, name);
-                createAndroidLibrary(module.getRootProject(), packageName, name);
+				  createAndroidLibrary(module.getProjectDir(), packageName, name);
                 dialog.dismiss();
               });
         });
@@ -463,7 +463,7 @@ public class TreeFileManagerFragment extends Fragment {
 
     projectPath.setText(pr);
 
-    List<String> implementationProjects = javaModule.getImplementationProjects();
+    List<String> implementationProjects = javaModule.getProjects();
     List<String> included = javaModule.getIncludedProjects();
 
     String implementationText =

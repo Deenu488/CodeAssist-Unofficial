@@ -29,10 +29,6 @@ public class ModuleImpl implements Module {
   private final File mRoot;
   private ModuleSettings myModuleSettings;
   private FileManager mFileManager;
-  private static final Pattern PLUGINS_ID =
-      Pattern.compile("\\s*(id)\\s*(')([a-zA-Z0-9.'/-:\\-]+)(')");
-  private static final Pattern PLUGINS_ID_QUOT =
-      Pattern.compile("\\s*(id)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
 
   public ModuleImpl(File root) {
     mRoot = root;
@@ -41,7 +37,7 @@ public class ModuleImpl implements Module {
 
   @Override
   public void open() throws IOException {
-    File codeassist = new File(getRootProject(), ".idea");
+    File codeassist = new File(getProjectDir(), ".idea");
     if (!codeassist.exists()) {
       if (!codeassist.mkdirs()) {}
     }
@@ -89,7 +85,7 @@ public class ModuleImpl implements Module {
   }
 
   @Override
-  public File getRootProject() {
+  public File getProjectDir() {
     return mRoot.getParentFile();
   }
 
@@ -101,7 +97,7 @@ public class ModuleImpl implements Module {
 
   @Override
   public File getSettingsGradleFile() {
-    File settingsGradleFile = new File(getRootProject(), "settings.gradle");
+    File settingsGradleFile = new File(getProjectDir(), "settings.gradle");
     return settingsGradleFile;
   }
 
@@ -111,13 +107,13 @@ public class ModuleImpl implements Module {
   }
 
   @Override
-  public List<String> getImplementationProjects() {
-    return parseImplementationProjects(getGradleFile());
+  public List<String> getProjects() {
+    return parseProjects(getGradleFile());
   }
 
   @Override
-  public List<String> getImplementationProjects(File gradleFile) {
-    return parseImplementationProjects(gradleFile);
+  public List<String> getProjects(File gradleFile) {
+    return parseProjects(gradleFile);
   }
 
   @Override
@@ -230,7 +226,8 @@ public class ModuleImpl implements Module {
   }
 
   private String getPlugins(String readString) {
-    Pattern APPLY_PLUGINS = Pattern.compile("\\s*apply\\s+plugin:\\s+[\"'](.+?)[\"']");
+    Pattern APPLY_PLUGIN = Pattern.compile("\\s*apply\\s+plugin:\\s+[\"'](.+?)[\"']");
+    Pattern PLUGINS_ID = Pattern.compile("\\s*(id)\\s*(\"')([a-zA-Z0-9.'/-:\\-]+)(\"')");
 
     readString = readString.replaceAll("\\s*//.*", "");
     Matcher matcher = PLUGINS_ID.matcher(readString);
@@ -241,14 +238,8 @@ public class ModuleImpl implements Module {
         plugins.add(String.valueOf(declaration));
       }
     }
-    matcher = PLUGINS_ID_QUOT.matcher(readString);
-    while (matcher.find()) {
-      String declaration = matcher.group(3);
-      if (declaration != null) {
-        plugins.add(String.valueOf(declaration));
-      }
-    }
-    matcher = APPLY_PLUGINS.matcher(readString);
+
+    matcher = APPLY_PLUGIN.matcher(readString);
     while (matcher.find()) {
       String declaration = matcher.group(1);
       if (declaration != null) {
@@ -258,16 +249,16 @@ public class ModuleImpl implements Module {
     return plugins.toString().replace("[", "").replace("]", "");
   }
 
-  private List<String> parseImplementationProjects(File gradleFile) {
+  private List<String> parseProjects(File gradleFile) {
     try {
       String readString = FileUtils.readFileToString(gradleFile, Charset.defaultCharset());
-      return parseImplementationProjects(readString);
+      return parseProjects(readString);
     } catch (IOException e) {
     }
     return null;
   }
 
-  public static List<String> parseImplementationProjects(String readString) throws IOException {
+  public static List<String> parseProjects(String readString) throws IOException {
     final Pattern PROJECT_PATTERN =
         Pattern.compile("implementation project\\(path:\\s*['\"]([^'\"]+)['\"]\\)");
     final Pattern PROJECT_PATTERN_QUOT =
