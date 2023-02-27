@@ -1,7 +1,6 @@
 package com.tyron.builder.compiler;
 
 import androidx.annotation.NonNull;
-import com.tyron.builder.compiler.builder.JavaLibraryBuilder;
 import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.log.ILogger;
 import com.tyron.builder.project.Project;

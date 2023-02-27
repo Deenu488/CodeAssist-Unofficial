@@ -464,6 +464,7 @@ public class ModuleImpl implements Module {
       String readString, String scope) throws IOException {
     Pattern pattern =
         Pattern.compile(scope + " fileTree\\(dir:\\s*'([^']*)',\\s*include:\\s*\\[([^\\]]*)\\]\\)");
+    readString = readString.replaceAll("\\s*//.*", "");
     Matcher matcher = pattern.matcher(readString);
     if (matcher.find()) {
       String dirValue = matcher.group(1);
@@ -493,16 +494,19 @@ public class ModuleImpl implements Module {
   public static AbstractMap.SimpleEntry<ArrayList<String>, ArrayList<String>>
       parseListDirAndIncludes(String readString, String scope) throws IOException {
     Pattern pattern = Pattern.compile(scope + "\\s+files\\(([^)]+)\\)");
+    readString = readString.replaceAll("\\s*//.*", "");
+    ArrayList<String> dirValues = new ArrayList<>();
+    ArrayList<String> includeValues = new ArrayList<>();
     Matcher matcher = pattern.matcher(readString);
-    if (matcher.find()) {
+    while (matcher.find()) {
       String[] filepaths = matcher.group(1).split(",");
-      ArrayList<String> dirValues = new ArrayList<>();
-      ArrayList<String> includeValues = new ArrayList<>();
       for (String filepath : filepaths) {
         String trimmedPath = filepath.trim().replaceAll("[\"']", "");
         dirValues.add(new File(trimmedPath).getParent());
         includeValues.add(new File(trimmedPath).getName());
       }
+    }
+    if (!dirValues.isEmpty() && !includeValues.isEmpty()) {
       return new AbstractMap.SimpleEntry<ArrayList<String>, ArrayList<String>>(
           dirValues, includeValues);
     }
