@@ -27,6 +27,10 @@ public interface Module extends UserDataHolderEx, CacheHolder {
 
   List<String> getProjects(File file);
 
+  List<String> getAllProjects();
+
+  List<String> getAllProjects(File file);
+
   List<String> getIncludedProjects();
 
   default String getName() {

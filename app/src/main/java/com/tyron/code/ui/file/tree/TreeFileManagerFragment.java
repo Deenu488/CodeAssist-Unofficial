@@ -313,9 +313,9 @@ public class TreeFileManagerFragment extends Fragment {
                 String name = nameEditText.getText().toString();
                 String packageName = packageNameEditText.getText().toString();
                 addLibrary(javaModule.getGradleFile(), name);
-				  File root = new File(module.getProjectDir(), "settings.gradle");
+                File root = new File(module.getProjectDir(), "settings.gradle");
                 addToInclude(root, name);
-				  createAndroidLibrary(module.getProjectDir(), packageName, name);
+                createAndroidLibrary(module.getProjectDir(), packageName, name);
                 dialog.dismiss();
               });
         });

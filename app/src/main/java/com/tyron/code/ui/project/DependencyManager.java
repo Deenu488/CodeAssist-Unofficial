@@ -58,7 +58,7 @@ public class DependencyManager {
   }
 
   public static List<Repository> getFromModule(JavaModule module) throws IOException {
-	  File repositoriesFile = new File(module.getProjectDir(), ".idea/" + REPOSITORIES_JSON);
+    File repositoriesFile = new File(module.getProjectDir(), ".idea/" + REPOSITORIES_JSON);
     List<RepositoryModel> repositoryModels = parseFile(repositoriesFile);
     List<Repository> repositories = new ArrayList<>();
     for (RepositoryModel model : repositoryModels) {
@@ -131,13 +131,13 @@ public class DependencyManager {
         continue;
       }
       resolvedProjects.add(include);
-		File gradleFile = new File(project.getProjectDir(), include + "/build.gradle");
+      File gradleFile = new File(project.getProjectDir(), include + "/build.gradle");
       if (gradleFile.exists()) {
-        List<String> includedInBuildGradle = project.getProjects(gradleFile);
+        List<String> includedInBuildGradle = project.getAllProjects(gradleFile);
         if (!includedInBuildGradle.isEmpty()) {
           projects.addAll(includedInBuildGradle);
         }
-		  File includeName = new File(project.getProjectDir(), include);
+        File includeName = new File(project.getProjectDir(), include);
         String root = include.replaceFirst("/", "").replaceAll("/", ":");
         logger.debug("> Task :" + root + ":" + "resolvingDependencies");
         try {
@@ -182,7 +182,7 @@ public class DependencyManager {
       resolvedPoms.clear();
     }
 
-		  File idea = new File(project.getProjectDir(), ".idea");
+    File idea = new File(project.getProjectDir(), ".idea");
     listener.onTaskStarted("Downloading dependencies");
     logger.debug("> Task :" + name + ":" + "downloadingDependencies");
 

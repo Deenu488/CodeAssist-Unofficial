@@ -49,15 +49,15 @@ public class CheckLibrariesTask extends Task<JavaModule> {
   public void run() throws IOException, CompilationFailedException {
 
     List<String> included = getModule().getIncludedProjects();
-	  File idea = new File(getModule().getProjectDir(), ".idea");
+    File idea = new File(getModule().getProjectDir(), ".idea");
 
     included.forEach(
         include -> {
           String root = include.replaceFirst("/", "").replaceAll("/", ":");
           getLogger().debug("> Task :" + root + ":" + "checkingLibraries");
           try {
-			  File gradleFile = new File(getModule().getProjectDir(), include + "/build.gradle");
-			  File includeName = new File(getModule().getProjectDir(), include);
+            File gradleFile = new File(getModule().getProjectDir(), include + "/build.gradle");
+            File includeName = new File(getModule().getProjectDir(), include);
             if (gradleFile.exists()) {
               checkLibraries(getModule(), includeName, idea, getLogger(), Collections.emptyList());
             }

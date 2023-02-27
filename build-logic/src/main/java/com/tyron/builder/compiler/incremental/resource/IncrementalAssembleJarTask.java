@@ -56,20 +56,19 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
   @Override
   public void run() throws IOException, CompilationFailedException {
 
-    List<String> implementationProjects =
-        getModule().getProjects(getModule().getGradleFile());
+    List<String> implementationProjects = getModule().getProjects(getModule().getGradleFile());
 
     for (String implementationProject : implementationProjects) {
-		File java = new File(getModule().getProjectDir(), implementationProject + "/src/main/java");
+      File java = new File(getModule().getProjectDir(), implementationProject + "/src/main/java");
       File classes =
-			new File(getModule().getProjectDir(), implementationProject + "/build/bin/java/classes");
+          new File(getModule().getProjectDir(), implementationProject + "/build/bin/java/classes");
       File out =
           new File(
-			getModule().getProjectDir(),
+              getModule().getProjectDir(),
               implementationProject + "/build/outputs/jar/" + implementationProject + ".jar");
-		File build = new File(getModule().getProjectDir(), implementationProject + "/build");
+      File build = new File(getModule().getProjectDir(), implementationProject + "/build");
       File jar =
-			new File(getModule().getProjectDir(), implementationProject + "/build/outputs/jar/");
+          new File(getModule().getProjectDir(), implementationProject + "/build/outputs/jar/");
 
       if (classes.exists()) {
         FileUtils.deleteDirectory(classes);
@@ -110,7 +109,7 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
       }
     }
 
-		  File res = new File(getModule().getProjectDir(), name + "/src/main/res");
+    File res = new File(getModule().getProjectDir(), name + "/src/main/res");
     if (res.exists()) {
       FileUtils.deleteDirectory(out);
       return;
@@ -131,7 +130,7 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
       }
     }
 
-		  File buildLibs = new File(getModule().getProjectDir(), name + "/build/libs");
+    File buildLibs = new File(getModule().getProjectDir(), name + "/build/libs");
     List<File> classpath = new ArrayList<>(getJarFiles(buildLibs));
 
     List<JavaFileObject> javaFileObjects = new ArrayList<>();

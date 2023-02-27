@@ -117,6 +117,16 @@ public class ModuleImpl implements Module {
   }
 
   @Override
+  public List<String> getAllProjects() {
+    return parseAllProjects(getGradleFile());
+  }
+
+  @Override
+  public List<String> getAllProjects(File gradleFile) {
+    return parseAllProjects(gradleFile);
+  }
+
+  @Override
   public List<String> getIncludedProjects() {
     return parseIncludedProjects(getSettingsGradleFile());
   }
@@ -283,6 +293,110 @@ public class ModuleImpl implements Module {
         projects.add(declaration);
       }
     }
+    return projects;
+  }
+
+  private List<String> parseAllProjects(File gradleFile) {
+    try {
+      String readString = FileUtils.readFileToString(gradleFile, Charset.defaultCharset());
+      return parseAllProjects(readString);
+    } catch (IOException e) {
+    }
+    return null;
+  }
+
+  public static List<String> parseAllProjects(String readString) throws IOException {
+    final Pattern IMPLEMENTATION_PROJECT_PATH =
+        Pattern.compile("implementation project\\(path:\\s*['\"]([^'\"]+)['\"]\\)");
+    final Pattern IMPLEMENTATION_PROJECT =
+        Pattern.compile("implementation project\\(\\s*['\"]([^'\"]+)['\"]\\)");
+    final Pattern API_PROJECT_PATH =
+        Pattern.compile("api project\\(path:\\s*['\"]([^'\"]+)['\"]\\)");
+    final Pattern API_PROJECT = Pattern.compile("api project\\(\\s*['\"]([^'\"]+)['\"]\\)");
+    final Pattern COMPILE_ONLY_PROJECT_PATH =
+        Pattern.compile("compileOnly project\\(path:\\s*['\"]([^'\"]+)['\"]\\)");
+    final Pattern COMPILE_ONLY_PROJECT =
+        Pattern.compile("compileOnly project\\(\\s*['\"]([^'\"]+)['\"]\\)");
+    final Pattern RUNTIME_ONLY_PROJECT_PATH =
+        Pattern.compile("runtimeOnly project\\(path:\\s*['\"]([^'\"]+)['\"]\\)");
+    final Pattern RUNTIME_ONLY_PROJECT =
+        Pattern.compile("runtimeOnly project\\(\\s*['\"]([^'\"]+)['\"]\\)");
+
+    readString = readString.replaceAll("\\s*//.*", "");
+    List<String> projects = new ArrayList<>();
+
+    Matcher matcher = IMPLEMENTATION_PROJECT_PATH.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(1);
+      if (declaration != null) {
+        declaration = declaration.replaceAll(":", "/");
+        projects.add(declaration);
+      }
+    }
+
+    matcher = IMPLEMENTATION_PROJECT.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(1);
+      if (declaration != null) {
+        declaration = declaration.replaceAll(":", "/");
+        projects.add(declaration);
+      }
+    }
+
+    matcher = API_PROJECT_PATH.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(1);
+      if (declaration != null) {
+        declaration = declaration.replaceAll(":", "/");
+        projects.add(declaration);
+      }
+    }
+
+    matcher = API_PROJECT.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(1);
+      if (declaration != null) {
+        declaration = declaration.replaceAll(":", "/");
+        projects.add(declaration);
+      }
+    }
+
+    matcher = COMPILE_ONLY_PROJECT_PATH.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(1);
+      if (declaration != null) {
+        declaration = declaration.replaceAll(":", "/");
+        projects.add(declaration);
+      }
+    }
+
+    matcher = COMPILE_ONLY_PROJECT.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(1);
+      if (declaration != null) {
+        declaration = declaration.replaceAll(":", "/");
+        projects.add(declaration);
+      }
+    }
+
+    matcher = RUNTIME_ONLY_PROJECT_PATH.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(1);
+      if (declaration != null) {
+        declaration = declaration.replaceAll(":", "/");
+        projects.add(declaration);
+      }
+    }
+
+    matcher = RUNTIME_ONLY_PROJECT.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(1);
+      if (declaration != null) {
+        declaration = declaration.replaceAll(":", "/");
+        projects.add(declaration);
+      }
+    }
+
     return projects;
   }
 
