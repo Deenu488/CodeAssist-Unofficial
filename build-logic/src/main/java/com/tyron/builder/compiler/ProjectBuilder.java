@@ -39,7 +39,7 @@ public class ProjectBuilder {
       String moduleType = module.getPlugins();
 
       if (moduleType.contains("java-library")) {
-        builder = new JavaLibraryBuilder(mProject, (JavaModule) module, mLogger);
+        builder = new JarBuilder(mProject, (JavaModule) module, mLogger);
       } else if (moduleType.contains("com.android.application")) {
         if (type == BuildType.AAB) {
           builder = new AndroidAppBundleBuilder(mProject, androidModule, mLogger);

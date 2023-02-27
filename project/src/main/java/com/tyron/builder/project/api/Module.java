@@ -39,6 +39,12 @@ public interface Module extends UserDataHolderEx, CacheHolder {
 
   AbstractMap.SimpleEntry<String, ArrayList<String>> extractDirAndIncludes(File file, String scope);
 
+  AbstractMap.SimpleEntry<ArrayList<String>, ArrayList<String>> extractListDirAndIncludes(
+      String scope);
+
+  AbstractMap.SimpleEntry<ArrayList<String>, ArrayList<String>> extractListDirAndIncludes(
+      File file, String scope);
+
   default String getName() {
     return getRootFile().getName();
   }

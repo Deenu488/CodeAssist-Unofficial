@@ -1,5 +1,7 @@
 package com.tyron.resolver;
 
+import java.io.IOException;
+
 public enum ScopeType {
   API("api"),
   IMPLEMENTATION("implementation"),
@@ -22,6 +24,10 @@ public enum ScopeType {
         return scopeType;
       }
     }
-    throw new IllegalArgumentException("Unknown scope type string value: " + stringValue);
+    try {
+      throw new IOException("Unknown scope type string value: " + stringValue);
+    } catch (IOException e) {
+    }
+    return null;
   }
 }

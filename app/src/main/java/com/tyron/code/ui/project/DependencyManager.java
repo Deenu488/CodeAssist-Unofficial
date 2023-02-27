@@ -29,7 +29,9 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -188,7 +190,10 @@ public class DependencyManager {
 
     resolvedPoms = mResolver.resolveDependencies(declaredImplementationDependencies);
     List<Library> implementationLibraries = getFiles(resolvedPoms, logger);
-    checkLibraries(project, root, idea, logger, implementationLibraries);
+    ScopeType implementation = ScopeType.IMPLEMENTATION;
+    String scopeTypeImplementation = implementation.getStringValue();
+    checkImplementationLibraries(
+        project, root, idea, logger, implementationLibraries, gradleFile, scopeTypeImplementation);
     if (resolvedPoms != null) {
       resolvedPoms.clear();
     }
@@ -196,7 +201,9 @@ public class DependencyManager {
 
     resolvedPoms = mResolver.resolveDependencies(declaredApiDependencies);
     List<Library> apiLibraries = getFiles(resolvedPoms, logger);
-    //  checkLibraries(project, root, idea, logger, apiLibraries);
+    ScopeType api = ScopeType.API;
+    String scopeTypeApi = api.getStringValue();
+    // checkApiLibraries(project, root, idea, logger, apiLibraries, scopeTypeApi);
     if (resolvedPoms != null) {
       resolvedPoms.clear();
     }
@@ -204,7 +211,10 @@ public class DependencyManager {
 
     resolvedPoms = mResolver.resolveDependencies(declaredCompileOnlyDependencies);
     List<Library> compileOnlyLibraries = getFiles(resolvedPoms, logger);
-    //  checkLibraries(project, root, idea, logger, compileOnlyLibraries);
+    ScopeType compileOnly = ScopeType.COMPILE_ONLY;
+    String scopeTypeCompileOnly = compileOnly.getStringValue();
+    // checkCompileOnlyLibraries(project, root, idea, logger, compileOnlyLibraries,
+    // scopeTypeCompileOnly);
     if (resolvedPoms != null) {
       resolvedPoms.clear();
     }
@@ -212,118 +222,59 @@ public class DependencyManager {
 
     resolvedPoms = mResolver.resolveDependencies(declaredRuntimeOnlyDependencies);
     List<Library> runtimeOnlyLibraries = getFiles(resolvedPoms, logger);
-    // checkLibraries(project, root, idea, logger, runtimeOnlyLibraries);
+    ScopeType runtimeOnly = ScopeType.RUNTIME_ONLY;
+    String scopeTypeRuntimeOnly = runtimeOnly.getStringValue();
+    // checkRuntimeOnlyLibraries(project, root, idea, logger, runtimeOnlyLibraries,
+    // scopeTypeRuntimeOnly);
     if (resolvedPoms != null) {
       resolvedPoms.clear();
     }
     runtimeOnlyLibraries.clear();
   }
 
-  private void checkLibraries(
-      JavaModule project, File root, File idea, ILogger logger, List<Library> newLibraries)
-      throws IOException {
-    Set<Library> libraries = new HashSet<>(newLibraries);
-
-    Map<String, Library> fileLibsHashes = new HashMap<>();
-    File rootLibs = new File(root, "libs");
-    File[] fileLibraries =
-        rootLibs.listFiles(c -> c.getName().endsWith(".aar") || c.getName().endsWith(".jar"));
-    if (fileLibraries != null) {
-      for (File fileLibrary : fileLibraries) {
-        try {
-          ZipFile zipFile = new ZipFile(fileLibrary);
-          Library library = new Library();
-          library.setSourceFile(fileLibrary);
-          fileLibsHashes.put(AndroidUtilities.calculateMD5(fileLibrary), library);
-        } catch (IOException e) {
-          String message = "File " + fileLibrary + " is corrupt! Ignoring.";
-          logger.warning(message);
-        }
-      }
-    }
-
-    ModuleSettings myModuleSettings =
-        new ModuleSettings(new File(idea, root.getName() + "_libraries.json"));
-
-    String librariesString = myModuleSettings.getString("libraries", "[]");
-    try {
-      List<Library> parsedLibraries =
-          new Gson().fromJson(librariesString, new TypeToken<List<Library>>() {}.getType());
-      if (parsedLibraries != null) {
-        for (Library parsedLibrary : parsedLibraries) {
-          if (!libraries.contains(parsedLibrary)) {
-            Log.d("LibraryCheck", "Removed library" + parsedLibrary);
-          } else {
-            libraries.add(parsedLibrary);
-          }
-        }
-      }
-    } catch (Exception ignore) {
-
-    }
-
-    Map<String, Library> md5Map = new HashMap<>();
-    libraries.forEach(it -> md5Map.put(AndroidUtilities.calculateMD5(it.getSourceFile()), it));
-    File buildLibs = new File(root, "build/libs");
-    if (!buildLibs.exists()) {
-      if (!buildLibs.mkdirs()) {}
-    }
-    File[] buildLibraryDirs = buildLibs.listFiles(File::isDirectory);
-    if (buildLibraryDirs != null) {
-      for (File libraryDir : buildLibraryDirs) {
-        String md5Hash = libraryDir.getName();
-        if (!md5Map.containsKey(md5Hash) && !fileLibsHashes.containsKey(md5Hash)) {
-          FileUtils.deleteDirectory(libraryDir);
-          Log.d("LibraryCheck", "Deleting contents of " + md5Hash);
-        }
-      }
-    }
-
-    saveLibraryToProject(project, root, idea, md5Map, fileLibsHashes);
-    md5Map.clear();
-    fileLibsHashes.clear();
-  }
-
-  private void saveLibraryToProject(
-      Module module,
+  private void checkImplementationLibraries(
+      JavaModule project,
       File root,
       File idea,
-      Map<String, Library> libraries,
-      Map<String, Library> fileLibraries)
+      ILogger logger,
+      List<Library> newLibraries,
+      File gradleFile,
+      String scope)
       throws IOException {
-    Map<String, Library> combined = new HashMap<>();
-    combined.putAll(libraries);
-    combined.putAll(fileLibraries);
 
-    if (module instanceof JavaModule) {
-      ((JavaModule) module).putLibraryHashes(combined);
-    }
+    Set<Library> libraries = new HashSet<>(newLibraries);
+    Map<String, Library> fileLibsHashes = new HashMap<>();
+    Map<String, Library> md5Map = new HashMap<>();
 
-    for (Map.Entry<String, Library> entry : combined.entrySet()) {
-      String hash = entry.getKey();
-      Library library = entry.getValue();
-
-      File libraryDir = new File(root, "build/libs/" + hash);
-      if (!libraryDir.exists()) {
-        libraryDir.mkdir();
-      } else {
-        continue;
-      }
-
-      if (library.getSourceFile().getName().endsWith(".jar")) {
-        FileUtils.copyFileToDirectory(library.getSourceFile(), libraryDir);
-
-        File file = new File(libraryDir, library.getSourceFile().getName());
-        file.renameTo(new File(libraryDir, "classes.jar"));
-      } else if (library.getSourceFile().getName().endsWith(".aar")) {
-        Decompress.unzip(library.getSourceFile().getAbsolutePath(), libraryDir.getAbsolutePath());
+    AbstractMap.SimpleEntry<ArrayList<String>, ArrayList<String>> result =
+        project.extractListDirAndIncludes(gradleFile, scope);
+    if (result != null) {
+      ArrayList<String> dirValue = result.getKey();
+      ArrayList<String> includeValues = result.getValue();
+      for (int i = 0; i < dirValue.size(); i++) {
+        String dir = dirValue.get(i);
+        String include = includeValues.get(i);
+        fileLibsHashes =
+            new HashMap<>(
+                checkFileLibraries(fileLibsHashes, logger, new File(root, dir), include, scope));
       }
     }
-    ModuleSettings myModuleSettings =
-        new ModuleSettings(new File(idea, root.getName() + "_libraries.json"));
-
-    String librariesString = new Gson().toJson(libraries.values());
-    myModuleSettings.edit().putString("libraries", librariesString).apply();
+    libraries =
+        new HashSet<>(
+            parseLibraries(libraries, new File(idea, root.getName() + "_libraries.json"), scope));
+    md5Map =
+        new HashMap<>(
+            checkLibraries(md5Map, libraries, fileLibsHashes, new File(root, "build/libs")));
+    saveLibraryToProject(
+        project,
+        new File(root, "build/libs"),
+        new File(idea, root.getName() + "_libraries.json"),
+        scope,
+        md5Map,
+        fileLibsHashes);
+    md5Map.clear();
+    fileLibsHashes.clear();
+    libraries.clear();
   }
 
   public List<Library> getFiles(List<Pom> resolvedPoms, ILogger logger) {
@@ -342,5 +293,108 @@ public class DependencyManager {
       }
     }
     return files;
+  }
+
+  public Map<String, Library> checkFileLibraries(
+      Map<String, Library> fileLibsHashes, ILogger logger, File dir, String include, String scope) {
+    try {
+      ZipFile zipFile = new ZipFile(new File(dir, include));
+      Library library = new Library();
+      library.setSourceFile(new File(dir, include));
+      fileLibsHashes.put(AndroidUtilities.calculateMD5(new File(dir, include)), library);
+    } catch (IOException e) {
+      String message = "File " + include + " is corrupt! Ignoring.";
+      logger.warning(message);
+    }
+    return fileLibsHashes;
+  }
+
+  public Set<Library> parseLibraries(Set<Library> libraries, File file, String scope) {
+    ModuleSettings myModuleSettings = new ModuleSettings(file);
+    String librariesString = myModuleSettings.getString(scope + "_libraries", "[]");
+    try {
+      List<Library> parsedLibraries =
+          new Gson().fromJson(librariesString, new TypeToken<List<Library>>() {}.getType());
+      if (parsedLibraries != null) {
+        for (Library parsedLibrary : parsedLibraries) {
+          if (!libraries.contains(parsedLibrary)) {
+            Log.d("LibraryCheck", "Removed library" + parsedLibrary);
+          } else {
+            libraries.add(parsedLibrary);
+          }
+        }
+      }
+    } catch (Exception ignore) {
+    }
+    return libraries;
+  }
+
+  public Map<String, Library> checkLibraries(
+      Map<String, Library> md5Map,
+      Set<Library> libraries,
+      Map<String, Library> fileLibsHashes,
+      File libs)
+      throws IOException {
+    libraries.forEach(it -> md5Map.put(AndroidUtilities.calculateMD5(it.getSourceFile()), it));
+
+    if (!libs.exists()) {
+      if (!libs.mkdirs()) {}
+    }
+    File[] buildLibraryDirs = libs.listFiles(File::isDirectory);
+    if (buildLibraryDirs != null) {
+      for (File libraryDir : buildLibraryDirs) {
+        String md5Hash = libraryDir.getName();
+        if (!md5Map.containsKey(md5Hash) && !fileLibsHashes.containsKey(md5Hash)) {
+          FileUtils.deleteDirectory(libraryDir);
+          Log.d("LibraryCheck", "Deleting contents of " + md5Hash);
+        }
+      }
+    }
+    return md5Map;
+  }
+
+  private void saveLibraryToProject(
+      Module module,
+      File libs,
+      File file,
+      String scope,
+      Map<String, Library> libraries,
+      Map<String, Library> fileLibraries)
+      throws IOException {
+    Map<String, Library> combined = new HashMap<>();
+    combined.putAll(libraries);
+    combined.putAll(fileLibraries);
+
+    if (module instanceof JavaModule) {
+      ((JavaModule) module).putLibraryHashes(combined);
+    }
+
+    for (Map.Entry<String, Library> entry : combined.entrySet()) {
+      String hash = entry.getKey();
+      Library library = entry.getValue();
+
+      File libraryDir = new File(libs, hash);
+      if (!libraryDir.exists()) {
+        libraryDir.mkdir();
+      } else {
+        continue;
+      }
+
+      if (library.getSourceFile().getName().endsWith(".jar")) {
+        FileUtils.copyFileToDirectory(library.getSourceFile(), libraryDir);
+
+        File jar = new File(libraryDir, library.getSourceFile().getName());
+        jar.renameTo(new File(libraryDir, "classes.jar"));
+      } else if (library.getSourceFile().getName().endsWith(".aar")) {
+        Decompress.unzip(library.getSourceFile().getAbsolutePath(), libraryDir.getAbsolutePath());
+      }
+    }
+    saveToGson(libraries.values(), file, scope);
+  }
+
+  private void saveToGson(Collection values, File file, String scope) {
+    ModuleSettings myModuleSettings = new ModuleSettings(file);
+    String librariesString = new Gson().toJson(values);
+    myModuleSettings.edit().putString(scope + "_libraries", librariesString).apply();
   }
 }

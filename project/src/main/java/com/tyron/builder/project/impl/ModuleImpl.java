@@ -145,6 +145,18 @@ public class ModuleImpl implements Module {
     return parseDirAndIncludes(gradleFile, scope);
   }
 
+  @Override
+  public AbstractMap.SimpleEntry<ArrayList<String>, ArrayList<String>> extractListDirAndIncludes(
+      String scope) {
+    return parseListDirAndIncludes(getGradleFile(), scope);
+  }
+
+  @Override
+  public AbstractMap.SimpleEntry<ArrayList<String>, ArrayList<String>> extractListDirAndIncludes(
+      File gradleFile, String scope) {
+    return parseListDirAndIncludes(gradleFile, scope);
+  }
+
   @Nullable
   @Override
   public <T> T getUserData(@NotNull Key<T> key) {
@@ -464,6 +476,35 @@ public class ModuleImpl implements Module {
         includeValues.set(i, includeValues.get(i).replace("*", " "));
       }
       return new AbstractMap.SimpleEntry<String, ArrayList<String>>(dirValue, includeValues);
+    }
+    return null;
+  }
+
+  public AbstractMap.SimpleEntry<ArrayList<String>, ArrayList<String>> parseListDirAndIncludes(
+      File file, String scope) {
+    try {
+      String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
+      return parseListDirAndIncludes(readString, scope);
+    } catch (IOException e) {
+    }
+    return null;
+  }
+
+  public static AbstractMap.SimpleEntry<ArrayList<String>, ArrayList<String>>
+      parseListDirAndIncludes(String readString, String scope) throws IOException {
+    Pattern pattern = Pattern.compile(scope + "\\s+files\\(([^)]+)\\)");
+    Matcher matcher = pattern.matcher(readString);
+    if (matcher.find()) {
+      String[] filepaths = matcher.group(1).split(",");
+      ArrayList<String> dirValues = new ArrayList<>();
+      ArrayList<String> includeValues = new ArrayList<>();
+      for (String filepath : filepaths) {
+        String trimmedPath = filepath.trim().replaceAll("[\"']", "");
+        dirValues.add(new File(trimmedPath).getParent());
+        includeValues.add(new File(trimmedPath).getName());
+      }
+      return new AbstractMap.SimpleEntry<ArrayList<String>, ArrayList<String>>(
+          dirValues, includeValues);
     }
     return null;
   }
