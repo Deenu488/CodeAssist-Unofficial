@@ -35,9 +35,10 @@ public interface Module extends UserDataHolderEx, CacheHolder {
 
   List<String> getIncludedProjects();
 
-  AbstractMap.SimpleEntry<String, ArrayList<String>> extractDirAndIncludes(String scope);
+  List<AbstractMap.SimpleEntry<String, ArrayList<String>>> extractDirAndIncludes(String scope);
 
-  AbstractMap.SimpleEntry<String, ArrayList<String>> extractDirAndIncludes(File file, String scope);
+  List<AbstractMap.SimpleEntry<String, ArrayList<String>>> extractDirAndIncludes(
+      File file, String scope);
 
   AbstractMap.SimpleEntry<ArrayList<String>, ArrayList<String>> extractListDirAndIncludes(
       String scope);

@@ -135,12 +135,13 @@ public class ModuleImpl implements Module {
   }
 
   @Override
-  public AbstractMap.SimpleEntry<String, ArrayList<String>> extractDirAndIncludes(String scope) {
+  public List<AbstractMap.SimpleEntry<String, ArrayList<String>>> extractDirAndIncludes(
+      String scope) {
     return parseDirAndIncludes(getGradleFile(), scope);
   }
 
   @Override
-  public AbstractMap.SimpleEntry<String, ArrayList<String>> extractDirAndIncludes(
+  public List<AbstractMap.SimpleEntry<String, ArrayList<String>>> extractDirAndIncludes(
       File gradleFile, String scope) {
     return parseDirAndIncludes(gradleFile, scope);
   }
@@ -450,7 +451,7 @@ public class ModuleImpl implements Module {
     return included;
   }
 
-  private AbstractMap.SimpleEntry<String, ArrayList<String>> parseDirAndIncludes(
+  private List<AbstractMap.SimpleEntry<String, ArrayList<String>>> parseDirAndIncludes(
       File file, String scope) {
     try {
       String readString = FileUtils.readFileToString(file, Charset.defaultCharset());
@@ -460,25 +461,23 @@ public class ModuleImpl implements Module {
     return null;
   }
 
-  public static AbstractMap.SimpleEntry<String, ArrayList<String>> parseDirAndIncludes(
+  public static List<AbstractMap.SimpleEntry<String, ArrayList<String>>> parseDirAndIncludes(
       String readString, String scope) throws IOException {
+    List<AbstractMap.SimpleEntry<String, ArrayList<String>>> results = new ArrayList<>();
     Pattern pattern =
         Pattern.compile(scope + " fileTree\\(dir:\\s*'([^']*)',\\s*include:\\s*\\[([^\\]]*)\\]\\)");
-    readString = readString.replaceAll("\\s*//.*", "");
     Matcher matcher = pattern.matcher(readString);
-    if (matcher.find()) {
+    while (matcher.find()) {
       String dirValue = matcher.group(1);
       ArrayList<String> includeValues =
           new ArrayList<String>(Arrays.asList(matcher.group(2).split(",\\s*")));
       for (int i = 0; i < includeValues.size(); i++) {
         includeValues.set(i, includeValues.get(i).trim().replace("'", ""));
-      }
-      for (int i = 0; i < includeValues.size(); i++) {
         includeValues.set(i, includeValues.get(i).replace("*", " "));
       }
-      return new AbstractMap.SimpleEntry<String, ArrayList<String>>(dirValue, includeValues);
+      results.add(new AbstractMap.SimpleEntry<String, ArrayList<String>>(dirValue, includeValues));
     }
-    return null;
+    return results;
   }
 
   public AbstractMap.SimpleEntry<ArrayList<String>, ArrayList<String>> parseListDirAndIncludes(

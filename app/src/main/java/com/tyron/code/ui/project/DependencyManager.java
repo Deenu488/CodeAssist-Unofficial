@@ -256,9 +256,22 @@ public class DependencyManager {
         String include = includeValues.get(i);
         fileLibsHashes =
             new HashMap<>(
-                checkFileLibraries(fileLibsHashes, logger, new File(root, dir), include, scope));
+                checkFilesLibraries(fileLibsHashes, logger, new File(root, dir), include, scope));
       }
     }
+
+    List<AbstractMap.SimpleEntry<String, ArrayList<String>>> results =
+        project.extractDirAndIncludes(gradleFile, scope);
+    if (results != null) {
+      for (AbstractMap.SimpleEntry<String, ArrayList<String>> entry : results) {
+        String dir = entry.getKey();
+        ArrayList<String> includes = entry.getValue();
+        fileLibsHashes =
+            new HashMap<>(
+                checkFileTreeLibraries(fileLibsHashes, logger, new File(root, dir), includes, scope));
+      }
+    }
+
     libraries =
         new HashSet<>(
             parseLibraries(libraries, new File(idea, root.getName() + "_libraries.json"), scope));
@@ -295,7 +308,7 @@ public class DependencyManager {
     return files;
   }
 
-  public Map<String, Library> checkFileLibraries(
+  public Map<String, Library> checkFilesLibraries(
       Map<String, Library> fileLibsHashes, ILogger logger, File dir, String include, String scope) {
     try {
       ZipFile zipFile = new ZipFile(new File(dir, include));
@@ -305,6 +318,31 @@ public class DependencyManager {
     } catch (IOException e) {
       String message = "File " + include + " is corrupt! Ignoring.";
       logger.warning(message);
+    }
+    return fileLibsHashes;
+  }
+
+  public Map<String, Library> checkFileTreeLibraries(
+      Map<String, Library> fileLibsHashes,
+      ILogger logger,
+      File dir,
+      ArrayList<String> includes,
+      String scope) {
+    for (String ext : includes) {
+      File[] fileLibraries = dir.listFiles(c -> c.getName().endsWith(ext));
+      if (fileLibraries != null) {
+        for (File fileLibrary : fileLibraries) {
+          try {
+            ZipFile zipFile = new ZipFile(fileLibrary);
+            Library library = new Library();
+            library.setSourceFile(fileLibrary);
+            fileLibsHashes.put(AndroidUtilities.calculateMD5(fileLibrary), library);
+          } catch (IOException e) {
+            String message = "File " + fileLibrary + " is corrupt! Ignoring.";
+            logger.warning(message);
+          }
+        }
+      }
     }
     return fileLibsHashes;
   }
