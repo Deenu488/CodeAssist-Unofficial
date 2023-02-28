@@ -34,8 +34,6 @@ dependencies {
 
     api 'com.android.tools:r8:4.0.48'
 
-
-
     api files (
             'libs/apksigner.jar'
     )

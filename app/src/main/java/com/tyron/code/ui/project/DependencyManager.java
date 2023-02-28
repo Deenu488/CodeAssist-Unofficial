@@ -213,20 +213,56 @@ public class DependencyManager {
     }
 
     checkLibraries(project, root, idea, logger, gradleFile, scopeTypeApi);
-	
-	ScopeType implementation = ScopeType.IMPLEMENTATION;
-	String scopeTypeImplementation = implementation.getStringValue();
 
-	if (!declaredImplementationDependencies.isEmpty()) {
-		resolvedImplementationPoms = mResolver.resolveDependencies(declaredImplementationDependencies);
-		List<Library> implementationLibraries = getFiles(resolvedImplementationPoms, logger);
-		checkDependencies(project, root, idea, logger, implementationLibraries, gradleFile, scopeTypeImplementation);
-		resolvedImplementationPoms.clear();
-		implementationLibraries.clear();
-	}
-	
-	checkLibraries(project, root, idea, logger, gradleFile, scopeTypeImplementation);
-		  
+    ScopeType implementation = ScopeType.IMPLEMENTATION;
+    String scopeTypeImplementation = implementation.getStringValue();
+
+    if (!declaredImplementationDependencies.isEmpty()) {
+      resolvedImplementationPoms =
+          mResolver.resolveDependencies(declaredImplementationDependencies);
+      List<Library> implementationLibraries = getFiles(resolvedImplementationPoms, logger);
+      checkDependencies(
+          project,
+          root,
+          idea,
+          logger,
+          implementationLibraries,
+          gradleFile,
+          scopeTypeImplementation);
+      resolvedImplementationPoms.clear();
+      implementationLibraries.clear();
+    }
+
+    checkLibraries(project, root, idea, logger, gradleFile, scopeTypeImplementation);
+
+    ScopeType compileOnly = ScopeType.COMPILE_ONLY;
+    String scopeTypeCompileOnly = compileOnly.getStringValue();
+
+    if (!declaredCompileOnlyDependencies.isEmpty()) {
+      resolvedCompileOnlyPoms = mResolver.resolveDependencies(declaredCompileOnlyDependencies);
+      List<Library> compileOnlyLibraries = getFiles(resolvedCompileOnlyPoms, logger);
+      checkDependencies(
+          project, root, idea, logger, compileOnlyLibraries, gradleFile, scopeTypeCompileOnly);
+      resolvedCompileOnlyPoms.clear();
+      compileOnlyLibraries.clear();
+    }
+
+    checkLibraries(project, root, idea, logger, gradleFile, scopeTypeCompileOnly);
+
+    ScopeType runtimeOnly = ScopeType.RUNTIME_ONLY;
+    String scopeTypeRuntimeOnly = runtimeOnly.getStringValue();
+
+    if (!declaredRuntimeOnlyDependencies.isEmpty()) {
+      resolvedRuntimeOnlyPoms = mResolver.resolveDependencies(declaredRuntimeOnlyDependencies);
+      List<Library> runtimeOnlyLibraries = getFiles(resolvedRuntimeOnlyPoms, logger);
+      checkDependencies(
+          project, root, idea, logger, runtimeOnlyLibraries, gradleFile, scopeTypeRuntimeOnly);
+      resolvedRuntimeOnlyPoms.clear();
+      runtimeOnlyLibraries.clear();
+    }
+
+    checkLibraries(project, root, idea, logger, gradleFile, scopeTypeRuntimeOnly);
+
     listener.onTaskStarted("Checking libraries");
     logger.debug("> Task :" + name + ":" + "checkingLibraries");
   }
