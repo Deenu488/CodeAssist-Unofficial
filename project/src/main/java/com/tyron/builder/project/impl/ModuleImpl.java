@@ -466,6 +466,7 @@ public class ModuleImpl implements Module {
     List<AbstractMap.SimpleEntry<String, ArrayList<String>>> results = new ArrayList<>();
     Pattern pattern =
         Pattern.compile(scope + " fileTree\\(dir:\\s*'([^']*)',\\s*include:\\s*\\[([^\\]]*)\\]\\)");
+    readString = readString.replaceAll("\\s*//.*", "");
     Matcher matcher = pattern.matcher(readString);
     while (matcher.find()) {
       String dirValue = matcher.group(1);
@@ -473,7 +474,7 @@ public class ModuleImpl implements Module {
           new ArrayList<String>(Arrays.asList(matcher.group(2).split(",\\s*")));
       for (int i = 0; i < includeValues.size(); i++) {
         includeValues.set(i, includeValues.get(i).trim().replace("'", ""));
-        includeValues.set(i, includeValues.get(i).replace("*", " "));
+        includeValues.set(i, includeValues.get(i).replace("*", ""));
       }
       results.add(new AbstractMap.SimpleEntry<String, ArrayList<String>>(dirValue, includeValues));
     }

@@ -268,7 +268,8 @@ public class DependencyManager {
         ArrayList<String> includes = entry.getValue();
         fileLibsHashes =
             new HashMap<>(
-                checkFileTreeLibraries(fileLibsHashes, logger, new File(root, dir), includes, scope));
+                checkFileTreeLibraries(
+                    fileLibsHashes, logger, new File(root, dir), includes, scope));
       }
     }
 
