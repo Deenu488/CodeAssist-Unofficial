@@ -465,7 +465,8 @@ public class ModuleImpl implements Module {
       String readString, String scope) throws IOException {
     List<AbstractMap.SimpleEntry<String, ArrayList<String>>> results = new ArrayList<>();
     Pattern pattern =
-        Pattern.compile(scope + " fileTree\\(dir:\\s*'([^']*)',\\s*include:\\s*\\[([^\\]]*)\\]\\)");
+        Pattern.compile(
+            scope + "\\s+fileTree\\(dir:\\s*'([^']*)',\\s*include:\\s*\\[([^\\]]*)\\]\\)");
     readString = readString.replaceAll("\\s*//.*", "");
     Matcher matcher = pattern.matcher(readString);
     while (matcher.find()) {
