@@ -64,7 +64,7 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
 
   public void run() throws IOException, CompilationFailedException {
     List<String> projects = new ArrayList<>();
-    projects.add(getModule().getRootFile().getName());
+    projects.addAll(getModule().getAllProjects(getModule().getGradleFile()));
     Set<String> resolvedProjects = new HashSet<>();
     while (!projects.isEmpty()) {
       String include = projects.remove(0);
@@ -112,11 +112,9 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
               compileJava(java, gen, classes, root);
             }
 
-            if (!root.equals(getModule().getRootFile().getName())) {
-              if (classes.exists()) {
-                getLogger().debug("> Task :" + root + ":" + "assembleAar");
-                assembleAar(classes, aar, build, root);
-              }
+            if (classes.exists()) {
+              getLogger().debug("> Task :" + root + ":" + "assembleAar");
+              assembleAar(classes, aar, build, root);
             }
           }
 

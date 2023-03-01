@@ -124,7 +124,7 @@ public class DependencyManager {
     logger.debug("> Configure project :" + project.getRootFile().getName());
 
     List<String> projects = new ArrayList<>();
-    projects.add(project.getRootFile().getName());
+    projects.addAll(project.getAllProjects(project.getGradleFile()));
     Set<String> resolvedProjects = new HashSet<>();
     while (!projects.isEmpty()) {
       String include = projects.remove(0);

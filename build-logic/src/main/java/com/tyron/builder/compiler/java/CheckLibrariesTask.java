@@ -52,7 +52,7 @@ public class CheckLibrariesTask extends Task<JavaModule> {
   public void run() throws IOException, CompilationFailedException {
 
     List<String> projects = new ArrayList<>();
-    projects.add(getModule().getRootFile().getName());
+    projects.addAll(getModule().getAllProjects(getModule().getGradleFile()));
     Set<String> resolvedProjects = new HashSet<>();
     while (!projects.isEmpty()) {
       String include = projects.remove(0);

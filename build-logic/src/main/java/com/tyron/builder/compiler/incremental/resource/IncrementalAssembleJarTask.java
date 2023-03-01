@@ -60,7 +60,7 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
   public void run() throws IOException, CompilationFailedException {
 
     List<String> projects = new ArrayList<>();
-    projects.add(getModule().getRootFile().getName());
+    projects.addAll(getModule().getAllProjects(getModule().getGradleFile()));
     Set<String> resolvedProjects = new HashSet<>();
     while (!projects.isEmpty()) {
       String include = projects.remove(0);
@@ -93,12 +93,11 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
           if (java.exists()) {
             compileJava(java, classes, root);
           }
-          if (!root.equals(getModule().getRootFile().getName())) {
-            if (classes.exists()) {
-              getLogger().debug("> Task :" + root + ":" + "assembleJar");
-              assembleJar(classes, out);
-            }
+          if (classes.exists()) {
+            getLogger().debug("> Task :" + root + ":" + "assembleJar");
+            assembleJar(classes, out);
           }
+
         } catch (IOException e) {
         }
       }
