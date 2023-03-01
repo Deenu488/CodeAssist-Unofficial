@@ -1,4 +1,4 @@
-package com.tyron.builder.compiler.java;
+package com.tyron.builder.compiler.jar;
 
 import com.tyron.builder.compiler.BuildType;
 import com.tyron.builder.compiler.Task;

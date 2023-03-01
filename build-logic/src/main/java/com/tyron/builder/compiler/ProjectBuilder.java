@@ -1,12 +1,12 @@
 package com.tyron.builder.compiler;
 
 import androidx.annotation.NonNull;
+import com.tyron.builder.compiler.builder.AndroidLibraryBuilder;
 import com.tyron.builder.compiler.builder.JavaLibraryBuilder;
 import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.log.ILogger;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
-import com.tyron.builder.project.api.JavaModule;
 import com.tyron.builder.project.api.Module;
 import java.io.IOException;
 import java.util.List;
@@ -39,7 +39,9 @@ public class ProjectBuilder {
       String moduleType = module.getPlugins();
 
       if (moduleType.contains("java-library")) {
-        builder = new JavaLibraryBuilder(mProject, (JavaModule) module, mLogger);
+        builder = new JavaLibraryBuilder(mProject, androidModule, mLogger);
+      } else if (moduleType.contains("com.android.library")) {
+        builder = new AndroidLibraryBuilder(mProject, androidModule, mLogger);
       } else if (moduleType.contains("com.android.application")) {
         if (type == BuildType.AAB) {
           builder = new AndroidAppBundleBuilder(mProject, androidModule, mLogger);

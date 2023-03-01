@@ -4,10 +4,10 @@ import com.tyron.builder.compiler.BuildType;
 import com.tyron.builder.compiler.BuilderImpl;
 import com.tyron.builder.compiler.CleanTask;
 import com.tyron.builder.compiler.Task;
+import com.tyron.builder.compiler.aar.BuildAarTask;
 import com.tyron.builder.compiler.incremental.java.IncrementalJavaTask;
 import com.tyron.builder.compiler.incremental.resource.IncrementalAssembleAarTask;
 import com.tyron.builder.compiler.incremental.resource.IncrementalAssembleJarTask;
-import com.tyron.builder.compiler.jar.BuildJarTask;
 import com.tyron.builder.compiler.java.CheckLibrariesTask;
 import com.tyron.builder.log.ILogger;
 import com.tyron.builder.project.Project;
@@ -15,9 +15,9 @@ import com.tyron.builder.project.api.AndroidModule;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JavaLibraryBuilder extends BuilderImpl<AndroidModule> {
+public class AndroidLibraryBuilder extends BuilderImpl<AndroidModule> {
 
-  public JavaLibraryBuilder(Project project, AndroidModule module, ILogger logger) {
+  public AndroidLibraryBuilder(Project project, AndroidModule module, ILogger logger) {
     super(project, module, logger);
   }
 
@@ -33,7 +33,7 @@ public class JavaLibraryBuilder extends BuilderImpl<AndroidModule> {
     tasks.add(new IncrementalAssembleAarTask(getProject(), module, getLogger()));
     tasks.add(new CheckLibrariesTask(getProject(), module, getLogger()));
     tasks.add(new IncrementalJavaTask(getProject(), module, getLogger()));
-    tasks.add(new BuildJarTask(getProject(), module, getLogger()));
+    tasks.add(new BuildAarTask(getProject(), module, getLogger()));
     return tasks;
   }
 }
