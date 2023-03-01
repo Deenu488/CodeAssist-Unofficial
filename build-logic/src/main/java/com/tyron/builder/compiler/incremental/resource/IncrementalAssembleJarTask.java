@@ -59,35 +59,46 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
   @Override
   public void run() throws IOException, CompilationFailedException {
 
-    List<String> implementationProjects = getModule().getProjects(getModule().getGradleFile());
-
-    for (String implementationProject : implementationProjects) {
-      File java = new File(getModule().getProjectDir(), implementationProject + "/src/main/java");
-      File classes =
-          new File(getModule().getProjectDir(), implementationProject + "/build/bin/java/classes");
-      File out =
-          new File(
-              getModule().getProjectDir(),
-              implementationProject + "/build/outputs/jar/" + implementationProject + ".jar");
-      File build = new File(getModule().getProjectDir(), implementationProject + "/build");
-      File jar =
-          new File(getModule().getProjectDir(), implementationProject + "/build/outputs/jar/");
-
-      if (classes.exists()) {
-        FileUtils.deleteDirectory(classes);
+    List<String> projects = new ArrayList<>();
+    projects.add(getModule().getRootFile().getName());
+    Set<String> resolvedProjects = new HashSet<>();
+    while (!projects.isEmpty()) {
+      String include = projects.remove(0);
+      if (resolvedProjects.contains(include)) {
+        continue;
       }
+      resolvedProjects.add(include);
+      File gradleFile = new File(getModule().getProjectDir(), include + "/build.gradle");
+      if (gradleFile.exists()) {
+        List<String> includedInBuildGradle = getModule().getAllProjects(gradleFile);
+        if (!includedInBuildGradle.isEmpty()) {
+          projects.addAll(includedInBuildGradle);
+        }
+        File includeName = new File(getModule().getProjectDir(), include);
+        String root = include.replaceFirst("/", "").replaceAll("/", ":");
+        try {
+          File java = new File(includeName + "/src/main/java");
+          File classes = new File(includeName + "/build/bin/java/classes");
+          File out = new File(includeName + "/build/outputs/jar/" + root + ".jar");
+          File jar = new File(includeName + "/build/outputs/jar/");
 
-      if (jar.exists()) {
-        FileUtils.deleteDirectory(jar);
-      }
-      String root = implementationProject.replaceFirst("/", "").replaceAll("/", ":");
+          if (classes.exists()) {
+            FileUtils.deleteDirectory(classes);
+          }
 
-      if (java.exists()) {
-        compileJava(java, classes, implementationProject);
-      }
-      if (classes.exists()) {
-        getLogger().debug("> Task :" + root + ":" + "assembleJar");
-        assembleJar(classes, out);
+          if (jar.exists()) {
+            FileUtils.deleteDirectory(jar);
+          }
+
+          if (java.exists()) {
+            compileJava(java, classes, root);
+          }
+          if (classes.exists()) {
+            getLogger().debug("> Task :" + root + ":" + "assembleJar");
+            assembleJar(classes, out);
+          }
+        } catch (IOException e) {
+        }
       }
     }
   }
