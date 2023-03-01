@@ -27,7 +27,6 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -186,11 +185,35 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
         mClassCache.remove(key.file, "class", "dex");
       }
     }
+    File api_files = new File(getModule().getProjectDir(), name + "/build/api_files/libs");
+    File api_libs = new File(getModule().getProjectDir(), name + "/build/api_libs");
 
-    File buildLibs = new File(getModule().getProjectDir(), name + "/build/libs");
+    File implementation_files =
+        new File(getModule().getProjectDir(), name + "/build/implementation_files/libs");
+    File implementation_libs =
+        new File(getModule().getProjectDir(), name + "/build/implementation_libs");
 
-    List<File> classpath = new ArrayList<>(getJarFiles(buildLibs));
+    File runtimeOnly_files =
+        new File(getModule().getProjectDir(), name + "/build/runtimeOnly_files/libs");
+    File runtimeOnly_libs = new File(getModule().getProjectDir(), name + "/build/runtimeOnly_libs");
 
+    File compileOnly_files =
+        new File(getModule().getProjectDir(), name + "/build/compileOnly_files/libs");
+    File compileOnly_libs = new File(getModule().getProjectDir(), name + "/build/compileOnly_libs");
+
+    List<File> compileClassPath = new ArrayList<>();
+    compileClassPath.addAll(getJarFiles(api_files));
+    compileClassPath.addAll(getJarFiles(api_libs));
+    compileClassPath.addAll(getJarFiles(implementation_files));
+    compileClassPath.addAll(getJarFiles(implementation_libs));
+    compileClassPath.addAll(getJarFiles(compileOnly_files));
+    compileClassPath.addAll(getJarFiles(compileOnly_libs));
+
+    List<File> runtimeClassPath = new ArrayList<>();
+    runtimeClassPath.addAll(getJarFiles(runtimeOnly_files));
+    runtimeClassPath.addAll(getJarFiles(runtimeOnly_libs));
+    runtimeClassPath.add(getModule().getBootstrapJarFile());
+    runtimeClassPath.add(getModule().getLambdaStubsJarFile());
     List<JavaFileObject> javaFileObjects = new ArrayList<>();
 
     mFilesToCompile.addAll(getJavaFiles(java));
@@ -235,10 +258,8 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
     standardJavaFileManager.setSymbolFileEnabled(false);
     standardJavaFileManager.setLocation(
         StandardLocation.CLASS_OUTPUT, Collections.singletonList(out));
-    standardJavaFileManager.setLocation(
-        StandardLocation.PLATFORM_CLASS_PATH,
-        Arrays.asList(getModule().getBootstrapJarFile(), getModule().getLambdaStubsJarFile()));
-    standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, classpath);
+    standardJavaFileManager.setLocation(StandardLocation.PLATFORM_CLASS_PATH, runtimeClassPath);
+    standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, compileClassPath);
     standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, mFilesToCompile);
 
     JavacTask task =

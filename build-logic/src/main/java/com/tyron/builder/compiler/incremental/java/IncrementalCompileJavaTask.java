@@ -19,12 +19,13 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.jar.JarFile;
+import java.util.zip.ZipException;
 import javax.tools.DiagnosticListener;
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
@@ -99,17 +100,40 @@ public class IncrementalCompileJavaTask extends Task<JavaModule> {
             diagnosticCollector, Locale.getDefault(), Charset.defaultCharset());
     standardJavaFileManager.setSymbolFileEnabled(false);
 
-    List<File> classpath = new ArrayList<>(getModule().getLibraries());
-    classpath.add(mOutputDir);
     File kotlinOutputDir = new File(getModule().getBuildDirectory(), "bin/kotlin/classes");
-    classpath.add(kotlinOutputDir);
+
+    File api_files = new File(getModule().getRootFile(), "/build/api_files/libs");
+    File api_libs = new File(getModule().getRootFile(), "/build/api_libs");
+
+    File implementation_files =
+        new File(getModule().getRootFile(), "/build/implementation_files/libs");
+    File implementation_libs = new File(getModule().getRootFile(), "/build/implementation_libs");
+
+    File runtimeOnly_files = new File(getModule().getRootFile(), "/build/runtimeOnly_files/libs");
+    File runtimeOnly_libs = new File(getModule().getRootFile(), "/build/runtimeOnly_libs");
+
+    File compileOnly_files = new File(getModule().getRootFile(), "/build/compileOnly_files/libs");
+    File compileOnly_libs = new File(getModule().getRootFile(), "/build/compileOnly_libs");
+
+    List<File> compileClassPath = new ArrayList<>();
+    compileClassPath.addAll(getJarFiles(api_files));
+    compileClassPath.addAll(getJarFiles(api_libs));
+    compileClassPath.addAll(getJarFiles(implementation_files));
+    compileClassPath.addAll(getJarFiles(implementation_libs));
+    compileClassPath.addAll(getJarFiles(compileOnly_files));
+    compileClassPath.addAll(getJarFiles(compileOnly_libs));
+    compileClassPath.addAll(getModule().getLibraries());
+
+    List<File> runtimeClassPath = new ArrayList<>();
+    runtimeClassPath.addAll(getJarFiles(runtimeOnly_files));
+    runtimeClassPath.addAll(getJarFiles(runtimeOnly_libs));
+    runtimeClassPath.add(getModule().getBootstrapJarFile());
+    runtimeClassPath.add(getModule().getLambdaStubsJarFile());
 
     standardJavaFileManager.setLocation(
         StandardLocation.CLASS_OUTPUT, Collections.singletonList(mOutputDir));
-    standardJavaFileManager.setLocation(
-        StandardLocation.PLATFORM_CLASS_PATH,
-        Arrays.asList(getModule().getBootstrapJarFile(), getModule().getLambdaStubsJarFile()));
-    standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, classpath);
+    standardJavaFileManager.setLocation(StandardLocation.PLATFORM_CLASS_PATH, runtimeClassPath);
+    standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, compileClassPath);
     standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, mFilesToCompile);
 
     List<JavaFileObject> javaFileObjects = new ArrayList<>();
@@ -164,6 +188,44 @@ public class IncrementalCompileJavaTask extends Task<JavaModule> {
     }
 
     return javaFiles;
+  }
+
+  public List<File> getJarFiles(File dir) {
+    List<File> jarFiles = new ArrayList<>();
+    File[] files = dir.listFiles();
+    if (files != null) {
+      for (File file : files) {
+        if (file.isFile() && file.getName().endsWith(".jar")) {
+          // Check if the JarFile is valid before adding it to the list
+          if (isJarFileValid(file)) {
+            jarFiles.add(file);
+          }
+        } else if (file.isDirectory()) {
+          // Recursively add JarFiles from subdirectories
+          jarFiles.addAll(getJarFiles(file));
+        }
+      }
+    }
+    return jarFiles;
+  }
+
+  public boolean isJarFileValid(File file) {
+    String message = "File " + file.getParentFile().getName() + " is corrupt! Ignoring.";
+    try {
+      // Try to open the JarFile
+      JarFile jarFile = new JarFile(file);
+      // If it opens successfully, close it and return true
+      jarFile.close();
+      return true;
+    } catch (ZipException e) {
+      // If the JarFile is invalid, it will throw a ZipException
+      getLogger().warning(message);
+      return false;
+    } catch (IOException e) {
+      // If there is some other error reading the JarFile, return false
+      getLogger().warning(message);
+      return false;
+    }
   }
 
   private void deleteAllFiles(File classFile, String ext) throws IOException {

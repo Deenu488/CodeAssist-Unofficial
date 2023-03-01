@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -148,8 +147,35 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
       }
     }
 
-    File buildLibs = new File(getModule().getProjectDir(), name + "/build/libs");
-    List<File> classpath = new ArrayList<>(getJarFiles(buildLibs));
+    File api_files = new File(getModule().getProjectDir(), name + "/build/api_files/libs");
+    File api_libs = new File(getModule().getProjectDir(), name + "/build/api_libs");
+
+    File implementation_files =
+        new File(getModule().getProjectDir(), name + "/build/implementation_files/libs");
+    File implementation_libs =
+        new File(getModule().getProjectDir(), name + "/build/implementation_libs");
+
+    File runtimeOnly_files =
+        new File(getModule().getProjectDir(), name + "/build/runtimeOnly_files/libs");
+    File runtimeOnly_libs = new File(getModule().getProjectDir(), name + "/build/runtimeOnly_libs");
+
+    File compileOnly_files =
+        new File(getModule().getProjectDir(), name + "/build/compileOnly_files/libs");
+    File compileOnly_libs = new File(getModule().getProjectDir(), name + "/build/compileOnly_libs");
+
+    List<File> compileClassPath = new ArrayList<>();
+    compileClassPath.addAll(getJarFiles(api_files));
+    compileClassPath.addAll(getJarFiles(api_libs));
+    compileClassPath.addAll(getJarFiles(implementation_files));
+    compileClassPath.addAll(getJarFiles(implementation_libs));
+    compileClassPath.addAll(getJarFiles(compileOnly_files));
+    compileClassPath.addAll(getJarFiles(compileOnly_libs));
+
+    List<File> runtimeClassPath = new ArrayList<>();
+    runtimeClassPath.addAll(getJarFiles(runtimeOnly_files));
+    runtimeClassPath.addAll(getJarFiles(runtimeOnly_libs));
+    runtimeClassPath.add(getModule().getBootstrapJarFile());
+    runtimeClassPath.add(getModule().getLambdaStubsJarFile());
 
     List<JavaFileObject> javaFileObjects = new ArrayList<>();
 
@@ -194,10 +220,8 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
     standardJavaFileManager.setSymbolFileEnabled(false);
     standardJavaFileManager.setLocation(
         StandardLocation.CLASS_OUTPUT, Collections.singletonList(out));
-    standardJavaFileManager.setLocation(
-        StandardLocation.PLATFORM_CLASS_PATH,
-        Arrays.asList(getModule().getBootstrapJarFile(), getModule().getLambdaStubsJarFile()));
-    standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, classpath);
+    standardJavaFileManager.setLocation(StandardLocation.PLATFORM_CLASS_PATH, runtimeClassPath);
+    standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, compileClassPath);
     standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, mFilesToCompile);
 
     JavacTask task =
