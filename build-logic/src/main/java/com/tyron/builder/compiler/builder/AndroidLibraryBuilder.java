@@ -6,6 +6,7 @@ import com.tyron.builder.compiler.CleanTask;
 import com.tyron.builder.compiler.Task;
 import com.tyron.builder.compiler.aar.BuildAarTask;
 import com.tyron.builder.compiler.incremental.java.IncrementalJavaTask;
+import com.tyron.builder.compiler.incremental.resource.IncrementalAapt2Task;
 import com.tyron.builder.compiler.incremental.resource.IncrementalAssembleAarTask;
 import com.tyron.builder.compiler.incremental.resource.IncrementalAssembleJarTask;
 import com.tyron.builder.compiler.java.CheckLibrariesTask;
@@ -32,6 +33,7 @@ public class AndroidLibraryBuilder extends BuilderImpl<AndroidModule> {
     tasks.add(new IncrementalAssembleJarTask(getProject(), module, getLogger()));
     tasks.add(new IncrementalAssembleAarTask(getProject(), module, getLogger()));
     tasks.add(new CheckLibrariesTask(getProject(), module, getLogger()));
+    tasks.add(new IncrementalAapt2Task(getProject(), module, logger, false));
     tasks.add(new IncrementalJavaTask(getProject(), module, getLogger()));
     tasks.add(new BuildAarTask(getProject(), module, getLogger()));
     return tasks;

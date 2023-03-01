@@ -250,9 +250,21 @@ public class JavaModuleImpl extends ModuleImpl implements JavaModule {
           .forEachRemaining(this::addJavaFile);
     }
 
-    File[] libraryDirectories = new File(getBuildDirectory(), "libs").listFiles(File::isDirectory);
-    if (libraryDirectories != null) {
-      for (File directory : libraryDirectories) {
+    File[] implementation_files =
+        new File(getBuildDirectory(), "implementation_files/libs").listFiles(File::isDirectory);
+    if (implementation_files != null) {
+      for (File directory : implementation_files) {
+        File check = new File(directory, "classes.jar");
+        if (check.exists()) {
+          addLibrary(check);
+        }
+      }
+    }
+
+    File[] implementation_libs =
+        new File(getBuildDirectory(), "implementation_libs").listFiles(File::isDirectory);
+    if (implementation_libs != null) {
+      for (File directory : implementation_libs) {
         File check = new File(directory, "classes.jar");
         if (check.exists()) {
           addLibrary(check);
