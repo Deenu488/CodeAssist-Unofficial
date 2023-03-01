@@ -264,13 +264,13 @@ public class ModuleImpl implements Module {
 
   private String getPlugins(String readString) {
     Pattern APPLY_PLUGIN = Pattern.compile("\\s*apply\\s+plugin:\\s+[\"'](.+?)[\"']");
-    Pattern PLUGINS_ID = Pattern.compile("\\s*(id)\\s*(\"')([a-zA-Z0-9.'/-:\\-]+)(\"')");
+    Pattern PLUGINS_ID = Pattern.compile("\\s*id\\s*[\"']([a-zA-Z0-9.'/-:\\-]+)[\"'].*");
 
     readString = readString.replaceAll("\\s*//.*", "");
     Matcher matcher = PLUGINS_ID.matcher(readString);
     List<String> plugins = new ArrayList<>();
     while (matcher.find()) {
-      String declaration = matcher.group(3);
+      String declaration = matcher.group(1);
       if (declaration != null) {
         plugins.add(String.valueOf(declaration));
       }
