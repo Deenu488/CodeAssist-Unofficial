@@ -123,6 +123,14 @@ public class DependencyManager {
     listener.onTaskStarted("Resolving dependencies");
     logger.debug("> Configure project :" + project.getRootFile().getName());
 
+    resolveMainDependency(
+        project,
+        project.getRootFile(),
+        listener,
+        logger,
+        project.getGradleFile(),
+        project.getRootFile().getName());
+
     List<String> projects = new ArrayList<>();
     projects.addAll(project.getAllProjects(project.getGradleFile()));
     Set<String> resolvedProjects = new HashSet<>();

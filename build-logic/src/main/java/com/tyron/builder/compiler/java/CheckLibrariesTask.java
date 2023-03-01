@@ -51,6 +51,13 @@ public class CheckLibrariesTask extends Task<JavaModule> {
   @Override
   public void run() throws IOException, CompilationFailedException {
 
+    checkLibraries(
+        getModule(),
+        getModule().getRootFile(),
+        getLogger(),
+        getModule().getGradleFile(),
+        getModule().getRootFile().getName());
+
     List<String> projects = new ArrayList<>();
     projects.addAll(getModule().getAllProjects(getModule().getGradleFile()));
     Set<String> resolvedProjects = new HashSet<>();
