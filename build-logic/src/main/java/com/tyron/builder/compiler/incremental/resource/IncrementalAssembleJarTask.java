@@ -176,6 +176,8 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
     runtimeClassPath.addAll(getJarFiles(runtimeOnly_libs));
     runtimeClassPath.add(getModule().getBootstrapJarFile());
     runtimeClassPath.add(getModule().getLambdaStubsJarFile());
+    runtimeClassPath.addAll(getJarFiles(api_files));
+    runtimeClassPath.addAll(getJarFiles(api_libs));
 
     List<JavaFileObject> javaFileObjects = new ArrayList<>();
 

@@ -129,6 +129,8 @@ public class IncrementalCompileJavaTask extends Task<JavaModule> {
     runtimeClassPath.addAll(getJarFiles(runtimeOnly_libs));
     runtimeClassPath.add(getModule().getBootstrapJarFile());
     runtimeClassPath.add(getModule().getLambdaStubsJarFile());
+    runtimeClassPath.addAll(getJarFiles(api_files));
+    runtimeClassPath.addAll(getJarFiles(api_libs));
 
     standardJavaFileManager.setLocation(
         StandardLocation.CLASS_OUTPUT, Collections.singletonList(mOutputDir));
