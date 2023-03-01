@@ -80,9 +80,9 @@ public class CheckLibrariesTask extends Task<JavaModule> {
   private void checkLibraries(
       JavaModule project, File root, ILogger logger, File gradleFile, String name)
       throws IOException {
-		  
+
     File idea = new File(project.getProjectDir(), ".idea");
-	
+
     ScopeType api = ScopeType.API;
     String scopeTypeApi = api.getStringValue();
     checkLibraries(project, root, idea, logger, gradleFile, scopeTypeApi);

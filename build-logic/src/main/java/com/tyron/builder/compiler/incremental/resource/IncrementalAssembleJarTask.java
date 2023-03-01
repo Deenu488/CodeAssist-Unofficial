@@ -7,6 +7,8 @@ import com.tyron.builder.compiler.BuildType;
 import com.tyron.builder.compiler.Task;
 import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.internal.jar.AssembleJar;
+import com.tyron.builder.internal.jar.JarOptions;
+import com.tyron.builder.internal.jar.JarOptionsImpl;
 import com.tyron.builder.log.ILogger;
 import com.tyron.builder.model.DiagnosticWrapper;
 import com.tyron.builder.project.Project;
@@ -24,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.zip.ZipException;
 import javax.tools.DiagnosticListener;
@@ -95,8 +98,11 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
         throw new IOException("Failed to create resource output directory");
       }
     }
+    JarOptions options = new JarOptionsImpl(new Attributes());
+    options.getAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
     AssembleJar assembleJar = new AssembleJar(false);
     assembleJar.setOutputFile(out);
+    assembleJar.setJarOptions(options);
     assembleJar.createJarArchive(input);
   }
 
