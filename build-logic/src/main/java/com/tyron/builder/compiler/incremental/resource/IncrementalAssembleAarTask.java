@@ -63,46 +63,64 @@ public class IncrementalAssembleAarTask extends Task<AndroidModule> {
   public void prepare(BuildType type) throws IOException {}
 
   public void run() throws IOException, CompilationFailedException {
-    List<String> implementationProjects = getModule().getProjects(getModule().getGradleFile());
-    for (String implementationProject : implementationProjects) {
+    List<String> projects = new ArrayList<>();
+    projects.add(getModule().getRootFile().getName());
+    Set<String> resolvedProjects = new HashSet<>();
+    while (!projects.isEmpty()) {
+      String include = projects.remove(0);
+      if (resolvedProjects.contains(include)) {
+        continue;
+      }
+      resolvedProjects.add(include);
+      File gradleFile = new File(getModule().getProjectDir(), include + "/build.gradle");
+      if (gradleFile.exists()) {
+        List<String> includedInBuildGradle = getModule().getAllProjects(gradleFile);
+        if (!includedInBuildGradle.isEmpty()) {
+          projects.addAll(includedInBuildGradle);
+        }
+        File includeName = new File(getModule().getProjectDir(), include);
+        String root = include.replaceFirst("/", "").replaceAll("/", ":");
+        try {
 
-      File res = new File(getModule().getProjectDir(), implementationProject + "/src/main/res");
-      File bin_res =
-          new File(getModule().getProjectDir(), implementationProject + "/build/bin/res");
-      File build = new File(getModule().getProjectDir(), implementationProject + "/build");
-      File manifest =
-          new File(
-              getModule().getProjectDir(), implementationProject + "/src/main/AndroidManifest.xml");
-      File assets =
-          new File(getModule().getProjectDir(), implementationProject + "/src/main/assets");
-      File java = new File(getModule().getProjectDir(), implementationProject + "/src/main/java");
-      File classes =
-          new File(getModule().getProjectDir(), implementationProject + "/build/bin/java/classes");
-      File gen = new File(getModule().getProjectDir(), implementationProject + "/build/gen");
-      File aar = new File(getModule().getProjectDir(), implementationProject + "/build/bin/aar");
-      File outputs =
-          new File(getModule().getProjectDir(), implementationProject + "/build/outputs/aar");
+          File res = new File(getModule().getProjectDir(), root + "/src/main/res");
+          File bin_res = new File(getModule().getProjectDir(), root + "/build/bin/res");
+          File build = new File(getModule().getProjectDir(), root + "/build");
+          File manifest =
+              new File(getModule().getProjectDir(), root + "/src/main/AndroidManifest.xml");
+          File assets = new File(getModule().getProjectDir(), root + "/src/main/assets");
+          File java = new File(getModule().getProjectDir(), root + "/src/main/java");
+          File classes = new File(getModule().getProjectDir(), root + "/build/bin/java/classes");
+          File gen = new File(getModule().getProjectDir(), root + "/build/gen");
+          File aar = new File(getModule().getProjectDir(), root + "/build/bin/aar");
+          File outputs = new File(getModule().getProjectDir(), root + "/build/outputs/aar");
 
-      if (res.exists() && manifest.exists()) {
-        if (classes.exists()) {
-          FileUtils.deleteDirectory(classes);
-        }
-        if (aar.exists()) {
-          FileUtils.deleteDirectory(aar);
-        }
-        if (outputs.exists()) {
-          FileUtils.deleteDirectory(outputs);
-        }
-        compileRes(res, bin_res, implementationProject);
-        linkRes(bin_res, implementationProject, manifest, assets);
-        String root = implementationProject.replaceFirst("/", "").replaceAll("/", ":");
-        if (java.exists()) {
-          getLogger().debug("> Task :" + root + ":" + "compileJava");
-          compileJava(java, gen, classes, implementationProject);
-        }
-        if (classes.exists()) {
-          getLogger().debug("> Task :" + root + ":" + "assembleAar");
-          assembleAar(classes, aar, build, implementationProject);
+          if (res.exists() && manifest.exists()) {
+            if (classes.exists()) {
+              FileUtils.deleteDirectory(classes);
+            }
+            if (aar.exists()) {
+              FileUtils.deleteDirectory(aar);
+            }
+            if (outputs.exists()) {
+              FileUtils.deleteDirectory(outputs);
+            }
+            compileRes(res, bin_res, root);
+            linkRes(bin_res, root, manifest, assets);
+
+            if (java.exists()) {
+              getLogger().debug("> Task :" + root + ":" + "compileJava");
+              compileJava(java, gen, classes, root);
+            }
+
+            if (!root.equals(getModule().getRootFile().getName())) {
+              if (classes.exists()) {
+                getLogger().debug("> Task :" + root + ":" + "assembleAar");
+                assembleAar(classes, aar, build, root);
+              }
+            }
+          }
+
+        } catch (IOException e) {
         }
       }
     }
