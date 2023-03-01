@@ -27,7 +27,7 @@ public class AssembleJar {
     File classesFolder = new File(in.getAbsolutePath());
 
     try (FileOutputStream stream = new FileOutputStream(mOutputFile)) {
-      try (JarOutputStream out = new JarOutputStream(stream)) {
+      try (JarOutputStream out = new JarOutputStream(stream, manifest)) {
         File[] children = classesFolder.listFiles();
         if (children != null) {
           for (File clazz : children) {
