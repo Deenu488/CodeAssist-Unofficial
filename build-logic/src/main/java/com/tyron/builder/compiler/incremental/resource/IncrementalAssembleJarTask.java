@@ -93,10 +93,12 @@ public class IncrementalAssembleJarTask extends Task<JavaModule> {
           if (java.exists()) {
             compileJava(java, classes, root);
           }
-          if (classes.exists()) {
-            getLogger().debug("> Task :" + root + ":" + "assembleJar");
-            assembleJar(classes, out);
-          }
+			if (!root.equals(getModule().getRootFile().getName())) {
+				if (classes.exists()) {
+					getLogger().debug("> Task :" + root + ":" + "assembleJar");
+					assembleJar(classes, out);
+				}
+			}		
         } catch (IOException e) {
         }
       }
