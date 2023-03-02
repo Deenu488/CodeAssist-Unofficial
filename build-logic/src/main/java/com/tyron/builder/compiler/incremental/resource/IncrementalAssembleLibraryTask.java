@@ -94,7 +94,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
             }
           }
           String pluginType = plugins.toString();
-
+          getLogger().debug("> Task :" + root + ":" + "checkingPlugins");
           if (plugins.isEmpty()) {
             getLogger().error("No plugins applied");
           } else {
@@ -110,21 +110,6 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
             }
           }
 
-          if (pluginType.contains("java-library")) {
-            // compileJava
-          } else if (pluginType.contains("java-library") && pluginType.contains("kotlin")) {
-            // compileKotiln
-            // compileJava
-          } else if (pluginType.contains("com.android.library")) {
-            // compileJava
-          } else if (pluginType.contains("com.android.library") && pluginType.contains("kotlin")) {
-            // compileKotlin
-            // compileJava
-          } else {
-            throw new CompilationFailedException(
-                "Unabled to find any plugins in " + gradleFile.getAbsolutePath());
-          }
-
           File res = new File(getModule().getProjectDir(), root + "/src/main/res");
           File bin_res = new File(getModule().getProjectDir(), root + "/build/bin/res");
           File build = new File(getModule().getProjectDir(), root + "/build");
@@ -132,14 +117,54 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
               new File(getModule().getProjectDir(), root + "/src/main/AndroidManifest.xml");
           File assets = new File(getModule().getProjectDir(), root + "/src/main/assets");
           File java = new File(getModule().getProjectDir(), root + "/src/main/java");
-          File classes = new File(getModule().getProjectDir(), root + "/build/bin/java/classes");
+          File kotlin = new File(getModule().getProjectDir(), root + "/src/main/kotlin");
+          File java_classes =
+              new File(getModule().getProjectDir(), root + "/build/bin/java/classes");
+          File kotiln_classes =
+              new File(getModule().getProjectDir(), root + "/build/bin/kotlin/classes");
+          File out =
+              new File(getModule().getProjectDir(), root + "/build/outputs/jar/" + root + ".jar");
+          File jar = new File(getModule().getProjectDir(), root + "/build/outputs/jar/");
           File gen = new File(getModule().getProjectDir(), root + "/build/gen");
           File aar = new File(getModule().getProjectDir(), root + "/build/bin/aar");
           File outputs = new File(getModule().getProjectDir(), root + "/build/outputs/aar");
 
           List<File> librariesToCompile = getLibraries(root, bin_res);
 
-          if (res.exists() && manifest.exists()) {
+          if (pluginType.equals("[java-library]")) {
+            if (java.exists()) {
+              getLogger().debug("> Task :" + root + ":" + "compileJava");
+            }
+
+          } else if (pluginType.equals("[java-library, kotlin]")
+              || pluginType.equals("[kotlin, java-library]")) {
+            if (kotlin.exists()) {
+              getLogger().debug("> Task :" + root + ":" + "compileKotlin");
+            }
+            if (java.exists()) {
+              getLogger().debug("> Task :" + root + ":" + "compileJava");
+            }
+
+          } else if (pluginType.equals("[com.android.library]")) {
+            if (java.exists()) {
+              getLogger().debug("> Task :" + root + ":" + "compileJava");
+            }
+
+          } else if (pluginType.equals("[com.android.library, kotlin]")
+              || pluginType.equals("[kotlin, com.android.library]")) {
+            if (kotlin.exists()) {
+              getLogger().debug("> Task :" + root + ":" + "compileKotiln");
+            }
+            if (java.exists()) {
+              getLogger().debug("> Task :" + root + ":" + "compileJava");
+            }
+
+          } else {
+            throw new CompilationFailedException(
+                "Unabled to find any plugins in " + gradleFile.getAbsolutePath());
+          }
+
+          /* if (res.exists() && manifest.exists()) {
             if (classes.exists()) {
               FileUtils.deleteDirectory(classes);
             }
@@ -162,7 +187,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
               getLogger().debug("> Task :" + root + ":" + "assembleAar");
               assembleAar(classes, aar, build, root);
             }
-          }
+          }*/
 
         } catch (IOException e) {
         }
