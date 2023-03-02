@@ -157,16 +157,24 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
               if (outputs.exists()) {
                 FileUtils.deleteDirectory(outputs);
               }
-			  
-			  getLogger().debug("> Task :" + root + ":" + "mergeResources");
-              compileRes(res, bin_res, root);
-              compileLibraries(librariesToCompile, root, bin_res);
-              linkRes(bin_res, root, manifest, assets);
+
+              getLogger().debug("> Task :" + root + ":" + "mergeResources");
+              // compileRes(res, bin_res, root);
+              //  compileLibraries(librariesToCompile, root, bin_res);
+              //   linkRes(bin_res, root, manifest, assets);
 
               if (java.exists()) {
-                getLogger().debug("> Task :" + root + ":" + "compileJava");
-                compileJava(java, java_classes, root);
+                //  getLogger().debug("> Task :" + root + ":" + "compileJava");
+                //   compileJava(java, java_classes, root);
+
               }
+
+              // List<String> allProjects = checkProjects(getModule().getProjectDir(), projects);
+              List<String> aProjects = new ArrayList<>();
+              aProjects.add(root);
+
+              getLogger().debug("> Task :" + "projectName " + aProjects.toString());
+              List<String> check = checkProjects(getModule().getProjectDir(), aProjects);
             }
           } else if (pluginType.equals("[com.android.library, kotlin]")
               || pluginType.equals("[kotlin, com.android.library]")) {
@@ -211,6 +219,41 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         }
       }
     }
+  }
+
+  private List<String> checkProjects(File directory, List<String> projectsToProcess) {
+    List<String> subProjects = new ArrayList<>();
+
+    for (String projectName : projectsToProcess) {
+      File projectDir = new File(directory, projectName);
+      File buildFile = new File(projectDir, "build.gradle");
+      List<String> dependencies = getModule().getAllProjects(buildFile);
+      getLogger().debug("> Task :" + projectName + ":" + "processingProject");
+      getLogger()
+          .debug(
+              "> Task :"
+                  + projectName
+                  + ":"
+                  + "gettingProjects from "
+                  + buildFile.toString()
+                  + ":"
+                  + dependencies.toString());
+      for (String dependency : dependencies) {
+        if (!subProjects.contains(dependency) && !projectsToProcess.contains(dependency)) {
+          subProjects.add(dependency);
+          getLogger().debug("> Task :" + "addingSubProject" + ":" + dependency + " to subProjects");
+        }
+      }
+    }
+
+    if (!subProjects.isEmpty()) {
+      List<String> moreProjects = checkProjects(directory, subProjects);
+      getLogger().debug("> Task :" + "subProjects" + ":" + moreProjects.toString());
+      subProjects.addAll(moreProjects);
+    }
+    getLogger().debug("> Task :" + "allProjects" + ":" + subProjects.toString());
+
+    return subProjects;
   }
 
   private List<File> getLibraries(String root, File bin_res) throws IOException {
