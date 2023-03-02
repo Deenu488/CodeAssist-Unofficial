@@ -120,7 +120,10 @@ public class ProjectManager {
           if (unsupported_plugins.isEmpty()) {
           } else {
             logger.debug(
-                "NOTE: " + "Unsupported plugins : " + unsupported_plugins.toString() + " will not be used");
+                "NOTE: "
+                    + "Unsupported plugins : "
+                    + unsupported_plugins.toString()
+                    + " will not be used");
           }
         }
       }

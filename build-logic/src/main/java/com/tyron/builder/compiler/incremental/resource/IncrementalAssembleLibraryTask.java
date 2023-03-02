@@ -47,7 +47,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
   public static final CacheHolder.CacheKey<String, List<File>> CACHE_KEY =
       new CacheHolder.CacheKey<>("javaCache");
-  private static final String TAG = "checkAndroidLibraries";
+  private static final String TAG = "assembleLibraries";
   private Cache<String, List<File>> mClassCache;
 
   public IncrementalAssembleLibraryTask(Project project, AndroidModule module, ILogger logger) {

@@ -247,8 +247,8 @@ public class TreeFileManagerFragment extends Fragment {
                     button.setEnabled(false);
                   } else {
 
-                    /*  boolean isLibraryExists = false;
-                    List<String> implementationProjects = javaModule.getProjects();
+                    boolean isLibraryExists = false;
+                    List<String> implementationProjects = javaModule.getAllProjects();
 
                     for (String implementationProject : implementationProjects) {
                       if (implementationProject.contains(name)) {
@@ -264,7 +264,7 @@ public class TreeFileManagerFragment extends Fragment {
                       nameLayout.setError(null);
 
                       button.setEnabled(true);
-                    }*/
+                    }
                   }
                 }
               };
@@ -283,8 +283,8 @@ public class TreeFileManagerFragment extends Fragment {
                       || package_name.contains(" ")) {
                     button.setEnabled(false);
                   } else {
-                    /*  boolean isLibraryExists = false;
-                    List<String> implementationProjects = javaModule.getProjects();
+                    boolean isLibraryExists = false;
+                    List<String> implementationProjects = javaModule.getAllProjects();
 
                     for (String implementationProject : implementationProjects) {
                       if (implementationProject.contains(name)) {
@@ -300,7 +300,7 @@ public class TreeFileManagerFragment extends Fragment {
                       nameLayout.setError(null);
 
                       button.setEnabled(true);
-                    }*/
+                    }
                   }
                 }
               };
@@ -463,32 +463,32 @@ public class TreeFileManagerFragment extends Fragment {
 
     projectPath.setText(pr);
 
-    /* List<String> implementationProjects = javaModule.getProjects();
+    List<String> implementationProjects = javaModule.getAllProjects();
     List<String> included = javaModule.getIncludedProjects();
 
     String implementationText =
         implementationProjects.isEmpty()
-            ? "Implementation projects: <none>"
-            : "Implementation projects:\n" + String.join("\n", implementationProjects);
+            ? "sub projects: <none>"
+            : "sub projects:\n" + String.join("\n", implementationProjects);
     libraryProjects.setText(implementationText);
 
     String includedText =
         included.isEmpty()
             ? "included projects: <none>"
             : "included projects:\n" + String.join("\n", included);
-    includedProjects.setText(includedText);*/
+    includedProjects.setText(includedText);
 
     File[] fileLibraries = getProjectLibraries(javaModule.getLibraryDirectory());
 
     if (fileLibraries != null && fileLibraries.length > 0) {
-      StringBuilder libraryTextBuilder = new StringBuilder("Project libraries:\n");
+      StringBuilder libraryTextBuilder = new StringBuilder(prPath.getName() + " libraries:\n");
       for (File fileLibrary : fileLibraries) {
         libraryTextBuilder.append(fileLibrary.getName()).append("\n");
       }
       String libraryText = libraryTextBuilder.toString().trim();
       projectLibraries.setText(libraryText);
     } else {
-      projectLibraries.setText("Project libraries: <none>");
+      projectLibraries.setText(prPath.getName() + " libraries: <none>");
     }
 
     new MaterialAlertDialogBuilder(requireContext())
