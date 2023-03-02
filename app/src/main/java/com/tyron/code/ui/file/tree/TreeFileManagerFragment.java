@@ -247,7 +247,7 @@ public class TreeFileManagerFragment extends Fragment {
                     button.setEnabled(false);
                   } else {
 
-                    boolean isLibraryExists = false;
+                    /*  boolean isLibraryExists = false;
                     List<String> implementationProjects = javaModule.getProjects();
 
                     for (String implementationProject : implementationProjects) {
@@ -264,7 +264,7 @@ public class TreeFileManagerFragment extends Fragment {
                       nameLayout.setError(null);
 
                       button.setEnabled(true);
-                    }
+                    }*/
                   }
                 }
               };
@@ -283,7 +283,7 @@ public class TreeFileManagerFragment extends Fragment {
                       || package_name.contains(" ")) {
                     button.setEnabled(false);
                   } else {
-                    boolean isLibraryExists = false;
+                    /*  boolean isLibraryExists = false;
                     List<String> implementationProjects = javaModule.getProjects();
 
                     for (String implementationProject : implementationProjects) {
@@ -300,7 +300,7 @@ public class TreeFileManagerFragment extends Fragment {
                       nameLayout.setError(null);
 
                       button.setEnabled(true);
-                    }
+                    }*/
                   }
                 }
               };
@@ -463,7 +463,7 @@ public class TreeFileManagerFragment extends Fragment {
 
     projectPath.setText(pr);
 
-    List<String> implementationProjects = javaModule.getProjects();
+    /* List<String> implementationProjects = javaModule.getProjects();
     List<String> included = javaModule.getIncludedProjects();
 
     String implementationText =
@@ -476,7 +476,7 @@ public class TreeFileManagerFragment extends Fragment {
         included.isEmpty()
             ? "included projects: <none>"
             : "included projects:\n" + String.join("\n", included);
-    includedProjects.setText(includedText);
+    includedProjects.setText(includedText);*/
 
     File[] fileLibraries = getProjectLibraries(javaModule.getLibraryDirectory());
 

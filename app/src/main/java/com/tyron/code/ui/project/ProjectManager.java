@@ -95,13 +95,33 @@ public class ProjectManager {
 
     // Index the project after downloading dependencies so it will get added to classpath
     try {
-      String plugins = module.getPlugins();
+      List<String> plugins = new ArrayList<>();
+      List<String> unsupported_plugins = new ArrayList<>();
+
+      for (String plugin : module.getPlugins()) {
+        if (plugin.equals("java-library")
+            || plugin.equals("com.android.library")
+            || plugin.equals("com.android.application")
+            || plugin.equals("kotlin")) {
+          plugins.add(plugin);
+        } else {
+          unsupported_plugins.add(plugin);
+        }
+      }
+
+      String pluginType = plugins.toString();
+
       if (gradleFile.exists()) {
         logger.debug("> Task :" + module.getRootFile().getName() + ":" + "checkingPlugins");
         if (plugins.isEmpty()) {
-          logger.warning("No plugins applied");
+          logger.error("No plugins applied");
         } else {
-          logger.debug("NOTE: " + "Plugins applied: " + plugins);
+          logger.debug("NOTE: " + "Plugins applied: " + plugins.toString());
+          if (unsupported_plugins.isEmpty()) {
+          } else {
+            logger.debug(
+                "NOTE: " + "Unsupported plugins : " + unsupported_plugins.toString() + " will not be used");
+          }
         }
       }
       mCurrentProject.open();

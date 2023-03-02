@@ -23,11 +23,9 @@ public interface Module extends UserDataHolderEx, CacheHolder {
 
   File getProjectDir();
 
-  String getPlugins();
+  List<String> getPlugins();
 
-  List<String> getProjects();
-
-  List<String> getProjects(File file);
+  List<String> getPlugins(File file);
 
   List<String> getAllProjects();
 

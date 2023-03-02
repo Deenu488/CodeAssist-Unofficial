@@ -105,18 +105,13 @@ public class ModuleImpl implements Module {
   }
 
   @Override
-  public String getPlugins() {
-    return getPlugins(getGradleFile());
+  public List<String> getPlugins() {
+    return parsePlugins(getGradleFile());
   }
 
   @Override
-  public List<String> getProjects() {
-    return parseProjects(getGradleFile());
-  }
-
-  @Override
-  public List<String> getProjects(File gradleFile) {
-    return parseProjects(gradleFile);
+  public List<String> getPlugins(File gradleFile) {
+    return parsePlugins(gradleFile);
   }
 
   @Override
@@ -253,22 +248,22 @@ public class ModuleImpl implements Module {
     mCacheMap.put(key, value);
   }
 
-  private String getPlugins(File gradleFile) {
+  private List<String> parsePlugins(File gradleFile) {
     try {
       String readString = FileUtils.readFileToString(gradleFile, Charset.defaultCharset());
-      return getPlugins(readString);
+      return parsePlugins(readString);
     } catch (IOException e) {
     }
     return null;
   }
 
-  private String getPlugins(String readString) {
+  private List<String> parsePlugins(String readString) {
     Pattern APPLY_PLUGIN = Pattern.compile("\\s*apply\\s+plugin:\\s+[\"'](.+?)[\"']");
     Pattern PLUGINS_ID = Pattern.compile("\\s*id\\s*[\"']([a-zA-Z0-9.'/-:\\-]+)[\"'].*");
+    List<String> plugins = new ArrayList<>();
 
     readString = readString.replaceAll("\\s*//.*", "");
     Matcher matcher = PLUGINS_ID.matcher(readString);
-    List<String> plugins = new ArrayList<>();
     while (matcher.find()) {
       String declaration = matcher.group(1);
       if (declaration != null) {
@@ -283,7 +278,7 @@ public class ModuleImpl implements Module {
         plugins.add(String.valueOf(declaration));
       }
     }
-    return plugins.toString().replace("[", "").replace("]", "");
+    return plugins;
   }
 
   private List<String> parseProjects(File gradleFile) {

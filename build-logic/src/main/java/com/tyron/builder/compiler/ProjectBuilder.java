@@ -9,6 +9,7 @@ import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.builder.project.api.Module;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectBuilder {
@@ -36,13 +37,36 @@ public class ProjectBuilder {
 
       Builder<? extends Module> builder = null;
       AndroidModule androidModule = (AndroidModule) module;
-      String moduleType = module.getPlugins();
+
+      List<String> plugins = new ArrayList<>();
+
+      for (String plugin : module.getPlugins()) {
+        if (plugin.equals("java-library")
+            || plugin.equals("com.android.library")
+            || plugin.equals("com.android.application")
+            || plugin.equals("kotlin")) {
+          plugins.add(plugin);
+        }
+      }
+
+      String moduleType = plugins.toString();
 
       if (moduleType.contains("java-library")) {
         builder = new JavaLibraryBuilder(mProject, androidModule, mLogger);
+      } else if (moduleType.contains("java-library") && moduleType.contains("kotlin")) {
+        builder = new JavaLibraryBuilder(mProject, androidModule, mLogger);
       } else if (moduleType.contains("com.android.library")) {
         builder = new AndroidLibraryBuilder(mProject, androidModule, mLogger);
+      } else if (moduleType.contains("com.android.library") && moduleType.contains("kotlin")) {
+        builder = new AndroidLibraryBuilder(mProject, androidModule, mLogger);
       } else if (moduleType.contains("com.android.application")) {
+        if (type == BuildType.AAB) {
+          builder = new AndroidAppBundleBuilder(mProject, androidModule, mLogger);
+        } else {
+          builder = new AndroidAppBuilder(mProject, androidModule, mLogger);
+        }
+
+      } else if (moduleType.contains("com.android.application") && moduleType.contains("kotlin")) {
         if (type == BuildType.AAB) {
           builder = new AndroidAppBundleBuilder(mProject, androidModule, mLogger);
         } else {
