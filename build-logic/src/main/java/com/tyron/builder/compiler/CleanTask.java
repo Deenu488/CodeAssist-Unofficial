@@ -4,8 +4,7 @@ import android.util.Log;
 import com.tyron.builder.compiler.incremental.dex.IncrementalD8Task;
 import com.tyron.builder.compiler.incremental.java.IncrementalCompileJavaTask;
 import com.tyron.builder.compiler.incremental.java.IncrementalJavaTask;
-import com.tyron.builder.compiler.incremental.resource.IncrementalAssembleAarTask;
-import com.tyron.builder.compiler.incremental.resource.IncrementalAssembleJarTask;
+import com.tyron.builder.compiler.incremental.resource.IncrementalAssembleLibraryTask;
 import com.tyron.builder.compiler.symbol.MergeSymbolsTask;
 import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.log.ILogger;
@@ -70,8 +69,7 @@ public class CleanTask extends Task<AndroidModule> {
     getModule().getCache(IncrementalD8Task.CACHE_KEY, new Cache<>()).clear();
     getModule().getCache(MergeSymbolsTask.CACHE_KEY, new Cache<>()).clear();
     getModule().getCache(IncrementalCompileJavaTask.CACHE_KEY, new Cache<>()).clear();
-    getModule().getCache(IncrementalAssembleJarTask.CACHE_KEY, new Cache<>()).clear();
-    getModule().getCache(IncrementalAssembleAarTask.CACHE_KEY, new Cache<>()).clear();
+    getModule().getCache(IncrementalAssembleLibraryTask.CACHE_KEY, new Cache<>()).clear();
   }
 
   private void cleanClasses() {

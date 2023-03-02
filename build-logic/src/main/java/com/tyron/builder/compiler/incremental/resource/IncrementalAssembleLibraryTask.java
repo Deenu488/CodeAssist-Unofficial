@@ -43,14 +43,14 @@ import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardLocation;
 import org.apache.commons.io.FileUtils;
 
-public class IncrementalAssembleAarTask extends Task<AndroidModule> {
+public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
   public static final CacheHolder.CacheKey<String, List<File>> CACHE_KEY =
       new CacheHolder.CacheKey<>("javaCache");
   private static final String TAG = "checkAndroidLibraries";
   private Cache<String, List<File>> mClassCache;
 
-  public IncrementalAssembleAarTask(Project project, AndroidModule module, ILogger logger) {
+  public IncrementalAssembleLibraryTask(Project project, AndroidModule module, ILogger logger) {
     super(project, module, logger);
   }
 

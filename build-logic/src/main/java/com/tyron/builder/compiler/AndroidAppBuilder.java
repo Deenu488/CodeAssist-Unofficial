@@ -12,8 +12,7 @@ import com.tyron.builder.compiler.incremental.java.IncrementalCompileJavaTask;
 import com.tyron.builder.compiler.incremental.java.IncrementalJavaTask;
 import com.tyron.builder.compiler.incremental.kotlin.IncrementalKotlinCompiler;
 import com.tyron.builder.compiler.incremental.resource.IncrementalAapt2Task;
-import com.tyron.builder.compiler.incremental.resource.IncrementalAssembleAarTask;
-import com.tyron.builder.compiler.incremental.resource.IncrementalAssembleJarTask;
+import com.tyron.builder.compiler.incremental.resource.IncrementalAssembleLibraryTask;
 import com.tyron.builder.compiler.java.CheckLibrariesTask;
 import com.tyron.builder.compiler.log.InjectLoggerTask;
 import com.tyron.builder.compiler.manifest.ManifestMergeTask;
@@ -41,8 +40,7 @@ public class AndroidAppBuilder extends BuilderImpl<AndroidModule> {
 
     List<Task<? super AndroidModule>> tasks = new ArrayList<>();
     tasks.add(new CleanTask(getProject(), module, logger));
-    tasks.add(new IncrementalAssembleJarTask(getProject(), module, logger));
-    tasks.add(new IncrementalAssembleAarTask(getProject(), module, logger));
+    tasks.add(new IncrementalAssembleLibraryTask(getProject(), module, logger));
     tasks.add(new CheckLibrariesTask(getProject(), module, logger));
     tasks.add(new ManifestMergeTask(getProject(), module, logger));
     if (type == BuildType.DEBUG) {
