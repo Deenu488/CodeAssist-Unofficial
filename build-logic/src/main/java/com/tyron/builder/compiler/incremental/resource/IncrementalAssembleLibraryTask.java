@@ -125,9 +125,6 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
                 "Unabled to find any plugins in " + gradleFile.getAbsolutePath());
           }
 
-          getLogger().debug(gradleFile.toString());
-          getLogger().debug(plugins.toString());
-
           File res = new File(getModule().getProjectDir(), root + "/src/main/res");
           File bin_res = new File(getModule().getProjectDir(), root + "/build/bin/res");
           File build = new File(getModule().getProjectDir(), root + "/build");
