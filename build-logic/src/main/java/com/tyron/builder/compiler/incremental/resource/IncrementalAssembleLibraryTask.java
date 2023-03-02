@@ -81,6 +81,52 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         File includeName = new File(getModule().getProjectDir(), include);
         String root = include.replaceFirst("/", "").replaceAll("/", ":");
         try {
+          List<String> plugins = new ArrayList<>();
+          List<String> unsupported_plugins = new ArrayList<>();
+
+          for (String plugin : getModule().getPlugins(gradleFile)) {
+            if (plugin.equals("java-library")
+                || plugin.equals("com.android.library")
+                || plugin.equals("kotlin")) {
+              plugins.add(plugin);
+            } else {
+              unsupported_plugins.add(plugin);
+            }
+          }
+          String pluginType = plugins.toString();
+
+          if (plugins.isEmpty()) {
+            getLogger().error("No plugins applied");
+          } else {
+            getLogger().debug("NOTE: " + "Plugins applied: " + plugins.toString());
+            if (unsupported_plugins.isEmpty()) {
+            } else {
+              getLogger()
+                  .debug(
+                      "NOTE: "
+                          + "Unsupported plugins : "
+                          + unsupported_plugins.toString()
+                          + " will not be used");
+            }
+          }
+
+          if (pluginType.contains("java-library")) {
+            // compileJava
+          } else if (pluginType.contains("java-library") && pluginType.contains("kotlin")) {
+            // compileKotiln
+            // compileJava
+          } else if (pluginType.contains("com.android.library")) {
+            // compileJava
+          } else if (pluginType.contains("com.android.library") && pluginType.contains("kotlin")) {
+            // compileKotlin
+            // compileJava
+          } else {
+            throw new CompilationFailedException(
+                "Unabled to find any plugins in " + gradleFile.getAbsolutePath());
+          }
+
+          getLogger().debug(gradleFile.toString());
+          getLogger().debug(plugins.toString());
 
           File res = new File(getModule().getProjectDir(), root + "/src/main/res");
           File bin_res = new File(getModule().getProjectDir(), root + "/build/bin/res");
