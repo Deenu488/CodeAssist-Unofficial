@@ -146,10 +146,28 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
             }
 
           } else if (pluginType.equals("[com.android.library]")) {
-            if (java.exists()) {
-              getLogger().debug("> Task :" + root + ":" + "compileJava");
-            }
+            if (res.exists() && manifest.exists()) {
+              if (java_classes.exists()) {
+                FileUtils.deleteDirectory(java_classes);
+              }
 
+              if (aar.exists()) {
+                FileUtils.deleteDirectory(aar);
+              }
+              if (outputs.exists()) {
+                FileUtils.deleteDirectory(outputs);
+              }
+			  
+			  getLogger().debug("> Task :" + root + ":" + "mergeResources");
+              compileRes(res, bin_res, root);
+              compileLibraries(librariesToCompile, root, bin_res);
+              linkRes(bin_res, root, manifest, assets);
+
+              if (java.exists()) {
+                getLogger().debug("> Task :" + root + ":" + "compileJava");
+                compileJava(java, java_classes, root);
+              }
+            }
           } else if (pluginType.equals("[com.android.library, kotlin]")
               || pluginType.equals("[kotlin, com.android.library]")) {
             if (kotlin.exists()) {
@@ -427,7 +445,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
   private boolean mHasErrors = false;
 
-  public void compileJava(File java, File gen, File out, String name)
+  public void compileJava(File java, File out, String name)
       throws IOException, CompilationFailedException {
 
     if (!out.exists()) {
@@ -446,6 +464,8 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         mClassCache.remove(key.file, "class", "dex");
       }
     }
+    File gen = new File(getModule().getProjectDir(), name + "/build/gen");
+
     File api_files = new File(getModule().getProjectDir(), name + "/build/api_files/libs");
     File api_libs = new File(getModule().getProjectDir(), name + "/build/api_libs");
 
