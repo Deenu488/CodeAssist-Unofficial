@@ -102,7 +102,8 @@ public class ProjectManager {
         if (plugin.equals("java-library")
             || plugin.equals("com.android.library")
             || plugin.equals("com.android.application")
-            || plugin.equals("kotlin")) {
+            || plugin.equals("kotlin")
+            || plugin.equals("kotlin-android")) {
           plugins.add(plugin);
         } else {
           unsupported_plugins.add(plugin);
@@ -115,6 +116,7 @@ public class ProjectManager {
         logger.debug("> Task :" + module.getRootFile().getName() + ":" + "checkingPlugins");
         if (plugins.isEmpty()) {
           logger.error("No plugins applied");
+          shouldReturn = true;
         } else {
           logger.debug("NOTE: " + "Plugins applied: " + plugins.toString());
           if (unsupported_plugins.isEmpty()) {

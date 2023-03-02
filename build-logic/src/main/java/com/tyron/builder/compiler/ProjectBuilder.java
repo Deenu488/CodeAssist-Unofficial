@@ -44,7 +44,8 @@ public class ProjectBuilder {
         if (plugin.equals("java-library")
             || plugin.equals("com.android.library")
             || plugin.equals("com.android.application")
-            || plugin.equals("kotlin")) {
+            || plugin.equals("kotlin")
+            || plugin.equals("kotlin-android")) {
           plugins.add(plugin);
         }
       }
@@ -66,7 +67,8 @@ public class ProjectBuilder {
           builder = new AndroidAppBuilder(mProject, androidModule, mLogger);
         }
 
-      } else if (moduleType.contains("com.android.application") && moduleType.contains("kotlin")) {
+      } else if (moduleType.contains("com.android.application")
+          && moduleType.contains("kotlin-android")) {
         if (type == BuildType.AAB) {
           builder = new AndroidAppBundleBuilder(mProject, androidModule, mLogger);
         } else {
