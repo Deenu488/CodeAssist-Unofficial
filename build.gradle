@@ -5,14 +5,14 @@ buildscript {
     repositories {
         google()
         maven { url 'https://jitpack.io' }
-	    maven { url "https://plugins.gradle.org/m2/" }
+	maven { url "https://plugins.gradle.org/m2/" }
         mavenCentral()
     }
 
     dependencies {
         classpath 'com.android.tools.build:gradle:7.3.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-		classpath "com.diffplug.spotless:spotless-plugin-gradle:6.15.0"
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:6.15.0"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -22,7 +22,7 @@ allprojects {
     repositories {
         google()
         maven { url 'https://jitpack.io' }
-		maven { url "https://plugins.gradle.org/m2/" }
+	maven { url "https://plugins.gradle.org/m2/" }
         mavenCentral()
     }
 }
@@ -39,5 +39,5 @@ ext {
 
     applicationId = "com.tyron.code"
     versionCode = 29
-    versionName = "0.2.9-alpha02"
+    versionName = "0.2.9-alpha03"
 }
