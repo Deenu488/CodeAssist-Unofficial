@@ -65,7 +65,6 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
   public void run() throws IOException, CompilationFailedException {
     List<String> projects = new ArrayList<>();
     projects.addAll(getModule().getAllProjects(getModule().getGradleFile()));
-
     Set<String> resolvedProjects = new HashSet<>();
     while (!projects.isEmpty()) {
       String include = projects.remove(0);
@@ -81,150 +80,36 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         }
         File includeName = new File(getModule().getProjectDir(), include);
         String root = include.replaceFirst("/", "").replaceAll("/", ":");
-        try {
-          List<String> plugins = new ArrayList<>();
-          List<String> unsupported_plugins = new ArrayList<>();
-
-          for (String plugin : getModule().getPlugins(gradleFile)) {
-            if (plugin.equals("java-library")
-                || plugin.equals("com.android.library")
-                || plugin.equals("kotlin")) {
-              plugins.add(plugin);
-            } else {
-              unsupported_plugins.add(plugin);
-            }
-          }
-          String pluginType = plugins.toString();
-          getLogger().debug("> Task :" + root + ":" + "checkingPlugins");
-          if (plugins.isEmpty()) {
-            getLogger().error("No plugins applied");
-          } else {
-            getLogger().debug("NOTE: " + "Plugins applied: " + plugins.toString());
-            if (unsupported_plugins.isEmpty()) {
-            } else {
-              getLogger()
-                  .debug(
-                      "NOTE: "
-                          + "Unsupported plugins : "
-                          + unsupported_plugins.toString()
-                          + " will not be used");
-            }
-          }
-
-          File res = new File(getModule().getProjectDir(), root + "/src/main/res");
-          File bin_res = new File(getModule().getProjectDir(), root + "/build/bin/res");
-          File build = new File(getModule().getProjectDir(), root + "/build");
-          File manifest =
-              new File(getModule().getProjectDir(), root + "/src/main/AndroidManifest.xml");
-          File assets = new File(getModule().getProjectDir(), root + "/src/main/assets");
-          File java = new File(getModule().getProjectDir(), root + "/src/main/java");
-          File kotlin = new File(getModule().getProjectDir(), root + "/src/main/kotlin");
-          File java_classes =
-              new File(getModule().getProjectDir(), root + "/build/bin/java/classes");
-          File kotiln_classes =
-              new File(getModule().getProjectDir(), root + "/build/bin/kotlin/classes");
-          File out =
-              new File(getModule().getProjectDir(), root + "/build/outputs/jar/" + root + ".jar");
-          File jar = new File(getModule().getProjectDir(), root + "/build/outputs/jar/");
-          File gen = new File(getModule().getProjectDir(), root + "/build/gen");
-          File aar = new File(getModule().getProjectDir(), root + "/build/bin/aar");
-          File outputs = new File(getModule().getProjectDir(), root + "/build/outputs/aar");
-
-          List<File> librariesToCompile = getLibraries(root, bin_res);
-
-          List<String> currentProject = new ArrayList<>();
-          currentProject.add(root);
-          
-          List<String> check = checkProjects(getModule().getProjectDir(), currentProject);     
-		  check.clear();
-
-          if (pluginType.equals("[java-library]")) {
-            if (java.exists()) {
-              //     getLogger().debug("> Task :" + root + ":" + "compileJava");
-            }
-
-          } else if (pluginType.equals("[java-library, kotlin]")
-              || pluginType.equals("[kotlin, java-library]")) {
-            if (kotlin.exists()) {
-              //     getLogger().debug("> Task :" + root + ":" + "compileKotlin");
-            }
-            if (java.exists()) {
-              //  getLogger().debug("> Task :" + root + ":" + "compileJava");
-            }
-
-          } else if (pluginType.equals("[com.android.library]")) {
-            if (res.exists() && manifest.exists()) {
-              /*   if (java_classes.exists()) {
-                         FileUtils.deleteDirectory(java_classes);
-                       }
-
-                       if (aar.exists()) {
-                         FileUtils.deleteDirectory(aar);
-                       }
-                       if (outputs.exists()) {
-                         FileUtils.deleteDirectory(outputs);
-                       }
-
-                      // getLogger().debug("> Task :" + root + ":" + "mergeResources");
-                       // compileRes(res, bin_res, root);
-                       //  compileLibraries(librariesToCompile, root, bin_res);
-                       //   linkRes(bin_res, root, manifest, assets);
-
-                       if (java.exists()) {
-                         //  getLogger().debug("> Task :" + root + ":" + "compileJava");
-                         //   compileJava(java, java_classes, root);
-
-                       }
-              */
-            }
-          } else if (pluginType.equals("[com.android.library, kotlin]")
-              || pluginType.equals("[kotlin, com.android.library]")) {
-            if (kotlin.exists()) {
-              //   getLogger().debug("> Task :" + root + ":" + "compileKotiln");
-            }
-            if (java.exists()) {
-              //  getLogger().debug("> Task :" + root + ":" + "compileJava");
-            }
-
-          } else {
-            throw new CompilationFailedException(
-                "Unabled to find any plugins in " + gradleFile.getAbsolutePath());
-          }
-        } catch (IOException e) {
-        }
+        List<String> currentProject = new ArrayList<>();
+        currentProject.add(root);
+        List<String> toCompile =
+            checkProjectsAndCompile(getModule().getProjectDir(), currentProject);
+        toCompile.clear();
       }
     }
   }
 
-  private List<String> checkProjects(File directory, List<String> projectsToProcess) {
+  private List<String> checkProjectsAndCompile(File directory, List<String> projectsToProcess) {
     List<String> subProjects = new ArrayList<>();
-
     for (String projectName : projectsToProcess) {
       File projectDir = new File(directory, projectName);
       File gradleFile = new File(projectDir, "build.gradle");
       List<String> projects = getModule().getAllProjects(gradleFile);
-    //  getLogger().debug("> Task :" + projectName + ":" + "checkingProjects");
-      if (projects.isEmpty()) {
-      //  getLogger().debug("no projects found in " + projectName);
-      } for (int i = 0; i < projects.size(); i++) {
-		  String project = projects.get(i);
-		 // getLogger().debug("found project " + project+ " in " + projectName);
-	  } 
+      if (projects.isEmpty()) {}
       for (String subProject : projects) {
         if (!subProjects.contains(subProject) && !projectsToProcess.contains(subProject)) {
           subProjects.add(subProject);
         }
       }
     }
-
     if (!subProjects.isEmpty()) {
-      List<String> moreProjects = checkProjects(directory, subProjects);
+      List<String> moreProjects = checkProjectsAndCompile(directory, subProjects);
       subProjects.addAll(moreProjects);
-	 // getLogger().debug("> Task :" + "subProjects" + ":" + subProjects.toString());
-	 for (String name: subProjects) {
-		 getLogger().debug("> Task :" + "compileProject" + ":" + name); 
-	 }
-    } 
+      // toCompile sub projects here
+      for (String root : subProjects) {
+        
+      }
+    }
     return subProjects;
   }
 
