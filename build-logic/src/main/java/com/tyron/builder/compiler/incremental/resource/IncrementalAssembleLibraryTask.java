@@ -89,7 +89,8 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     }
   }
 
-  private List<String> checkProjectsAndCompile(File directory, List<String> projectsToProcess) {
+  private List<String> checkProjectsAndCompile(File directory, List<String> projectsToProcess)
+      throws IOException, CompilationFailedException {
     List<String> subProjects = new ArrayList<>();
     for (String projectName : projectsToProcess) {
       File projectDir = new File(directory, projectName);
@@ -113,7 +114,8 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     return subProjects;
   }
 
-  private void compileProject(File directory, String root, ILogger logger) {
+  private void compileProject(File directory, String root, ILogger logger)
+      throws IOException, CompilationFailedException {
     List<String> plugins = new ArrayList<>();
     List<String> unsupported_plugins = new ArrayList<>();
     File projectDir = new File(directory, root);
@@ -129,7 +131,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       }
     }
     String pluginType = plugins.toString();
-	String name = root.replaceFirst("/", "").replaceAll("/", ":");
+    String name = root.replaceFirst("/", "").replaceAll("/", ":");
     logger.debug("> Task :" + name + ":" + "checkingPlugins");
     if (plugins.isEmpty()) {
       logger.error("No plugins applied");
@@ -143,19 +145,20 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
                 + unsupported_plugins.toString()
                 + " will not be used");
       }
-	}
-	//java
-	  File java = new File(projectDir + "/src/main/java");
-	  Set<File> javaFiles = new HashSet<>(getJavaFiles(java));
-	  
-	  if (pluginType.equals("[java-library]")) {
-		  if (java.exists()&& !javaFiles.isEmpty()) {
-           logger.debug("> Task :" + name + ":" + "compileJava");
-		  } else {
-		   logger.debug("> Task :" + name + ":" + "compileJava:NO-SOURCE");  
-		  }
-	  }
-	  
+    }
+    // java
+    File java = new File(projectDir + "/src/main/java");
+    File java_classes = new File(projectDir + "/build/classes/java/main");
+    Set<File> javaFiles = new HashSet<>(getJavaFiles(java));
+
+    if (pluginType.equals("[java-library]")) {
+      if (java.exists() && !javaFiles.isEmpty()) {
+        logger.debug("> Task :" + name + ":" + "compileJava");
+        compileJava(javaFiles, java_classes, name);
+      } else {
+        logger.debug("> Task :" + name + ":" + "compileJava:NO-SOURCE");
+      }
+    }
   }
 
   private List<File> getLibraries(String root, File bin_res) throws IOException {
@@ -390,7 +393,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
   private boolean mHasErrors = false;
 
-  public void compileJava(File java, File out, String name)
+  public void compileJava(Set<File> javaFiles, File out, String name)
       throws IOException, CompilationFailedException {
 
     if (!out.exists()) {
@@ -409,44 +412,14 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         mClassCache.remove(key.file, "class", "dex");
       }
     }
-    File gen = new File(getModule().getProjectDir(), name + "/build/gen");
-
-    File api_files = new File(getModule().getProjectDir(), name + "/build/api_files/libs");
-    File api_libs = new File(getModule().getProjectDir(), name + "/build/api_libs");
-
-    File implementation_files =
-        new File(getModule().getProjectDir(), name + "/build/implementation_files/libs");
-    File implementation_libs =
-        new File(getModule().getProjectDir(), name + "/build/implementation_libs");
-
-    File runtimeOnly_files =
-        new File(getModule().getProjectDir(), name + "/build/runtimeOnly_files/libs");
-    File runtimeOnly_libs = new File(getModule().getProjectDir(), name + "/build/runtimeOnly_libs");
-
-    File compileOnly_files =
-        new File(getModule().getProjectDir(), name + "/build/compileOnly_files/libs");
-    File compileOnly_libs = new File(getModule().getProjectDir(), name + "/build/compileOnly_libs");
 
     List<File> compileClassPath = new ArrayList<>();
-    compileClassPath.addAll(getJarFiles(api_files));
-    compileClassPath.addAll(getJarFiles(api_libs));
-    compileClassPath.addAll(getJarFiles(implementation_files));
-    compileClassPath.addAll(getJarFiles(implementation_libs));
-    compileClassPath.addAll(getJarFiles(compileOnly_files));
-    compileClassPath.addAll(getJarFiles(compileOnly_libs));
 
     List<File> runtimeClassPath = new ArrayList<>();
-    runtimeClassPath.addAll(getJarFiles(runtimeOnly_files));
-    runtimeClassPath.addAll(getJarFiles(runtimeOnly_libs));
-    runtimeClassPath.add(getModule().getBootstrapJarFile());
-    runtimeClassPath.add(getModule().getLambdaStubsJarFile());
-    runtimeClassPath.addAll(getJarFiles(api_files));
-    runtimeClassPath.addAll(getJarFiles(api_libs));
 
     List<JavaFileObject> javaFileObjects = new ArrayList<>();
 
-    mFilesToCompile.addAll(getJavaFiles(java));
-    mFilesToCompile.addAll(getJavaFiles(gen));
+    mFilesToCompile.addAll(javaFiles);
 
     if (mFilesToCompile.isEmpty()) {
       return;
