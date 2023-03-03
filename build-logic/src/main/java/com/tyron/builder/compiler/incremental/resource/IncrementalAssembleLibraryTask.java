@@ -167,11 +167,21 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
   private List<File> getCompileClassPath(File libraries) {
     List<File> compileClassPath = new ArrayList<>();
     compileClassPath.addAll(getJarFiles(new File(libraries, "api_files/libs")));
+    compileClassPath.addAll(getJarFiles(new File(libraries, "api_libs")));
+    compileClassPath.addAll(getJarFiles(new File(libraries, "implementation_files/libs")));
+    compileClassPath.addAll(getJarFiles(new File(libraries, "implementation_libs")));
+    compileClassPath.addAll(getJarFiles(new File(libraries, "compileOnly_files/libs")));
+    compileClassPath.addAll(getJarFiles(new File(libraries, "compileOnly_libs")));
     return compileClassPath;
   }
 
   private List<File> getRuntimeClassPath(File libraries) {
     List<File> runtimeClassPath = new ArrayList<>();
+    runtimeClassPath.addAll(getJarFiles(new File(libraries, "runtimeOnly_files/libs")));
+    runtimeClassPath.addAll(getJarFiles(new File(libraries, "runtimeOnly_libs")));
+    runtimeClassPath.addAll(getJarFiles(new File(libraries, "api_files/libs")));
+    runtimeClassPath.addAll(getJarFiles(new File(libraries, "api_libs")));
+
     return runtimeClassPath;
   }
 
