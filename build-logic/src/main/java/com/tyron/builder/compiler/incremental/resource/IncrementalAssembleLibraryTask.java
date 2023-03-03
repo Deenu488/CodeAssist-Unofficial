@@ -150,11 +150,12 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     File java = new File(projectDir + "/src/main/java");
     File java_classes = new File(projectDir + "/build/classes/java/main");
     Set<File> javaFiles = new HashSet<>(getJavaFiles(java));
-
+	List<File> compileClassPath = new ArrayList<>();
+	List<File> runtimeClassPath = new ArrayList<>();
     if (pluginType.equals("[java-library]")) {
       if (java.exists() && !javaFiles.isEmpty()) {
         logger.debug("> Task :" + name + ":" + "compileJava");
-        compileJava(javaFiles, java_classes, name);
+        compileJava(javaFiles, java_classes, name, compileClassPath, runtimeClassPath);
       } else {
         logger.debug("> Task :" + name + ":" + "compileJava:NO-SOURCE");
       }
@@ -393,7 +394,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
   private boolean mHasErrors = false;
 
-  public void compileJava(Set<File> javaFiles, File out, String name)
+  public void compileJava(Set<File> javaFiles, File out, String name, List<File> compileClassPath, List<File> runtimeClassPath)
       throws IOException, CompilationFailedException {
 
     if (!out.exists()) {
@@ -412,10 +413,9 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         mClassCache.remove(key.file, "class", "dex");
       }
     }
-
-    List<File> compileClassPath = new ArrayList<>();
-
-    List<File> runtimeClassPath = new ArrayList<>();
+		
+	runtimeClassPath.add(getModule().getBootstrapJarFile());
+	runtimeClassPath.add(getModule().getLambdaStubsJarFile());
 
     List<JavaFileObject> javaFileObjects = new ArrayList<>();
 
