@@ -160,11 +160,11 @@ public class CheckLibrariesTask extends Task<JavaModule> {
                 md5Map,
                 libraries,
                 fileLibsHashes,
-                new File(root, "build/" + scope + "_files/libs")));
+                new File(root, "build/libraries/" + scope + "_files/libs")));
 
     saveLibraryToProject(
         project,
-        new File(root, "build/" + scope + "_files/libs"),
+        new File(root, "build/libraries/" + scope + "_files/libs"),
         new File(idea, root.getName() + "_" + scope + "_libraries.json"),
         scope + "Files",
         md5Map,

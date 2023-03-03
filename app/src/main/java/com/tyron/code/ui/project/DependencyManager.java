@@ -300,11 +300,14 @@ public class DependencyManager {
     md5Map =
         new HashMap<>(
             checkLibraries(
-                md5Map, libraries, fileLibsHashes, new File(root, "build/" + scope + "_libs")));
+                md5Map,
+                libraries,
+                fileLibsHashes,
+                new File(root, "build/libraries/" + scope + "_libs")));
 
     saveLibraryToProject(
         project,
-        new File(root, "build/" + scope + "_libs"),
+        new File(root, "build/libraries/" + scope + "_libs"),
         new File(idea, root.getName() + "_" + scope + "_libraries.json"),
         scope,
         md5Map,
@@ -367,11 +370,11 @@ public class DependencyManager {
                 md5Map,
                 libraries,
                 fileLibsHashes,
-                new File(root, "build/" + scope + "_files/libs")));
+                new File(root, "build/libraries/" + scope + "_files/libs")));
 
     saveLibraryToProject(
         project,
-        new File(root, "build/" + scope + "_files/libs"),
+        new File(root, "build/libraries/" + scope + "_files/libs"),
         new File(idea, root.getName() + "_" + scope + "_libraries.json"),
         scope + "Files",
         md5Map,

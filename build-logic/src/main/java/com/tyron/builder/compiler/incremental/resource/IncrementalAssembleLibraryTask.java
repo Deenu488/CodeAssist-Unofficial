@@ -149,9 +149,11 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     // java
     File java = new File(projectDir + "/src/main/java");
     File java_classes = new File(projectDir + "/build/classes/java/main");
+    File libraries = new File(projectDir + "/build/libraries");
     Set<File> javaFiles = new HashSet<>(getJavaFiles(java));
-	List<File> compileClassPath = new ArrayList<>();
-	List<File> runtimeClassPath = new ArrayList<>();
+    List<File> compileClassPath = new ArrayList<>();
+    compileClassPath.addAll(getCompileClassPath(libraries));
+    List<File> runtimeClassPath = new ArrayList<>();
     if (pluginType.equals("[java-library]")) {
       if (java.exists() && !javaFiles.isEmpty()) {
         logger.debug("> Task :" + name + ":" + "compileJava");
@@ -160,6 +162,17 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         logger.debug("> Task :" + name + ":" + "compileJava:NO-SOURCE");
       }
     }
+  }
+
+  private List<File> getCompileClassPath(File libraries) {
+    List<File> compileClassPath = new ArrayList<>();
+    compileClassPath.addAll(getJarFiles(new File(libraries, "api_files/libs")));
+    return compileClassPath;
+  }
+
+  private List<File> getRuntimeClassPath(File libraries) {
+    List<File> runtimeClassPath = new ArrayList<>();
+    return runtimeClassPath;
   }
 
   private List<File> getLibraries(String root, File bin_res) throws IOException {
@@ -394,7 +407,12 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
   private boolean mHasErrors = false;
 
-  public void compileJava(Set<File> javaFiles, File out, String name, List<File> compileClassPath, List<File> runtimeClassPath)
+  public void compileJava(
+      Set<File> javaFiles,
+      File out,
+      String name,
+      List<File> compileClassPath,
+      List<File> runtimeClassPath)
       throws IOException, CompilationFailedException {
 
     if (!out.exists()) {
@@ -413,9 +431,9 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         mClassCache.remove(key.file, "class", "dex");
       }
     }
-		
-	runtimeClassPath.add(getModule().getBootstrapJarFile());
-	runtimeClassPath.add(getModule().getLambdaStubsJarFile());
+
+    runtimeClassPath.add(getModule().getBootstrapJarFile());
+    runtimeClassPath.add(getModule().getLambdaStubsJarFile());
 
     List<JavaFileObject> javaFileObjects = new ArrayList<>();
 
