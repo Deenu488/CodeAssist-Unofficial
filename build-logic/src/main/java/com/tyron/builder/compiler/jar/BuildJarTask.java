@@ -14,7 +14,7 @@ import java.util.jar.Attributes;
 
 public class BuildJarTask extends Task<JavaModule> {
 
-  private static final String TAG = "assembleJar";
+  private static final String TAG = "jar";
 
   public BuildJarTask(Project project, JavaModule module, ILogger logger) {
     super(project, module, logger);
@@ -38,14 +38,12 @@ public class BuildJarTask extends Task<JavaModule> {
     assembleJar(classes, out);
   }
 
-  private void assembleJar(File input, File out) throws IOException, CompilationFailedException {
+  public void assembleJar(File input, File out) throws IOException, CompilationFailedException {
     if (!out.getParentFile().exists()) {
       if (!out.getParentFile().mkdirs()) {
         throw new IOException("Failed to create resource output directory");
       }
     }
-    // JarOptions options = new JarOptionsImpl(new Attributes());
-    // options.getAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
     AssembleJar assembleJar = new AssembleJar(false);
     assembleJar.setOutputFile(out);
     assembleJar.setJarOptions(new JarOptionsImpl(new Attributes()));

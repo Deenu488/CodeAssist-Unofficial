@@ -40,8 +40,8 @@ public class AndroidAppBuilder extends BuilderImpl<AndroidModule> {
 
     List<Task<? super AndroidModule>> tasks = new ArrayList<>();
     tasks.add(new CleanTask(getProject(), module, logger));
-    tasks.add(new IncrementalAssembleLibraryTask(getProject(), module, logger));
     tasks.add(new CheckLibrariesTask(getProject(), module, logger));
+    tasks.add(new IncrementalAssembleLibraryTask(getProject(), module, logger));
     tasks.add(new ManifestMergeTask(getProject(), module, logger));
     if (type == BuildType.DEBUG) {
       tasks.add(new GenerateDebugBuildConfigTask(getProject(), module, logger));
