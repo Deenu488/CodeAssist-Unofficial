@@ -123,7 +123,7 @@ public class ProjectManager {
           } else {
             logger.debug(
                 "NOTE: "
-                    + "Unsupported plugins :"
+                    + "Unsupported plugins: "
                     + unsupported_plugins.toString()
                     + " will not be used");
           }

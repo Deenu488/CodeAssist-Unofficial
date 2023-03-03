@@ -107,10 +107,55 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       subProjects.addAll(moreProjects);
       // toCompile sub projects here
       for (String root : subProjects) {
-        
+        compileProject(directory, root, getLogger());
       }
     }
     return subProjects;
+  }
+
+  private void compileProject(File directory, String root, ILogger logger) {
+    List<String> plugins = new ArrayList<>();
+    List<String> unsupported_plugins = new ArrayList<>();
+    File projectDir = new File(directory, root);
+    File gradleFile = new File(projectDir, "build.gradle");
+
+    for (String plugin : getModule().getPlugins(gradleFile)) {
+      if (plugin.equals("java-library")
+          || plugin.equals("com.android.library")
+          || plugin.equals("kotlin")) {
+        plugins.add(plugin);
+      } else {
+        unsupported_plugins.add(plugin);
+      }
+    }
+    String pluginType = plugins.toString();
+	String name = root.replaceFirst("/", "").replaceAll("/", ":");
+    logger.debug("> Task :" + name + ":" + "checkingPlugins");
+    if (plugins.isEmpty()) {
+      logger.error("No plugins applied");
+    } else {
+      logger.debug("NOTE: " + "Plugins applied: " + plugins.toString());
+      if (unsupported_plugins.isEmpty()) {
+      } else {
+        logger.debug(
+            "NOTE: "
+                + "Unsupported plugins: "
+                + unsupported_plugins.toString()
+                + " will not be used");
+      }
+	}
+	//java
+	  File java = new File(projectDir + "/src/main/java");
+	  Set<File> javaFiles = new HashSet<>(getJavaFiles(java));
+	  
+	  if (pluginType.equals("[java-library]")) {
+		  if (java.exists()&& !javaFiles.isEmpty()) {
+           logger.debug("> Task :" + name + ":" + "compileJava");
+		  } else {
+		   logger.debug("> Task :" + name + ":" + "compileJava:NO-SOURCE");  
+		  }
+	  }
+	  
   }
 
   private List<File> getLibraries(String root, File bin_res) throws IOException {
