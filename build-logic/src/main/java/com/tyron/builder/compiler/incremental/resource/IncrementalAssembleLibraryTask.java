@@ -93,23 +93,27 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 	throws IOException, CompilationFailedException {
 		List<String> subProjects = new ArrayList<>();
 		for (String projectName : projectsToProcess) {
+			String currentName = projectName.replaceFirst("/", "").replaceAll("/", ":");
 			File projectDir = new File(directory, projectName);
 			File gradleFile = new File(projectDir, "build.gradle");
-			List<String> projects = getModule().getAllProjects(gradleFile);
-			if (projects.isEmpty()) {}
+			List<String> projects = getModule().getAllProjects(gradleFile);		
+			if (projects.isEmpty()) {
+				getLogger().debug("> Task :" + currentName + ":" + "resolveProject");	
+			getLogger().debug("> Task :" + currentName + ":" + "compileProject");
+			} else {
+		    getLogger().debug("INFO: "+ "Projects found in "+ currentName + " "+ projects.toString().replaceAll("/",""));	
+			}
 			for (String subProject : projects) {
 				if (!subProjects.contains(subProject) && !projectsToProcess.contains(subProject)) {
-					subProjects.add(subProject);
+					subProjects.add(subProject);				
 				}
 			}
 		}
 		if (!subProjects.isEmpty()) {
 			List<String> moreProjects = checkProjectsAndCompile(directory, subProjects);
+			getLogger().debug("INFO: " + "Getting projects " + moreProjects.toString().replaceAll("/",""));
 			subProjects.addAll(moreProjects);
-			// toCompile sub projects here
-			for (String root : subProjects) {
-				compileProject(directory, root, getLogger());
-			}
+			getLogger().debug("INFO: " + "Added sub projects" + subProjects.toString().replaceAll("/",""));
 		}
 		return subProjects;
 	}
@@ -154,6 +158,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 		List<File> compileClassPath = new ArrayList<>();
 		compileClassPath.addAll(getCompileClassPath(libraries));
 		List<File> runtimeClassPath = new ArrayList<>();
+		runtimeClassPath.addAll(getRuntimeClassPath(libraries));
 		if (pluginType.equals("[java-library]")) {
 			if (java.exists() && !javaFiles.isEmpty()) {
 				logger.debug("> Task :" + name + ":" + "compileJava");
