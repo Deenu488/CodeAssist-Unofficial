@@ -7,6 +7,7 @@ import com.sun.tools.javac.api.JavacTool;
 import com.sun.tools.javac.file.JavacFileManager;
 import com.tyron.builder.compiler.BuildType;
 import com.tyron.builder.compiler.Task;
+import com.tyron.builder.compiler.jar.BuildJarTask;
 import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.internal.jar.AssembleJar;
 import com.tyron.builder.log.ILogger;
@@ -238,6 +239,9 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     // java
     File javaDir = new File(projectDir + "/src/main/java");
     File javaClassesDir = new File(projectDir + "/build/classes/java/main");
+    File jarDir = new File(projectDir + "/build/outputs/jar");
+    File jarFileDir = new File(jarDir, name + ".jar");
+
     File libraries = new File(projectDir + "/build/libraries");
 
     Set<File> javaFiles = new HashSet<>(getJavaFiles(javaDir));
@@ -249,10 +253,14 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     runtimeClassPath.addAll(getRuntimeClassPath(libraries));
 
     if (pluginType.equals("[java-library]")) {
-
+      compileJava(javaFiles, javaClassesDir, name, compileClassPath, runtimeClassPath);
+      logger.debug("> Task :" + name + ":" + "jar");
+      BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), logger);
+      buildJarTask.assembleJar(javaClassesDir, jarFileDir);
     } else if (pluginType.equals("[java-library, kotlin]")
         || pluginType.equals("[kotlin, java-library]")) {
-
+      // compileKotlin(kotlinFiles,kotlinClassesDir,name, compileClassPath,runtimeClassPath);
+      compileJava(javaFiles, javaClassesDir, name, compileClassPath, runtimeClassPath);
     } else if (pluginType.equals("[com.android.library]")) {
 
     } else if (pluginType.equals("[com.android.library, kotlin]")
