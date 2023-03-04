@@ -101,10 +101,32 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       if (projectsByInclusion.containsKey(i)) {
         List<String> projects = projectsByInclusion.get(i);
         for (String projectName : projects) {
+          List<String> subProjects =
+              getModule().getAllProjects(new File(directory, projectName + "/build.gradle"));
           getLogger().debug(projectName);
+          printSubProjects(subProjects, 1, directory);
         }
       }
     }
+  }
+
+  private void printSubProjects(List<String> subProjects, int level, File directory) {
+    for (String subProject : subProjects) {
+      getLogger().debug(getIndent(level) + subProject);
+   /*   List<String> subSubProjects =
+          getModule().getAllProjects(new File(directory, subProject + "/build.gradle"));
+      if (subSubProjects != null) {
+        printSubProjects(subSubProjects, level + 1, directory);
+      }*/
+    }
+  }
+
+  private String getIndent(int level) {
+    StringBuilder indent = new StringBuilder();
+    for (int i = 0; i < level; i++) {
+      indent.append("  ");
+    }
+    return indent.toString();
   }
 
   private void compileProject(File directory, String root, ILogger logger)
