@@ -74,7 +74,6 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       throws IOException, CompilationFailedException {
     Map<Integer, List<String>> projectsByInclusion = new HashMap<>();
     int maxInclusion = 0;
-    // first, process the projects with 0 sub-projects
     for (String projectName : rootProjects) {
       List<String> subProjects =
           getModule().getAllProjects(new File(directory, projectName + "/build.gradle"));
@@ -85,7 +84,6 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
             .add(projectName);
       }
     }
-    // then, process the projects with 1 or more sub-projects
     for (String projectName : rootProjects) {
       List<String> subProjects =
           getModule().getAllProjects(new File(directory, projectName + "/build.gradle"));
@@ -100,35 +98,73 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     for (int i = 0; i <= maxInclusion; i++) {
       if (projectsByInclusion.containsKey(i)) {
         List<String> projects = projectsByInclusion.get(i);
-        for (String projectName : projects) {
-          List<String> subProjects =
-              getModule().getAllProjects(new File(directory, projectName + "/build.gradle"));
-          getLogger().debug(projectName);
-          printSubProjects(subProjects, 1, directory);
+	    
+		for (String projectName : projects) {	
+			File gradleFile = new File(directory, projectName + "/build.gradle");
+			List<String> subProjects = getSubProjects(gradleFile);		
+			getLogger().debug( "Processing project " + projectName);
+			getLogger().debug( "Checking sub projects of " + projectName);
+			if (subProjects.isEmpty()) {
+				getLogger().debug( "No sub projects found for " + projectName);	
+				getLogger().debug( "Compiling project:" + projectName);
+			} else {
+				getLogger().debug( "Sub projects found in:" + projectName + ":" + subProjects.toString());	
+				for (String subProject: subProjects){
+					File subGradleFile = new File(directory, subProject + "/build.gradle");
+					getLogger().debug( "Processing sub project " +projectName +":"+ subProject);
+					String plugins = getModule().getPlugins(subGradleFile).toString();
+					File jarFile = new File(directory, subProject + "/build/outputs/jar/" + subProject + ".jar");
+					File aarFile = new File(directory, subProject + "/build/outputs/aar/" + subProject + ".aar");
+					File jarOut = new File(directory, subProject + "/build/outputs/jar/");
+					File aarOut = new File(directory, subProject + "/build/outputs/aar/");
+					
+					if (!jarOut.exists()) {
+						if (!jarOut.mkdirs()) {
+							throw new IOException("Failed to create jarOut directory");
+						}
+					}
+					
+					if (!aarOut.exists()) {
+						if (!aarOut.mkdirs()) {
+							throw new IOException("Failed to create aarOut directory");
+						}
+					}
+					
+					if (plugins.contains("java-library")) {
+						if(jarFile.exists()) {			
+							getLogger().debug( "Skipping project:" + subProject);
+						} else {
+							getLogger().debug( "Compiling project:" + subProject+ ":jar");
+							jarFile.createNewFile();
+						}
+					} else if (plugins.contains("com.android.library")) {
+						if(aarFile.exists()) {
+							getLogger().debug( "Skipping project:" + subProject);
+						} else {
+							getLogger().debug( "Compiling project:" + subProject+":aar");
+							aarFile.createNewFile();
+						}
+					}	
+					getLogger().debug( "Compiling project:" + projectName);
+				}
+			}
+			
         }
       }
     }
   }
 
-  private void printSubProjects(List<String> subProjects, int level, File directory) {
-    for (String subProject : subProjects) {
-      getLogger().debug(getIndent(level) + subProject);
-   /*   List<String> subSubProjects =
-          getModule().getAllProjects(new File(directory, subProject + "/build.gradle"));
-      if (subSubProjects != null) {
-        printSubProjects(subSubProjects, level + 1, directory);
-      }*/
-    }
-  }
-
-  private String getIndent(int level) {
-    StringBuilder indent = new StringBuilder();
-    for (int i = 0; i < level; i++) {
-      indent.append("  ");
-    }
-    return indent.toString();
-  }
-
+	private List <String> getSubProjects(File gradleFile) {
+		List<String> projects = new ArrayList<>();		
+		List<String> subProjects = getModule().getAllProjects(gradleFile);		
+		if(!subProjects.isEmpty()) {
+		for (String subProject : subProjects) {
+			projects.add(subProject);
+		}
+		}
+		return projects;
+	}
+	
   private void compileProject(File directory, String root, ILogger logger)
       throws IOException, CompilationFailedException {
     List<String> plugins = new ArrayList<>();
@@ -197,6 +233,8 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     runtimeClassPath.addAll(getJarFiles(new File(libraries, "runtimeOnly_libs")));
     runtimeClassPath.addAll(getJarFiles(new File(libraries, "api_files/libs")));
     runtimeClassPath.addAll(getJarFiles(new File(libraries, "api_libs")));
+	runtimeClassPath.addAll(getJarFiles(new File(libraries, "implementation_files/libs")));
+    runtimeClassPath.addAll(getJarFiles(new File(libraries, "implementation_libs")));  
     return runtimeClassPath;
   }
 
