@@ -78,9 +78,10 @@ public class ProjectBuilder {
         }
       } else {
         throw new CompilationFailedException(
-            "Unabled to find any plugins, check project plugins and refresh module");
+            "Unable to find any plugins in "
+                + mProject.getRootFile().getName()
+                + "/build.gradle, check project's gradle plugins and build again.");
       }
-
       builder.setTaskListener(mTaskListener);
       builder.build(type);
     }
