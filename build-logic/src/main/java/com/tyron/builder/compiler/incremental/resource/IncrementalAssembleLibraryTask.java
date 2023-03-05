@@ -103,134 +103,44 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     }
   }
 
-  private void processProjects(File projectDir, List<String> projects)
-      throws IOException, CompilationFailedException {
-    List<File> compileClassPath = new ArrayList<>();
-    List<File> runtimeClassPath = new ArrayList<>();
+	private void processProjects(File projectDir, List<String> projects)
+    throws IOException, CompilationFailedException {
+		List<File> compileClassPath = new ArrayList<>();
+		List<File> runtimeClassPath = new ArrayList<>();
 
-    for (String projectName : projects) {
-      File gradleFile = new File(projectDir, projectName + "/build.gradle");
-      String name = projectName.replaceFirst("/", "").replaceAll("/", ":");
+		for (String projectName : projects) {
+			File gradleFile = new File(projectDir, projectName + "/build.gradle");
+			String name = projectName.replaceFirst("/", "").replaceAll("/", ":");
 
-      List<String> pluginTypes = getPlugins(projectName, gradleFile);
-      String pluginType = pluginTypes.toString();
+			List<String> pluginTypes = getPlugins(projectName, gradleFile);
+			String pluginType = pluginTypes.toString();
 
-      getLogger().debug("Processing empty project " + name);
-      getLogger().debug("Checking sub projects of " + name);
+			getLogger().debug("Project: " + name);
+			buildSubProjects(projectDir, name, gradleFile);
 
-      if (pluginType.equals("[java-library]")) {
-        if (getSubProjects(projectDir, name, gradleFile).isEmpty()) {
-          getLogger().debug("No sub projects found for " + name);
-          getLogger().debug("Compiling empty project:" + name);
-        }
+			if (getModule().getAllProjects(gradleFile).isEmpty()) {
+				getLogger().debug("Building project: " + name);
+			}
+		}
+	}
 
-      } else if (pluginType.equals("[java-library, kotlin]")
-          || pluginType.equals("[kotlin, java-library]")) {
-        if (getSubProjects(projectDir, name, gradleFile).isEmpty()) {
-          getLogger().debug("No sub projects found for " + name);
-          getLogger().debug("Compiling empty project:" + name);
-        }
+	private void buildSubProjects(File projectDir, String projectName, File gradleFile)
+    throws IOException, CompilationFailedException {
+		List<String> subProjects = getModule().getAllProjects(gradleFile);
 
-      } else if (pluginType.equals("[com.android.library]")) {
-        if (getSubProjects(projectDir, name, gradleFile).isEmpty()) {
-          getLogger().debug("No sub projects found for " + name);
-          getLogger().debug("Compiling empty project:" + name);
-        }
+		while (!subProjects.isEmpty()) {
+			String subProject = subProjects.remove(0);    
+			String subName = subProject.replaceFirst("/", "").replaceAll("/", ":");
 
-      } else if (pluginType.equals("[com.android.library, kotlin]")
-          || pluginType.equals("[kotlin, com.android.library]")) {
-        if (getSubProjects(projectDir, name, gradleFile).isEmpty()) {
-          getLogger().debug("No sub projects found for " + name);
-          getLogger().debug("Compiling empty project:" + name);
-        }
+			getLogger().debug("Sub project: " + subName);
+			getLogger().debug("Compiling sub project: " + subName);
+		}
 
-      } else {
-        throw new CompilationFailedException(
-            "Unable to find any plugins in "
-                + name
-                + "/build.gradle, check project's gradle plugins and build again.");
-      }
-    }
-  }
-
-  private List<String> getSubProjects(File projectDir, String projectName, File gradleFile)
-      throws IOException, CompilationFailedException {
-    List<String> subProjects = getModule().getAllProjects(gradleFile);
-    List<File> compileClassPath = new ArrayList<>();
-    List<File> runtimeClassPath = new ArrayList<>();
-
-    if (subProjects.isEmpty()) {
-    } else {
-      for (String subProject : subProjects) {
-        String subName = subProject.replaceFirst("/", "").replaceAll("/", ":");
-        File subGradleFile = new File(projectDir, subProject + "/build.gradle");
-
-        List<String> subPluginTypes = getPlugins(subProject, subGradleFile);
-
-        if (subPluginTypes.isEmpty()) {
-          throw new CompilationFailedException(
-              "Unable to find any plugins in "
-                  + subName
-                  + "/build.gradle, check project's gradle plugins and build again.");
-        }
-
-        String pluginType = subPluginTypes.toString();
-
-        getLogger().debug("Processing sub project " + projectName + ":" + subName);
-        getLogger().debug("Compiling sub project:" + subName);
-
-        if (pluginType.equals("[java-library]")) {
-
-        } else if (pluginType.equals("[java-library, kotlin]")
-            || pluginType.equals("[kotlin, java-library]")) {
-
-        } else if (pluginType.equals("[com.android.library]")) {
-
-        } else if (pluginType.equals("[com.android.library, kotlin]")
-            || pluginType.equals("[kotlin, com.android.library]")) {
-
-        } else {
-          throw new CompilationFailedException(
-              "Unable to find any plugins in "
-                  + subName
-                  + "/build.gradle, check project's gradle plugins and build again.");
-        }
-      }
-
-      String name = projectName.replaceFirst("/", "").replaceAll("/", ":");
-
-      List<String> pluginTypes = getPlugins(projectName, gradleFile);
-
-      getLogger().debug("Processing main project " + projectName);
-      getLogger().debug("Compiling main project:" + projectName);
-
-      if (pluginTypes.isEmpty()) {
-        throw new CompilationFailedException(
-            "Unable to find any plugins in "
-                + name
-                + "/build.gradle, check project's gradle plugins and build again.");
-      }
-
-      String pluginType = pluginTypes.toString();
-
-      if (pluginType.equals("[java-library]")) {
-
-      } else if (pluginType.equals("[java-library, kotlin]")
-          || pluginType.equals("[kotlin, java-library]")) {
-
-      } else if (pluginType.equals("[com.android.library]")) {
-      } else if (pluginType.equals("[com.android.library, kotlin]")
-          || pluginType.equals("[kotlin, com.android.library]")) {
-      } else {
-        throw new CompilationFailedException(
-            "Unable to find any plugins in "
-                + name
-                + "/build.gradle, check project's gradle plugins and build again.");
-      }
-    }
-    return subProjects;
-  }
-
+		if (!projectName.isEmpty()) {
+			getLogger().debug("Building project: " + projectName);
+		}
+	}
+	
   private String checkPlugins(String projectName, File gradleFile) {
     List<String> plugins = new ArrayList<>();
     List<String> unsupported_plugins = new ArrayList<>();
