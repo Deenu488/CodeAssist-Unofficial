@@ -7,7 +7,6 @@ import com.sun.tools.javac.api.JavacTool;
 import com.sun.tools.javac.file.JavacFileManager;
 import com.tyron.builder.compiler.BuildType;
 import com.tyron.builder.compiler.Task;
-import com.tyron.builder.compiler.jar.BuildJarTask;
 import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.internal.jar.AssembleJar;
 import com.tyron.builder.log.ILogger;
@@ -17,7 +16,6 @@ import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.builder.project.cache.CacheHolder;
 import com.tyron.common.util.Cache;
-import com.tyron.common.util.Decompress;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -105,105 +103,46 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     }
   }
 
-  // process empty sub projects
   private void processProjects(File projectDir, List<String> projects)
       throws IOException, CompilationFailedException {
     List<File> compileClassPath = new ArrayList<>();
     List<File> runtimeClassPath = new ArrayList<>();
-    // proccess all sub projects of rootProject
+
     for (String projectName : projects) {
-
       File gradleFile = new File(projectDir, projectName + "/build.gradle");
-
       String name = projectName.replaceFirst("/", "").replaceAll("/", ":");
 
-      File libraries = new File(projectDir, projectName + "/build/libraries");
+      List<String> pluginTypes = getPlugins(projectName, gradleFile);
+      String pluginType = pluginTypes.toString();
 
-      File javaDir = new File(projectDir, projectName + "/src/main/java");
-      File javaClassesDir = new File(projectDir, projectName + "/build/classes/java/main");
-      File jarDir = new File(projectDir, projectName + "/build/outputs/jar");
-      File jarFileDir = new File(jarDir, projectName + ".jar");
-      File jarTransformsDir = new File(projectDir, projectName + "/build/.transforms/transformed");
-
-      File resDir = new File(projectDir, projectName + "/src/main/res");
-      File binResDir = new File(projectDir, projectName + "/build/bin/res");
-      File buildDir = new File(projectDir, projectName + "/build");
-      File manifestFileDir = new File(projectDir, projectName + "/src/main/AndroidManifest.xml");
-      File assetsDir = new File(projectDir, projectName + "/src/main/assets");
-      File aarDir = new File(projectDir, projectName + "/build/outputs/aar");
-      File buildBinAarDir = new File(projectDir, projectName + "/build/bin/aar");
-
-      File aarFileDir = new File(aarDir, projectName + ".aar");
-      File aarTransformsDir =
-          new File(projectDir, projectName + "/build/.transforms/transformed/out/jars");
-
-      Set<File> javaFiles = new HashSet<>();
-      javaFiles.addAll(getJavaFiles(javaDir));
-
-      compileClassPath.addAll(getCompileClassPath(libraries));
-      runtimeClassPath.addAll(getRuntimeClassPath(libraries));
-
-      String pluginType = checkPlugins(name, gradleFile);
+      getLogger().debug("Processing empty project " + name);
+      getLogger().debug("Checking sub projects of " + name);
 
       if (pluginType.equals("[java-library]")) {
-
         if (getSubProjects(projectDir, name, gradleFile).isEmpty()) {
-          if (jarFileDir.exists()) {
-
-            getLogger().debug("> Task :" + name + ":" + "compileJava SKIPPED");
-            getLogger().debug("> Task :" + name + ":" + "classes SKIPPED");
-            getLogger().debug("> Task :" + name + ":" + "jar SKIPPED");
-
-          } else {
-            compileJava(javaFiles, javaClassesDir, name, compileClassPath, runtimeClassPath);
-            Set<File> javaClassFiles = new HashSet<>();
-            javaClassFiles.addAll(getFiles(javaClassesDir, ".class"));
-
-            if (javaClassFiles.isEmpty()) {
-              getLogger().debug("> Task :" + name + ":" + "jar SKIPPED");
-            } else {
-              getLogger().debug("> Task :" + name + ":" + "jar");
-              BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
-              buildJarTask.assembleJar(javaClassesDir, jarFileDir);
-              FileUtils.copyFileToDirectory(jarFileDir, jarTransformsDir);
-            }
-          }
+          getLogger().debug("No sub projects found for " + name);
+          getLogger().debug("Compiling empty project:" + name);
         }
 
       } else if (pluginType.equals("[java-library, kotlin]")
           || pluginType.equals("[kotlin, java-library]")) {
-
-        if (getSubProjects(projectDir, name, gradleFile).isEmpty()) {}
+        if (getSubProjects(projectDir, name, gradleFile).isEmpty()) {
+          getLogger().debug("No sub projects found for " + name);
+          getLogger().debug("Compiling empty project:" + name);
+        }
 
       } else if (pluginType.equals("[com.android.library]")) {
-        List<File> librariesToCompile = getLibraries(name, binResDir);
-        if (aarFileDir.exists()) {
-          getLogger().debug("> Task :" + name + ":" + "bundleAar SKIPPED");
-        } else {
-          if (resDir.exists()) {
-            compileRes(resDir, binResDir, name);
-          }
-      
-          compileLibraries(librariesToCompile, name, binResDir);
-          linkRes(binResDir, name, manifestFileDir, assetsDir);
-          compileJava(javaFiles, javaClassesDir, name, compileClassPath, runtimeClassPath);
-          Set<File> javaClassFiles = new HashSet<>();
-          javaClassFiles.addAll(getFiles(javaClassesDir, ".class"));
-
-          if (javaClassFiles.isEmpty()) {
-            getLogger().debug("> Task :" + name + ":" + "bundleAar SKIPPED");
-          } else {
-            getLogger().debug("> Task :" + name + ":" + "bundleAar");
-            assembleAar(javaClassesDir, buildBinAarDir, buildDir, name);
-            Decompress.unzip(aarFileDir.getAbsolutePath(), aarTransformsDir.getAbsolutePath());
-          }
+        if (getSubProjects(projectDir, name, gradleFile).isEmpty()) {
+          getLogger().debug("No sub projects found for " + name);
+          getLogger().debug("Compiling empty project:" + name);
         }
-        if (getSubProjects(projectDir, name, gradleFile).isEmpty()) {}
 
       } else if (pluginType.equals("[com.android.library, kotlin]")
           || pluginType.equals("[kotlin, com.android.library]")) {
-
-        if (getSubProjects(projectDir, name, gradleFile).isEmpty()) {}
+        if (getSubProjects(projectDir, name, gradleFile).isEmpty()) {
+          getLogger().debug("No sub projects found for " + name);
+          getLogger().debug("Compiling empty project:" + name);
+        }
 
       } else {
         throw new CompilationFailedException(
@@ -214,215 +153,74 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     }
   }
 
-  // get sub projects and build
   private List<String> getSubProjects(File projectDir, String projectName, File gradleFile)
       throws IOException, CompilationFailedException {
     List<String> subProjects = getModule().getAllProjects(gradleFile);
     List<File> compileClassPath = new ArrayList<>();
     List<File> runtimeClassPath = new ArrayList<>();
 
-    compileClassPath.clear();
-    runtimeClassPath.clear();
-
     if (subProjects.isEmpty()) {
     } else {
-      // get sub projects of root sub projects and build
       for (String subProject : subProjects) {
-        String name = subProject.replaceFirst("/", "").replaceAll("/", ":");
+        String subName = subProject.replaceFirst("/", "").replaceAll("/", ":");
         File subGradleFile = new File(projectDir, subProject + "/build.gradle");
-        File sub_libraries = new File(projectDir, subProject + "/build/libraries");
-        File jarDir = new File(projectDir, subProject + "/build/outputs/jar");
-        File jarFileDir = new File(jarDir, subProject + ".jar");
-        File javaDir = new File(projectDir, subProject + "/src/main/java");
-        File javaClassesDir = new File(projectDir, subProject + "/build/classes/java/main");
 
-        File aarDir = new File(projectDir, subProject + "/build/outputs/aar");
-        File aarFileDir = new File(aarDir, subProject + ".aar");
-        File jarTransformsDir = new File(projectDir, subProject + "/build/.transforms/transformed");
-        File aarTransformsDir =
-            new File(projectDir, subProject + "/build/.transforms/transformed/out/jars");
-        Set<File> javaFiles = new HashSet<>();
-        javaFiles.addAll(getJavaFiles(javaDir));
+        List<String> subPluginTypes = getPlugins(subProject, subGradleFile);
 
-        List<String> pluginTypes = getPlugins(subProject, subGradleFile);
-
-        if (pluginTypes.isEmpty()) {
-
+        if (subPluginTypes.isEmpty()) {
           throw new CompilationFailedException(
               "Unable to find any plugins in "
-                  + name
+                  + subName
                   + "/build.gradle, check project's gradle plugins and build again.");
         }
-        String pluginType = pluginTypes.toString();
+
+        String pluginType = subPluginTypes.toString();
+
+        getLogger().debug("Processing sub project " + projectName + ":" + subName);
+        getLogger().debug("Compiling sub project:" + subName);
 
         if (pluginType.equals("[java-library]")) {
-          // don not build project if jar exits and take compile and runtime jars
-          if (jarFileDir.exists()) {
-            compileClassPath.addAll(getCompileClassPath(sub_libraries));
-            runtimeClassPath.addAll(getRuntimeClassPath(sub_libraries));
-            compileClassPath.add(new File(jarTransformsDir, subProject + ".jar"));
-            runtimeClassPath.add(new File(jarTransformsDir, subProject + ".jar"));
-          } else {
-            compileClassPath.addAll(getCompileClassPath(sub_libraries));
-            runtimeClassPath.addAll(getRuntimeClassPath(sub_libraries));
-            compileJava(javaFiles, javaClassesDir, name, compileClassPath, runtimeClassPath);
-            Set<File> javaClassFiles = new HashSet<>();
-            javaClassFiles.addAll(getFiles(javaClassesDir, ".class"));
 
-            if (javaClassFiles.isEmpty()) {
-              getLogger().debug("> Task :" + name + ":" + "jar SKIPPED");
-            } else {
-              getLogger().debug("> Task :" + name + ":" + "jar");
-              BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
-              buildJarTask.assembleJar(javaClassesDir, jarFileDir);
-              FileUtils.copyFileToDirectory(jarFileDir, jarTransformsDir);
-            }
-          }
         } else if (pluginType.equals("[java-library, kotlin]")
             || pluginType.equals("[kotlin, java-library]")) {
-          if (jarFileDir.exists()) {
-            getLogger().debug("> Task :" + name + ":" + "compileJava SKIPPED");
 
-            getLogger().debug("> Task :" + name + ":" + "classes SKIPPED");
-            getLogger().debug("> Task :" + name + ":" + "jar SKIPPED");
-
-            getLogger().debug("> Task :" + name + ":" + "compileClasspath");
-            getLogger().debug("> Task :" + name + ":" + "runtimeClasspath");
-            compileClassPath.addAll(getCompileClassPath(sub_libraries));
-            runtimeClassPath.addAll(getRuntimeClassPath(sub_libraries));
-            compileClassPath.add(new File(jarTransformsDir, subProject + ".jar"));
-            runtimeClassPath.add(new File(jarTransformsDir, subProject + ".jar"));
-
-          } else {
-            getLogger().debug("> Task :" + name + ":" + "compileClasspath");
-            getLogger().debug("> Task :" + name + ":" + "runtimeClasspath");
-            compileClassPath.addAll(getCompileClassPath(sub_libraries));
-            runtimeClassPath.addAll(getRuntimeClassPath(sub_libraries));
-            compileClassPath.add(new File(jarTransformsDir, subProject + ".jar"));
-            runtimeClassPath.add(new File(jarTransformsDir, subProject + ".jar"));
-            jarFileDir.createNewFile();
-          }
         } else if (pluginType.equals("[com.android.library]")) {
-          if (aarFileDir.exists()) {
-            getLogger().debug("> Task :" + name + ":" + "compileClasspath");
-            getLogger().debug("> Task :" + name + ":" + "runtimeClasspath");
-            compileClassPath.addAll(getCompileClassPath(sub_libraries));
-            runtimeClassPath.addAll(getRuntimeClassPath(sub_libraries));
-            compileClassPath.add(new File(aarTransformsDir, ".classes.jar"));
-            runtimeClassPath.add(new File(aarTransformsDir, ".classes.jar"));
-
-          } else {
-            getLogger().debug("> Task :" + name + ":" + "compileClasspath");
-            getLogger().debug("> Task :" + name + ":" + "runtimeClasspath");
-            compileClassPath.addAll(getCompileClassPath(sub_libraries));
-            runtimeClassPath.addAll(getRuntimeClassPath(sub_libraries));
-            compileClassPath.add(new File(aarTransformsDir, ".classes.jar"));
-            runtimeClassPath.add(new File(aarTransformsDir, ".classes.jar"));
-            aarFileDir.createNewFile();
-          }
 
         } else if (pluginType.equals("[com.android.library, kotlin]")
             || pluginType.equals("[kotlin, com.android.library]")) {
 
-          if (aarFileDir.exists()) {
-            getLogger().debug("> Task :" + name + ":" + "compileClasspath");
-            getLogger().debug("> Task :" + name + ":" + "runtimeClasspath");
-            compileClassPath.addAll(getCompileClassPath(sub_libraries));
-            runtimeClassPath.addAll(getRuntimeClassPath(sub_libraries));
-            compileClassPath.add(new File(aarTransformsDir, ".classes.jar"));
-            runtimeClassPath.add(new File(aarTransformsDir, ".classes.jar"));
-
-          } else {
-            getLogger().debug("> Task :" + name + ":" + "compileClasspath");
-            getLogger().debug("> Task :" + name + ":" + "runtimeClasspath");
-            compileClassPath.addAll(getCompileClassPath(sub_libraries));
-            runtimeClassPath.addAll(getRuntimeClassPath(sub_libraries));
-            compileClassPath.add(new File(aarTransformsDir, "classes.jar"));
-            runtimeClassPath.add(new File(aarTransformsDir, "classes.jar"));
-            aarFileDir.createNewFile();
-          }
-
         } else {
           throw new CompilationFailedException(
               "Unable to find any plugins in "
-                  + name
+                  + subName
                   + "/build.gradle, check project's gradle plugins and build again.");
         }
       }
-      // buid main sub project in last
+
       String name = projectName.replaceFirst("/", "").replaceAll("/", ":");
-      File libraries = new File(projectDir, projectName + "/build/libraries");
-      File javaDir = new File(projectDir, projectName + "/src/main/java");
-      File javaClassesDir = new File(projectDir, projectName + "/build/classes/java/main");
-      File jarDir = new File(projectDir, projectName + "/build/outputs/jar");
-      File jarFileDir = new File(jarDir, projectName + ".jar");
-      File aarDir = new File(projectDir, projectName + "/build/outputs/aar");
-      File aarFileDir = new File(aarDir, projectName + ".aar");
-      File jarTransformsDir = new File(projectDir, projectName + "/build/.transforms/transformed");
-      File aarTransformsDir =
-          new File(projectDir, projectName + "/build/.transforms/transformed/out/jars");
 
       List<String> pluginTypes = getPlugins(projectName, gradleFile);
 
-      if (pluginTypes.isEmpty()) {
+      getLogger().debug("Processing main project " + projectName);
+      getLogger().debug("Compiling main project:" + projectName);
 
+      if (pluginTypes.isEmpty()) {
         throw new CompilationFailedException(
             "Unable to find any plugins in "
                 + name
                 + "/build.gradle, check project's gradle plugins and build again.");
       }
+
       String pluginType = pluginTypes.toString();
-      Set<File> javaFiles = new HashSet<>();
-      javaFiles.addAll(getJavaFiles(javaDir));
-      compileClassPath.addAll(getCompileClassPath(libraries));
-      runtimeClassPath.addAll(getRuntimeClassPath(libraries));
 
       if (pluginType.equals("[java-library]")) {
-        if (jarFileDir.exists()) {
-          getLogger().debug("> Task :" + name + ":" + "compileJava SKIPPED");
-          getLogger().debug("> Task :" + name + ":" + "classes SKIPPED");
-          getLogger().debug("> Task :" + name + ":" + "jar SKIPPED");
-        } else {
-          compileJava(javaFiles, javaClassesDir, name, compileClassPath, runtimeClassPath);
-          Set<File> javaClassFiles = new HashSet<>();
-          javaClassFiles.addAll(getFiles(javaClassesDir, ".class"));
 
-          if (javaClassFiles.isEmpty()) {
-            getLogger().debug("> Task :" + name + ":" + "jar SKIPPED");
-          } else {
-            getLogger().debug("> Task :" + name + ":" + "jar");
-            BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
-            buildJarTask.assembleJar(javaClassesDir, jarFileDir);
-            FileUtils.copyFileToDirectory(jarFileDir, jarTransformsDir);
-          }
-        }
       } else if (pluginType.equals("[java-library, kotlin]")
           || pluginType.equals("[kotlin, java-library]")) {
-        if (jarFileDir.exists()) {
-          getLogger().debug("> Task :" + name + ":" + "compileJava SKIPPED");
 
-          getLogger().debug("> Task :" + name + ":" + "classes SKIPPED");
-          getLogger().debug("> Task :" + name + ":" + "jar SKIPPED");
-
-        } else {
-          jarFileDir.createNewFile();
-        }
       } else if (pluginType.equals("[com.android.library]")) {
-        if (aarFileDir.exists()) {
-
-        } else {
-          aarFileDir.createNewFile();
-        }
-
       } else if (pluginType.equals("[com.android.library, kotlin]")
           || pluginType.equals("[kotlin, com.android.library]")) {
-
-        if (aarFileDir.exists()) {
-
-        } else {
-          aarFileDir.createNewFile();
-        }
-
       } else {
         throw new CompilationFailedException(
             "Unable to find any plugins in "
