@@ -17,6 +17,7 @@ import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.builder.project.cache.CacheHolder;
 import com.tyron.common.util.Cache;
+import com.tyron.common.util.Decompress;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -45,7 +46,7 @@ import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardLocation;
 import org.apache.commons.io.FileUtils;
-import com.tyron.common.util.Decompress;
+
 public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
   public static final CacheHolder.CacheKey<String, List<File>> CACHE_KEY =
@@ -176,23 +177,26 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
       } else if (pluginType.equals("[com.android.library]")) {
         List<File> librariesToCompile = getLibraries(name, binResDir);
-        if (resDir.exists()) {
-          compileRes(resDir, binResDir, name);
-          compileLibraries(librariesToCompile, name, binResDir);
-          linkRes(binResDir, name, manifestFileDir, assetsDir);
-        }
-        compileJava(javaFiles, javaClassesDir, name, compileClassPath, runtimeClassPath);
-        Set<File> javaClassFiles = new HashSet<>();
-        javaClassFiles.addAll(getFiles(javaClassesDir, ".class"));
-
-        if (javaClassFiles.isEmpty()) {
-          getLogger().debug("> Task :" + name + ":" + "bundleAar SKIPPED");
+        if (aarFileDir.exists()) {
+			getLogger().debug("> Task :" + name + ":" + "bundleAar SKIPPED");
         } else {
-          getLogger().debug("> Task :" + name + ":" + "bundleAar");
-          assembleAar(javaClassesDir, buildBinAarDir, buildDir, name);
-		  Decompress.unzip(aarFileDir.getAbsolutePath(), aarTransformsDir.getAbsolutePath());
-        }
+          if (resDir.exists()) {
+            compileRes(resDir, binResDir, name);
+         } 
+			compileLibraries(librariesToCompile, name, binResDir);
+            linkRes(binResDir, name, manifestFileDir, assetsDir);
+          compileJava(javaFiles, javaClassesDir, name, compileClassPath, runtimeClassPath);
+          Set<File> javaClassFiles = new HashSet<>();
+          javaClassFiles.addAll(getFiles(javaClassesDir, ".class"));
 
+          if (javaClassFiles.isEmpty()) {
+            getLogger().debug("> Task :" + name + ":" + "bundleAar SKIPPED");
+          } else {
+            getLogger().debug("> Task :" + name + ":" + "bundleAar");
+            assembleAar(javaClassesDir, buildBinAarDir, buildDir, name);
+            Decompress.unzip(aarFileDir.getAbsolutePath(), aarTransformsDir.getAbsolutePath());
+          }
+        }
         if (getSubProjects(projectDir, name, gradleFile).isEmpty()) {}
 
       } else if (pluginType.equals("[com.android.library, kotlin]")
@@ -729,7 +733,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     zipFolder(
         Paths.get(aar.getAbsolutePath()), Paths.get(library.getAbsolutePath(), name + ".aar"));
     if (aar.exists()) {
-        FileUtils.deleteDirectory(aar);
+      FileUtils.deleteDirectory(aar);
     }
   }
 
