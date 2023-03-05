@@ -183,7 +183,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
           if (resDir.exists()) {
             compileRes(resDir, binResDir, name);
           }
-          getLogger().debug(librariesToCompile.toString());
+      
           compileLibraries(librariesToCompile, name, binResDir);
           linkRes(binResDir, name, manifestFileDir, assetsDir);
           compileJava(javaFiles, javaClassesDir, name, compileClassPath, runtimeClassPath);
@@ -666,7 +666,6 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
   private void compileLibraries(List<File> libraries, String root, File bin_res)
       throws IOException, CompilationFailedException {
     Log.d(TAG, "Compiling libraries.");
-    getLogger().debug(libraries.toString());
     if (!bin_res.exists()) {
       if (!bin_res.mkdirs()) {
         throw new IOException("Failed to create resource output directory");
