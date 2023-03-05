@@ -178,13 +178,14 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       } else if (pluginType.equals("[com.android.library]")) {
         List<File> librariesToCompile = getLibraries(name, binResDir);
         if (aarFileDir.exists()) {
-			getLogger().debug("> Task :" + name + ":" + "bundleAar SKIPPED");
+          getLogger().debug("> Task :" + name + ":" + "bundleAar SKIPPED");
         } else {
           if (resDir.exists()) {
             compileRes(resDir, binResDir, name);
-         } 
-			compileLibraries(librariesToCompile, name, binResDir);
-            linkRes(binResDir, name, manifestFileDir, assetsDir);
+          }
+          getLogger().debug(librariesToCompile.toString());
+          compileLibraries(librariesToCompile, name, binResDir);
+          linkRes(binResDir, name, manifestFileDir, assetsDir);
           compileJava(javaFiles, javaClassesDir, name, compileClassPath, runtimeClassPath);
           Set<File> javaClassFiles = new HashSet<>();
           javaClassFiles.addAll(getFiles(javaClassesDir, ".class"));
@@ -516,7 +517,8 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     List<File> libraries = new ArrayList<>();
 
     for (File library :
-        getLibraries(new File(getModule().getProjectDir(), root + "/build/api_files/libs"))) {
+        getLibraries(
+            new File(getModule().getProjectDir(), root + "/build/libraries/api_files/libs"))) {
       File parent = library.getParentFile();
       if (parent != null) {
         if (!new File(parent, "res").exists()) {
@@ -531,7 +533,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     }
 
     for (File library :
-        getLibraries(new File(getModule().getProjectDir(), root + "/build/api_libs"))) {
+        getLibraries(new File(getModule().getProjectDir(), root + "/build/libraries/api_libs"))) {
       File parent = library.getParentFile();
       if (parent != null) {
         if (!new File(parent, "res").exists()) {
@@ -546,22 +548,9 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     }
     for (File library :
         getLibraries(
-            new File(getModule().getProjectDir(), root + "/build/implementation_files/libs"))) {
-      File parent = library.getParentFile();
-      if (parent != null) {
-        if (!new File(parent, "res").exists()) {
-          // we don't need to check it if it has no resource directory
-          continue;
-        }
-        File check = new File(bin_res, parent.getName() + ".zip");
-        if (!check.exists()) {
-          libraries.add(library);
-        }
-      }
-    }
-
-    for (File library :
-        getLibraries(new File(getModule().getProjectDir(), root + "/build/implementation_libs"))) {
+            new File(
+                getModule().getProjectDir(),
+                root + "/build/libraries/implementation_files/libs"))) {
       File parent = library.getParentFile();
       if (parent != null) {
         if (!new File(parent, "res").exists()) {
@@ -577,22 +566,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
     for (File library :
         getLibraries(
-            new File(getModule().getProjectDir(), root + "/build/compileOnly_files/libs"))) {
-      File parent = library.getParentFile();
-      if (parent != null) {
-        if (!new File(parent, "res").exists()) {
-          // we don't need to check it if it has no resource directory
-          continue;
-        }
-        File check = new File(bin_res, parent.getName() + ".zip");
-        if (!check.exists()) {
-          libraries.add(library);
-        }
-      }
-    }
-
-    for (File library :
-        getLibraries(new File(getModule().getProjectDir(), root + "/build/compileOnly_libs"))) {
+            new File(getModule().getProjectDir(), root + "/build/libraries/implementation_libs"))) {
       File parent = library.getParentFile();
       if (parent != null) {
         if (!new File(parent, "res").exists()) {
@@ -608,7 +582,8 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
     for (File library :
         getLibraries(
-            new File(getModule().getProjectDir(), root + "/build/runtimeOnly_files/libs"))) {
+            new File(
+                getModule().getProjectDir(), root + "/build/libraries/compileOnly_files/libs"))) {
       File parent = library.getParentFile();
       if (parent != null) {
         if (!new File(parent, "res").exists()) {
@@ -623,7 +598,41 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     }
 
     for (File library :
-        getLibraries(new File(getModule().getProjectDir(), root + "/build/runtimeOnly_libs"))) {
+        getLibraries(
+            new File(getModule().getProjectDir(), root + "/build/libraries/compileOnly_libs"))) {
+      File parent = library.getParentFile();
+      if (parent != null) {
+        if (!new File(parent, "res").exists()) {
+          // we don't need to check it if it has no resource directory
+          continue;
+        }
+        File check = new File(bin_res, parent.getName() + ".zip");
+        if (!check.exists()) {
+          libraries.add(library);
+        }
+      }
+    }
+
+    for (File library :
+        getLibraries(
+            new File(
+                getModule().getProjectDir(), root + "/build/libraries/runtimeOnly_files/libs"))) {
+      File parent = library.getParentFile();
+      if (parent != null) {
+        if (!new File(parent, "res").exists()) {
+          // we don't need to check it if it has no resource directory
+          continue;
+        }
+        File check = new File(bin_res, parent.getName() + ".zip");
+        if (!check.exists()) {
+          libraries.add(library);
+        }
+      }
+    }
+
+    for (File library :
+        getLibraries(
+            new File(getModule().getProjectDir(), root + "/build/libraries/runtimeOnly_libs"))) {
       File parent = library.getParentFile();
       if (parent != null) {
         if (!new File(parent, "res").exists()) {
@@ -657,7 +666,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
   private void compileLibraries(List<File> libraries, String root, File bin_res)
       throws IOException, CompilationFailedException {
     Log.d(TAG, "Compiling libraries.");
-
+    getLogger().debug(libraries.toString());
     if (!bin_res.exists()) {
       if (!bin_res.mkdirs()) {
         throw new IOException("Failed to create resource output directory");
@@ -900,7 +909,8 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     args.add(file.getAbsolutePath());
 
     for (File library :
-        getLibraries(new File(getModule().getProjectDir(), name + "/build/api_files/libs"))) {
+        getLibraries(
+            new File(getModule().getProjectDir(), name + "/build/libraries/api_files/libs"))) {
       File parent = library.getParentFile();
       if (parent == null) {
         continue;
@@ -914,7 +924,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     }
 
     for (File library :
-        getLibraries(new File(getModule().getProjectDir(), name + "/build/api_libs"))) {
+        getLibraries(new File(getModule().getProjectDir(), name + "/build/libraries/api_libs"))) {
       File parent = library.getParentFile();
       if (parent == null) {
         continue;
@@ -929,50 +939,9 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
     for (File library :
         getLibraries(
-            new File(getModule().getProjectDir(), name + "/build/implementation_files/libs"))) {
-      File parent = library.getParentFile();
-      if (parent == null) {
-        continue;
-      }
-
-      File assetsDir = new File(parent, "assets");
-      if (assetsDir.exists()) {
-        args.add("-A");
-        args.add(assetsDir.getAbsolutePath());
-      }
-    }
-
-    for (File library :
-        getLibraries(new File(getModule().getProjectDir(), name + "/build/implementation_libs"))) {
-      File parent = library.getParentFile();
-      if (parent == null) {
-        continue;
-      }
-
-      File assetsDir = new File(parent, "assets");
-      if (assetsDir.exists()) {
-        args.add("-A");
-        args.add(assetsDir.getAbsolutePath());
-      }
-    }
-
-    for (File library :
-        getLibraries(
-            new File(getModule().getProjectDir(), name + "/build/compileOnly_files/libs"))) {
-      File parent = library.getParentFile();
-      if (parent == null) {
-        continue;
-      }
-
-      File assetsDir = new File(parent, "assets");
-      if (assetsDir.exists()) {
-        args.add("-A");
-        args.add(assetsDir.getAbsolutePath());
-      }
-    }
-
-    for (File library :
-        getLibraries(new File(getModule().getProjectDir(), name + "/build/compileOnly_libs"))) {
+            new File(
+                getModule().getProjectDir(),
+                name + "/build/libraries/implementation_files/libs"))) {
       File parent = library.getParentFile();
       if (parent == null) {
         continue;
@@ -987,7 +956,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
     for (File library :
         getLibraries(
-            new File(getModule().getProjectDir(), name + "/build/runtimeOnly_files/libs"))) {
+            new File(getModule().getProjectDir(), name + "/build/libraries/implementation_libs"))) {
       File parent = library.getParentFile();
       if (parent == null) {
         continue;
@@ -1001,7 +970,55 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     }
 
     for (File library :
-        getLibraries(new File(getModule().getProjectDir(), name + "/build/runtimeOnly_libs"))) {
+        getLibraries(
+            new File(
+                getModule().getProjectDir(), name + "/build/libraries/compileOnly_files/libs"))) {
+      File parent = library.getParentFile();
+      if (parent == null) {
+        continue;
+      }
+
+      File assetsDir = new File(parent, "assets");
+      if (assetsDir.exists()) {
+        args.add("-A");
+        args.add(assetsDir.getAbsolutePath());
+      }
+    }
+
+    for (File library :
+        getLibraries(
+            new File(getModule().getProjectDir(), name + "/build/libraries/compileOnly_libs"))) {
+      File parent = library.getParentFile();
+      if (parent == null) {
+        continue;
+      }
+
+      File assetsDir = new File(parent, "assets");
+      if (assetsDir.exists()) {
+        args.add("-A");
+        args.add(assetsDir.getAbsolutePath());
+      }
+    }
+
+    for (File library :
+        getLibraries(
+            new File(
+                getModule().getProjectDir(), name + "/build/libraries/runtimeOnly_files/libs"))) {
+      File parent = library.getParentFile();
+      if (parent == null) {
+        continue;
+      }
+
+      File assetsDir = new File(parent, "assets");
+      if (assetsDir.exists()) {
+        args.add("-A");
+        args.add(assetsDir.getAbsolutePath());
+      }
+    }
+
+    for (File library :
+        getLibraries(
+            new File(getModule().getProjectDir(), name + "/build/libraries/runtimeOnly_libs"))) {
       File parent = library.getParentFile();
       if (parent == null) {
         continue;
