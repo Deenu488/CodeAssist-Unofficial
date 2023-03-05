@@ -113,16 +113,26 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     for (String projectName : projects) {
 
       File gradleFile = new File(projectDir, projectName + "/build.gradle");
+
       String name = projectName.replaceFirst("/", "").replaceAll("/", ":");
 
       File libraries = new File(projectDir, projectName + "/build/libraries");
+
       File javaDir = new File(projectDir, projectName + "/src/main/java");
       File javaClassesDir = new File(projectDir, projectName + "/build/classes/java/main");
       File jarDir = new File(projectDir, projectName + "/build/outputs/jar");
       File jarFileDir = new File(jarDir, projectName + ".jar");
-      File aarDir = new File(projectDir, projectName + "/build/outputs/aar");
-      File aarFileDir = new File(aarDir, projectName + ".aar");
       File jarTransformsDir = new File(projectDir, projectName + "/build/.transforms/transformed");
+
+      File resDir = new File(projectDir, projectName + "/src/main/res");
+      File binResDir = new File(projectDir, projectName + "/build/bin/res");
+      File buildDir = new File(projectDir, projectName + "/build");
+      File manifestFileDir = new File(projectDir, projectName + "/src/main/AndroidManifest.xml");
+      File assetsDir = new File(projectDir, projectName + "/src/main/assets");
+      File aarDir = new File(projectDir, projectName + "/build/outputs/aar");
+      File buildBinAarDir = new File(projectDir, projectName + "/build/bin/aar");
+
+      File aarFileDir = new File(aarDir, projectName + ".aar");
       File aarTransformsDir =
           new File(projectDir, projectName + "/build/.transforms/transformed/out/jars");
 
@@ -165,6 +175,23 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         if (getSubProjects(projectDir, name, gradleFile).isEmpty()) {}
 
       } else if (pluginType.equals("[com.android.library]")) {
+        List<File> librariesToCompile = getLibraries(name, binResDir);
+        if (resDir.exists()) {
+          compileRes(resDir, binResDir, name);
+          compileLibraries(librariesToCompile, name, binResDir);
+          linkRes(binResDir, name, manifestFileDir, assetsDir);
+        }
+        compileJava(javaFiles, javaClassesDir, name, compileClassPath, runtimeClassPath);
+        Set<File> javaClassFiles = new HashSet<>();
+        javaClassFiles.addAll(getFiles(javaClassesDir, ".class"));
+
+        if (javaClassFiles.isEmpty()) {
+          getLogger().debug("> Task :" + name + ":" + "bundleAar SKIPPED");
+        } else {
+          getLogger().debug("> Task :" + name + ":" + "bundleAar");
+          assembleAar(javaClassesDir, buildBinAarDir, buildDir, name);
+          // FileUtils.copyFileToDirectory(jarFileDir, jarTransformsDir);
+        }
 
         if (getSubProjects(projectDir, name, gradleFile).isEmpty()) {}
 
@@ -201,20 +228,20 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         File sub_libraries = new File(projectDir, subProject + "/build/libraries");
         File jarDir = new File(projectDir, subProject + "/build/outputs/jar");
         File jarFileDir = new File(jarDir, subProject + ".jar");
-		File javaDir = new File(projectDir, subProject + "/src/main/java");
-		File javaClassesDir = new File(projectDir, subProject + "/build/classes/java/main");
-		  
-		File aarDir = new File(projectDir, subProject + "/build/outputs/aar");
+        File javaDir = new File(projectDir, subProject + "/src/main/java");
+        File javaClassesDir = new File(projectDir, subProject + "/build/classes/java/main");
+
+        File aarDir = new File(projectDir, subProject + "/build/outputs/aar");
         File aarFileDir = new File(aarDir, subProject + ".aar");
         File jarTransformsDir = new File(projectDir, subProject + "/build/.transforms/transformed");
         File aarTransformsDir =
             new File(projectDir, subProject + "/build/.transforms/transformed/out/jars");
-		  Set<File> javaFiles = new HashSet<>();
-		  javaFiles.addAll(getJavaFiles(javaDir));
-		  		  
+        Set<File> javaFiles = new HashSet<>();
+        javaFiles.addAll(getJavaFiles(javaDir));
+
         List<String> pluginTypes = getPlugins(subProject, subGradleFile);
-       
-		if (pluginTypes.isEmpty()) {
+
+        if (pluginTypes.isEmpty()) {
 
           throw new CompilationFailedException(
               "Unable to find any plugins in "
@@ -224,7 +251,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         String pluginType = pluginTypes.toString();
 
         if (pluginType.equals("[java-library]")) {
-			//don not build project if jar exits and take compile and runtime jars
+          // don not build project if jar exits and take compile and runtime jars
           if (jarFileDir.exists()) {
             compileClassPath.addAll(getCompileClassPath(sub_libraries));
             runtimeClassPath.addAll(getRuntimeClassPath(sub_libraries));
@@ -232,19 +259,19 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
             runtimeClassPath.add(new File(jarTransformsDir, subProject + ".jar"));
           } else {
             compileClassPath.addAll(getCompileClassPath(sub_libraries));
-            runtimeClassPath.addAll(getRuntimeClassPath(sub_libraries));          
-			  compileJava(javaFiles, javaClassesDir, name, compileClassPath, runtimeClassPath);
-			  Set<File> javaClassFiles = new HashSet<>();
-			  javaClassFiles.addAll(getFiles(javaClassesDir, ".class"));
+            runtimeClassPath.addAll(getRuntimeClassPath(sub_libraries));
+            compileJava(javaFiles, javaClassesDir, name, compileClassPath, runtimeClassPath);
+            Set<File> javaClassFiles = new HashSet<>();
+            javaClassFiles.addAll(getFiles(javaClassesDir, ".class"));
 
-			  if (javaClassFiles.isEmpty()) {
-				  getLogger().debug("> Task :" + name + ":" + "jar SKIPPED");
-			  } else {
-				  getLogger().debug("> Task :" + name + ":" + "jar");
-				  BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
-				  buildJarTask.assembleJar(javaClassesDir, jarFileDir);
-				  FileUtils.copyFileToDirectory(jarFileDir, jarTransformsDir);
-			  }
+            if (javaClassFiles.isEmpty()) {
+              getLogger().debug("> Task :" + name + ":" + "jar SKIPPED");
+            } else {
+              getLogger().debug("> Task :" + name + ":" + "jar");
+              BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
+              buildJarTask.assembleJar(javaClassesDir, jarFileDir);
+              FileUtils.copyFileToDirectory(jarFileDir, jarTransformsDir);
+            }
           }
         } else if (pluginType.equals("[java-library, kotlin]")
             || pluginType.equals("[kotlin, java-library]")) {
@@ -317,7 +344,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
                   + "/build.gradle, check project's gradle plugins and build again.");
         }
       }
-	  //buid main sub project in last
+      // buid main sub project in last
       String name = projectName.replaceFirst("/", "").replaceAll("/", ":");
       File libraries = new File(projectDir, projectName + "/build/libraries");
       File javaDir = new File(projectDir, projectName + "/src/main/java");
@@ -1003,6 +1030,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         throw new IOException("Failed to create resource output directory");
       }
     }
+
     List<String> args = new ArrayList<>();
     args.add("--dir");
     args.add(res.getAbsolutePath());
