@@ -104,13 +104,14 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     }
   }
 
-  //process empty sub projects
+  // process empty sub projects
   private void processProjects(File projectDir, List<String> projects)
       throws IOException, CompilationFailedException {
     List<File> compileClassPath = new ArrayList<>();
     List<File> runtimeClassPath = new ArrayList<>();
-
+	//proccess all sub projects of rootProject
     for (String projectName : projects) {
+		
       File gradleFile = new File(projectDir, projectName + "/build.gradle");
       String name = projectName.replaceFirst("/", "").replaceAll("/", ":");
 
@@ -123,28 +124,34 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       File aarFileDir = new File(aarDir, projectName + ".aar");
       File jarTransformsDir = new File(projectDir, projectName + "/build/.transforms/transformed");
       File aarTransformsDir =
-          new File(projectDir, projectName + "/build/.transforms/transformed/out/jars");
-      Set<File> javaFiles = new HashSet<>(getJavaFiles(javaDir));
-      Set<File> javaClassFiles = new HashSet<>(getFiles(javaClassesDir, ".class"));
-
+	  new File(projectDir, projectName + "/build/.transforms/transformed/out/jars");
+    
+	  Set<File> javaFiles = new HashSet<>();    
+      javaFiles.addAll(getJavaFiles(javaDir));
+   
       compileClassPath.addAll(getCompileClassPath(libraries));
       runtimeClassPath.addAll(getRuntimeClassPath(libraries));
-      String pluginType = checkPlugins(name, gradleFile);
+	  
+		getLogger().debug("proccessing project " + name);
+		
+		String pluginType = checkPlugins(name, gradleFile);
 
       if (pluginType.equals("[java-library]")) {
 
         if (getSubProjects(projectDir, name, gradleFile).isEmpty()) {
           if (jarFileDir.exists()) {
-            getLogger().debug("> Task :" + name + ":" + "compileJava SKIPPED");
 
+            getLogger().debug("> Task :" + name + ":" + "compileJava SKIPPED");
             getLogger().debug("> Task :" + name + ":" + "classes SKIPPED");
             getLogger().debug("> Task :" + name + ":" + "jar SKIPPED");
 
           } else {
             compileJava(javaFiles, javaClassesDir, name, compileClassPath, runtimeClassPath);
-            if (javaClassFiles.isEmpty()) {
+			  Set<File> javaClassFiles = new HashSet<>();
+			  javaClassFiles.addAll(getFiles(javaClassesDir, ".class"));
+			  
+			if (javaClassFiles.isEmpty()) {
               getLogger().debug("> Task :" + name + ":" + "jar SKIPPED");
-
             } else {
               getLogger().debug("> Task :" + name + ":" + "jar");
               BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
@@ -177,7 +184,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     }
   }
 
-  //get sub projects and build
+  // get sub projects and build
   private List<String> getSubProjects(File projectDir, String projectName, File gradleFile)
       throws IOException, CompilationFailedException {
     List<String> subProjects = getModule().getAllProjects(gradleFile);
@@ -189,6 +196,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
     if (subProjects.isEmpty()) {
     } else {
+		//get sub projects of root sub projects and build 
       for (String subProject : subProjects) {
         String name = subProject.replaceFirst("/", "").replaceAll("/", ":");
         File subGradleFile = new File(projectDir, subProject + "/build.gradle");
@@ -201,23 +209,23 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         File aarTransformsDir =
             new File(projectDir, subProject + "/build/.transforms/transformed/out/jars");
 
-        String pluginType = checkPlugins(subProject, subGradleFile);
+        List<String> pluginTypes = getPlugins(subProject, subGradleFile);
+        if (pluginTypes.isEmpty()) {
+
+          throw new CompilationFailedException(
+              "Unable to find any plugins in "
+                  + name
+                  + "/build.gradle, check project's gradle plugins and build again.");
+        }
+        String pluginType = pluginTypes.toString();
 
         if (pluginType.equals("[java-library]")) {
           if (jarFileDir.exists()) {
-            getLogger().debug("> Task :" + name + ":" + "compileJava SKIPPED");
-
-            getLogger().debug("> Task :" + name + ":" + "classes SKIPPED");
-            getLogger().debug("> Task :" + name + ":" + "jar SKIPPED");
-            getLogger().debug("> Task :" + name + ":" + "compileClasspath");
-            getLogger().debug("> Task :" + name + ":" + "runtimeClasspath");
             compileClassPath.addAll(getCompileClassPath(sub_libraries));
             runtimeClassPath.addAll(getRuntimeClassPath(sub_libraries));
             compileClassPath.add(new File(jarTransformsDir, subProject + ".jar"));
             runtimeClassPath.add(new File(jarTransformsDir, subProject + ".jar"));
           } else {
-            getLogger().debug("> Task :" + name + ":" + "compileClasspath");
-            getLogger().debug("> Task :" + name + ":" + "runtimeClasspath");
             compileClassPath.addAll(getCompileClassPath(sub_libraries));
             runtimeClassPath.addAll(getRuntimeClassPath(sub_libraries));
             compileClassPath.add(new File(jarTransformsDir, subProject + ".jar"));
@@ -308,18 +316,39 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       File aarTransformsDir =
           new File(projectDir, projectName + "/build/.transforms/transformed/out/jars");
 
-      String pluginType = checkPlugins(projectName, gradleFile);
+      List<String> pluginTypes = getPlugins(projectName, gradleFile);
 
-      Set<File> javaFiles = new HashSet<>(getJavaFiles(javaDir));
+      if (pluginTypes.isEmpty()) {
+
+        throw new CompilationFailedException(
+            "Unable to find any plugins in "
+                + name
+                + "/build.gradle, check project's gradle plugins and build again.");
+      }
+      String pluginType = pluginTypes.toString();
+      Set<File> javaFiles = new HashSet<>();
+      javaFiles.addAll(getJavaFiles(javaDir));
+      	compileClassPath.addAll(getCompileClassPath(libraries));
+		runtimeClassPath.addAll(getRuntimeClassPath(libraries));
 
       if (pluginType.equals("[java-library]")) {
         if (jarFileDir.exists()) {
           getLogger().debug("> Task :" + name + ":" + "compileJava SKIPPED");
-
           getLogger().debug("> Task :" + name + ":" + "classes SKIPPED");
           getLogger().debug("> Task :" + name + ":" + "jar SKIPPED");
         } else {
-          jarFileDir.createNewFile();
+          compileJava(javaFiles, javaClassesDir, name, compileClassPath, runtimeClassPath);
+			Set<File> javaClassFiles = new HashSet<>();
+			javaClassFiles.addAll(getFiles(javaClassesDir, ".class"));
+			
+		  if (javaClassFiles.isEmpty()) {
+            getLogger().debug("> Task :" + name + ":" + "jar SKIPPED");
+          } else {
+            getLogger().debug("> Task :" + name + ":" + "jar");
+            BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
+            buildJarTask.assembleJar(javaClassesDir, jarFileDir);
+            FileUtils.copyFileToDirectory(jarFileDir, jarTransformsDir);
+          }
         }
       } else if (pluginType.equals("[java-library, kotlin]")
           || pluginType.equals("[kotlin, java-library]")) {
@@ -388,6 +417,22 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       }
     }
     return pluginType;
+  }
+
+  private List<String> getPlugins(String projectName, File gradleFile) {
+    List<String> plugins = new ArrayList<>();
+    List<String> unsupported_plugins = new ArrayList<>();
+    for (String plugin : getModule().getPlugins(gradleFile)) {
+      if (plugin.equals("java-library")
+          || plugin.equals("com.android.library")
+          || plugin.equals("kotlin")) {
+        plugins.add(plugin);
+      } else {
+        unsupported_plugins.add(plugin);
+      }
+    }
+
+    return plugins;
   }
 
   public void compileProject(
@@ -732,9 +777,11 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     task.parse();
     task.analyze();
     task.generate();
-    getLogger().debug("> Task :" + name + ":" + "classes");
+
     if (mHasErrors) {
       throw new CompilationFailedException("Compilation failed, check logs for more details");
+    } else {
+      getLogger().debug("> Task :" + name + ":" + "classes");
     }
   }
 
@@ -991,6 +1038,27 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     return javaFiles;
   }
 
+  public static Set<File> getFiles(File dir, String ext) {
+    Set<File> Files = new HashSet<>();
+
+    File[] files = dir.listFiles();
+    if (files == null) {
+      return Collections.emptySet();
+    }
+
+    for (File file : files) {
+      if (file.isDirectory()) {
+        Files.addAll(getFiles(file, ext));
+      } else {
+        if (file.getName().endsWith(ext)) {
+          Files.add(file);
+        }
+      }
+    }
+
+    return Files;
+  }
+
   private void zipFolder(final Path sourceFolderPath, Path zipPath) throws IOException {
     final ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipPath.toFile()));
     Files.walkFileTree(
@@ -1061,25 +1129,6 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       }
     }
     return jarFiles;
-  }
-
-  public List<File> getFiles(File dir, String ext) {
-    List<File> Files = new ArrayList<>();
-    File[] files = dir.listFiles();
-    if (files != null) {
-      for (File file : files) {
-        if (file.isFile() && file.getName().endsWith(ext)) {
-          // Check if the JarFile is valid before adding it to the list
-          if (isJarFileValid(file)) {
-            Files.add(file);
-          }
-        } else if (file.isDirectory()) {
-          // Recursively add JarFiles from subdirectories
-          Files.addAll(getJarFiles(file));
-        }
-      }
-    }
-    return Files;
   }
 
   public boolean isJarFileValid(File file) {
