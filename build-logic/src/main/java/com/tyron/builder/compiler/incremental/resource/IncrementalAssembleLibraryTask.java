@@ -45,7 +45,7 @@ import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardLocation;
 import org.apache.commons.io.FileUtils;
-
+import com.tyron.common.util.Decompress;
 public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
   public static final CacheHolder.CacheKey<String, List<File>> CACHE_KEY =
@@ -190,7 +190,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         } else {
           getLogger().debug("> Task :" + name + ":" + "bundleAar");
           assembleAar(javaClassesDir, buildBinAarDir, buildDir, name);
-          // FileUtils.copyFileToDirectory(jarFileDir, jarTransformsDir);
+		  Decompress.unzip(aarFileDir.getAbsolutePath(), aarTransformsDir.getAbsolutePath());
         }
 
         if (getSubProjects(projectDir, name, gradleFile).isEmpty()) {}
@@ -708,12 +708,13 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         throw new IOException("Failed to create resource libs directory");
       }
     }
+    File res = new File(getModule().getProjectDir(), name + "/src/main/res");
     copyResources(
         new File(getModule().getProjectDir(), name + "/src/main/AndroidManifest.xml"),
         aar.getAbsolutePath());
-    copyResources(
-        new File(getModule().getProjectDir(), name + "/src/main/res"), aar.getAbsolutePath());
-
+    if (res.exists()) {
+      copyResources(res, aar.getAbsolutePath());
+    }
     File assets = new File(getModule().getProjectDir(), name + "/src/main/assets");
     File jniLibs = new File(getModule().getProjectDir(), name + "/src/main/jniLibs");
 
@@ -728,7 +729,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     zipFolder(
         Paths.get(aar.getAbsolutePath()), Paths.get(library.getAbsolutePath(), name + ".aar"));
     if (aar.exists()) {
-      FileUtils.deleteDirectory(aar);
+        FileUtils.deleteDirectory(aar);
     }
   }
 
