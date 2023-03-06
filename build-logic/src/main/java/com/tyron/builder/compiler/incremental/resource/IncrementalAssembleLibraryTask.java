@@ -103,45 +103,96 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     }
   }
 
-	private void processProjects(File projectDir, List<String> projects)
-    throws IOException, CompilationFailedException {
-		List<File> compileClassPath = new ArrayList<>();
-		List<File> runtimeClassPath = new ArrayList<>();
+  private void processProjects(File projectDir, List<String> projects)
+      throws IOException, CompilationFailedException {
+    List<File> compileClassPath = new ArrayList<>();
+    List<File> runtimeClassPath = new ArrayList<>();
 
-		for (String projectName : projects) {
-			File gradleFile = new File(projectDir, projectName + "/build.gradle");
-			String name = projectName.replaceFirst("/", "").replaceAll("/", ":");
+    for (String projectName : projects) {
+      String name = projectName.replaceFirst("/", "").replaceAll("/", ":");
 
-			List<String> pluginTypes = getPlugins(projectName, gradleFile);
-			String pluginType = pluginTypes.toString();
+      File gradleFile = new File(projectDir, name + "/build.gradle");
 
-			getLogger().debug("Project: " + name);
-			buildSubProjects(projectDir, name, gradleFile);
+      List<String> pluginTypes = getPlugins(name, gradleFile);
+      String pluginType = pluginTypes.toString();
 
-			if (getModule().getAllProjects(gradleFile).isEmpty()) {
-				getLogger().debug("Building project: " + name);
-			}
-		}
-	}
+      getLogger().debug("Project: " + name);
+      prepairSubProjects(projectDir, name);
+    }
+  }
 
-	private void buildSubProjects(File projectDir, String projectName, File gradleFile)
-    throws IOException, CompilationFailedException {
-		List<String> subProjects = getModule().getAllProjects(gradleFile);
+  private void prepairSubProjects(File projectDir, String name)
+      throws IOException, CompilationFailedException {
 
-		while (!subProjects.isEmpty()) {
-			String subProject = subProjects.remove(0);    
-			String subName = subProject.replaceFirst("/", "").replaceAll("/", ":");
+    File gradleFile = new File(projectDir, name + "/build.gradle");
 
-			getLogger().debug("Sub project: " + subName);
-			getLogger().debug("Compiling sub project: " + subName);
-		}
+    List<String> subProjects = getModule().getAllProjects(gradleFile);
+    List<File> compileClassPath = new ArrayList<>();
+    List<File> runtimeClassPath = new ArrayList<>();
+    compileClassPath.clear();
+    runtimeClassPath.clear();
 
-		if (!projectName.isEmpty()) {
-			getLogger().debug("Building project: " + projectName);
-		}
-	}
-	
-  private String checkPlugins(String projectName, File gradleFile) {
+    while (!subProjects.isEmpty()) {
+      String subProject = subProjects.remove(0);
+      String subName = subProject.replaceFirst("/", "").replaceAll("/", ":");
+      File sub_libraries = new File(projectDir, subName + "/build/libraries");
+
+      getLogger().debug("Sub project: " + subName);
+      getLogger().debug("Compiling sub project: " + subName);
+
+      compileClassPath.addAll(getCompileClassPath(sub_libraries));
+      runtimeClassPath.addAll(getRuntimeClassPath(sub_libraries));
+
+      buildSubProject(projectDir, subName, compileClassPath, runtimeClassPath);
+    }
+
+    if (!name.isEmpty()) {
+      File libraries = new File(projectDir, name + "/build/libraries");
+
+      getLogger().debug("Building project: " + name);
+
+      compileClassPath.addAll(getCompileClassPath(libraries));
+      runtimeClassPath.addAll(getRuntimeClassPath(libraries));
+
+      buildProject(projectDir, name, compileClassPath, runtimeClassPath);
+    }
+  }
+
+  private void buildSubProject(
+      File projectDir, String subName, List<File> compileClassPath, List<File> runtimeClassPath)
+      throws CompilationFailedException {
+    File subGradleFile = new File(projectDir, subName + "/build.gradle");
+
+    List<String> pluginTypes = getPlugins(subName, subGradleFile);
+    if (pluginTypes.isEmpty()) {
+	  getLogger().error("No plugins applied");
+      throw new CompilationFailedException(
+          "Unable to find any plugins in "
+              + subName
+              + "/build.gradle, check project's gradle plugins and build again.");
+    }
+
+    String pluginType = pluginTypes.toString();
+  }
+
+  private void buildProject(
+      File projectDir, String name, List<File> compileClassPath, List<File> runtimeClassPath)
+      throws CompilationFailedException {
+    File gradleFile = new File(projectDir, name + "/build.gradle");
+
+	List<String> pluginTypes = checkPlugins(name, gradleFile);
+    if (pluginTypes.isEmpty()) {
+	  getLogger().error("No plugins applied");
+      throw new CompilationFailedException(
+          "Unable to find any plugins in "
+              + name
+              + "/build.gradle, check project's gradle plugins and build again.");
+    }
+
+    String pluginType = pluginTypes.toString();
+  }
+
+  private List<String> checkPlugins(String name, File gradleFile) {
     List<String> plugins = new ArrayList<>();
     List<String> unsupported_plugins = new ArrayList<>();
     for (String plugin : getModule().getPlugins(gradleFile)) {
@@ -154,10 +205,9 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       }
     }
     String pluginType = plugins.toString();
-    String name = projectName.replaceFirst("/", "").replaceAll("/", ":");
+
     getLogger().debug("> Task :" + name + ":" + "checkingPlugins");
     if (plugins.isEmpty()) {
-      getLogger().error("No plugins applied");
     } else {
       getLogger().debug("NOTE: " + "Plugins applied: " + plugins.toString());
       if (unsupported_plugins.isEmpty()) {
@@ -170,7 +220,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
                     + " will not be used");
       }
     }
-    return pluginType;
+    return plugins;
   }
 
   private List<String> getPlugins(String projectName, File gradleFile) {
