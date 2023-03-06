@@ -116,18 +116,18 @@ public class IncrementalJavaTask extends Task<JavaModule> {
             diagnosticCollector, Locale.getDefault(), Charset.defaultCharset());
     standardJavaFileManager.setSymbolFileEnabled(false);
 
-    File api_files = new File(getModule().getRootFile(), "/build/api_files/libs");
-    File api_libs = new File(getModule().getRootFile(), "/build/api_libs");
+    File api_files = new File(getModule().getRootFile(), "/build/libraries/api_files/libs");
+    File api_libs = new File(getModule().getRootFile(), "/build/libraries/api_libs");
 
     File implementation_files =
-        new File(getModule().getRootFile(), "/build/implementation_files/libs");
-    File implementation_libs = new File(getModule().getRootFile(), "/build/implementation_libs");
+        new File(getModule().getRootFile(), "/build/libraries/implementation_files/libs");
+    File implementation_libs = new File(getModule().getRootFile(), "/build/libraries/implementation_libs");
 
-    File runtimeOnly_files = new File(getModule().getRootFile(), "/build/runtimeOnly_files/libs");
-    File runtimeOnly_libs = new File(getModule().getRootFile(), "/build/runtimeOnly_libs");
+    File runtimeOnly_files = new File(getModule().getRootFile(), "/build/libraries/runtimeOnly_files/libs");
+    File runtimeOnly_libs = new File(getModule().getRootFile(), "/build/libraries/runtimeOnly_libs");
 
-    File compileOnly_files = new File(getModule().getRootFile(), "/build/compileOnly_files/libs");
-    File compileOnly_libs = new File(getModule().getRootFile(), "/build/compileOnly_libs");
+    File compileOnly_files = new File(getModule().getRootFile(), "/build/libraries/compileOnly_files/libs");
+    File compileOnly_libs = new File(getModule().getRootFile(), "/build/libraries/compileOnly_libs");
 
     List<File> compileClassPath = new ArrayList<>();
     compileClassPath.addAll(getJarFiles(api_files));
