@@ -12,6 +12,7 @@ import com.tyron.builder.internal.jar.AssembleJar;
 import com.tyron.builder.log.ILogger;
 import com.tyron.builder.log.LogUtils;
 import com.tyron.builder.model.DiagnosticWrapper;
+import com.tyron.builder.model.ModuleSettings;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.builder.project.cache.CacheHolder;
@@ -160,12 +161,12 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
   private void buildSubProject(
       File projectDir, String subName, List<File> compileClassPath, List<File> runtimeClassPath)
-      throws CompilationFailedException {
+      throws CompilationFailedException, IOException {
     File subGradleFile = new File(projectDir, subName + "/build.gradle");
 
     List<String> pluginTypes = getPlugins(subName, subGradleFile);
     if (pluginTypes.isEmpty()) {
-	  getLogger().error("No plugins applied");
+      getLogger().error("No plugins applied");
       throw new CompilationFailedException(
           "Unable to find any plugins in "
               + subName
@@ -180,9 +181,9 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       throws CompilationFailedException {
     File gradleFile = new File(projectDir, name + "/build.gradle");
 
-	List<String> pluginTypes = checkPlugins(name, gradleFile);
+    List<String> pluginTypes = checkPlugins(name, gradleFile);
     if (pluginTypes.isEmpty()) {
-	  getLogger().error("No plugins applied");
+      getLogger().error("No plugins applied");
       throw new CompilationFailedException(
           "Unable to find any plugins in "
               + name
@@ -190,6 +191,31 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     }
 
     String pluginType = pluginTypes.toString();
+  }
+
+  public static boolean hasDirectoryBeenModifiedSinceLastRun(Set<File> files, File config)
+      throws IOException {
+    if (files.isEmpty()) {
+      return false;
+    }
+    List<File> fileList = new ArrayList<>(files);
+    File lastModifiedFile = fileList.get(0);
+    for (int i = 0; i < fileList.size(); i++) {
+      if (lastModifiedFile.lastModified() < fileList.get(i).lastModified()) {
+        lastModifiedFile = fileList.get(i);
+      }
+    }
+    ModuleSettings myModuleSettings = new ModuleSettings(config);
+    long lastModifiedTime = Long.parseLong(myModuleSettings.getString("lastBuildTime", "0"));
+    if (lastModifiedTime >= lastModifiedFile.lastModified()) {
+      return false;
+    } else {
+      myModuleSettings
+          .edit()
+          .putString("lastBuildTime", String.valueOf(lastModifiedFile.lastModified()))
+          .apply();
+      return true;
+    }
   }
 
   private List<String> checkPlugins(String name, File gradleFile) {
@@ -836,27 +862,6 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       throw new IOException("Unable to create file " + name);
     }
     return createdFile;
-  }
-
-  public static Set<File> getJavaFiles(File dir) {
-    Set<File> javaFiles = new HashSet<>();
-
-    File[] files = dir.listFiles();
-    if (files == null) {
-      return Collections.emptySet();
-    }
-
-    for (File file : files) {
-      if (file.isDirectory()) {
-        javaFiles.addAll(getJavaFiles(file));
-      } else {
-        if (file.getName().endsWith(".java")) {
-          javaFiles.add(file);
-        }
-      }
-    }
-
-    return javaFiles;
   }
 
   public static Set<File> getFiles(File dir, String ext) {
