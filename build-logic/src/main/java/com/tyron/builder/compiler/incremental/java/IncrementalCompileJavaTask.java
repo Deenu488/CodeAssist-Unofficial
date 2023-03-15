@@ -107,13 +107,18 @@ public class IncrementalCompileJavaTask extends Task<JavaModule> {
 
     File implementation_files =
         new File(getModule().getRootFile(), "/build/libraries/implementation_files/libs");
-    File implementation_libs = new File(getModule().getRootFile(), "/build/libraries/implementation_libs");
+    File implementation_libs =
+        new File(getModule().getRootFile(), "/build/libraries/implementation_libs");
 
-    File runtimeOnly_files = new File(getModule().getRootFile(), "/build/libraries/runtimeOnly_files/libs");
-    File runtimeOnly_libs = new File(getModule().getRootFile(), "/build/libraries/runtimeOnly_libs");
+    File runtimeOnly_files =
+        new File(getModule().getRootFile(), "/build/libraries/runtimeOnly_files/libs");
+    File runtimeOnly_libs =
+        new File(getModule().getRootFile(), "/build/libraries/runtimeOnly_libs");
 
-    File compileOnly_files = new File(getModule().getRootFile(), "/build/libraries/compileOnly_files/libs");
-    File compileOnly_libs = new File(getModule().getRootFile(), "/build/libraries/compileOnly_libs");
+    File compileOnly_files =
+        new File(getModule().getRootFile(), "/build/libraries/compileOnly_files/libs");
+    File compileOnly_libs =
+        new File(getModule().getRootFile(), "/build/libraries/compileOnly_libs");
 
     List<File> compileClassPath = new ArrayList<>();
     compileClassPath.addAll(getJarFiles(api_files));

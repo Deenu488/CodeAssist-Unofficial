@@ -266,8 +266,30 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
   }
 
   public void compileProject(
-      File projectDir, String projectName, List<File> compileClassPath, List<File> runtimeClassPath)
-      throws IOException, CompilationFailedException {}
+      String pluginType,
+      File projectDir,
+      String projectName,
+      List<File> compileClassPath,
+      List<File> runtimeClassPath)
+      throws IOException, CompilationFailedException {
+
+    if (pluginType.equals("[java-library]")) {
+
+    } else if (pluginType.equals("[java-library, kotlin]")
+        || pluginType.equals("[kotlin, java-library]")) {
+
+    } else if (pluginType.equals("[com.android.library]")) {
+
+    } else if (pluginType.equals("[com.android.library, kotlin]")
+        || pluginType.equals("[kotlin, com.android.library]")) {
+
+    } else if (pluginType.equals("[com.android.application]")) {
+
+    } else if (pluginType.equals("[com.android.application, kotlin-android]")
+        || pluginType.equals("[kotlin-android, com.android.application]")) {
+
+    }
+  }
 
   private List<File> getCompileClassPath(File libraries) {
     List<File> compileClassPath = new ArrayList<>();
