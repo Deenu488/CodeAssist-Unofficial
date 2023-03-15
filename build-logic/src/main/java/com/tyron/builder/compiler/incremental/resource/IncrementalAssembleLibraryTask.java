@@ -178,7 +178,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
   private void buildProject(
       File projectDir, String name, List<File> compileClassPath, List<File> runtimeClassPath)
-      throws CompilationFailedException {
+      throws CompilationFailedException, IOException {
     File gradleFile = new File(projectDir, name + "/build.gradle");
 
     List<String> pluginTypes = checkPlugins(name, gradleFile);
@@ -191,6 +191,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     }
 
     String pluginType = pluginTypes.toString();
+	compileProject(pluginType,projectDir,name,compileClassPath,runtimeClassPath);
   }
 
   public static boolean hasDirectoryBeenModifiedSinceLastRun(Set<File> files, File config)
@@ -273,6 +274,9 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       List<File> runtimeClassPath)
       throws IOException, CompilationFailedException {
 
+	  mOutputDir = new File(getModule().getBuildDirectory(), "bin/java/classes");
+	  
+	  
     if (pluginType.equals("[java-library]")) {
 
     } else if (pluginType.equals("[java-library, kotlin]")
