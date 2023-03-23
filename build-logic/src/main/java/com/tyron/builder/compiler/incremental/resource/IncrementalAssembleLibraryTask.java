@@ -53,6 +53,8 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       new CacheHolder.CacheKey<>("javaCache");
   private static final String TAG = "assembleLibraries";
   private Cache<String, List<File>> mClassCache;
+  private List<File> subCompileClassPath = new ArrayList<>();
+  private List<File> subRuntimeClassPath = new ArrayList<>();
 
   public IncrementalAssembleLibraryTask(Project project, AndroidModule module, ILogger logger) {
     super(project, module, logger);
@@ -107,17 +109,9 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
   private void processProjects(File projectDir, List<String> projects)
       throws IOException, CompilationFailedException {
-    List<File> compileClassPath = new ArrayList<>();
-    List<File> runtimeClassPath = new ArrayList<>();
 
     for (String projectName : projects) {
       String name = projectName.replaceFirst("/", "").replaceAll("/", ":");
-
-      File gradleFile = new File(projectDir, name + "/build.gradle");
-
-      List<String> pluginTypes = getPlugins(name, gradleFile);
-      String pluginType = pluginTypes.toString();
-
       getLogger().debug("Project: " + name);
       prepairSubProjects(projectDir, name);
     }
@@ -133,6 +127,8 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     List<File> runtimeClassPath = new ArrayList<>();
     compileClassPath.clear();
     runtimeClassPath.clear();
+    subCompileClassPath.clear();
+    subRuntimeClassPath.clear();
 
     while (!subProjects.isEmpty()) {
       String subProject = subProjects.remove(0);
@@ -155,6 +151,8 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
       compileClassPath.addAll(getCompileClassPath(libraries));
       runtimeClassPath.addAll(getRuntimeClassPath(libraries));
+      compileClassPath.addAll(subCompileClassPath);
+      runtimeClassPath.addAll(subRuntimeClassPath);
 
       buildProject(projectDir, name, compileClassPath, runtimeClassPath);
     }
@@ -285,7 +283,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
     File jarTransformsDir = new File(projectDir, projectName + "/build/.transforms/transformed");
 
-    File config = new File(jarDir, "lastBuildTime");
+    File config = new File(jarDir, "lastBuild.bin");
 
     Set<File> javaFiles = new HashSet<>();
     Set<File> kotlinFiles = new HashSet<>();
@@ -294,19 +292,23 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
     if (pluginType.equals("[java-library]")) {
       javaFiles.addAll(getFiles(javaDir, ".java"));
-      if (hasDirectoryBeenModifiedSinceLastRun(javaFiles, config)) {
+      if (!jarFileDir.exists() || hasDirectoryBeenModifiedSinceLastRun(javaFiles, config)) {
+        // If the JAR file directory doesn't exist or the Java files have been modified,
+        // compile the Java files, create a JAR file, and add the JAR file to the classpaths.
         compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
         BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
         buildJarTask.assembleJar(javaClassesDir, jarFileDir);
         getLogger().debug("> Task :" + projectName + ":" + "jar");
+        copyResources(jarFileDir, jarTransformsDir.getAbsolutePath());
+        subCompileClassPath.add(new File(jarTransformsDir, projectName + ".jar"));
+        subRuntimeClassPath.add(new File(jarTransformsDir, projectName + ".jar"));
       } else {
         if (jarFileDir.exists()) {
+          // If the JAR file directory exists and the Java files have not been modified,
+          // add the existing JAR file to the classpaths.
           getLogger().debug("> Task :" + projectName + ":" + "jar SKIPPED");
-        } else {
-          compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
-          BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
-          buildJarTask.assembleJar(javaClassesDir, jarFileDir);
-          getLogger().debug("> Task :" + projectName + ":" + "jar");
+          subCompileClassPath.add(new File(jarTransformsDir, projectName + ".jar"));
+          subRuntimeClassPath.add(new File(jarTransformsDir, projectName + ".jar"));
         }
       }
 
