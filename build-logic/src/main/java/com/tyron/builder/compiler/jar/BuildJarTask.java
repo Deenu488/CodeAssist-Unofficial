@@ -10,6 +10,7 @@ import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.JavaModule;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.jar.Attributes;
 
 public class BuildJarTask extends Task<JavaModule> {
@@ -48,5 +49,18 @@ public class BuildJarTask extends Task<JavaModule> {
     assembleJar.setOutputFile(out);
     assembleJar.setJarOptions(new JarOptionsImpl(new Attributes()));
     assembleJar.createJarArchive(input);
+  }
+
+  public void assembleJar(List<File> inputFolders, File out)
+      throws IOException, CompilationFailedException {
+    if (!out.getParentFile().exists()) {
+      if (!out.getParentFile().mkdirs()) {
+        throw new IOException("Failed to create resource output directory");
+      }
+    }
+    AssembleJar assembleJar = new AssembleJar(false);
+    assembleJar.setOutputFile(out);
+    assembleJar.setJarOptions(new JarOptionsImpl(new Attributes()));
+    assembleJar.createJarArchive(inputFolders);
   }
 }

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -19,6 +20,41 @@ public class AssembleJar {
   public AssembleJar(boolean verbose) {
     mVerbose = verbose;
     mJarOptions = new JarOptionsImpl(new Attributes());
+  }
+
+  public void createJarArchive(List<File> inputFolders) throws IOException {
+    Manifest manifest = setJarOptions(mJarOptions);
+
+    try (FileOutputStream stream = new FileOutputStream(mOutputFile)) {
+      try (JarOutputStream out = new JarOutputStream(stream, manifest)) {
+        for (File folder : inputFolders) {
+          addFolderToJar("", folder, out);
+        }
+      }
+    }
+  }
+
+  private void addFolderToJar(String path, File folder, JarOutputStream out) throws IOException {
+    File[] files = folder.listFiles();
+    if (files == null) {
+      return;
+    }
+    for (File file : files) {
+      if (file.isDirectory()) {
+        addFolderToJar(path + file.getName() + "/", file, out);
+      } else {
+        JarEntry entry = new JarEntry(path + file.getName());
+        out.putNextEntry(entry);
+        try (FileInputStream in = new FileInputStream(file)) {
+          byte[] buffer = new byte[1024];
+          int bytesRead;
+          while ((bytesRead = in.read(buffer)) != -1) {
+            out.write(buffer, 0, bytesRead);
+          }
+        }
+        out.closeEntry();
+      }
+    }
   }
 
   public void createJarArchive(File in) throws IOException {

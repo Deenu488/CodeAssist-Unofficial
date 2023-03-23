@@ -332,6 +332,12 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       kotlinFiles.addAll(getFiles(kotlinDir, ".kt"));
       kotlinFiles.addAll(getFiles(javaDir, ".kt"));
       javaFiles.addAll(getFiles(javaDir, ".java"));
+      List<File> sourceFolders = new ArrayList<>();
+      sourceFolders.add(
+          new File(getModule().getProjectDir(), projectName + "/build/classes/java/main"));
+      sourceFolders.add(
+          new File(getModule().getProjectDir(), projectName + "/build/classes/kotlin/main"));
+
       if (!jarFileDir.exists()
           || hasDirectoryBeenModifiedSinceLastRun(kotlinFiles, config)
           || hasDirectoryBeenModifiedSinceLastRun(javaFiles, config)) {
@@ -341,7 +347,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
             kotlinFiles, kotlinClassesDir, projectName, compileClassPath, runtimeClassPath);
         compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
         BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
-        buildJarTask.assembleJar(javaClassesDir, jarFileDir);
+        buildJarTask.assembleJar(sourceFolders, jarFileDir);
         getLogger().debug("> Task :" + projectName + ":" + "jar");
         copyResources(jarFileDir, jarTransformsDir.getAbsolutePath());
         subCompileClassPath.add(new File(jarTransformsDir, projectName + ".jar"));
@@ -702,7 +708,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       args.setPluginOptions(getPluginOptions());
 
       File cacheDir =
-          new File(getModule().getProjectDir(), name + "build/kotlin/compileKotlin/cacheable");
+          new File(getModule().getProjectDir(), name + "/build/kotlin/compileKotlin/cacheable");
 
       IncrementalJvmCompilerRunnerKt.makeIncrementally(
           cacheDir,
@@ -733,7 +739,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     if (mCollector.hasErrors()) {
       throw new CompilationFailedException("Compilation failed, see logs for more details");
     } else {
-		getLogger().debug("> Task :" + name + ":" + "classes");
+      getLogger().debug("> Task :" + name + ":" + "classes");
     }
   }
 
