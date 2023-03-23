@@ -7,6 +7,7 @@ import com.sun.tools.javac.api.JavacTool;
 import com.sun.tools.javac.file.JavacFileManager;
 import com.tyron.builder.compiler.BuildType;
 import com.tyron.builder.compiler.Task;
+import com.tyron.builder.compiler.jar.BuildJarTask;
 import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.internal.jar.AssembleJar;
 import com.tyron.builder.log.ILogger;
@@ -174,6 +175,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     }
 
     String pluginType = pluginTypes.toString();
+    compileProject(pluginType, projectDir, subName, compileClassPath, runtimeClassPath);
   }
 
   private void buildProject(
@@ -191,7 +193,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     }
 
     String pluginType = pluginTypes.toString();
-	compileProject(pluginType,projectDir,name,compileClassPath,runtimeClassPath);
+    compileProject(pluginType, projectDir, name, compileClassPath, runtimeClassPath);
   }
 
   public static boolean hasDirectoryBeenModifiedSinceLastRun(Set<File> files, File config)
@@ -274,10 +276,39 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       List<File> runtimeClassPath)
       throws IOException, CompilationFailedException {
 
-	  mOutputDir = new File(getModule().getBuildDirectory(), "bin/java/classes");
-	  
-	  
+    File jarDir = new File(projectDir, projectName + "/build/outputs/jar");
+    File jarFileDir = new File(jarDir, projectName + ".jar");
+    File javaDir = new File(projectDir, projectName + "/src/main/java");
+    File kotlinDir = new File(projectDir, projectName + "/src/main/kotlin");
+    File javaClassesDir = new File(projectDir, projectName + "/build/classes/java/main");
+    File kotlinClassesDir = new File(projectDir, projectName + "/build/classes/kotlin/main");
+
+    File jarTransformsDir = new File(projectDir, projectName + "/build/.transforms/transformed");
+
+    File config = new File(jarDir, "lastBuildTime");
+
+    Set<File> javaFiles = new HashSet<>();
+    Set<File> kotlinFiles = new HashSet<>();
+
+    // kotlinFiles.addAll(getFiles(kotlinDir, ".kt"));
+
     if (pluginType.equals("[java-library]")) {
+      javaFiles.addAll(getFiles(javaDir, ".java"));
+      if (hasDirectoryBeenModifiedSinceLastRun(javaFiles, config)) {
+        compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
+        BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
+        buildJarTask.assembleJar(javaClassesDir, jarFileDir);
+        getLogger().debug("> Task :" + projectName + ":" + "jar");
+      } else {
+        if (jarFileDir.exists()) {
+          getLogger().debug("> Task :" + projectName + ":" + "jar SKIPPED");
+        } else {
+          compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
+          BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
+          buildJarTask.assembleJar(javaClassesDir, jarFileDir);
+          getLogger().debug("> Task :" + projectName + ":" + "jar");
+        }
+      }
 
     } else if (pluginType.equals("[java-library, kotlin]")
         || pluginType.equals("[kotlin, java-library]")) {
