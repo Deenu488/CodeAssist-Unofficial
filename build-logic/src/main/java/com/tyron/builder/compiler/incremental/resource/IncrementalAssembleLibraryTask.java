@@ -1,7 +1,10 @@
 package com.tyron.builder.compiler.incremental.resource;
 
+import android.text.TextUtils;
 import android.util.Log;
+import androidx.annotation.NonNull;
 import com.android.tools.aapt2.Aapt2Jni;
+import com.google.common.base.Throwables;
 import com.sun.source.util.JavacTask;
 import com.sun.tools.javac.api.JavacTool;
 import com.sun.tools.javac.file.JavacFileManager;
@@ -30,6 +33,8 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,6 +43,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipOutputStream;
@@ -45,7 +51,17 @@ import javax.tools.DiagnosticListener;
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import javax.tools.StandardLocation;
+import kotlin.jvm.functions.Function0;
 import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.kotlin.build.report.ICReporterBase;
+import org.jetbrains.kotlin.cli.common.ExitCode;
+import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments;
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity;
+import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation;
+import org.jetbrains.kotlin.cli.common.messages.MessageCollector;
+import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler;
+import org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunnerKt;
 
 public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
@@ -55,6 +71,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
   private Cache<String, List<File>> mClassCache;
   private List<File> subCompileClassPath = new ArrayList<>();
   private List<File> subRuntimeClassPath = new ArrayList<>();
+  private final MessageCollector mCollector = new Collector();
 
   public IncrementalAssembleLibraryTask(Project project, AndroidModule module, ILogger logger) {
     super(project, module, logger);
@@ -288,8 +305,6 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     Set<File> javaFiles = new HashSet<>();
     Set<File> kotlinFiles = new HashSet<>();
 
-    // kotlinFiles.addAll(getFiles(kotlinDir, ".kt"));
-
     if (pluginType.equals("[java-library]")) {
       javaFiles.addAll(getFiles(javaDir, ".java"));
       if (!jarFileDir.exists() || hasDirectoryBeenModifiedSinceLastRun(javaFiles, config)) {
@@ -314,6 +329,32 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
     } else if (pluginType.equals("[java-library, kotlin]")
         || pluginType.equals("[kotlin, java-library]")) {
+      kotlinFiles.addAll(getFiles(kotlinDir, ".kt"));
+      kotlinFiles.addAll(getFiles(javaDir, ".kt"));
+      javaFiles.addAll(getFiles(javaDir, ".java"));
+      if (!jarFileDir.exists()
+          || hasDirectoryBeenModifiedSinceLastRun(kotlinFiles, config)
+          || hasDirectoryBeenModifiedSinceLastRun(javaFiles, config)) {
+        // If the JAR file directory doesn't exist or the Java files have been modified,
+        // compile the Java files, create a JAR file, and add the JAR file to the classpaths.
+        compileKotlin(
+            kotlinFiles, kotlinClassesDir, projectName, compileClassPath, runtimeClassPath);
+        compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
+        BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
+        buildJarTask.assembleJar(javaClassesDir, jarFileDir);
+        getLogger().debug("> Task :" + projectName + ":" + "jar");
+        copyResources(jarFileDir, jarTransformsDir.getAbsolutePath());
+        subCompileClassPath.add(new File(jarTransformsDir, projectName + ".jar"));
+        subRuntimeClassPath.add(new File(jarTransformsDir, projectName + ".jar"));
+      } else {
+        if (jarFileDir.exists()) {
+          // If the JAR file directory exists and the Java files have not been modified,
+          // add the existing JAR file to the classpaths.
+          getLogger().debug("> Task :" + projectName + ":" + "jar SKIPPED");
+          subCompileClassPath.add(new File(jarTransformsDir, projectName + ".jar"));
+          subRuntimeClassPath.add(new File(jarTransformsDir, projectName + ".jar"));
+        }
+      }
 
     } else if (pluginType.equals("[com.android.library]")) {
 
@@ -585,6 +626,114 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         Paths.get(aar.getAbsolutePath()), Paths.get(library.getAbsolutePath(), name + ".aar"));
     if (aar.exists()) {
       FileUtils.deleteDirectory(aar);
+    }
+  }
+
+  public void compileKotlin(
+      Set<File> kotlinFiles,
+      File out,
+      String name,
+      List<File> compileClassPath,
+      List<File> runtimeClassPath)
+      throws IOException, CompilationFailedException {
+    if (!out.exists()) {
+      if (!out.mkdirs()) {
+        throw new IOException("Failed to create resource output directory");
+      }
+    }
+
+    List<File> mFilesToCompile = new ArrayList<>();
+
+    mClassCache = getModule().getCache(CACHE_KEY, new Cache<>());
+    for (Cache.Key<String> key : new HashSet<>(mClassCache.getKeys())) {
+      if (!mFilesToCompile.contains(key.file.toFile())) {
+        File file = mClassCache.get(key.file, "class").iterator().next();
+        deleteAllFiles(file, ".class");
+        mClassCache.remove(key.file, "class", "dex");
+      }
+    }
+
+    mFilesToCompile.addAll(kotlinFiles);
+
+    if (mFilesToCompile.isEmpty()) {
+      getLogger().debug("> Task :" + name + ":" + "compileKotlin SKIPPED");
+      return;
+    } else {
+      getLogger().debug("> Task :" + name + ":" + "compileKotlin");
+    }
+
+    List<File> classpath = new ArrayList<>();
+    classpath.add(getModule().getBootstrapJarFile());
+    classpath.add(getModule().getLambdaStubsJarFile());
+    classpath.addAll(compileClassPath);
+    classpath.addAll(runtimeClassPath);
+    List<String> arguments = new ArrayList<>();
+    Collections.addAll(
+        arguments,
+        "-cp",
+        classpath.stream()
+            .map(File::getAbsolutePath)
+            .collect(Collectors.joining(File.pathSeparator)));
+    File javaDir = new File(getModule().getProjectDir(), name + "/src/main/java");
+    List<File> javaSourceRoots = new ArrayList<>(getFiles(javaDir, ".java"));
+
+    try {
+      K2JVMCompiler compiler = new K2JVMCompiler();
+      K2JVMCompilerArguments args = new K2JVMCompilerArguments();
+      compiler.parseArguments(arguments.toArray(new String[0]), args);
+
+      args.setUseJavac(false);
+      args.setCompileJava(false);
+      args.setIncludeRuntime(false);
+      args.setNoJdk(true);
+      args.setModuleName("codeassist-kotlin");
+      args.setNoReflect(true);
+      args.setNoStdlib(true);
+      args.setSuppressWarnings(true);
+      args.setJavaSourceRoots(
+          javaSourceRoots.stream().map(File::getAbsolutePath).toArray(String[]::new));
+      // args.setKotlinHome(mKotlinHome.getAbsolutePath());
+      args.setDestination(out.getAbsolutePath());
+
+      List<File> plugins = getPlugins();
+      getLogger().debug("Loading kotlin compiler plugins: " + plugins);
+
+      args.setPluginClasspaths(plugins.stream().map(File::getAbsolutePath).toArray(String[]::new));
+      args.setPluginOptions(getPluginOptions());
+
+      File cacheDir =
+          new File(getModule().getProjectDir(), name + "build/kotlin/compileKotlin/cacheable");
+
+      IncrementalJvmCompilerRunnerKt.makeIncrementally(
+          cacheDir,
+          Arrays.asList(javaDir, new File(getModule().getProjectDir(), name + "/build/gen")),
+          args,
+          mCollector,
+          new ICReporterBase() {
+            @Override
+            public void report(@NonNull Function0<String> function0) {
+              getLogger().info(function0.invoke());
+            }
+
+            @Override
+            public void reportVerbose(@NonNull Function0<String> function0) {
+              getLogger().verbose(function0.invoke());
+            }
+
+            @Override
+            public void reportCompileIteration(
+                boolean incremental,
+                @NonNull Collection<? extends File> sources,
+                @NonNull ExitCode exitCode) {}
+          });
+    } catch (Exception e) {
+      throw new CompilationFailedException(Throwables.getStackTraceAsString(e));
+    }
+
+    if (mCollector.hasErrors()) {
+      throw new CompilationFailedException("Compilation failed, see logs for more details");
+    } else {
+		getLogger().debug("> Task :" + name + ":" + "classes");
     }
   }
 
@@ -1043,5 +1192,162 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       }
     }
     return file;
+  }
+
+  private List<File> getPlugins() {
+    File pluginDir = new File(getModule().getBuildDirectory(), "plugins");
+    File[] children = pluginDir.listFiles(c -> c.getName().endsWith(".jar"));
+
+    if (children == null) {
+      return Collections.emptyList();
+    }
+
+    return Arrays.stream(children).collect(Collectors.toList());
+  }
+
+  private String[] getPluginOptions() throws IOException {
+    File pluginDir = new File(getModule().getBuildDirectory(), "plugins");
+    File args = new File(pluginDir, "args.txt");
+    if (!args.exists()) {
+      return new String[0];
+    }
+
+    String string = FileUtils.readFileToString(args, StandardCharsets.UTF_8);
+    return string.split(" ");
+  }
+
+  private static class Diagnostic extends DiagnosticWrapper {
+    private final CompilerMessageSeverity mSeverity;
+    private final String mMessage;
+    private final CompilerMessageSourceLocation mLocation;
+
+    public Diagnostic(
+        CompilerMessageSeverity severity, String message, CompilerMessageSourceLocation location) {
+      mSeverity = severity;
+      mMessage = message;
+
+      if (location == null) {
+        mLocation =
+            new CompilerMessageSourceLocation() {
+              @NonNull
+              @Override
+              public String getPath() {
+                return "UNKNOWN";
+              }
+
+              @Override
+              public int getLine() {
+                return 0;
+              }
+
+              @Override
+              public int getColumn() {
+                return 0;
+              }
+
+              @Override
+              public int getLineEnd() {
+                return 0;
+              }
+
+              @Override
+              public int getColumnEnd() {
+                return 0;
+              }
+
+              @Override
+              public String getLineContent() {
+                return "";
+              }
+            };
+      } else {
+        mLocation = location;
+      }
+    }
+
+    @Override
+    public File getSource() {
+      if (mLocation == null || TextUtils.isEmpty(mLocation.getPath())) {
+        return new File("UNKNOWN");
+      }
+      return new File(mLocation.getPath());
+    }
+
+    @Override
+    public Kind getKind() {
+      switch (mSeverity) {
+        case ERROR:
+          return Kind.ERROR;
+        case STRONG_WARNING:
+          return Kind.MANDATORY_WARNING;
+        case WARNING:
+          return Kind.WARNING;
+        case LOGGING:
+          return Kind.OTHER;
+        default:
+        case INFO:
+          return Kind.NOTE;
+      }
+    }
+
+    @Override
+    public long getLineNumber() {
+      return mLocation.getLine();
+    }
+
+    @Override
+    public long getColumnNumber() {
+      return mLocation.getColumn();
+    }
+
+    @Override
+    public String getMessage(Locale locale) {
+      return mMessage;
+    }
+  }
+
+  private class Collector implements MessageCollector {
+
+    private final List<Diagnostic> mDiagnostics = new ArrayList<>();
+    private boolean mHasErrors;
+
+    @Override
+    public void clear() {
+      mDiagnostics.clear();
+    }
+
+    @Override
+    public boolean hasErrors() {
+      return mHasErrors;
+    }
+
+    @Override
+    public void report(
+        @NotNull CompilerMessageSeverity severity,
+        @NotNull String message,
+        CompilerMessageSourceLocation location) {
+      if (message.contains("No class roots are found in the JDK path")) {
+        // Android does not have JDK so its okay to ignore this error
+        return;
+      }
+      Diagnostic diagnostic = new Diagnostic(severity, message, location);
+      mDiagnostics.add(diagnostic);
+
+      switch (severity) {
+        case ERROR:
+          mHasErrors = true;
+          getLogger().error(diagnostic);
+          break;
+        case STRONG_WARNING:
+        case WARNING:
+          getLogger().warning(diagnostic);
+          break;
+        case INFO:
+          getLogger().info(diagnostic);
+          break;
+        default:
+          getLogger().debug(diagnostic);
+      }
+    }
   }
 }
