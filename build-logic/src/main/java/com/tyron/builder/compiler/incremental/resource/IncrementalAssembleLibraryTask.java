@@ -21,6 +21,7 @@ import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.builder.project.cache.CacheHolder;
 import com.tyron.common.util.Cache;
+import com.tyron.common.util.Decompress;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -297,8 +298,17 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     File kotlinDir = new File(projectDir, projectName + "/src/main/kotlin");
     File javaClassesDir = new File(projectDir, projectName + "/build/classes/java/main");
     File kotlinClassesDir = new File(projectDir, projectName + "/build/classes/kotlin/main");
+    File transformsDir = new File(projectDir, projectName + "/build/.transforms/transformed");
 
-    File jarTransformsDir = new File(projectDir, projectName + "/build/.transforms/transformed");
+    File resDir = new File(projectDir, projectName + "/src/main/res");
+    File binResDir = new File(projectDir, projectName + "/build/bin/res");
+    File buildDir = new File(projectDir, projectName + "/build");
+    File manifestFileDir = new File(projectDir, projectName + "/src/main/AndroidManifest.xml");
+    File assetsDir = new File(projectDir, projectName + "/src/main/assets");
+    File genDir = new File(projectDir, projectName + "/build/gen");
+    File aarDir = new File(projectDir, projectName + "/build/bin/aar");
+    File outputsDir = new File(projectDir, projectName + "/build/outputs/aar");
+    File aarFileDir = new File(outputsDir, projectName + ".aar");
 
     File config = new File(jarDir, "lastBuild.bin");
 
@@ -306,6 +316,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     Set<File> kotlinFiles = new HashSet<>();
 
     if (pluginType.equals("[java-library]")) {
+
       javaFiles.addAll(getFiles(javaDir, ".java"));
       if (!jarFileDir.exists() || hasDirectoryBeenModifiedSinceLastRun(javaFiles, config)) {
         // If the JAR file directory doesn't exist or the Java files have been modified,
@@ -314,29 +325,28 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
         buildJarTask.assembleJar(javaClassesDir, jarFileDir);
         getLogger().debug("> Task :" + projectName + ":" + "jar");
-        copyResources(jarFileDir, jarTransformsDir.getAbsolutePath());
-        subCompileClassPath.add(new File(jarTransformsDir, projectName + ".jar"));
-        subRuntimeClassPath.add(new File(jarTransformsDir, projectName + ".jar"));
+        copyResources(jarFileDir, transformsDir.getAbsolutePath());
+        subCompileClassPath.add(new File(transformsDir, projectName + ".jar"));
+        subRuntimeClassPath.add(new File(transformsDir, projectName + ".jar"));
       } else {
         if (jarFileDir.exists()) {
           // If the JAR file directory exists and the Java files have not been modified,
           // add the existing JAR file to the classpaths.
           getLogger().debug("> Task :" + projectName + ":" + "jar SKIPPED");
-          subCompileClassPath.add(new File(jarTransformsDir, projectName + ".jar"));
-          subRuntimeClassPath.add(new File(jarTransformsDir, projectName + ".jar"));
+          subCompileClassPath.add(new File(transformsDir, projectName + ".jar"));
+          subRuntimeClassPath.add(new File(transformsDir, projectName + ".jar"));
         }
       }
 
     } else if (pluginType.equals("[java-library, kotlin]")
         || pluginType.equals("[kotlin, java-library]")) {
+
       kotlinFiles.addAll(getFiles(kotlinDir, ".kt"));
       kotlinFiles.addAll(getFiles(javaDir, ".kt"));
       javaFiles.addAll(getFiles(javaDir, ".java"));
       List<File> sourceFolders = new ArrayList<>();
-      sourceFolders.add(
-          new File(getModule().getProjectDir(), projectName + "/build/classes/java/main"));
-      sourceFolders.add(
-          new File(getModule().getProjectDir(), projectName + "/build/classes/kotlin/main"));
+      sourceFolders.add(new File(projectDir, projectName + "/build/classes/java/main"));
+      sourceFolders.add(new File(projectDir, projectName + "/build/classes/kotlin/main"));
 
       if (!jarFileDir.exists()
           || hasDirectoryBeenModifiedSinceLastRun(kotlinFiles, config)
@@ -349,29 +359,77 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
         buildJarTask.assembleJar(sourceFolders, jarFileDir);
         getLogger().debug("> Task :" + projectName + ":" + "jar");
-        copyResources(jarFileDir, jarTransformsDir.getAbsolutePath());
-        subCompileClassPath.add(new File(jarTransformsDir, projectName + ".jar"));
-        subRuntimeClassPath.add(new File(jarTransformsDir, projectName + ".jar"));
+        copyResources(jarFileDir, transformsDir.getAbsolutePath());
+        subCompileClassPath.add(new File(transformsDir, projectName + ".jar"));
+        subRuntimeClassPath.add(new File(transformsDir, projectName + ".jar"));
       } else {
         if (jarFileDir.exists()) {
           // If the JAR file directory exists and the Java files have not been modified,
           // add the existing JAR file to the classpaths.
           getLogger().debug("> Task :" + projectName + ":" + "jar SKIPPED");
-          subCompileClassPath.add(new File(jarTransformsDir, projectName + ".jar"));
-          subRuntimeClassPath.add(new File(jarTransformsDir, projectName + ".jar"));
+          subCompileClassPath.add(new File(transformsDir, projectName + ".jar"));
+          subRuntimeClassPath.add(new File(transformsDir, projectName + ".jar"));
         }
       }
 
     } else if (pluginType.equals("[com.android.library]")) {
+      javaFiles.addAll(getFiles(javaDir, ".java"));
+      if (manifestFileDir.exists()) {
+        if (resDir.exists()) {
+          if (javaClassesDir.exists()) {
+            FileUtils.deleteDirectory(javaClassesDir);
+          }
+          if (aarDir.exists()) {
+            FileUtils.deleteDirectory(aarDir);
+          }
+          List<File> librariesToCompile = getLibraries(projectName, binResDir);
+          compileRes(resDir, binResDir, projectName);
+          compileLibraries(librariesToCompile, projectName, binResDir);
+          linkRes(binResDir, projectName, manifestFileDir, assetsDir);
+        }
+        compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
+        getLogger().debug("> Task :" + projectName + ":" + "aar");
+        assembleAar(javaClassesDir, aarDir, buildDir, projectName);
+        Decompress.unzip(aarFileDir.getAbsolutePath(), transformsDir.getAbsolutePath());
+        subCompileClassPath.add(new File(transformsDir, "classes.jar"));
+        subRuntimeClassPath.add(new File(transformsDir, "classes.jar"));
+      } else {
+        throw new CompilationFailedException("Manifest file does not exist.");
+      }
 
     } else if (pluginType.equals("[com.android.library, kotlin]")
         || pluginType.equals("[kotlin, com.android.library]")) {
+      kotlinFiles.addAll(getFiles(kotlinDir, ".kt"));
+      kotlinFiles.addAll(getFiles(javaDir, ".kt"));
+      javaFiles.addAll(getFiles(javaDir, ".java"));
+      List<File> sourceFolders = new ArrayList<>();
+      sourceFolders.add(new File(projectDir, projectName + "/build/classes/java/main"));
+      sourceFolders.add(new File(projectDir, projectName + "/build/classes/kotlin/main"));
 
-    } else if (pluginType.equals("[com.android.application]")) {
-
-    } else if (pluginType.equals("[com.android.application, kotlin-android]")
-        || pluginType.equals("[kotlin-android, com.android.application]")) {
-
+      if (manifestFileDir.exists()) {
+        if (resDir.exists()) {
+          if (javaClassesDir.exists()) {
+            FileUtils.deleteDirectory(javaClassesDir);
+          }
+          if (aarDir.exists()) {
+            FileUtils.deleteDirectory(aarDir);
+          }
+          List<File> librariesToCompile = getLibraries(projectName, binResDir);
+          compileRes(resDir, binResDir, projectName);
+          compileLibraries(librariesToCompile, projectName, binResDir);
+          linkRes(binResDir, projectName, manifestFileDir, assetsDir);
+        }
+        compileKotlin(
+            kotlinFiles, kotlinClassesDir, projectName, compileClassPath, runtimeClassPath);
+        compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
+        getLogger().debug("> Task :" + projectName + ":" + "aar");
+        assembleAar(sourceFolders, aarDir, buildDir, projectName);
+        Decompress.unzip(aarFileDir.getAbsolutePath(), transformsDir.getAbsolutePath());
+        subCompileClassPath.add(new File(transformsDir, "classes.jar"));
+        subRuntimeClassPath.add(new File(transformsDir, "classes.jar"));
+      } else {
+        throw new CompilationFailedException("Manifest file does not exist.");
+      }
     }
   }
 
@@ -590,6 +648,48 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
           }
         }
       }
+    }
+  }
+
+  private void assembleAar(List<File> inputFolders, File aar, File build, String name)
+      throws IOException, CompilationFailedException {
+    if (!aar.exists()) {
+      if (!aar.mkdirs()) {
+        throw new IOException("Failed to create resource aar directory");
+      }
+    }
+    AssembleJar assembleJar = new AssembleJar(false);
+    assembleJar.setOutputFile(new File(aar.getAbsolutePath(), "classes.jar"));
+    assembleJar.createJarArchive(inputFolders);
+    File library = new File(getModule().getProjectDir(), name + "/build/outputs/aar/");
+
+    if (!library.exists()) {
+      if (!library.mkdirs()) {
+        throw new IOException("Failed to create resource libs directory");
+      }
+    }
+    File res = new File(getModule().getProjectDir(), name + "/src/main/res");
+    copyResources(
+        new File(getModule().getProjectDir(), name + "/src/main/AndroidManifest.xml"),
+        aar.getAbsolutePath());
+    if (res.exists()) {
+      copyResources(res, aar.getAbsolutePath());
+    }
+    File assets = new File(getModule().getProjectDir(), name + "/src/main/assets");
+    File jniLibs = new File(getModule().getProjectDir(), name + "/src/main/jniLibs");
+
+    if (assets.exists()) {
+      copyResources(assets, aar.getAbsolutePath());
+    }
+    if (jniLibs.exists()) {
+      copyResources(jniLibs, aar.getAbsolutePath());
+      File jni = new File(aar.getAbsolutePath(), "jniLibs");
+      jni.renameTo(new File(aar.getAbsolutePath(), "jni"));
+    }
+    zipFolder(
+        Paths.get(aar.getAbsolutePath()), Paths.get(library.getAbsolutePath(), name + ".aar"));
+    if (aar.exists()) {
+      FileUtils.deleteDirectory(aar);
     }
   }
 
@@ -839,6 +939,8 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
   private void linkRes(File in, String name, File manifest, File assets)
       throws CompilationFailedException, IOException {
+    getLogger().debug("> Task :" + name + ":" + "mergeResources");
+
     List<String> args = new ArrayList<>();
     args.add("-I");
     args.add(getModule().getBootstrapJarFile().getAbsolutePath());
