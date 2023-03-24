@@ -147,6 +147,19 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       String subName = subProject.replaceFirst("/", "").replaceAll("/", ":");
       File sub_libraries = new File(projectDir, subName + "/build/libraries");
 
+      List<String> sub =
+          getModule().getAllProjects(new File(projectDir, subName + "/build.gradle"));
+
+      for (String projectName : sub) {
+        String n = projectName.replaceFirst("/", "").replaceAll("/", ":");
+        File l = new File(projectDir, n + "/build/libraries");
+
+        getLogger().debug("Sub Project: " + n);
+        prepairSubProjects(projectDir, n);
+        subCompileClassPath.addAll(getCompileClassPath(l));
+        subRuntimeClassPath.addAll(getRuntimeClassPath(l));
+      }
+
       getLogger().debug("Sub project: " + subName);
       getLogger().debug("Compiling sub project: " + subName);
 
@@ -157,6 +170,17 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
     if (!name.isEmpty()) {
       File libraries = new File(projectDir, name + "/build/libraries");
+      List<String> sub = getModule().getAllProjects(new File(projectDir, name + "/build.gradle"));
+
+      for (String projectName : sub) {
+        String n = projectName.replaceFirst("/", "").replaceAll("/", ":");
+        File l = new File(projectDir, n + "/build/libraries");
+
+        getLogger().debug("Sub Project: " + n);
+        prepairSubProjects(projectDir, n);
+        subCompileClassPath.addAll(getCompileClassPath(l));
+        subRuntimeClassPath.addAll(getRuntimeClassPath(l));
+      }
 
       getLogger().debug("Building project: " + name);
 
