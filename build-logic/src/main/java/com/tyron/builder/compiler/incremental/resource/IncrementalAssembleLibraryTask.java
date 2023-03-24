@@ -396,8 +396,8 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       } else {
         throw new CompilationFailedException("Manifest file does not exist.");
       }
-      subCompileClassPath.add(new File(transformsDir, projectName + ".jar"));
-      subRuntimeClassPath.add(new File(transformsDir, projectName + ".jar"));
+      subCompileClassPath.add(new File(transformsDir, "classes.jar"));
+      subRuntimeClassPath.add(new File(transformsDir, "classes.jar"));
 
     } else if (pluginType.equals("[com.android.library, kotlin]")
         || pluginType.equals("[kotlin, com.android.library]")) {
@@ -431,8 +431,8 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       } else {
         throw new CompilationFailedException("Manifest file does not exist.");
       }
-      subCompileClassPath.add(new File(transformsDir, projectName + ".jar"));
-      subRuntimeClassPath.add(new File(transformsDir, projectName + ".jar"));
+      subCompileClassPath.add(new File(transformsDir, "classes.jar"));
+      subRuntimeClassPath.add(new File(transformsDir, "classes.jar"));
     }
   }
 
