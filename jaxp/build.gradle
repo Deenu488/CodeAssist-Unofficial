@@ -2,10 +2,7 @@ plugins {
     id 'java-library'
 }
 dependencies {
-    api files (
-            'libs/jaxp-internal.jar',
-			'libs/xml.jar'
-    )
+    api files('libs/jaxp-internal.jar','libs/xml.jar')
 }
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8

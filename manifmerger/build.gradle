@@ -10,13 +10,11 @@ java {
 
 dependencies {
     compileOnly project(path: ':android-stubs')
-
-
+	api files('libs/manifmerger.jar')
     implementation project(path: ':common')
     implementation project(path: ':logging')
     implementation 'org.jetbrains:annotations:23.0.0'
     implementation 'com.android.tools:sdklib:25.3.0'
-
     implementation project(path: ':jaxp')
 }
 
