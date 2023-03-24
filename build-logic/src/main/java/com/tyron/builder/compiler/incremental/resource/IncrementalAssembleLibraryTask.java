@@ -334,6 +334,8 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       if (!jarFileDir.exists() || hasDirectoryBeenModifiedSinceLastRun(javaFiles, config)) {
         // If the JAR file directory doesn't exist or the Java files have been modified,
         // compile the Java files, create a JAR file, and add the JAR file to the classpaths.
+        compileClassPath.add(javaClassesDir);
+        runtimeClassPath.add(javaClassesDir);
         compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
         BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
         buildJarTask.assembleJar(javaClassesDir, jarFileDir);
@@ -362,6 +364,10 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         // compile the Java files, create a JAR file, and add the JAR file to the classpaths.
         compileKotlin(
             kotlinFiles, kotlinClassesDir, projectName, compileClassPath, runtimeClassPath);
+        compileClassPath.add(javaClassesDir);
+        runtimeClassPath.add(javaClassesDir);
+        compileClassPath.add(kotlinClassesDir);
+        runtimeClassPath.add(kotlinClassesDir);
         compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
         BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
         buildJarTask.assembleJar(sourceFolders, jarFileDir);
@@ -389,6 +395,8 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
           compileLibraries(librariesToCompile, projectName, binResDir);
           linkRes(binResDir, projectName, manifestFileDir, assetsDir);
         }
+        compileClassPath.add(javaClassesDir);
+        runtimeClassPath.add(javaClassesDir);
         compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
         getLogger().debug("> Task :" + projectName + ":" + "aar");
         assembleAar(javaClassesDir, aarDir, buildDir, projectName);
@@ -424,6 +432,10 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         }
         compileKotlin(
             kotlinFiles, kotlinClassesDir, projectName, compileClassPath, runtimeClassPath);
+        compileClassPath.add(javaClassesDir);
+        runtimeClassPath.add(javaClassesDir);
+        compileClassPath.add(kotlinClassesDir);
+        runtimeClassPath.add(kotlinClassesDir);
         compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
         getLogger().debug("> Task :" + projectName + ":" + "aar");
         assembleAar(sourceFolders, aarDir, buildDir, projectName);
