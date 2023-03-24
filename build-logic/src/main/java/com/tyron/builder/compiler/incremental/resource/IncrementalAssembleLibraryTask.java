@@ -131,6 +131,9 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     for (String projectName : projects) {
       String name = projectName.replaceFirst("/", "").replaceAll("/", ":");
       getLogger().debug("Project: " + name);
+
+      subCompileClassPath.clear();
+      subRuntimeClassPath.clear();
       prepairSubProjects(projectDir, name);
     }
   }
@@ -153,15 +156,13 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       for (String projectName : sub) {
         String n = projectName.replaceFirst("/", "").replaceAll("/", ":");
         File l = new File(projectDir, n + "/build/libraries");
-
-        getLogger().debug("Sub Project: " + n);
         prepairSubProjects(projectDir, n);
         subCompileClassPath.addAll(getCompileClassPath(l));
         subRuntimeClassPath.addAll(getRuntimeClassPath(l));
       }
 
-      getLogger().debug("Sub project: " + subName);
-      getLogger().debug("Compiling sub project: " + subName);
+      // getLogger().debug("Sub project: " + subName);
+      // getLogger().debug("Compiling sub project: " + subName);
 
       subCompileClassPath.addAll(getCompileClassPath(sub_libraries));
       subRuntimeClassPath.addAll(getRuntimeClassPath(sub_libraries));
@@ -175,8 +176,6 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       for (String projectName : sub) {
         String n = projectName.replaceFirst("/", "").replaceAll("/", ":");
         File l = new File(projectDir, n + "/build/libraries");
-
-        getLogger().debug("Sub Project: " + n);
         prepairSubProjects(projectDir, n);
         subCompileClassPath.addAll(getCompileClassPath(l));
         subRuntimeClassPath.addAll(getRuntimeClassPath(l));
@@ -900,6 +899,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     }
 
     List<String> options = new ArrayList<>();
+    options.add("-proc:none");
     options.add("-source");
     options.add("1.8");
     options.add("-target");

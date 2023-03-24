@@ -172,6 +172,7 @@ public class IncrementalJavaTask extends Task<JavaModule> {
     }
 
     List<String> options = new ArrayList<>();
+    options.add("-proc:none");
     options.add("-source");
     options.add("1.8");
     options.add("-target");
