@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.com.intellij.util.ReflectionUtil;
 public class AndroidModuleImpl extends JavaModuleImpl implements AndroidModule {
 
   private ManifestData mManifestData;
+  private ManifestData manifestData;
   private final Map<String, File> mKotlinFiles;
   private Map<String, File> mResourceClasses;
 
@@ -115,6 +116,22 @@ public class AndroidModuleImpl extends JavaModuleImpl implements AndroidModule {
       return null;
     }
     return mManifestData.getPackage();
+  }
+
+  @Override
+  public String getPackageName(File manifest) {
+
+    try {
+      if (manifest.exists()) {
+        manifestData = AndroidManifestParser.parse(manifest);
+      }
+    } catch (IOException e) {
+    }
+
+    if (manifestData == null) {
+      return null;
+    }
+    return manifestData.getPackage();
   }
 
   @Override

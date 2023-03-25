@@ -10,6 +10,8 @@ import com.sun.tools.javac.api.JavacTool;
 import com.sun.tools.javac.file.JavacFileManager;
 import com.tyron.builder.compiler.BuildType;
 import com.tyron.builder.compiler.Task;
+import com.tyron.builder.compiler.buildconfig.GenerateDebugBuildConfigTask;
+import com.tyron.builder.compiler.buildconfig.GenerateReleaseBuildConfigTask;
 import com.tyron.builder.compiler.jar.BuildJarTask;
 import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.internal.jar.AssembleJar;
@@ -73,6 +75,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
   private List<File> subCompileClassPath = new ArrayList<>();
   private List<File> subRuntimeClassPath = new ArrayList<>();
   private final MessageCollector mCollector = new Collector();
+  private BuildType mBuildType;
 
   public IncrementalAssembleLibraryTask(Project project, AndroidModule module, ILogger logger) {
     super(project, module, logger);
@@ -84,7 +87,9 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
   }
 
   @Override
-  public void prepare(BuildType type) throws IOException {}
+  public void prepare(BuildType type) throws IOException {
+    mBuildType = type;
+  }
 
   public void run() throws IOException, CompilationFailedException {
     List<String> projects = new ArrayList<>();
@@ -151,7 +156,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       String subName = subProject.replaceFirst("/", "").replaceAll("/", ":");
 
       if (processedSubProjects.contains(subName)) {
-        getLogger().debug("Skipping duplicate sub-project: " + subName);
+        // getLogger().debug("Skipping duplicate sub-project: " + subName);
         continue;
       } else {
         processedSubProjects.add(subName);
@@ -170,7 +175,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         subRuntimeClassPath.addAll(getRuntimeClassPath(l));
       }
 
-      getLogger().debug("Building sub project: " + subName);
+      // getLogger().debug("Building sub project: " + subName);
 
       subCompileClassPath.addAll(getCompileClassPath(sub_libraries));
       subRuntimeClassPath.addAll(getRuntimeClassPath(sub_libraries));
@@ -179,7 +184,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
     if (!name.isEmpty()) {
       if (processedSubProjects.contains(name)) {
-        getLogger().debug("Skipping duplicate project: " + name);
+        // getLogger().debug("Skipping duplicate project: " + name);
         return;
       }
 
@@ -392,10 +397,21 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
     } else if (pluginType.equals("[com.android.library]")) {
 
-      javaFiles.addAll(getFiles(javaDir, ".java"));
-      javaFiles.addAll(getFiles(buildGenDir, ".java"));
-      javaFiles.addAll(getFiles(viewBindingDir, ".java"));
       if (manifestFileDir.exists()) {
+        if (mBuildType == BuildType.RELEASE || mBuildType == BuildType.AAB) {
+          getLogger().debug("> Task :" + projectName + ":" + "generateReleaseBuildConfig");
+          GenerateReleaseBuildConfigTask generateReleaseBuildConfigTask =
+              new GenerateReleaseBuildConfigTask(getProject(), getModule(), getLogger());
+          generateReleaseBuildConfigTask.GenerateBuildConfig(
+              getModule().getPackageName(manifestFileDir), buildGenDir);
+
+        } else if (mBuildType == BuildType.DEBUG) {
+          getLogger().debug("> Task :" + projectName + ":" + "generateDebugBuildConfig");
+          GenerateDebugBuildConfigTask generateDebugBuildConfigTask =
+              new GenerateDebugBuildConfigTask(getProject(), getModule(), getLogger());
+          generateDebugBuildConfigTask.GenerateBuildConfig(
+              getModule().getPackageName(manifestFileDir), buildGenDir);
+        }
         if (resDir.exists()) {
           if (javaClassesDir.exists()) {
             FileUtils.deleteDirectory(javaClassesDir);
@@ -408,6 +424,9 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
           compileLibraries(librariesToCompile, projectName, binResDir);
           linkRes(binResDir, projectName, manifestFileDir, assetsDir);
         }
+        javaFiles.addAll(getFiles(javaDir, ".java"));
+        javaFiles.addAll(getFiles(buildGenDir, ".java"));
+        javaFiles.addAll(getFiles(viewBindingDir, ".java"));
         compileClassPath.add(javaClassesDir);
         runtimeClassPath.add(javaClassesDir);
         compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
@@ -425,16 +444,25 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         || pluginType.equals("[com.android.library, kotlin-android]")
         || pluginType.equals("[kotlin-android, com.android.library]")) {
 
-      kotlinFiles.addAll(getFiles(kotlinDir, ".kt"));
-      kotlinFiles.addAll(getFiles(javaDir, ".kt"));
-      javaFiles.addAll(getFiles(javaDir, ".java"));
-      javaFiles.addAll(getFiles(buildGenDir, ".java"));
-      javaFiles.addAll(getFiles(viewBindingDir, ".java"));
       List<File> sourceFolders = new ArrayList<>();
       sourceFolders.add(new File(projectDir, projectName + "/build/classes/java/main"));
       sourceFolders.add(new File(projectDir, projectName + "/build/classes/kotlin/main"));
 
       if (manifestFileDir.exists()) {
+        if (mBuildType == BuildType.RELEASE || mBuildType == BuildType.AAB) {
+          getLogger().debug("> Task :" + projectName + ":" + "generateReleaseBuildConfig");
+          GenerateReleaseBuildConfigTask generateReleaseBuildConfigTask =
+              new GenerateReleaseBuildConfigTask(getProject(), getModule(), getLogger());
+          generateReleaseBuildConfigTask.GenerateBuildConfig(
+              getModule().getPackageName(manifestFileDir), buildGenDir);
+
+        } else if (mBuildType == BuildType.DEBUG) {
+          getLogger().debug("> Task :" + projectName + ":" + "generateDebugBuildConfig");
+          GenerateDebugBuildConfigTask generateDebugBuildConfigTask =
+              new GenerateDebugBuildConfigTask(getProject(), getModule(), getLogger());
+          generateDebugBuildConfigTask.GenerateBuildConfig(
+              getModule().getPackageName(manifestFileDir), buildGenDir);
+        }
         if (resDir.exists()) {
           if (javaClassesDir.exists()) {
             FileUtils.deleteDirectory(javaClassesDir);
@@ -447,6 +475,11 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
           compileLibraries(librariesToCompile, projectName, binResDir);
           linkRes(binResDir, projectName, manifestFileDir, assetsDir);
         }
+        kotlinFiles.addAll(getFiles(kotlinDir, ".kt"));
+        kotlinFiles.addAll(getFiles(javaDir, ".kt"));
+        javaFiles.addAll(getFiles(javaDir, ".java"));
+        javaFiles.addAll(getFiles(buildGenDir, ".java"));
+        javaFiles.addAll(getFiles(viewBindingDir, ".java"));
         compileKotlin(
             kotlinFiles, kotlinClassesDir, projectName, compileClassPath, runtimeClassPath);
         compileClassPath.add(javaClassesDir);
@@ -905,8 +938,8 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     runtimeClassPath.add(getModule().getBootstrapJarFile());
     runtimeClassPath.add(getModule().getLambdaStubsJarFile());
 
-    mFilesToCompile.addAll(javaFiles);
-
+    // mFilesToCompile.addAll(javaFiles);
+    //  getLogger().debug("> Task :" + name + ":" + "mFilesToCompile "+ mFilesToCompile.toString());
     List<JavaFileObject> javaFileObjects = new ArrayList<>();
 
     if (mFilesToCompile.isEmpty()) {

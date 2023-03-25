@@ -17,6 +17,8 @@ public interface AndroidModule extends JavaModule, KotlinModule {
 
   String getPackageName();
 
+  String getPackageName(File manifest);
+
   File getManifestFile();
 
   int getTargetSdk();

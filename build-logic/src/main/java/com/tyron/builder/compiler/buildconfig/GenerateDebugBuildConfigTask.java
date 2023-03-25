@@ -89,4 +89,45 @@ public class GenerateDebugBuildConfigTask extends Task<AndroidModule> {
 
     FileUtils.writeStringToFile(buildConfigClass, buildConfigString, Charset.defaultCharset());
   }
+
+  public void GenerateBuildConfig(String packageName, File genDir) throws IOException {
+    Log.d(TAG, "Generating BuildConfig.java");
+
+    File dir = new File(genDir, packageName.replace('.', '/'));
+    File buildConfigClass = new File(dir, "/BuildConfig.java");
+    if (dir.exists()) {
+    } else {
+      dir.mkdirs();
+    }
+
+    if (!buildConfigClass.exists() && !buildConfigClass.createNewFile()) {
+      throw new IOException("Unable to generate BuildConfig.java");
+    }
+
+    String buildConfigString =
+        "/**"
+            + "\n"
+            + "* Automatically generated file. DO NOT MODIFY"
+            + "\n"
+            + "*/"
+            + "\n"
+            + "package "
+            + packageName
+            + ";\n"
+            + "\n"
+            + "public final class BuildConfig {"
+            + "\n"
+            + "    public static final boolean DEBUG = "
+            + "Boolean.parseBoolean(\"true\")"
+            + ";\n"
+            + "    public static final String LIBRARY_PACKAGE_NAME = "
+            + "\"$package_name\"".replace("$package_name", packageName)
+            + ";\n"
+            + "    public static final String BUILD_TYPE = "
+            + "\"debug\""
+            + ";\n"
+            + "}\n";
+
+    FileUtils.writeStringToFile(buildConfigClass, buildConfigString, Charset.defaultCharset());
+  }
 }
