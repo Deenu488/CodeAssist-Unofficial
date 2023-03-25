@@ -125,12 +125,12 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
           new ICReporterBase() {
             @Override
             public void report(@NonNull Function0<String> function0) {
-              getLogger().info(function0.invoke());
+              // getLogger().info(function0.invoke());
             }
 
             @Override
             public void reportVerbose(@NonNull Function0<String> function0) {
-              getLogger().verbose(function0.invoke());
+              // getLogger().verbose(function0.invoke());
             }
 
             @Override

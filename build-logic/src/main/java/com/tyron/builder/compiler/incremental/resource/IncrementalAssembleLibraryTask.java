@@ -136,7 +136,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
     for (String projectName : projects) {
       String name = projectName.replaceFirst("/", "").replaceAll("/", ":");
-      getLogger().debug("Project: " + name);
+      // getLogger().debug("Project: " + name);
 
       Set<String> processedSubProjects = new HashSet<>();
       subCompileClassPath.clear();
@@ -193,7 +193,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
       File libraries = new File(projectDir, name + "/build/libraries");
 
-      getLogger().debug("Building project: " + name);
+      // getLogger().debug("Building project: " + name);
 
       subCompileClassPath.addAll(getCompileClassPath(libraries));
       subRuntimeClassPath.addAll(getRuntimeClassPath(libraries));
@@ -205,8 +205,13 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       File projectDir, String subName, List<File> compileClassPath, List<File> runtimeClassPath)
       throws CompilationFailedException, IOException {
     File subGradleFile = new File(projectDir, subName + "/build.gradle");
-
-    List<String> pluginTypes = getPlugins(subName, subGradleFile);
+    List<String> pluginTypes = new ArrayList<>();
+    if (builtProjects.contains(subName)) {
+      // getLogger().debug("Already built project: " + subName);
+      pluginTypes = getPlugins(subName, subGradleFile);
+    } else {
+      pluginTypes = checkPlugins(subName, subGradleFile);
+    }
     if (pluginTypes.isEmpty()) {
       getLogger().error("No plugins applied");
       throw new CompilationFailedException(
@@ -223,8 +228,14 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       File projectDir, String name, List<File> compileClassPath, List<File> runtimeClassPath)
       throws CompilationFailedException, IOException {
     File gradleFile = new File(projectDir, name + "/build.gradle");
+    List<String> pluginTypes = new ArrayList<>();
+    if (builtProjects.contains(name)) {
+      // getLogger().debug("Already built project: " + name);
+      pluginTypes = getPlugins(name, gradleFile);
+    } else {
+      pluginTypes = checkPlugins(name, gradleFile);
+    }
 
-    List<String> pluginTypes = checkPlugins(name, gradleFile);
     if (pluginTypes.isEmpty()) {
       getLogger().error("No plugins applied");
       throw new CompilationFailedException(
@@ -345,7 +356,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
     if (pluginType.equals("[java-library]")) {
       if (builtProjects.contains(projectName)) {
-        getLogger().debug("Already built project: " + projectName);
+        // getLogger().debug("Already built project: " + projectName);
         subCompileClassPath.add(new File(transformsDir, projectName + ".jar"));
         subRuntimeClassPath.add(new File(transformsDir, projectName + ".jar"));
         return;
@@ -373,7 +384,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     } else if (pluginType.equals("[java-library, kotlin]")
         || pluginType.equals("[kotlin, java-library]")) {
       if (builtProjects.contains(projectName)) {
-        getLogger().debug("Already built project: " + projectName);
+        // getLogger().debug("Already built project: " + projectName);
         subCompileClassPath.add(new File(transformsDir, projectName + ".jar"));
         subRuntimeClassPath.add(new File(transformsDir, projectName + ".jar"));
         return;
@@ -412,7 +423,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
     } else if (pluginType.equals("[com.android.library]")) {
       if (builtProjects.contains(projectName)) {
-        getLogger().debug("Already built project: " + projectName);
+        // getLogger().debug("Already built project: " + projectName);
         subCompileClassPath.add(new File(transformsDir, "classes.jar"));
         subRuntimeClassPath.add(new File(transformsDir, "classes.jar"));
         return;
@@ -467,7 +478,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         || pluginType.equals("[com.android.library, kotlin-android]")
         || pluginType.equals("[kotlin-android, com.android.library]")) {
       if (builtProjects.contains(projectName)) {
-        getLogger().debug("Already built project: " + projectName);
+        // getLogger().debug("Already built project: " + projectName);
         subCompileClassPath.add(new File(transformsDir, "classes.jar"));
         subRuntimeClassPath.add(new File(transformsDir, "classes.jar"));
         return;
@@ -913,12 +924,12 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
           new ICReporterBase() {
             @Override
             public void report(@NonNull Function0<String> function0) {
-              getLogger().info(function0.invoke());
+              // getLogger().info(function0.invoke());
             }
 
             @Override
             public void reportVerbose(@NonNull Function0<String> function0) {
-              getLogger().verbose(function0.invoke());
+              // getLogger().verbose(function0.invoke());
             }
 
             @Override
