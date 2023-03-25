@@ -396,7 +396,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       subRuntimeClassPath.add(new File(transformsDir, projectName + ".jar"));
 
     } else if (pluginType.equals("[com.android.library]")) {
-
+      javaFiles.addAll(getFiles(javaDir, ".java"));
       if (manifestFileDir.exists()) {
         if (mBuildType == BuildType.RELEASE || mBuildType == BuildType.AAB) {
           getLogger().debug("> Task :" + projectName + ":" + "generateReleaseBuildConfig");
@@ -424,7 +424,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
           compileLibraries(librariesToCompile, projectName, binResDir);
           linkRes(binResDir, projectName, manifestFileDir, assetsDir);
         }
-        javaFiles.addAll(getFiles(javaDir, ".java"));
+
         javaFiles.addAll(getFiles(buildGenDir, ".java"));
         javaFiles.addAll(getFiles(viewBindingDir, ".java"));
         compileClassPath.add(javaClassesDir);
@@ -443,7 +443,9 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         || pluginType.equals("[kotlin, com.android.library]")
         || pluginType.equals("[com.android.library, kotlin-android]")
         || pluginType.equals("[kotlin-android, com.android.library]")) {
-
+      kotlinFiles.addAll(getFiles(kotlinDir, ".kt"));
+      kotlinFiles.addAll(getFiles(javaDir, ".kt"));
+      javaFiles.addAll(getFiles(javaDir, ".java"));
       List<File> sourceFolders = new ArrayList<>();
       sourceFolders.add(new File(projectDir, projectName + "/build/classes/java/main"));
       sourceFolders.add(new File(projectDir, projectName + "/build/classes/kotlin/main"));
@@ -475,9 +477,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
           compileLibraries(librariesToCompile, projectName, binResDir);
           linkRes(binResDir, projectName, manifestFileDir, assetsDir);
         }
-        kotlinFiles.addAll(getFiles(kotlinDir, ".kt"));
-        kotlinFiles.addAll(getFiles(javaDir, ".kt"));
-        javaFiles.addAll(getFiles(javaDir, ".java"));
+
         javaFiles.addAll(getFiles(buildGenDir, ".java"));
         javaFiles.addAll(getFiles(viewBindingDir, ".java"));
         compileKotlin(
@@ -938,8 +938,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     runtimeClassPath.add(getModule().getBootstrapJarFile());
     runtimeClassPath.add(getModule().getLambdaStubsJarFile());
 
-    // mFilesToCompile.addAll(javaFiles);
-    //  getLogger().debug("> Task :" + name + ":" + "mFilesToCompile "+ mFilesToCompile.toString());
+    mFilesToCompile.addAll(javaFiles);
     List<JavaFileObject> javaFileObjects = new ArrayList<>();
 
     if (mFilesToCompile.isEmpty()) {
