@@ -132,13 +132,14 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       String name = projectName.replaceFirst("/", "").replaceAll("/", ":");
       getLogger().debug("Project: " + name);
 
+      Set<String> processedSubProjects = new HashSet<>();
       subCompileClassPath.clear();
       subRuntimeClassPath.clear();
-      prepairSubProjects(projectDir, name);
+      prepairSubProjects(projectDir, name, processedSubProjects);
     }
   }
 
-  private void prepairSubProjects(File projectDir, String name)
+  private void prepairSubProjects(File projectDir, String name, Set<String> processedSubProjects)
       throws IOException, CompilationFailedException {
 
     File gradleFile = new File(projectDir, name + "/build.gradle");
@@ -148,6 +149,14 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     while (!subProjects.isEmpty()) {
       String subProject = subProjects.remove(0);
       String subName = subProject.replaceFirst("/", "").replaceAll("/", ":");
+
+      if (processedSubProjects.contains(subName)) {
+        getLogger().debug("Skipping duplicate sub-project: " + subName);
+        continue;
+      } else {
+        processedSubProjects.add(subName);
+      }
+
       File sub_libraries = new File(projectDir, subName + "/build/libraries");
 
       List<String> sub =
@@ -156,7 +165,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       for (String projectName : sub) {
         String n = projectName.replaceFirst("/", "").replaceAll("/", ":");
         File l = new File(projectDir, n + "/build/libraries");
-        prepairSubProjects(projectDir, n);
+        prepairSubProjects(projectDir, n, processedSubProjects);
         subCompileClassPath.addAll(getCompileClassPath(l));
         subRuntimeClassPath.addAll(getRuntimeClassPath(l));
       }
@@ -169,6 +178,13 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     }
 
     if (!name.isEmpty()) {
+      if (processedSubProjects.contains(name)) {
+        getLogger().debug("Skipping duplicate project: " + name);
+        return;
+      }
+
+      processedSubProjects.add(name);
+
       File libraries = new File(projectDir, name + "/build/libraries");
 
       getLogger().debug("Building project: " + name);
