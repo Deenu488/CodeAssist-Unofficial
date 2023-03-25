@@ -11,7 +11,7 @@ import org.jetbrains.kotlin.com.intellij.util.ProcessingContext;
 
 public class PsiElementPatterns {
 
-  public static org.jetbrains.kotlin.com.intellij.patterns.PsiJavaElementPattern.@NotNull Capture<
+  public static @NotNull org.jetbrains.kotlin.com.intellij.patterns.PsiJavaElementPattern.Capture<
           PsiElement>
       insideStarting(final ElementPattern<? extends PsiElement> ancestor) {
     return psiElement()
@@ -37,7 +37,7 @@ public class PsiElementPatterns {
             });
   }
 
-  public static org.jetbrains.kotlin.com.intellij.patterns.PsiJavaElementPattern.@NotNull Capture<
+  public static @NotNull org.jetbrains.kotlin.com.intellij.patterns.PsiJavaElementPattern.Capture<
           PsiElement>
       withParents(Class<? extends PsiElement>... types) {
     return psiElement()

@@ -47,7 +47,7 @@ public class CompletionItemAdapter extends RecyclerView.Adapter<CompletionItemAd
 
     view.setOnClickListener(
         view1 -> {
-          int pos = holder.getBindingAdapterPosition();
+          int pos = holder.getAdapterPosition();
 
           if (pos != RecyclerView.NO_POSITION) {
             if (onClickListener != null) {
@@ -57,7 +57,7 @@ public class CompletionItemAdapter extends RecyclerView.Adapter<CompletionItemAd
         });
     view.setOnLongClickListener(
         p1 -> {
-          int pos = holder.getBindingAdapterPosition();
+          int pos = holder.getAdapterPosition();
 
           if (pos != RecyclerView.NO_POSITION) {
             if (longClickListener != null) {
