@@ -344,43 +344,20 @@ public class MainFragment extends Fragment implements ProjectManager.OnProjectOp
         module.getFileManager().shutdown();
       }
     }
-    manager.removeOnProjectOpenListener(this);
-
-    MainFragment fragment = new MainFragment();
-    recreateActivity(MainActivity.class, new Bundle());
+    manager.removeOnProjectOpenListener(this); 
+    startActivity(MainActivity.class, new Bundle());
   }
 
-  public void recreateActivity(final Class clazz, final Bundle b) {
-    // Add a 250 ms delay so that it has a nicer transition.
-    SleepyTime(
-        () -> {
-          Intent i = new Intent(getActivity(), clazz);
-          i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-          if (b != null) {
-            i.putExtra("recreate", b);
-          }
-          getActivity().finish();
-          getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-          startActivity(i);
-          getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-        },
-        200);
-  }
-
-  public void SleepyTime(final Runnable run, final int SleepyTime) {
-    final android.os.Handler h = new android.os.Handler();
-    Thread sleepyTime =
-        new Thread() {
-          public void run() {
-            try {
-              Thread.sleep(SleepyTime);
-            } catch (InterruptedException e) {
-              e.printStackTrace();
-            }
-            h.post(run);
-          }
-        };
-    sleepyTime.start();
+  public void startActivity(final Class clazz, final Bundle b) {
+    Intent i = new Intent(getActivity(), clazz);
+    i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+    if (b != null) {
+      i.putExtra("recreate", b);
+    }
+    getActivity().finish();
+    getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    startActivity(i);
+    getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
   }
 
   @Override
