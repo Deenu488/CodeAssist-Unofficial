@@ -11,6 +11,7 @@ import com.tyron.common.util.StringSearch;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -102,6 +103,21 @@ public class JavaModuleImpl extends ModuleImpl implements JavaModule {
   @Override
   public List<File> getLibraries() {
     return ImmutableList.copyOf(mLibraries);
+  }
+
+  @Override
+  public List<File> getLibraries(File dir) {
+    List<File> libraries = new ArrayList<>();
+    File[] libs = dir.listFiles(File::isDirectory);
+    if (libs != null) {
+      for (File directory : libs) {
+        File check = new File(directory, "classes.jar");
+        if (check.exists()) {
+          libraries.add(check);
+        }
+      }
+    }
+    return libraries;
   }
 
   @Override

@@ -15,9 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 
@@ -75,31 +73,6 @@ public class ManifestMergeTask extends Task<AndroidModule> {
         if (manifest.length() != 0) {
           manifests.add(manifest);
         }
-      }
-    }
-
-    List<String> projects = new ArrayList<>();
-    projects.addAll(getModule().getAllProjects(getModule().getGradleFile()));
-    Set<String> resolvedProjects = new HashSet<>();
-    while (!projects.isEmpty()) {
-      String include = projects.remove(0);
-      if (resolvedProjects.contains(include)) {
-        continue;
-      }
-      resolvedProjects.add(include);
-      File gradleFile = new File(getModule().getProjectDir(), include + "/build.gradle");
-      if (gradleFile.exists()) {
-        List<String> includedInBuildGradle = getModule().getAllProjects(gradleFile);
-        if (!includedInBuildGradle.isEmpty()) {
-          projects.addAll(includedInBuildGradle);
-        }
-        File includeName = new File(getModule().getProjectDir(), include);
-        File manifestFileDir = new File(includeName, "src/main/AndroidManifest.xml");
-          if (manifestFileDir.exists()) {
-			  if (manifestFileDir.length() != 0) {
-				  manifests.add(manifestFileDir);
-			  }
-		  }
       }
     }
 

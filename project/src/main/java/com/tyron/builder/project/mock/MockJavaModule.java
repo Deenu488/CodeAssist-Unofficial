@@ -10,6 +10,7 @@ import com.tyron.builder.project.util.PackageTrie;
 import com.tyron.common.util.StringSearch;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -69,6 +70,21 @@ public class MockJavaModule extends ModuleImpl implements JavaModule {
   @Override
   public List<File> getLibraries() {
     return Collections.emptyList();
+  }
+
+  @Override
+  public List<File> getLibraries(File dir) {
+    List<File> libraries = new ArrayList<>();
+    File[] libs = dir.listFiles(File::isDirectory);
+    if (libs != null) {
+      for (File directory : libs) {
+        File check = new File(directory, "classes.jar");
+        if (check.exists()) {
+          libraries.add(check);
+        }
+      }
+    }
+    return libraries;
   }
 
   @Override
