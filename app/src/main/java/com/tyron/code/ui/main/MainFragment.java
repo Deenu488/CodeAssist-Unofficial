@@ -20,8 +20,6 @@ import androidx.core.view.ViewCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
@@ -41,6 +39,7 @@ import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.builder.project.api.Module;
 import com.tyron.code.ApplicationLoader;
+import com.tyron.code.MainActivity;
 import com.tyron.code.R;
 import com.tyron.code.service.CompilerService;
 import com.tyron.code.service.CompilerServiceConnection;
@@ -348,11 +347,40 @@ public class MainFragment extends Fragment implements ProjectManager.OnProjectOp
     manager.removeOnProjectOpenListener(this);
 
     MainFragment fragment = new MainFragment();
-    FragmentManager fm = getActivity().getSupportFragmentManager();
-    FragmentTransaction ft = fm.beginTransaction();
-    ft.remove(fragment);
-    ft.commit();
-    fm.popBackStack();
+    recreateActivity(MainActivity.class, new Bundle());
+  }
+
+  public void recreateActivity(final Class clazz, final Bundle b) {
+    // Add a 250 ms delay so that it has a nicer transition.
+    SleepyTime(
+        () -> {
+          Intent i = new Intent(getActivity(), clazz);
+          i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+          if (b != null) {
+            i.putExtra("recreate", b);
+          }
+          getActivity().finish();
+          getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+          startActivity(i);
+          getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        },
+        200);
+  }
+
+  public void SleepyTime(final Runnable run, final int SleepyTime) {
+    final android.os.Handler h = new android.os.Handler();
+    Thread sleepyTime =
+        new Thread() {
+          public void run() {
+            try {
+              Thread.sleep(SleepyTime);
+            } catch (InterruptedException e) {
+              e.printStackTrace();
+            }
+            h.post(run);
+          }
+        };
+    sleepyTime.start();
   }
 
   @Override
