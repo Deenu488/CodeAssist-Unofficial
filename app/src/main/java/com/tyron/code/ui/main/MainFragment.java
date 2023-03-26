@@ -323,17 +323,19 @@ public class MainFragment extends Fragment implements ProjectManager.OnProjectOp
   }
 
   public void showExitDialog() {
-    new MaterialAlertDialogBuilder(requireContext())
-        .setTitle(R.string.title_confirm_project_close)
-        .setMessage(R.string.msg_confirm_project_close)
-        .setNegativeButton(android.R.string.no, null)
-        .setPositiveButton(
-            android.R.string.yes,
-            (d, w) -> {
-              saveAll();
-              closeProject();
-            })
-        .show();
+    if (!CompletionEngine.isIndexing()) {
+      new MaterialAlertDialogBuilder(requireContext())
+          .setTitle(R.string.title_confirm_project_close)
+          .setMessage(R.string.msg_confirm_project_close)
+          .setNegativeButton(android.R.string.no, null)
+          .setPositiveButton(
+              android.R.string.yes,
+              (d, w) -> {
+                saveAll();
+                closeProject();
+              })
+          .show();
+    }
   }
 
   private void closeProject() {

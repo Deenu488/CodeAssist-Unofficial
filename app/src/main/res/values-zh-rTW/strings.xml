@@ -183,7 +183,7 @@
     <string name="project_manager_permission_rationale">應用程式需要儲存許可權才能儲存解除安裝應用程式時模組檔案不會被刪除，或者你可以選擇將模組檔案儲存到應用程式的內部儲存中。</string>
     <string name="project_manager_android11_notice">專案將被儲存到應用程式的內部儲存目錄，請在解除安裝應用程式之前備份模組。</string>
     <string name="project_manager_projects">專案</string>
-    <string name="project_manager_empty">專案是空的</string>`
+    <string name="project_manager_empty">專案是空的</string>
     <string name="project_manager_create_project">建立模組</string>
     <string name="project_path_menu_title">專案路徑</string>
     <string name="project_manager_null_projects">沒有發現專案</string>

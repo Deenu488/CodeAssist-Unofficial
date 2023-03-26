@@ -184,7 +184,7 @@
     <string name="project_manager_android11_notice">Los proyectos se guardarán en el directorio de almacenamiento interno de la aplicación.
         Haga una copia de seguridad de sus módulos antes de desinstalar la aplicación.</string>
     <string name="project_manager_projects">Poyectos</string>
-    <string name="project_manager_empty">No hay proyectos</string>`
+    <string name="project_manager_empty">No hay proyectos</string>
     <string name="project_manager_create_project">Crear módulo</string>
     <string name="project_path_menu_title">Ruta de Proyectos</string>
     <string name="project_manager_null_projects">No se encontró ningún proyecto</string>

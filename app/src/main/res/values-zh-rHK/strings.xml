@@ -183,7 +183,7 @@
     <string name="project_manager_permission_rationale">應用程式需要存儲權限才能保存卸載應用程式時模塊文件不會被刪除，或者你可以選擇將模塊文件保存到應用程式的內部存儲中。</string>
     <string name="project_manager_android11_notice">項目將被保存到應用程式的內部存儲目錄，請在卸載應用程式之前備份模塊。</string>
     <string name="project_manager_projects">項目</string>
-    <string name="project_manager_empty">項目是空的</string>`
+    <string name="project_manager_empty">項目是空的</string>
     <string name="project_manager_create_project">創建模塊</string>
     <string name="project_path_menu_title">項目路徑</string>
     <string name="project_manager_null_projects">沒有發現項目</string>

@@ -163,7 +163,7 @@
     <string name="project_manager_android11_notice">Projeler, uygulamanın dahili depolama dizinine kaydedilecek.
         Uygulamayı kaldırmadan önce modüllerinizi yedekleyin.</string>
     <string name="project_manager_projects">Projeler</string>
-    <string name="project_manager_empty">Projeler boş</string>`
+    <string name="project_manager_empty">Projeler boş</string>
     <string name="project_manager_create_project">Modül oluştur</string>
     <string name="project_path_menu_title">Proje yolu</string>
     <string name="project_manager_null_projects">Proje Bulunamadı</string>

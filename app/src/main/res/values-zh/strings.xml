@@ -183,7 +183,7 @@
     <string name="project_manager_permission_rationale">应用程序需要存储权限才能保存卸载应用程序时模块文件不会被删除，或者你可以选择将模块文件保存到应用程序的内部存储中。</string>
     <string name="project_manager_android11_notice">项目将被保存到应用程序的内部存储目录，请在卸载应用程序之前备份模块。</string>
     <string name="project_manager_projects">项目</string>
-    <string name="project_manager_empty">项目是空的</string>`
+    <string name="project_manager_empty">项目是空的</string>
     <string name="project_manager_create_project">创建模块</string>
     <string name="project_path_menu_title">项目路径</string>
     <string name="project_manager_null_projects">没有发现项目</string>

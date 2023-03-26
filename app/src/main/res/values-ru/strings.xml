@@ -166,7 +166,7 @@
     <string name="project_manager_android11_notice">Проекты будут сохранены во внутреннем хранилище приложения.
         Сделайте копию ваших модулей перед удалением приложения.</string>
     <string name="project_manager_projects">Проекты</string>
-    <string name="project_manager_empty">Отсутствуют проекты</string>`
+    <string name="project_manager_empty">Отсутствуют проекты</string>
     <string name="project_manager_create_project">Создать модуль</string>
     <string name="project_path_menu_title">Путь к проектам</string>
     <string name="project_manager_null_projects">Проекты не найдены</string>
