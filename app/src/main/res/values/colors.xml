@@ -9,7 +9,7 @@
     <color name="colorControlNormal">#FFEAEAEA</color>
     <color name="textActionNameColor">@android:color/tertiary_text_light</color>
     <color name="white">#FFEAEAEA</color>
-
+	<color name="black">#00000000</color>
     <color name="md_theme_light_primary">#B22D00</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
     <color name="md_theme_light_primaryContainer">#FFDACF</color>
