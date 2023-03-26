@@ -174,6 +174,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         prepairSubProjects(projectDir, n, processedSubProjects);
         subCompileClassPath.addAll(getCompileClassPath(l));
         subRuntimeClassPath.addAll(getRuntimeClassPath(l));
+        addToClassPath(l);
       }
 
       // getLogger().debug("Building sub project: " + subName);
@@ -194,7 +195,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       File libraries = new File(projectDir, name + "/build/libraries");
 
       // getLogger().debug("Building project: " + name);
-
+      addToClassPath(libraries);
       subCompileClassPath.addAll(getCompileClassPath(libraries));
       subRuntimeClassPath.addAll(getRuntimeClassPath(libraries));
       buildProject(projectDir, name, subCompileClassPath, subRuntimeClassPath);
@@ -380,6 +381,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       builtProjects.add(projectName);
       subCompileClassPath.add(new File(transformsDir, projectName + ".jar"));
       subRuntimeClassPath.add(new File(transformsDir, projectName + ".jar"));
+      getModule().addLibrary(new File(transformsDir, projectName + ".jar"));
 
     } else if (pluginType.equals("[java-library, kotlin]")
         || pluginType.equals("[kotlin, java-library]")) {
@@ -420,7 +422,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       builtProjects.add(projectName);
       subCompileClassPath.add(new File(transformsDir, projectName + ".jar"));
       subRuntimeClassPath.add(new File(transformsDir, projectName + ".jar"));
-
+      getModule().addLibrary(new File(transformsDir, projectName + ".jar"));
     } else if (pluginType.equals("[com.android.library]")) {
       if (builtProjects.contains(projectName)) {
         // getLogger().debug("Already built project: " + projectName);
@@ -472,7 +474,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       builtProjects.add(projectName);
       subCompileClassPath.add(new File(transformsDir, "classes.jar"));
       subRuntimeClassPath.add(new File(transformsDir, "classes.jar"));
-
+      getModule().addLibrary(new File(transformsDir, "classes.jar"));
     } else if (pluginType.equals("[com.android.library, kotlin]")
         || pluginType.equals("[kotlin, com.android.library]")
         || pluginType.equals("[com.android.library, kotlin-android]")
@@ -536,6 +538,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       builtProjects.add(projectName);
       subCompileClassPath.add(new File(transformsDir, "classes.jar"));
       subRuntimeClassPath.add(new File(transformsDir, "classes.jar"));
+      getModule().addLibrary(new File(transformsDir, "classes.jar"));
     }
   }
 
@@ -548,6 +551,15 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     compileClassPath.addAll(getJarFiles(new File(libraries, "compileOnly_files/libs")));
     compileClassPath.addAll(getJarFiles(new File(libraries, "compileOnly_libs")));
     return compileClassPath;
+  }
+
+  private void addToClassPath(File libraries) {
+    List<File> classPath = new ArrayList<>();
+    classPath.addAll(getJarFiles(new File(libraries, "api_files/libs")));
+    classPath.addAll(getJarFiles(new File(libraries, "api_libs")));
+    for (File jar : classPath) {
+      getModule().addLibrary(jar);
+    }
   }
 
   private List<File> getRuntimeClassPath(File libraries) {
