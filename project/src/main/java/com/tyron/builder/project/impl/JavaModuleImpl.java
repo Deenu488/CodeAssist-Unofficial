@@ -288,6 +288,28 @@ public class JavaModuleImpl extends ModuleImpl implements JavaModule {
         }
       }
     }
+	  File[] api_files =
+		  new File(getBuildDirectory(), "libraries/api_files/libs")
+		  .listFiles(File::isDirectory);
+	  if (implementation_files != null) {
+		  for (File directory : implementation_files) {
+			  File check = new File(directory, "classes.jar");
+			  if (check.exists()) {
+				  addLibrary(check);
+			  }
+		  }
+	  }
+
+	  File[] api_libs =
+		  new File(getBuildDirectory(), "libraries/api_libs").listFiles(File::isDirectory);
+	  if (implementation_libs != null) {
+		  for (File directory : implementation_libs) {
+			  File check = new File(directory, "classes.jar");
+			  if (check.exists()) {
+				  addLibrary(check);
+			  }
+		  }
+	  }
   }
 
   @Override
