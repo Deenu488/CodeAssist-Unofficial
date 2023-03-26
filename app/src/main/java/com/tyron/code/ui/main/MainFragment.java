@@ -344,7 +344,7 @@ public class MainFragment extends Fragment implements ProjectManager.OnProjectOp
         module.getFileManager().shutdown();
       }
     }
-    manager.removeOnProjectOpenListener(this); 
+    manager.removeOnProjectOpenListener(this);
     startActivity(MainActivity.class, new Bundle());
   }
 
@@ -354,7 +354,7 @@ public class MainFragment extends Fragment implements ProjectManager.OnProjectOp
     if (b != null) {
       i.putExtra("recreate", b);
     }
-    getActivity().finish();
+    getActivity().finishAffinity();
     getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     startActivity(i);
     getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
