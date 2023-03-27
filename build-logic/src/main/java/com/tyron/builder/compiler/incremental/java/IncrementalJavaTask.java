@@ -64,7 +64,7 @@ public class IncrementalJavaTask extends Task<JavaModule> {
 
     mFilesToCompile = new ArrayList<>();
     mClassCache = getModule().getCache(CACHE_KEY, new Cache<>());
-
+	mJavaFiles = new ArrayList<>();
     /*if (getModule() instanceof AndroidModule) {
       mJavaFiles.addAll(((AndroidModule) getModule()).getResourceClasses().values());
     }*/
