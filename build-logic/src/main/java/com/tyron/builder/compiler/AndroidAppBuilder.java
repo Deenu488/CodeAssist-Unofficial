@@ -24,6 +24,7 @@ import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
 import java.util.ArrayList;
 import java.util.List;
+import com.tyron.builder.compiler.incremental.java.IncrementalCompileJavaTask;
 
 public class AndroidAppBuilder extends BuilderImpl<AndroidModule> {
 
@@ -57,7 +58,8 @@ public class AndroidAppBuilder extends BuilderImpl<AndroidModule> {
     // tasks.add(new IncrementalCompileJavaTask(getProject(), module, logger));
     tasks.add(new MergeSymbolsTask(getProject(), module, logger));
     tasks.add(new IncrementalKotlinCompiler(getProject(), module, logger));
-    tasks.add(new IncrementalJavaTask(getProject(), module, logger));
+	tasks.add(new IncrementalCompileJavaTask(getProject(), module, logger));
+	//tasks.add(new IncrementalJavaTask(getProject(), module, logger));
     if (module.getSettings().getBoolean(ModuleSettings.USE_R8, false)
         && type == BuildType.RELEASE) {
       tasks.add(new R8Task(getProject(), module, logger));
