@@ -174,7 +174,8 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         prepairSubProjects(projectDir, n, processedSubProjects);
         subCompileClassPath.addAll(getCompileClassPath(l));
         subRuntimeClassPath.addAll(getRuntimeClassPath(l));
-        addToClassPath(l);
+        subCompileClassPath.addAll(addToClassPath(l));
+        subRuntimeClassPath.addAll(addToClassPath(l));
       }
 
       // getLogger().debug("Building sub project: " + subName);
@@ -195,7 +196,8 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       File libraries = new File(projectDir, name + "/build/libraries");
 
       // getLogger().debug("Building project: " + name);
-      addToClassPath(libraries);
+      subCompileClassPath.addAll(addToClassPath(libraries));
+      subRuntimeClassPath.addAll(addToClassPath(libraries));
       subCompileClassPath.addAll(getCompileClassPath(libraries));
       subRuntimeClassPath.addAll(getRuntimeClassPath(libraries));
       buildProject(projectDir, name, subCompileClassPath, subRuntimeClassPath);
@@ -557,13 +559,14 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     return compileClassPath;
   }
 
-  private void addToClassPath(File libraries) {
+  private List<File> addToClassPath(File libraries) {
     List<File> classPath = new ArrayList<>();
     classPath.addAll(getJarFiles(new File(libraries, "api_files/libs")));
     classPath.addAll(getJarFiles(new File(libraries, "api_libs")));
     for (File jar : classPath) {
       getModule().addLibrary(jar);
     }
+    return classPath;
   }
 
   private List<File> getRuntimeClassPath(File libraries) {
