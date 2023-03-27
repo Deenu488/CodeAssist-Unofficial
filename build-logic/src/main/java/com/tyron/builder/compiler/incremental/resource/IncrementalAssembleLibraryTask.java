@@ -370,6 +370,10 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
         compileClassPath.add(javaClassesDir);
         runtimeClassPath.add(javaClassesDir);
+        compileClassPath.add(javaDir);
+        runtimeClassPath.add(javaDir);
+        compileClassPath.add(buildGenDir);
+        runtimeClassPath.add(buildGenDir);
         compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
         BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
         buildJarTask.assembleJar(javaClassesDir, jarFileDir);
@@ -411,6 +415,12 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         runtimeClassPath.add(javaClassesDir);
         compileClassPath.add(kotlinClassesDir);
         runtimeClassPath.add(kotlinClassesDir);
+        compileClassPath.add(javaDir);
+        runtimeClassPath.add(javaDir);
+        compileClassPath.add(kotlinDir);
+        runtimeClassPath.add(kotlinDir);
+        compileClassPath.add(buildGenDir);
+        runtimeClassPath.add(buildGenDir);
         compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
         BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
         buildJarTask.assembleJar(sourceFolders, jarFileDir);
@@ -464,6 +474,12 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         javaFiles.addAll(getFiles(viewBindingDir, ".java"));
         compileClassPath.add(javaClassesDir);
         runtimeClassPath.add(javaClassesDir);
+        compileClassPath.add(javaDir);
+        runtimeClassPath.add(javaDir);
+        compileClassPath.add(buildGenDir);
+        runtimeClassPath.add(buildGenDir);
+        compileClassPath.add(viewBindingDir);
+        runtimeClassPath.add(viewBindingDir);
         compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
         getLogger().debug("> Task :" + projectName + ":" + "aar");
         assembleAar(javaClassesDir, aarDir, buildDir, projectName);
@@ -528,6 +544,14 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         runtimeClassPath.add(javaClassesDir);
         compileClassPath.add(kotlinClassesDir);
         runtimeClassPath.add(kotlinClassesDir);
+        compileClassPath.add(javaDir);
+        runtimeClassPath.add(javaDir);
+        compileClassPath.add(kotlinDir);
+        runtimeClassPath.add(kotlinDir);
+        compileClassPath.add(buildGenDir);
+        runtimeClassPath.add(buildGenDir);
+        compileClassPath.add(viewBindingDir);
+        runtimeClassPath.add(viewBindingDir);
         compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
         getLogger().debug("> Task :" + projectName + ":" + "aar");
         assembleAar(sourceFolders, aarDir, buildDir, projectName);

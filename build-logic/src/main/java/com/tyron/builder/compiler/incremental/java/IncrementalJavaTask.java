@@ -115,10 +115,14 @@ public class IncrementalJavaTask extends Task<JavaModule> {
         tool.getStandardFileManager(
             diagnosticCollector, Locale.getDefault(), Charset.defaultCharset());
     standardJavaFileManager.setSymbolFileEnabled(false);
+    File javaDir = new File(getModule().getRootFile() + "/src/main/java");
+    File buildGenDir = new File(getModule().getRootFile() + "/build/gen");
+    File viewBindingDir = new File(getModule().getRootFile() + "/build/view_binding");
 
     File api_files = new File(getModule().getRootFile(), "/build/libraries/api_files/libs");
     File api_libs = new File(getModule().getRootFile(), "/build/libraries/api_libs");
-
+    File kotlinOutputDir = new File(getModule().getBuildDirectory(), "bin/kotlin/classes");
+    File javaOutputDir = new File(getModule().getBuildDirectory(), "bin/java/classes");
     File implementation_files =
         new File(getModule().getRootFile(), "/build/libraries/implementation_files/libs");
     File implementation_libs =
@@ -141,6 +145,11 @@ public class IncrementalJavaTask extends Task<JavaModule> {
     compileClassPath.addAll(getJarFiles(implementation_libs));
     compileClassPath.addAll(getJarFiles(compileOnly_files));
     compileClassPath.addAll(getJarFiles(compileOnly_libs));
+    compileClassPath.add(javaOutputDir);
+    compileClassPath.add(kotlinOutputDir);
+    compileClassPath.add(javaDir);
+    compileClassPath.add(buildGenDir);
+    compileClassPath.add(viewBindingDir);
 
     List<File> runtimeClassPath = new ArrayList<>();
     runtimeClassPath.addAll(getJarFiles(runtimeOnly_files));
@@ -149,7 +158,11 @@ public class IncrementalJavaTask extends Task<JavaModule> {
     runtimeClassPath.add(getModule().getLambdaStubsJarFile());
     runtimeClassPath.addAll(getJarFiles(api_files));
     runtimeClassPath.addAll(getJarFiles(api_libs));
-
+    runtimeClassPath.add(javaOutputDir);
+    runtimeClassPath.add(kotlinOutputDir);
+    compileClassPath.add(javaDir);
+    compileClassPath.add(buildGenDir);
+    compileClassPath.add(viewBindingDir);
     try {
       standardJavaFileManager.setLocation(
           StandardLocation.CLASS_OUTPUT, Collections.singletonList(mOutputDir));
