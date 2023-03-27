@@ -1040,7 +1040,15 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     options.add("1.8");
     options.add("-target");
     options.add("1.8");
-
+    options.add("-Xlint:cast");
+    options.add("-Xlint:deprecation");
+    options.add("-Xlint:empty");
+    options.add("-Xlint" + ":fallthrough");
+    options.add("-Xlint:finally");
+    options.add("-Xlint:path");
+    options.add("-Xlint:unchecked");
+    options.add("-Xlint" + ":varargs");
+    options.add("-Xlint:static");
     for (File file : mFilesToCompile) {
       javaFileObjects.add(
           new SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {

@@ -65,14 +65,12 @@ public class IncrementalJavaTask extends Task<JavaModule> {
     mFilesToCompile = new ArrayList<>();
     mClassCache = getModule().getCache(CACHE_KEY, new Cache<>());
 
-    mJavaFiles = new ArrayList<>(getModule().getJavaFiles().values());
-
     /*if (getModule() instanceof AndroidModule) {
       mJavaFiles.addAll(((AndroidModule) getModule()).getResourceClasses().values());
     }*/
-    mFilesToCompile.addAll(getJavaFiles(new File(getModule().getRootFile() + "/src/main/java")));
-    mFilesToCompile.addAll(getJavaFiles(new File(getModule().getBuildDirectory(), "gen")));
-    mFilesToCompile.addAll(getJavaFiles(new File(getModule().getBuildDirectory(), "view_binding")));
+    mJavaFiles.addAll(getJavaFiles(new File(getModule().getRootFile() + "/src/main/java")));
+    mJavaFiles.addAll(getJavaFiles(new File(getModule().getBuildDirectory(), "gen")));
+    mJavaFiles.addAll(getJavaFiles(new File(getModule().getBuildDirectory(), "view_binding")));
 
     for (Cache.Key<String> key : new HashSet<>(mClassCache.getKeys())) {
       if (!mJavaFiles.contains(key.file.toFile())) {
@@ -196,6 +194,15 @@ public class IncrementalJavaTask extends Task<JavaModule> {
     options.add("1.8");
     options.add("-target");
     options.add("1.8");
+    options.add("-Xlint:cast");
+    options.add("-Xlint:deprecation");
+    options.add("-Xlint:empty");
+    options.add("-Xlint" + ":fallthrough");
+    options.add("-Xlint:finally");
+    options.add("-Xlint:path");
+    options.add("-Xlint:unchecked");
+    options.add("-Xlint" + ":varargs");
+    options.add("-Xlint:static");
     JavacTask task =
         tool.getTask(
             null, standardJavaFileManager, diagnosticCollector, options, null, javaFileObjects);
