@@ -162,7 +162,7 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
       args.setCompileJava(false);
       args.setIncludeRuntime(false);
       args.setNoJdk(true);
-      args.setModuleName("codeassist-kotlin");
+      args.setModuleName(getModule().getRootFile().getName());
       args.setNoReflect(true);
       args.setNoStdlib(true);
       args.setSuppressWarnings(true);
