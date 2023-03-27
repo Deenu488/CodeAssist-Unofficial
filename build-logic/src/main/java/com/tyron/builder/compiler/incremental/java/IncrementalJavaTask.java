@@ -64,7 +64,7 @@ public class IncrementalJavaTask extends Task<JavaModule> {
 
     mFilesToCompile = new ArrayList<>();
     mClassCache = getModule().getCache(CACHE_KEY, new Cache<>());
-	mJavaFiles = new ArrayList<>();
+    mJavaFiles = new ArrayList<>();
     /*if (getModule() instanceof AndroidModule) {
       mJavaFiles.addAll(((AndroidModule) getModule()).getResourceClasses().values());
     }*/
@@ -95,6 +95,7 @@ public class IncrementalJavaTask extends Task<JavaModule> {
     if (mFilesToCompile.isEmpty()) {
       return;
     }
+    getLogger().debug("> Task :" + "compileJava " + getModule().getLibraries().toString());
 
     Log.d(TAG, "Compiling java files");
 
@@ -160,12 +161,12 @@ public class IncrementalJavaTask extends Task<JavaModule> {
     runtimeClassPath.add(getModule().getLambdaStubsJarFile());
     runtimeClassPath.addAll(getJarFiles(api_files));
     runtimeClassPath.addAll(getJarFiles(api_libs));
-    compileClassPath.addAll(getModule().getLibraries());
-    compileClassPath.add(javaOutputDir);
-    compileClassPath.add(kotlinOutputDir);
-    compileClassPath.addAll(getParentJavaFiles(javaDir));
-    compileClassPath.addAll(getParentJavaFiles(buildGenDir));
-    compileClassPath.addAll(getParentJavaFiles(viewBindingDir));
+    runtimeClassPath.addAll(getModule().getLibraries());
+    runtimeClassPath.add(javaOutputDir);
+    runtimeClassPath.add(kotlinOutputDir);
+    runtimeClassPath.addAll(getParentJavaFiles(javaDir));
+    runtimeClassPath.addAll(getParentJavaFiles(buildGenDir));
+    runtimeClassPath.addAll(getParentJavaFiles(viewBindingDir));
 
     try {
       standardJavaFileManager.setLocation(
