@@ -11,7 +11,6 @@ import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.log.ILogger;
 import com.tyron.builder.model.DiagnosticWrapper;
 import com.tyron.builder.project.Project;
-import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.builder.project.api.JavaModule;
 import com.tyron.builder.project.cache.CacheHolder;
 import com.tyron.common.util.Cache;
@@ -68,9 +67,13 @@ public class IncrementalJavaTask extends Task<JavaModule> {
 
     mJavaFiles = new ArrayList<>(getModule().getJavaFiles().values());
 
-    if (getModule() instanceof AndroidModule) {
+    /*if (getModule() instanceof AndroidModule) {
       mJavaFiles.addAll(((AndroidModule) getModule()).getResourceClasses().values());
-    }
+    }*/
+    mFilesToCompile.addAll(getJavaFiles(new File(getModule().getRootFile() + "/src/main/java")));
+    mFilesToCompile.addAll(getJavaFiles(new File(getModule().getBuildDirectory(), "gen")));
+    mFilesToCompile.addAll(getJavaFiles(new File(getModule().getBuildDirectory(), "view_binding")));
+
     for (Cache.Key<String> key : new HashSet<>(mClassCache.getKeys())) {
       if (!mJavaFiles.contains(key.file.toFile())) {
         File file = mClassCache.get(key.file, "class").iterator().next();
@@ -145,11 +148,12 @@ public class IncrementalJavaTask extends Task<JavaModule> {
     compileClassPath.addAll(getJarFiles(implementation_libs));
     compileClassPath.addAll(getJarFiles(compileOnly_files));
     compileClassPath.addAll(getJarFiles(compileOnly_libs));
+    compileClassPath.addAll(getModule().getLibraries());
     compileClassPath.add(javaOutputDir);
     compileClassPath.add(kotlinOutputDir);
-    compileClassPath.add(javaDir);
-    compileClassPath.add(buildGenDir);
-    compileClassPath.add(viewBindingDir);
+    compileClassPath.addAll(getParentJavaFiles(javaDir));
+    compileClassPath.addAll(getParentJavaFiles(buildGenDir));
+    compileClassPath.addAll(getParentJavaFiles(viewBindingDir));
 
     List<File> runtimeClassPath = new ArrayList<>();
     runtimeClassPath.addAll(getJarFiles(runtimeOnly_files));
@@ -158,11 +162,13 @@ public class IncrementalJavaTask extends Task<JavaModule> {
     runtimeClassPath.add(getModule().getLambdaStubsJarFile());
     runtimeClassPath.addAll(getJarFiles(api_files));
     runtimeClassPath.addAll(getJarFiles(api_libs));
-    runtimeClassPath.add(javaOutputDir);
-    runtimeClassPath.add(kotlinOutputDir);
-    compileClassPath.add(javaDir);
-    compileClassPath.add(buildGenDir);
-    compileClassPath.add(viewBindingDir);
+    compileClassPath.addAll(getModule().getLibraries());
+    compileClassPath.add(javaOutputDir);
+    compileClassPath.add(kotlinOutputDir);
+    compileClassPath.addAll(getParentJavaFiles(javaDir));
+    compileClassPath.addAll(getParentJavaFiles(buildGenDir));
+    compileClassPath.addAll(getParentJavaFiles(viewBindingDir));
+
     try {
       standardJavaFileManager.setLocation(
           StandardLocation.CLASS_OUTPUT, Collections.singletonList(mOutputDir));
@@ -283,6 +289,27 @@ public class IncrementalJavaTask extends Task<JavaModule> {
       } else {
         if (file.getName().endsWith(".java")) {
           javaFiles.add(file);
+        }
+      }
+    }
+
+    return javaFiles;
+  }
+
+  public static Set<File> getParentJavaFiles(File dir) {
+    Set<File> javaFiles = new HashSet<>();
+
+    File[] files = dir.listFiles();
+    if (files == null) {
+      return Collections.emptySet();
+    }
+
+    for (File file : files) {
+      if (file.isDirectory()) {
+        javaFiles.addAll(getParentJavaFiles(file));
+      } else {
+        if (file.getName().endsWith(".java")) {
+          javaFiles.add(file.getParentFile());
         }
       }
     }

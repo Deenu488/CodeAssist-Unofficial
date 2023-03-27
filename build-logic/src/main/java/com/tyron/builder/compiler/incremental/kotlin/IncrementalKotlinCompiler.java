@@ -138,13 +138,20 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
             .collect(Collectors.joining(File.pathSeparator)));
 
     File javaDir = new File(getModule().getRootFile() + "/src/main/java");
+    File kotlinDir = new File(getModule().getRootFile() + "/src/main/kotlin");
     File buildGenDir = new File(getModule().getRootFile() + "/build/gen");
     File viewBindingDir = new File(getModule().getRootFile() + "/build/view_binding");
 
     List<File> javaSourceRoots = new ArrayList<>();
-    javaSourceRoots.addAll(getFiles(javaDir, ".java"));
-    javaSourceRoots.addAll(getFiles(buildGenDir, ".java"));
-    javaSourceRoots.addAll(getFiles(viewBindingDir, ".java"));
+    if (javaDir.exists()) {
+      javaSourceRoots.addAll(getFiles(javaDir, ".java"));
+    }
+    if (buildGenDir.exists()) {
+      javaSourceRoots.addAll(getFiles(buildGenDir, ".java"));
+    }
+    if (viewBindingDir.exists()) {
+      javaSourceRoots.addAll(getFiles(viewBindingDir, ".java"));
+    }
 
     try {
       K2JVMCompiler compiler = new K2JVMCompiler();
@@ -158,7 +165,7 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
       args.setModuleName("codeassist-kotlin");
       args.setNoReflect(true);
       args.setNoStdlib(true);
-      args.setSuppressWarnings(false);
+      args.setSuppressWarnings(true);
       args.setJavaSourceRoots(
           javaSourceRoots.stream().map(File::getAbsolutePath).toArray(String[]::new));
       // args.setKotlinHome(mKotlinHome.getAbsolutePath());
@@ -171,10 +178,23 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
       args.setPluginOptions(getPluginOptions());
 
       File cacheDir = new File(getModule().getBuildDirectory(), "kotlin/compileKotlin/cacheable");
+      List<File> fileList = new ArrayList<>();
+      if (javaDir.exists()) {
+        fileList.add(javaDir);
+      }
+      if (buildGenDir.exists()) {
+        fileList.add(buildGenDir);
+      }
+      if (viewBindingDir.exists()) {
+        fileList.add(viewBindingDir);
+      }
+      if (kotlinDir.exists()) {
+        fileList.add(kotlinDir);
+      }
 
       IncrementalJvmCompilerRunnerKt.makeIncrementally(
           cacheDir,
-          Arrays.asList(javaDir, buildGenDir, viewBindingDir),
+          Arrays.asList(fileList.toArray(new File[0])),
           args,
           mCollector,
           new ICReporterBase() {
