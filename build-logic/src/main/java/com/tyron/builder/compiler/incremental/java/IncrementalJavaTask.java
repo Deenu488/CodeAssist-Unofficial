@@ -95,7 +95,6 @@ public class IncrementalJavaTask extends Task<JavaModule> {
     if (mFilesToCompile.isEmpty()) {
       return;
     }
-    getLogger().debug("> Task :" + "compileJava " + getModule().getLibraries().toString());
 
     Log.d(TAG, "Compiling java files");
 
