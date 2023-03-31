@@ -335,12 +335,15 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
     File jarDir = new File(projectDir, projectName + "/build/outputs/jar");
     File jarFileDir = new File(jarDir, projectName + ".jar");
+
     File javaDir = new File(projectDir, projectName + "/src/main/java");
     File kotlinDir = new File(projectDir, projectName + "/src/main/kotlin");
     File javaClassesDir = new File(projectDir, projectName + "/build/classes/java/main");
     File kotlinClassesDir = new File(projectDir, projectName + "/build/classes/kotlin/main");
     File transformsDir =
         new File(projectDir, projectName + "/build/.transforms/transformed/" + projectName);
+    File transformedJarFileDir = new File(transformsDir, projectName + ".jar");
+    File classesJarFileDir = new File(transformsDir, "classes.jar");
 
     File resDir = new File(projectDir, projectName + "/src/main/res");
     File binResDir = new File(projectDir, projectName + "/build/bin/res");
@@ -379,6 +382,9 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         buildJarTask.assembleJar(javaClassesDir, jarFileDir);
         getLogger().debug("> Task :" + projectName + ":" + "jar");
         copyResources(jarFileDir, transformsDir.getAbsolutePath());
+        if (!transformedJarFileDir.renameTo(classesJarFileDir)) {
+          getLogger().warning("Failed to rename " + transformedJarFileDir.getName() + " file");
+        }
       } else {
         getLogger().debug("> Task :" + projectName + ":" + "jar SKIPPED");
       }
@@ -421,6 +427,9 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         buildJarTask.assembleJar(sourceFolders, jarFileDir);
         getLogger().debug("> Task :" + projectName + ":" + "jar");
         copyResources(jarFileDir, transformsDir.getAbsolutePath());
+        if (!transformedJarFileDir.renameTo(classesJarFileDir)) {
+          getLogger().warning("Failed to rename " + transformedJarFileDir.getName() + " file");
+        }
       } else {
         getLogger().debug("> Task :" + projectName + ":" + "jar SKIPPED");
       }
