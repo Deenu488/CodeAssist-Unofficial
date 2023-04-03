@@ -73,7 +73,7 @@ public class GenerateFirebaseConfigTask extends Task<AndroidModule> {
       Log.d(TAG, "No google-services.json found.");
       return;
     }
-    String packageName = module.getNameSpace();
+	  String packageName = getModule().getNameSpace();
     if (packageName == null) {
       throw new IOException("Unable to find namespace in build.gradle file");
     }
