@@ -39,8 +39,7 @@ public class GenerateDebugBuildConfigTask extends Task<AndroidModule> {
 
   private void GenerateBuildConfig() throws IOException {
     Log.d(TAG, "Generating BuildConfig.java");
-
-	  String packageName = getModule().getNameSpace();
+    String packageName = module.getNameSpace();
     if (packageName == null) {
       throw new IOException("Unable to find namespace in build.gradle file");
     }
@@ -96,7 +95,9 @@ public class GenerateDebugBuildConfigTask extends Task<AndroidModule> {
 
   public void GenerateBuildConfig(String packageName, File genDir) throws IOException {
     Log.d(TAG, "Generating BuildConfig.java");
-
+    if (packageName == null) {
+      throw new IOException("Unable to find namespace in build.gradle file");
+    }
     File dir = new File(genDir, packageName.replace('.', '/'));
     File buildConfigClass = new File(dir, "/BuildConfig.java");
     if (dir.exists()) {
