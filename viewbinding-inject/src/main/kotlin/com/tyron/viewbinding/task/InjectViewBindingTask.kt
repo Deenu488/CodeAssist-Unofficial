@@ -44,7 +44,7 @@ class InjectViewBindingTask private constructor(
     companion object {
         @JvmStatic
         fun inject(project: Project, module: AndroidModule) {                    
-            boolean isViewBindingEnabled = module.getViewBindingEnabled()
+            isViewBindingEnabled: Boolean = module.getViewBindingEnabled()
             if (!isViewBindingEnabled) {
             return
             }
