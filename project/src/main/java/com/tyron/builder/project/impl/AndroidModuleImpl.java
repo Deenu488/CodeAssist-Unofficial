@@ -7,13 +7,17 @@ import com.tyron.builder.compiler.manifest.xml.AndroidManifestParser;
 import com.tyron.builder.compiler.manifest.xml.ManifestData;
 import com.tyron.builder.model.ModuleSettings;
 import com.tyron.builder.project.api.AndroidModule;
+import com.tyron.builder.project.cache.CacheHolder.CacheKey;
 import com.tyron.common.util.StringSearch;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -132,6 +136,42 @@ public class AndroidModuleImpl extends JavaModuleImpl implements AndroidModule {
       return null;
     }
     return manifestData.getPackage();
+  }
+
+  @Override
+  public boolean getViewBindingEnabled() {
+    return parseViewBindingEnabled(getGradleFile());
+  }
+
+  @Override
+  public boolean getViewBindingEnabled(File file) {
+    return parseViewBindingEnabled(file);
+  }
+
+  private boolean parseViewBindingEnabled(File gradle) {
+    if (gradle != null && gradle.exists()) {
+      try {
+        String readString = FileUtils.readFileToString(gradle, Charset.defaultCharset());
+        return parseViewBindingEnabled(readString);
+      } catch (IOException e) {
+        // handle the exception here, if needed
+      }
+    }
+    return false;
+  }
+
+  private boolean parseViewBindingEnabled(String readString) throws IOException {
+    Pattern VIEW_BINDING_ENABLED =
+        Pattern.compile("\\s*(viewBinding)\\s*()([a-zA-Z0-9.'/-:\\-]+)()");
+    Matcher matcher = VIEW_BINDING_ENABLED.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null && !declaration.isEmpty()) {
+        boolean minifyEnabled = Boolean.parseBoolean(String.valueOf(declaration));
+        return minifyEnabled;
+      }
+    }
+    return false;
   }
 
   @Override
