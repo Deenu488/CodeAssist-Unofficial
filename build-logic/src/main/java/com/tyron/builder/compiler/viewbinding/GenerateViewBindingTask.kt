@@ -87,7 +87,7 @@ class GenerateViewBindingTask(
 
     private fun generateClassesToBundle(): ResourceBundle {
         // it doesn't matter what we pass to the 2nd argument, we won't be using data binding anyways
-        val resourceBundle = ResourceBundle(module.packageName, true)
+        val resourceBundle = ResourceBundle(module.nameSpace, true)
         val resDir = module.androidResourcesDirectory
 
         resDir.walkTopDown().filter {
@@ -99,7 +99,7 @@ class GenerateViewBindingTask(
         }.forEach { file ->
             val bundle = LayoutFileParser.parseXml(
                 RelativizableFile.fromAbsoluteFile(file),
-                module.packageName,
+                module.nameSpace,
                 getUpToDateFileContent(module, file),
                 true
             )

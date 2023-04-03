@@ -15,9 +15,9 @@ public interface AndroidModule extends JavaModule, KotlinModule {
 
   File getAssetsDirectory();
 
-  String getPackageName();
+  String getNameSpace();
 
-  String getPackageName(File manifest);
+  String getNameSpace(File file);
 
   File getManifestFile();
 
@@ -28,6 +28,7 @@ public interface AndroidModule extends JavaModule, KotlinModule {
   boolean getViewBindingEnabled();
 
   boolean getViewBindingEnabled(File file);
+
   /** Return a map of fully qualified name and the file object of an R.java class */
   Map<String, File> getResourceClasses();
 

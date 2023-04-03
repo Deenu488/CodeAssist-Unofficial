@@ -131,9 +131,9 @@ public class ManifestMergeTask extends Task<AndroidModule> {
   }
 
   private String getApplicationId() throws IOException {
-    String packageName = getModule().getPackageName();
+    String packageName = getModule().getNameSpace();
     if (packageName == null) {
-      throw new IOException("Failed to parse package name");
+      throw new IOException("Unable to find namespace in build.gradle file");
     }
     return packageName;
   }

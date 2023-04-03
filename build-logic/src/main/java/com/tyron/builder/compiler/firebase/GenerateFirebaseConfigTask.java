@@ -86,14 +86,14 @@ public class GenerateFirebaseConfigTask extends Task<AndroidModule> {
         throw new IOException("Unable to create secrets.xml file");
       }
 
-      if (doGenerate(contents, getModule().getPackageName(), secretsFile)) {
+      if (doGenerate(contents, getModule().getNameSpace(), secretsFile)) {
         return;
       }
 
       String message =
           ""
               + "Unable to find "
-              + getModule().getPackageName()
+              + getModule().getNameSpace()
               + " in google-services.json. \n"
               + "Ensure that the package name defined in your firebase console "
               + "matches your app's package name.";

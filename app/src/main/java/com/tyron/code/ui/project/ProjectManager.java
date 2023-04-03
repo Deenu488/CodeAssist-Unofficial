@@ -190,8 +190,15 @@ public class ProjectManager {
 
             XmlRepository xmlRepository = index.get(project, module);
             try {
-              logger.debug("> Task :" + module.getRootFile().getName() + ":" + "indexingResources");
-              xmlRepository.initialize((AndroidModule) module);
+              String packageName = ((AndroidModule) module).getNameSpace();
+              if (packageName != null) {
+                logger.debug(
+                    "> Task :" + module.getRootFile().getName() + ":" + "indexingResources");
+                xmlRepository.initialize((AndroidModule) module);
+              } else {
+                throw new CompilationFailedException(
+                    "Unable to find namespace in build.gradle file");
+              }
             } catch (IOException e) {
               String message =
                   "Unable to initialize resource repository. "
@@ -210,10 +217,16 @@ public class ProjectManager {
           JavaCompilerService service = provider.get(project, module);
           if (res.exists()) {
             if (module instanceof AndroidModule) {
-              InjectResourcesTask.inject(project, (AndroidModule) module);
-              InjectViewBindingTask.inject(project, (AndroidModule) module);
-              logger.debug(
-                  "> Task :" + module.getRootFile().getName() + ":" + "injectingResources");
+              String packageName = ((AndroidModule) module).getNameSpace();
+              if (packageName != null) {
+                InjectResourcesTask.inject(project, (AndroidModule) module);
+                InjectViewBindingTask.inject(project, (AndroidModule) module);
+                logger.debug(
+                    "> Task :" + module.getRootFile().getName() + ":" + "injectingResources");
+              } else {
+                throw new CompilationFailedException(
+                    "Unable to find namespace in build.gradle file");
+              }
             }
           }
           Collection<File> files = javaModule.getJavaFiles().values();
@@ -231,8 +244,14 @@ public class ProjectManager {
     mCurrentProject.setIndexing(false);
     mListener.onComplete(project, true, "Index successful");
 
-    long seconds = TimeUnit.MILLISECONDS.toSeconds(Duration.between(now, Instant.now()).toMillis());
-    logger.debug("TIME TOOK " + seconds + "s");
+    long milliseconds = Duration.between(now, Instant.now()).toMillis();
+    long seconds = TimeUnit.MILLISECONDS.toSeconds(milliseconds);
+    if (seconds > 60) {
+      long minutes = TimeUnit.MILLISECONDS.toMinutes(milliseconds);
+      logger.debug("TIME TOOK " + minutes + "m");
+    } else {
+      logger.debug("TIME TOOK " + seconds + "s");
+    }
   }
 
   private void downloadLibraries(JavaModule project, TaskListener listener, ILogger logger)

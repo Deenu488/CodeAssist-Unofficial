@@ -57,7 +57,7 @@ public class LayoutXmlCompletionProvider extends CompletionProvider {
       String contents = params.getContents();
 
       ResourceNamespace namespace =
-          ResourceNamespace.fromPackageName(((AndroidModule) params.getModule()).getPackageName());
+          ResourceNamespace.fromPackageName(((AndroidModule) params.getModule()).getNameSpace());
       DOMDocument parsed =
           DOMParser.getInstance()
               .parse(contents, namespace.getXmlNamespaceUri(), new URIResolverExtensionManager());

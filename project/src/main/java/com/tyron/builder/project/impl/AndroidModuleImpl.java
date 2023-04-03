@@ -3,8 +3,6 @@ package com.tyron.builder.project.impl;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.common.collect.ImmutableMap;
-import com.tyron.builder.compiler.manifest.xml.AndroidManifestParser;
-import com.tyron.builder.compiler.manifest.xml.ManifestData;
 import com.tyron.builder.model.ModuleSettings;
 import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.builder.project.cache.CacheHolder.CacheKey;
@@ -25,8 +23,6 @@ import org.jetbrains.kotlin.com.intellij.util.ReflectionUtil;
 
 public class AndroidModuleImpl extends JavaModuleImpl implements AndroidModule {
 
-  private ManifestData mManifestData;
-  private ManifestData manifestData;
   private final Map<String, File> mKotlinFiles;
   private Map<String, File> mResourceClasses;
 
@@ -40,13 +36,9 @@ public class AndroidModuleImpl extends JavaModuleImpl implements AndroidModule {
   @Override
   public void open() throws IOException {
     super.open();
-
-    try {
-      File manifest = getManifestFile();
-      if (manifest.exists()) {
-        mManifestData = AndroidManifestParser.parse(getManifestFile());
-      }
-    } catch (IOException e) {
+    File gradle = getGradleFile();
+    if (!gradle.exists()) {
+      throw new IOException("Unable to open build.gradle file");
     }
   }
 
@@ -115,27 +107,57 @@ public class AndroidModuleImpl extends JavaModuleImpl implements AndroidModule {
   }
 
   @Override
-  public String getPackageName() {
-    if (mManifestData == null) {
-      return null;
+  public String getNameSpace() {
+    return parseNameSpace(getGradleFile());
+  }
+
+  private String parseNameSpace(File gradle) {
+    if (gradle != null && gradle.exists()) {
+      try {
+        String readString = FileUtils.readFileToString(gradle, Charset.defaultCharset());
+        return parseNameSpace(readString);
+      } catch (IOException e) {
+        // handle the exception here, if needed
+      }
     }
-    return mManifestData.getPackage();
+    return null;
+  }
+
+  public static String parseNameSpace(String readString) throws IOException {
+    Pattern NAMESPLACE = Pattern.compile("\\s*(namespace)\\s*(')([a-zA-Z0-9.'/-:\\-]+)(')");
+    Pattern NAMESPLACE_QUOT = Pattern.compile("\\s*(namespace)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
+
+    readString = readString.replaceAll("\\s*//.*", "");
+    Matcher matcher = NAMESPLACE.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null) {
+        String namespace = String.valueOf(declaration);
+        if (namespace != null && !namespace.isEmpty()) {
+          return namespace;
+        } else {
+          throw new IOException("Unable to find namespace in build.gradle file");
+        }
+      }
+    }
+    matcher = NAMESPLACE_QUOT.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null) {
+        String namespace = String.valueOf(declaration);
+        if (namespace != null && !namespace.isEmpty()) {
+          return namespace;
+        } else {
+          throw new IOException("Unable to find namespace in build.gradle file");
+        }
+      }
+    }
+    return null;
   }
 
   @Override
-  public String getPackageName(File manifest) {
-
-    try {
-      if (manifest.exists()) {
-        manifestData = AndroidManifestParser.parse(manifest);
-      }
-    } catch (IOException e) {
-    }
-
-    if (manifestData == null) {
-      return null;
-    }
-    return manifestData.getPackage();
+  public String getNameSpace(File gradle) {
+    return parseNameSpace(gradle);
   }
 
   @Override

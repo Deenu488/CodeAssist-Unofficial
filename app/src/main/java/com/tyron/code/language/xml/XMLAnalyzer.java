@@ -212,7 +212,7 @@ public class XMLAnalyzer extends DiagnosticTextmateAnalyzer {
     }
 
     // work around to refresh R.java file
-    File resourceClass = module.getJavaFile(module.getPackageName() + ".R");
+    File resourceClass = module.getJavaFile(module.getNameSpace() + ".R");
     if (resourceClass != null) {
       JavaCompilerProvider provider =
           CompilerService.getInstance().getIndex(JavaCompilerProvider.KEY);

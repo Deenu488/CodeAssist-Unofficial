@@ -42,8 +42,7 @@ public class GenerateDebugBuildConfigTask extends Task<AndroidModule> {
 
     File packageDir =
         new File(
-            getModule().getBuildDirectory() + "/gen",
-            getModule().getPackageName().replace('.', '/'));
+            getModule().getBuildDirectory() + "/gen", getModule().getNameSpace().replace('.', '/'));
     File buildConfigClass = new File(packageDir, "/BuildConfig.java");
     if (packageDir.exists()) {
     } else {
@@ -62,7 +61,7 @@ public class GenerateDebugBuildConfigTask extends Task<AndroidModule> {
             + "*/"
             + "\n"
             + "package "
-            + getModule().getPackageName()
+            + getModule().getNameSpace()
             + ";\n"
             + "\n"
             + "public final class BuildConfig {"
@@ -71,7 +70,7 @@ public class GenerateDebugBuildConfigTask extends Task<AndroidModule> {
             + "Boolean.parseBoolean(\"true\")"
             + ";\n"
             + "    public static final String APPLICATION_ID = "
-            + "\"$package_name\"".replace("$package_name", getModule().getPackageName())
+            + "\"$package_name\"".replace("$package_name", getModule().getNameSpace())
             + ";\n"
             + "    public static final String BUILD_TYPE = "
             + "\"debug\""

@@ -134,7 +134,7 @@ public class InjectResourcesTask {
     }
 
     SymbolLoader loader = new SymbolLoader(symbols);
-    SymbolWriter symbolWriter = new SymbolWriter(null, mModule.getPackageName(), loader, null);
+    SymbolWriter symbolWriter = new SymbolWriter(null, mModule.getNameSpace(), loader, null);
     symbolWriter.addSymbolsToWrite(loader);
     return symbolWriter.getString();
   }

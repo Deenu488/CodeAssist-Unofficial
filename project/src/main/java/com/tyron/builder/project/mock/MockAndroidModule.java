@@ -3,8 +3,6 @@ package com.tyron.builder.project.mock;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.common.collect.ImmutableMap;
-import com.tyron.builder.compiler.manifest.xml.AndroidManifestParser;
-import com.tyron.builder.compiler.manifest.xml.ManifestData;
 import com.tyron.builder.model.ModuleSettings;
 import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.builder.project.api.FileManager;
@@ -25,10 +23,6 @@ public class MockAndroidModule extends MockJavaModule implements AndroidModule {
   private int mTargetSdk = 31;
   private int mMinSdk = 21;
 
-  private ManifestData mManifestData;
-  private ManifestData manifestData;
-  private String mPackageName;
-
   private File mAndroidResourcesDir;
 
   private final ModuleSettings mockSettings = new MockModuleSettings();
@@ -46,8 +40,9 @@ public class MockAndroidModule extends MockJavaModule implements AndroidModule {
   public void open() throws IOException {
     super.open();
 
-    if (getManifestFile().exists()) {
-      mManifestData = AndroidManifestParser.parse(getManifestFile());
+    File gradle = getGradleFile();
+    if (!gradle.exists()) {
+      throw new IOException("Unable to open build.gradle file");
     }
   }
 
@@ -76,35 +71,60 @@ public class MockAndroidModule extends MockJavaModule implements AndroidModule {
     return new File(getRootFile(), "src/main/assets");
   }
 
-  public void setPackageName(@NonNull String name) {
-    mPackageName = name;
-  }
+  public void setPackageName(@NonNull String name) {}
 
   @Override
-  public String getPackageName() {
-    if (mPackageName != null) {
-      return mPackageName;
-    }
-
-    if (mManifestData == null) {
-      throw new IllegalStateException("Project is not yet opened");
-    }
-    return mManifestData.getPackage();
+  public String getNameSpace() {
+    return parseNameSpace(getGradleFile());
   }
 
-  @Override
-  public String getPackageName(File manifest) {
-    try {
-      if (manifest.exists()) {
-        manifestData = AndroidManifestParser.parse(manifest);
+  private String parseNameSpace(File gradle) {
+    if (gradle != null && gradle.exists()) {
+      try {
+        String readString = FileUtils.readFileToString(gradle, Charset.defaultCharset());
+        return parseNameSpace(readString);
+      } catch (IOException e) {
+        // handle the exception here, if needed
       }
-    } catch (IOException e) {
     }
+    return null;
+  }
 
-    if (manifestData == null) {
-      throw new IllegalStateException("Project is not yet opened");
+  public static String parseNameSpace(String readString) throws IOException {
+    Pattern NAMESPLACE = Pattern.compile("\\s*(namespace)\\s*(')([a-zA-Z0-9.'/-:\\-]+)(')");
+    Pattern NAMESPLACE_QUOT = Pattern.compile("\\s*(namespace)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
+
+    readString = readString.replaceAll("\\s*//.*", "");
+    Matcher matcher = NAMESPLACE.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null) {
+        String namespace = String.valueOf(declaration);
+        if (namespace != null && !namespace.isEmpty()) {
+          return namespace;
+        } else {
+          throw new IOException("Unable to find namespace in build.gradle file");
+        }
+      }
     }
-    return manifestData.getPackage();
+    matcher = NAMESPLACE_QUOT.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null) {
+        String namespace = String.valueOf(declaration);
+        if (namespace != null && !namespace.isEmpty()) {
+          return namespace;
+        } else {
+          throw new IOException("Unable to find namespace in build.gradle file");
+        }
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public String getNameSpace(File gradle) {
+    return parseNameSpace(gradle);
   }
 
   @Override

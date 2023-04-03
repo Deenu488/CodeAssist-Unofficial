@@ -159,7 +159,7 @@ public class InjectLoggerTask extends Task<AndroidModule> {
 
       String applicationClass = getApplicationClass();
       if (applicationClass == null) {
-        applicationClass = getModule().getPackageName() + ".LoggerApplication";
+        applicationClass = getModule().getNameSpace() + ".LoggerApplication";
         createApplicationClass(applicationClass);
       } else {
         isNewApplicationClass = false;
@@ -256,7 +256,7 @@ public class InjectLoggerTask extends Task<AndroidModule> {
           if (pair.first.equals("android:name")) {
             String name = pair.second;
             if (name.startsWith(".")) {
-              return getModule().getPackageName() + name;
+              return getModule().getNameSpace() + name;
             } else {
               return name;
             }
@@ -295,7 +295,7 @@ public class InjectLoggerTask extends Task<AndroidModule> {
       throw new IOException("Unable to create LoggerApplication");
     }
 
-    String classString = "package " + getModule().getPackageName() + ";\n" + APPLICATION_CLASS;
+    String classString = "package " + getModule().getNameSpace() + ";\n" + APPLICATION_CLASS;
     FileUtils.writeStringToFile(output, classString, Charset.defaultCharset());
     getModule().addJavaFile(output);
   }
@@ -324,7 +324,7 @@ public class InjectLoggerTask extends Task<AndroidModule> {
     Log.d(TAG, "Creating Logger.java");
 
     File packageDir =
-        new File(getModule().getJavaDirectory(), getModule().getPackageName().replace('.', '/'));
+        new File(getModule().getJavaDirectory(), getModule().getNameSpace().replace('.', '/'));
     File loggerClass = new File(packageDir, "/Logger.java");
     if (packageDir.exists()) {
     } else {
@@ -334,7 +334,7 @@ public class InjectLoggerTask extends Task<AndroidModule> {
       throw new IOException("Unable to create Logger.java");
     }
 
-    String loggerString = "package " + getModule().getPackageName() + ";\n" + LOGGER_CLASS;
+    String loggerString = "package " + getModule().getNameSpace() + ";\n" + LOGGER_CLASS;
     FileUtils.writeStringToFile(loggerClass, loggerString, Charset.defaultCharset());
     mLoggerFile = loggerClass;
     getModule().addJavaFile(loggerClass);

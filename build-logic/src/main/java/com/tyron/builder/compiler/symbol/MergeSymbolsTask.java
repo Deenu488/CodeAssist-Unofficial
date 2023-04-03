@@ -63,7 +63,7 @@ public class MergeSymbolsTask extends Task<AndroidModule> {
         continue;
       }
 
-      if (packageName.equals(getModule().getPackageName())) {
+      if (packageName.equals(getModule().getNameSpace())) {
         // only generate libraries
         continue;
       }

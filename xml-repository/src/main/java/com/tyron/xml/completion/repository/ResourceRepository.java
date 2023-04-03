@@ -24,7 +24,7 @@ public class ResourceRepository extends SimpleResourceRepository {
   public ResourceRepository(AndroidModule module) {
     super(
         module.getAndroidResourcesDirectory(),
-        ResourceNamespace.fromPackageName(module.getPackageName()));
+        ResourceNamespace.fromPackageName(module.getNameSpace()));
     mModule = module;
     mAndroidRepository = AndroidResourceRepository.getInstance();
   }

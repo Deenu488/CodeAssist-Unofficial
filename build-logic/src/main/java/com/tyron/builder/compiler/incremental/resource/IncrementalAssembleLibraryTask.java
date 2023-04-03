@@ -332,7 +332,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       List<File> compileClassPath,
       List<File> runtimeClassPath)
       throws IOException, CompilationFailedException {
-
+    File gradleFile = new File(projectDir, projectName + "/build.gradle");
     File jarDir = new File(projectDir, projectName + "/build/outputs/jar");
     File jarFileDir = new File(jarDir, projectName + ".jar");
 
@@ -453,14 +453,14 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
           GenerateReleaseBuildConfigTask generateReleaseBuildConfigTask =
               new GenerateReleaseBuildConfigTask(getProject(), getModule(), getLogger());
           generateReleaseBuildConfigTask.GenerateBuildConfig(
-              getModule().getPackageName(manifestFileDir), buildGenDir);
+              getModule().getNameSpace(gradleFile), buildGenDir);
 
         } else if (mBuildType == BuildType.DEBUG) {
           getLogger().debug("> Task :" + projectName + ":" + "generateDebugBuildConfig");
           GenerateDebugBuildConfigTask generateDebugBuildConfigTask =
               new GenerateDebugBuildConfigTask(getProject(), getModule(), getLogger());
           generateDebugBuildConfigTask.GenerateBuildConfig(
-              getModule().getPackageName(manifestFileDir), buildGenDir);
+              getModule().getNameSpace(gradleFile), buildGenDir);
         }
         if (resDir.exists()) {
           if (javaClassesDir.exists()) {
@@ -514,14 +514,14 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
           GenerateReleaseBuildConfigTask generateReleaseBuildConfigTask =
               new GenerateReleaseBuildConfigTask(getProject(), getModule(), getLogger());
           generateReleaseBuildConfigTask.GenerateBuildConfig(
-              getModule().getPackageName(manifestFileDir), buildGenDir);
+              getModule().getNameSpace(gradleFile), buildGenDir);
 
         } else if (mBuildType == BuildType.DEBUG) {
           getLogger().debug("> Task :" + projectName + ":" + "generateDebugBuildConfig");
           GenerateDebugBuildConfigTask generateDebugBuildConfigTask =
               new GenerateDebugBuildConfigTask(getProject(), getModule(), getLogger());
           generateDebugBuildConfigTask.GenerateBuildConfig(
-              getModule().getPackageName(manifestFileDir), buildGenDir);
+              getModule().getNameSpace(gradleFile), buildGenDir);
         }
         if (resDir.exists()) {
           if (javaClassesDir.exists()) {
