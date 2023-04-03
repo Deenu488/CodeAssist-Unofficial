@@ -99,7 +99,7 @@ public class GenerateReleaseBuildConfigTask extends Task<AndroidModule> {
     }
     File dir = new File(genDir, packageName.replace('.', '/'));
 
-    File buildConfigClass = new File(dir, packageName.replace('.', '/') + "/BuildConfig.java");
+    File buildConfigClass = new File(dir, "/BuildConfig.java");
     if (genDir.exists()) {
     } else {
       genDir.mkdirs();
