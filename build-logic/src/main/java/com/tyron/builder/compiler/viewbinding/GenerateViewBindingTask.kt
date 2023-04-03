@@ -52,8 +52,9 @@ class GenerateViewBindingTask(
         outputDirectory.mkdirs()
     }
 
-    override fun run() {
-        if (!module.settings.getBoolean(ModuleSettings.VIEW_BINDING_ENABLED, false)) {
+    override fun run() {     
+        val isViewBindingEnabled: Boolean = module.getViewBindingEnabled()
+            if (!isViewBindingEnabled) {
             Log.d(TAG, "View binding is disabled, skipping")
             return
         }

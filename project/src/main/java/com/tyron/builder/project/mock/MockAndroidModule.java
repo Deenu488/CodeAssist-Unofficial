@@ -137,7 +137,11 @@ public class MockAndroidModule extends MockJavaModule implements AndroidModule {
       String declaration = matcher.group(3);
       if (declaration != null && !declaration.isEmpty()) {
         boolean minifyEnabled = Boolean.parseBoolean(String.valueOf(declaration));
-        return minifyEnabled;
+        if (minifyEnabled) {
+          return true;
+        } else {
+          return false;
+        }
       }
     }
     return false;

@@ -53,11 +53,7 @@ public class AndroidAppBuilder extends BuilderImpl<AndroidModule> {
     }
     tasks.add(new CrashlyticsTask(getProject(), module, logger));
     tasks.add(new IncrementalAapt2Task(getProject(), module, logger, false));
-
-    boolean isViewBindingEnabled = module.getViewBindingEnabled();
-    if (isViewBindingEnabled) {
-      tasks.add(new GenerateViewBindingTask(getProject(), module, logger, true));
-    }
+    tasks.add(new GenerateViewBindingTask(getProject(), module, logger, true));
 
     tasks.add(new MergeSymbolsTask(getProject(), module, logger));
     tasks.add(new IncrementalKotlinCompiler(getProject(), module, logger));
