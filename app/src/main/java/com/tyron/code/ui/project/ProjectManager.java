@@ -196,8 +196,7 @@ public class ProjectManager {
                     "> Task :" + module.getRootFile().getName() + ":" + "indexingResources");
                 xmlRepository.initialize((AndroidModule) module);
               } else {
-                throw new CompilationFailedException(
-                    "Unable to find namespace in build.gradle file");
+                throw new IOException("Unable to find namespace in build.gradle file");
               }
             } catch (IOException e) {
               String message =
@@ -224,8 +223,7 @@ public class ProjectManager {
                 logger.debug(
                     "> Task :" + module.getRootFile().getName() + ":" + "injectingResources");
               } else {
-                throw new CompilationFailedException(
-                    "Unable to find namespace in build.gradle file");
+                throw new IOException("Unable to find namespace in build.gradle file");
               }
             }
           }
