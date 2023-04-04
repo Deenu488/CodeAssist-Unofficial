@@ -25,6 +25,10 @@ public interface AndroidModule extends JavaModule, KotlinModule {
 
   int getMinSdk();
 
+  int getVersionCode();
+
+  String getVersionName();
+
   boolean getViewBindingEnabled();
 
   boolean getViewBindingEnabled(File file);

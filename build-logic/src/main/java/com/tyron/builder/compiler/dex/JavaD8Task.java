@@ -107,7 +107,7 @@ public class JavaD8Task extends Task<JavaModule> {
                       .collect(Collectors.toList()))
               .addProgramFiles(mFilesToCompile)
               .addLibraryFiles(getLibraryFiles())
-              .setMinApiLevel(21)
+              .setMinApiLevel(getModule().getMinSdk())
               .setMode(CompilationMode.RELEASE)
               .setIntermediate(true)
               .setOutput(mOutputPath, OutputMode.DexFilePerClassFile)
@@ -135,7 +135,7 @@ public class JavaD8Task extends Task<JavaModule> {
                       .collect(Collectors.toList()))
               .addProgramFiles(mFilesToCompile)
               .addLibraryFiles(getLibraryFiles())
-              .setMinApiLevel(21)
+              .setMinApiLevel(getModule().getMinSdk())
               .setMode(CompilationMode.DEBUG)
               .setIntermediate(true)
               .setOutput(mOutputPath, OutputMode.DexFilePerClassFile)
@@ -154,7 +154,7 @@ public class JavaD8Task extends Task<JavaModule> {
                   getModule().getLibraries().stream()
                       .map(File::toPath)
                       .collect(Collectors.toList()))
-              .setMinApiLevel(21);
+              .setMinApiLevel(getModule().getMinSdk());
 
       File output = new File(getModule().getBuildDirectory(), "bin");
       builder.setMode(CompilationMode.DEBUG);
@@ -177,7 +177,7 @@ public class JavaD8Task extends Task<JavaModule> {
             .addLibraryFiles(getLibraryFiles())
             .addProgramFiles(getAllDexFiles(mOutputPath.toFile()))
             .addProgramFiles(getLibraryDexes())
-            .setMinApiLevel(21)
+            .setMinApiLevel(getModule().getMinSdk())
             .setMode(CompilationMode.RELEASE)
             .setOutput(output.toPath(), OutputMode.DexIndexed)
             .build();
@@ -246,7 +246,7 @@ public class JavaD8Task extends Task<JavaModule> {
                   .addLibraryFiles(getLibraryFiles())
                   .addClasspathFiles(
                       libraries.stream().map(File::toPath).collect(Collectors.toList()))
-                  .setMinApiLevel(21)
+                  .setMinApiLevel(getModule().getMinSdk())
                   .addProgramFiles(lib.toPath())
                   .setMode(CompilationMode.RELEASE)
                   .setOutput(lib.getParentFile().toPath(), OutputMode.DexIndexed)

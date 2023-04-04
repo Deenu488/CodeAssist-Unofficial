@@ -153,6 +153,41 @@ public class ModuleImpl implements Module {
     return parseListDirAndIncludes(gradleFile, scope);
   }
 
+  @Override
+  public int getMinSdk() {
+    return parseMinSdk(getGradleFile());
+  }
+
+  private int parseMinSdk(File gradle) {
+    if (gradle != null && gradle.exists()) {
+      try {
+        String readString = FileUtils.readFileToString(gradle, Charset.defaultCharset());
+        return parseMinSdk(readString);
+      } catch (IOException e) {
+        // handle the exception here, if needed
+      }
+    }
+    return 21;
+  }
+
+  public static int parseMinSdk(String readString) throws IOException {
+    Pattern MIN_SDK = Pattern.compile("\\s*(minSdk)\\s*()([a-zA-Z0-9.'/-:\\-]+)()");
+    Matcher matcher = MIN_SDK.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null & !declaration.isEmpty()) {
+        try {
+          int minSdk = Integer.parseInt(String.valueOf(declaration));
+          return minSdk;
+        } catch (NumberFormatException e) {
+          // Handle the exception here, such as logging an error or returning a default value
+          e.printStackTrace();
+        }
+      }
+    }
+    return 21;
+  }
+
   @Nullable
   @Override
   public <T> T getUserData(@NotNull Key<T> key) {

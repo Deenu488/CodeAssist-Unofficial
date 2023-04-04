@@ -29,8 +29,8 @@ public class ModuleSettings implements SharedPreferences {
 
   public static final String SAVED_EDITOR_FILES = "editor_opened_files";
   public static final String USE_R8 = "useR8";
-  public static final String TARGET_SDK_VERSION = "targetSdkVersion";
-  public static final String MIN_SDK_VERSION = "minSdkVersion";
+  // public static final String TARGET_SDK_VERSION = "targetSdkVersion";
+  // public static final String MIN_SDK_VERSION = "minSdkVersion";
   public static final String VERSION_NAME = "versionName";
   public static final String VERSION_CODE = "versionCode";
   public static final String JAVA_TARGET_VERSION = "javaTargetVersion";
@@ -71,8 +71,8 @@ public class ModuleSettings implements SharedPreferences {
     plugins.add("com.android.application");
 
     map.put(USE_R8, false);
-    map.put(MIN_SDK_VERSION, 21);
-    map.put(TARGET_SDK_VERSION, 33);
+    //  map.put(MIN_SDK_VERSION, 21);
+    // map.put(TARGET_SDK_VERSION, 33);
     map.put(VERSION_NAME, "1.0");
     map.put(VERSION_CODE, 1);
     map.put(ZIP_ALIGN_ENABLED, false);

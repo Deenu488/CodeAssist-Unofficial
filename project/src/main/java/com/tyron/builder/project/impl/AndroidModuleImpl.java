@@ -3,7 +3,6 @@ package com.tyron.builder.project.impl;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.common.collect.ImmutableMap;
-import com.tyron.builder.model.ModuleSettings;
 import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.builder.project.cache.CacheHolder.CacheKey;
 import com.tyron.common.util.StringSearch;
@@ -211,12 +210,155 @@ public class AndroidModuleImpl extends JavaModuleImpl implements AndroidModule {
 
   @Override
   public int getTargetSdk() {
-    return getSettings().getInt(ModuleSettings.TARGET_SDK_VERSION, 30);
+    return parseTargetSdk(getGradleFile());
+  }
+
+  private int parseTargetSdk(File gradle) {
+    if (gradle != null && gradle.exists()) {
+      try {
+        String readString = FileUtils.readFileToString(gradle, Charset.defaultCharset());
+        return parseTargetSdk(readString);
+      } catch (IOException e) {
+        // handle the exception here, if needed
+      }
+    }
+    return 33;
+  }
+
+  public static int parseTargetSdk(String readString) throws IOException {
+    Pattern TARGET_SDK = Pattern.compile("\\s*(targetSdk)\\s*()([a-zA-Z0-9.'/-:\\-]+)()");
+
+    Matcher matcher = TARGET_SDK.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null & !declaration.isEmpty()) {
+
+        try {
+          int targetSdk = Integer.parseInt(String.valueOf(declaration));
+          return targetSdk;
+        } catch (NumberFormatException e) {
+          // Handle the exception here, such as logging an error or returning a default value
+          e.printStackTrace();
+        }
+      }
+    }
+    return 33;
   }
 
   @Override
   public int getMinSdk() {
-    return getSettings().getInt(ModuleSettings.MIN_SDK_VERSION, 21);
+    return parseMinSdk(getGradleFile());
+  }
+
+  private int parseMinSdk(File gradle) {
+    if (gradle != null && gradle.exists()) {
+      try {
+        String readString = FileUtils.readFileToString(gradle, Charset.defaultCharset());
+        return parseMinSdk(readString);
+      } catch (IOException e) {
+        // handle the exception here, if needed
+      }
+    }
+    return 21;
+  }
+
+  public static int parseMinSdk(String readString) throws IOException {
+    Pattern MIN_SDK = Pattern.compile("\\s*(minSdk)\\s*()([a-zA-Z0-9.'/-:\\-]+)()");
+    Matcher matcher = MIN_SDK.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null & !declaration.isEmpty()) {
+        try {
+          int minSdk = Integer.parseInt(String.valueOf(declaration));
+          return minSdk;
+        } catch (NumberFormatException e) {
+          // Handle the exception here, such as logging an error or returning a default value
+          e.printStackTrace();
+        }
+      }
+    }
+    return 21;
+  }
+
+  @Override
+  public int getVersionCode() {
+    return parseVersionCode(getGradleFile());
+  }
+
+  private int parseVersionCode(File gradle) {
+    if (gradle != null && gradle.exists()) {
+      try {
+        String readString = FileUtils.readFileToString(gradle, Charset.defaultCharset());
+        return parseMinSdk(readString);
+      } catch (IOException e) {
+        // handle the exception here, if needed
+      }
+    }
+    return 1;
+  }
+
+  public static int parseVersionCode(String readString) throws IOException {
+    Pattern VERSION_CODE = Pattern.compile("\\s*(versionCode)\\s*()([a-zA-Z0-9.'/-:\\-]+)()");
+    Matcher matcher = VERSION_CODE.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null & !declaration.isEmpty()) {
+        try {
+          int minSdk = Integer.parseInt(String.valueOf(declaration));
+          return minSdk;
+        } catch (NumberFormatException e) {
+          // Handle the exception here, such as logging an error or returning a default value
+          e.printStackTrace();
+        }
+      }
+    }
+    return 1;
+  }
+
+  @Override
+  public String getVersionName() {
+    return parseVersionName(getGradleFile());
+  }
+
+  private String parseVersionName(File gradle) {
+    if (gradle != null && gradle.exists()) {
+      try {
+        String readString = FileUtils.readFileToString(gradle, Charset.defaultCharset());
+        return parseVersionName(readString);
+      } catch (IOException e) {
+        // handle the exception here, if needed
+      }
+    }
+    return "1.0";
+  }
+
+  public static String parseVersionName(String readString) throws IOException {
+    Pattern VERSION_NAME = Pattern.compile("\\s*(versionName)\\s*(')([a-zA-Z0-9.'/-:\\-]+)(')");
+    Pattern VERSION_NAME_QUOT =
+        Pattern.compile("\\s*(versionName)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
+
+    readString = readString.replaceAll("\\s*//.*", "");
+    Matcher matcher = VERSION_NAME.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null && !declaration.isEmpty()) {
+        String versionName = String.valueOf(declaration);
+        if (versionName != null && !versionName.isEmpty()) {
+          return versionName;
+        }
+      }
+    }
+    matcher = VERSION_NAME_QUOT.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null && !declaration.isEmpty()) {
+        String versionName = String.valueOf(declaration);
+        if (versionName != null && !versionName.isEmpty()) {
+          return versionName;
+        }
+      }
+    }
+    return "1.0";
   }
 
   @Override

@@ -23,6 +23,8 @@ public interface Module extends UserDataHolderEx, CacheHolder {
 
   File getProjectDir();
 
+  int getMinSdk();
+
   List<String> getPlugins();
 
   List<String> getPlugins(File file);

@@ -57,7 +57,7 @@ public class D8Task extends Task<JavaModule> {
                   getModule().getLibraries().stream()
                       .map(File::toPath)
                       .collect(Collectors.toList()))
-              .setMinApiLevel(21)
+              .setMinApiLevel(getModule().getMinSdk())
               .addLibraryFiles(getLibraryFiles())
               .addProgramFiles(
                   getClassFiles(new File(getModule().getBuildDirectory(), "bin/classes")))
@@ -102,7 +102,7 @@ public class D8Task extends Task<JavaModule> {
                   .addLibraryFiles(getLibraryFiles())
                   .addClasspathFiles(
                       libraries.stream().map(File::toPath).collect(Collectors.toList()))
-                  .setMinApiLevel(21)
+                  .setMinApiLevel(getModule().getMinSdk())
                   .addProgramFiles(lib.toPath())
                   .setMode(CompilationMode.RELEASE)
                   .setOutput(lib.getParentFile().toPath(), OutputMode.DexIndexed)
