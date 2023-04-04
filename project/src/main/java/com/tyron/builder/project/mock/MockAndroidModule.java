@@ -250,7 +250,7 @@ public class MockAndroidModule extends MockJavaModule implements AndroidModule {
     if (gradle != null && gradle.exists()) {
       try {
         String readString = FileUtils.readFileToString(gradle, Charset.defaultCharset());
-        return parseMinSdk(readString);
+        return parseVersionCode(readString);
       } catch (IOException e) {
         // handle the exception here, if needed
       }
