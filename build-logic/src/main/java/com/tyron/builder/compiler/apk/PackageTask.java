@@ -122,6 +122,12 @@ public class PackageTask extends Task<AndroidModule> {
       if (resourcesDir.exists()) {
         builder.addSourceFolder(resourcesDir);
       }
+      List<String> excludes = getModule().getExcludes();
+      if (excludes != null && !excludes.isEmpty()) {
+        for (String exclude : excludes) {
+          // builder.addNoCompressPattern(exclude);
+        }
+      }
 
       builder.sealApk();
     } catch (ApkCreationException | SealedApkException e) {

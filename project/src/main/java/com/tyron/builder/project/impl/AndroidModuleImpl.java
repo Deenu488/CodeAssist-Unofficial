@@ -9,7 +9,9 @@ import com.tyron.common.util.StringSearch;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -468,6 +470,48 @@ public class AndroidModuleImpl extends JavaModuleImpl implements AndroidModule {
       }
     }
     return false;
+  }
+
+  @Override
+  public List<String> getExcludes() {
+    return parseExcludes(getGradleFile());
+  }
+
+  private List<String> parseExcludes(File gradle) {
+    if (gradle != null && gradle.exists()) {
+
+      try {
+        String readString = FileUtils.readFileToString(gradle, Charset.defaultCharset());
+        return parseExcludes(readString);
+      } catch (IOException e) {
+      }
+    }
+    return null;
+  }
+
+  private List<String> parseExcludes(String readString) throws IOException {
+    List<String> excludes = new ArrayList<>();
+    Matcher matcher =
+        Pattern.compile("resources\\.excludes\\s*\\+?=\\s*\\[(.*)\\]").matcher(readString);
+    if (matcher.find()) {
+      String[] exclusions = matcher.group(1).split(",");
+      for (String declaration : exclusions) {
+        if (declaration != null && !declaration.isEmpty()) {
+          excludes.add(declaration.trim());
+        }
+      }
+    }
+
+    // Match file exclusions
+    matcher =
+        Pattern.compile("(exclude|exclude\\s+group:)\\s+[\"']([^\"']*)[\"']").matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null && !declaration.isEmpty()) {
+        excludes.add(declaration);
+      }
+    }
+    return excludes;
   }
 
   @Override
