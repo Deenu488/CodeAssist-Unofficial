@@ -188,8 +188,8 @@ public class AndroidModuleImpl extends JavaModuleImpl implements AndroidModule {
     while (matcher.find()) {
       String declaration = matcher.group(3);
       if (declaration != null && !declaration.isEmpty()) {
-        boolean minifyEnabled = Boolean.parseBoolean(String.valueOf(declaration));
-        if (minifyEnabled) {
+        boolean viewBindingEnabled = Boolean.parseBoolean(String.valueOf(declaration));
+        if (viewBindingEnabled) {
           return true;
         } else {
           return false;
@@ -359,6 +359,115 @@ public class AndroidModuleImpl extends JavaModuleImpl implements AndroidModule {
       }
     }
     return "1.0";
+  }
+
+  @Override
+  public boolean getMinifyEnabled() {
+    return parseMinifyEnabled(getGradleFile());
+  }
+
+  @Override
+  public boolean getMinifyEnabled(File file) {
+    return parseMinifyEnabled(file);
+  }
+
+  private boolean parseMinifyEnabled(File gradle) {
+    if (gradle != null && gradle.exists()) {
+      try {
+        String readString = FileUtils.readFileToString(gradle, Charset.defaultCharset());
+        return parseMinifyEnabled(readString);
+      } catch (IOException e) {
+        // handle the exception here, if needed
+      }
+    }
+    return false;
+  }
+
+  private boolean parseMinifyEnabled(String readString) throws IOException {
+    Pattern MINIFY_ENABLED = Pattern.compile("\\s*(minifyEnabled)\\s*()([a-zA-Z0-9.'/-:\\-]+)()");
+    Matcher matcher = MINIFY_ENABLED.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null && !declaration.isEmpty()) {
+        boolean minifyEnabled = Boolean.parseBoolean(String.valueOf(declaration));
+        if (minifyEnabled) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public boolean getZipAlignEnabled() {
+    return parseZipAlignEnabled(getGradleFile());
+  }
+
+  private boolean parseZipAlignEnabled(File gradle) {
+    if (gradle != null && gradle.exists()) {
+      try {
+        String readString = FileUtils.readFileToString(gradle, Charset.defaultCharset());
+        return parseZipAlignEnabled(readString);
+      } catch (IOException e) {
+        // handle the exception here, if needed
+      }
+    }
+    return false;
+  }
+
+  private boolean parseZipAlignEnabled(String readString) throws IOException {
+    Pattern ZIP_ALIGN_ENABLED =
+        Pattern.compile("\\s*(zipAlignEnabled)\\s*()([a-zA-Z0-9.'/-:\\-]+)()");
+    Matcher matcher = ZIP_ALIGN_ENABLED.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null && !declaration.isEmpty()) {
+        boolean zipAlignEnabled = Boolean.parseBoolean(String.valueOf(declaration));
+        if (zipAlignEnabled) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public boolean getUseLegacyPackaging() {
+    return parseUseLegacyPackaging(getGradleFile());
+  }
+
+  private boolean parseUseLegacyPackaging(File gradle) {
+    if (gradle != null && gradle.exists()) {
+      try {
+        String readString = FileUtils.readFileToString(gradle, Charset.defaultCharset());
+        return parseUseLegacyPackaging(readString);
+      } catch (IOException e) {
+        // handle the exception here, if needed
+      }
+    }
+    return false;
+  }
+
+  private boolean parseUseLegacyPackaging(String readString) throws IOException {
+    Pattern USE_LEGACY_PACKAGING =
+        Pattern.compile("\\s*(useLegacyPackaging)\\s*()([a-zA-Z0-9.'/-:\\-]+)()");
+    Matcher matcher = USE_LEGACY_PACKAGING.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null && !declaration.isEmpty()) {
+        boolean useLegacyPackaging = Boolean.parseBoolean(String.valueOf(declaration));
+        if (useLegacyPackaging) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    return false;
   }
 
   @Override

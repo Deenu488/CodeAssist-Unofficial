@@ -33,6 +33,14 @@ public interface AndroidModule extends JavaModule, KotlinModule {
 
   boolean getViewBindingEnabled(File file);
 
+  boolean getMinifyEnabled();
+
+  boolean getMinifyEnabled(File file);
+
+  boolean getZipAlignEnabled();
+
+  boolean getUseLegacyPackaging();
+
   /** Return a map of fully qualified name and the file object of an R.java class */
   Map<String, File> getResourceClasses();
 
