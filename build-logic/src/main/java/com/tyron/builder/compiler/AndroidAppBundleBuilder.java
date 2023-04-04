@@ -14,7 +14,6 @@ import com.tyron.builder.compiler.symbol.MergeSymbolsTask;
 import com.tyron.builder.compiler.viewbinding.GenerateViewBindingTask;
 import com.tyron.builder.crashlytics.CrashlyticsTask;
 import com.tyron.builder.log.ILogger;
-import com.tyron.builder.model.ModuleSettings;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ public class AndroidAppBundleBuilder extends BuilderImpl<AndroidModule> {
     tasks.add(new MergeSymbolsTask(getProject(), getModule(), getLogger()));
     tasks.add(new IncrementalKotlinCompiler(getProject(), getModule(), getLogger()));
     tasks.add(new IncrementalJavaTask(getProject(), getModule(), getLogger()));
-    if (getModule().getSettings().getBoolean(ModuleSettings.USE_R8, false)) {
+    if (getModule().getMinifyEnabled()) {
       tasks.add(new R8Task(getProject(), getModule(), getLogger()));
     } else {
       tasks.add(new IncrementalD8Task(getProject(), getModule(), getLogger()));

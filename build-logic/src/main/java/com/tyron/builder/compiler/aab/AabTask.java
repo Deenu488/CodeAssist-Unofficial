@@ -12,7 +12,6 @@ import com.tyron.builder.compiler.Task;
 import com.tyron.builder.compiler.manifest.SdkConstants;
 import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.log.ILogger;
-import com.tyron.builder.model.ModuleSettings;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.common.util.BinaryExecutor;
@@ -103,10 +102,7 @@ public class AabTask extends Task<AndroidModule> {
       copyLibraries();
       aab();
       buildApks();
-
-      if (getModule().getSettings().getBoolean(ModuleSettings.EXTRACT_APKS, true)) {
-        extractApks();
-      }
+      extractApks();
 
     } catch (SignedJarBuilder.IZipEntryFilter.ZipAbortException e) {
       String message = e.getMessage();
@@ -188,11 +184,11 @@ public class AabTask extends Task<AndroidModule> {
 
   private void aab() throws CompilationFailedException {
     Log.d(TAG, "Generating AAB.");
-    boolean uncompressed;
+    boolean uncompressed = false;
     BundleTool signer = new BundleTool(mInputApk.getAbsolutePath(), mOutputApk.getAbsolutePath());
     try {
 
-      if (getModule().getSettings().getBoolean(ModuleSettings.UNCOMPRESSED_FLAG, true)) {
+      if (getModule().getUseLegacyPackaging()) {
         uncompressed = true;
         signer.aab(uncompressed);
       } else {

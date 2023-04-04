@@ -19,7 +19,6 @@ import com.tyron.builder.compiler.symbol.MergeSymbolsTask;
 import com.tyron.builder.compiler.viewbinding.GenerateViewBindingTask;
 import com.tyron.builder.crashlytics.CrashlyticsTask;
 import com.tyron.builder.log.ILogger;
-import com.tyron.builder.model.ModuleSettings;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
 import java.util.ArrayList;
@@ -58,14 +57,13 @@ public class AndroidAppBuilder extends BuilderImpl<AndroidModule> {
     tasks.add(new MergeSymbolsTask(getProject(), module, logger));
     tasks.add(new IncrementalKotlinCompiler(getProject(), module, logger));
     tasks.add(new IncrementalJavaTask(getProject(), module, logger));
-    if (module.getSettings().getBoolean(ModuleSettings.USE_R8, false)
-        && type == BuildType.RELEASE) {
+    if (module.getMinifyEnabled() && type == BuildType.RELEASE) {
       tasks.add(new R8Task(getProject(), module, logger));
     } else {
       tasks.add(new IncrementalD8Task(getProject(), module, logger));
     }
     tasks.add(new PackageTask(getProject(), module, logger));
-    if (module.getSettings().getBoolean(ModuleSettings.ZIP_ALIGN_ENABLED, false)) {
+    if (module.getZipAlignEnabled()) {
       tasks.add(new ZipAlignTask(getProject(), module, logger));
     }
     tasks.add(new SignTask(getProject(), module, logger));

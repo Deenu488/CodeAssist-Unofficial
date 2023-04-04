@@ -14,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -25,24 +24,7 @@ import org.apache.commons.io.FileUtils;
 public class ModuleSettings implements SharedPreferences {
 
   /** Commonly used keys for project settings */
-  public static final String LIBRARY_LIST = "libraries";
-
   public static final String SAVED_EDITOR_FILES = "editor_opened_files";
-  public static final String USE_R8 = "useR8";
-  // public static final String TARGET_SDK_VERSION = "targetSdkVersion";
-  // public static final String MIN_SDK_VERSION = "minSdkVersion";
-  public static final String VERSION_NAME = "versionName";
-  public static final String VERSION_CODE = "versionCode";
-  public static final String JAVA_TARGET_VERSION = "javaTargetVersion";
-  public static final String JAVA_SOURCE_VERSION = "javaSourceVersion";
-  public static final String MODULE_TYPE = "moduleType";
-  public static final String ZIP_ALIGN_ENABLED = "zipAlignEnabled";
-  public static final String VIEW_BINDING_ENABLED = "viewBindingEnabled";
-  public static final String PACKAGE_NAME = "packageName";
-  public static final String EXTRACT_APKS = "extractApks";
-  public static final String UNCOMPRESSED_FLAG = "bundle_enableUncompressedNativeLibs";
-  public static final String INCLUDE = "include";
-  public static final String PLUGINS_ID = "plugins";
 
   private final File mConfigFile;
   private final Map<String, Object> mConfigMap;
@@ -66,24 +48,6 @@ public class ModuleSettings implements SharedPreferences {
 
   protected Map<String, Object> getDefaults() {
     Map<String, Object> map = new LinkedHashMap<>();
-    List<String> includeList = new ArrayList<String>();
-    List<String> plugins = new ArrayList<>();
-    plugins.add("com.android.application");
-
-    map.put(USE_R8, false);
-    //  map.put(MIN_SDK_VERSION, 21);
-    // map.put(TARGET_SDK_VERSION, 33);
-    map.put(VERSION_NAME, "1.0");
-    map.put(VERSION_CODE, 1);
-    map.put(ZIP_ALIGN_ENABLED, false);
-    map.put(VIEW_BINDING_ENABLED, false);
-    map.put(MODULE_TYPE, "android_application");
-    //  map.put(JAVA_TARGET_VERSION, "1.8");
-    //  map.put(JAVA_SOURCE_VERSION, "1.8");
-    map.put(EXTRACT_APKS, false);
-    map.put(UNCOMPRESSED_FLAG, false);
-    map.put(INCLUDE, includeList.toString());
-    map.put(PLUGINS_ID, plugins.toString());
     return map;
   }
 

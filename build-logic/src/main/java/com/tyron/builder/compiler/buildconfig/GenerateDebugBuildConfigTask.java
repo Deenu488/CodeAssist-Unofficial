@@ -5,7 +5,6 @@ import com.tyron.builder.compiler.BuildType;
 import com.tyron.builder.compiler.Task;
 import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.log.ILogger;
-import com.tyron.builder.model.ModuleSettings;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
 import java.io.File;
@@ -80,13 +79,10 @@ public class GenerateDebugBuildConfigTask extends Task<AndroidModule> {
             + "\"debug\""
             + ";\n"
             + "    public static final int VERSION_CODE = "
-            + getModule().getSettings().getInt(ModuleSettings.VERSION_CODE, 1)
+            + getModule().getVersionCode()
             + ";\n"
             + "    public static final String VERSION_NAME = "
-            + "\"$version_name\""
-                .replace(
-                    "$version_name",
-                    getModule().getSettings().getString(ModuleSettings.VERSION_NAME, "1.0"))
+            + "\"$version_name\"".replace("$version_name", getModule().getVersionName())
             + ";\n"
             + "}\n";
 
