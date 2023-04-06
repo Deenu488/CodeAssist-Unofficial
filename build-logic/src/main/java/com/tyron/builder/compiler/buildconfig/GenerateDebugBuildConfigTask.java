@@ -92,8 +92,9 @@ public class GenerateDebugBuildConfigTask extends Task<AndroidModule> {
     }
     File dir = new File(genDir, packageName.replace('.', '/'));
     File buildConfigClass = new File(dir, "/BuildConfig.java");
-    if (dir.exists()) {
+    if (genDir.exists() || dir.exists()) {
     } else {
+      genDir.mkdirs();
       dir.mkdirs();
     }
 
