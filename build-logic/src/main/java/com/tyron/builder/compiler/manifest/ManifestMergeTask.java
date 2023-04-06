@@ -122,6 +122,14 @@ public class ManifestMergeTask extends Task<AndroidModule> {
     }
   }
 
+  public String getPackageName() {
+    try {
+      getApplicationId();
+    } catch (IOException e) {
+    }
+    return null;
+  }
+
   private String getApplicationId() throws IOException {
     String packageName = getModule().getNameSpace();
     String content = parseString(getModule().getGradleFile());

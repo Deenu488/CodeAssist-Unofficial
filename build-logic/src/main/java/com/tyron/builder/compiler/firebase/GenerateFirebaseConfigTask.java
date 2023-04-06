@@ -4,6 +4,7 @@ import android.util.Log;
 import androidx.annotation.VisibleForTesting;
 import com.tyron.builder.compiler.BuildType;
 import com.tyron.builder.compiler.Task;
+import com.tyron.builder.compiler.manifest.ManifestMergeTask;
 import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.log.ILogger;
 import com.tyron.builder.project.Project;
@@ -73,10 +74,10 @@ public class GenerateFirebaseConfigTask extends Task<AndroidModule> {
       Log.d(TAG, "No google-services.json found.");
       return;
     }
-    String packageName = getModule().getNameSpace();
-    if (packageName == null) {
-      throw new IOException("Unable to find namespace in build.gradle file");
-    }
+    ManifestMergeTask manifestMergeTask =
+        new ManifestMergeTask(getProject(), getModule(), getLogger());
+    String packageName = manifestMergeTask.getPackageName();
+
     String contents = FileUtils.readFileToString(mConfigFile, Charset.defaultCharset());
     try {
       File xmlDirectory = new File(getModule().getAndroidResourcesDirectory(), VALUES);
@@ -89,14 +90,14 @@ public class GenerateFirebaseConfigTask extends Task<AndroidModule> {
         throw new IOException("Unable to create secrets.xml file");
       }
 
-      if (doGenerate(contents, getModule().getNameSpace(), secretsFile)) {
+      if (doGenerate(contents, packageName, secretsFile)) {
         return;
       }
 
       String message =
           ""
               + "Unable to find "
-              + getModule().getNameSpace()
+              + packageName
               + " in google-services.json. \n"
               + "Ensure that the package name defined in your firebase console "
               + "matches your app's package name.";
