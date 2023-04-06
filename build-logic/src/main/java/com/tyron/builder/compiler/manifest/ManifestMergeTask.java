@@ -122,6 +122,72 @@ public class ManifestMergeTask extends Task<AndroidModule> {
     }
   }
 
+  public void merge(File root, File gradle) throws IOException, CompilationFailedException {
+    getLogger().debug("> Task :" + root.getName() + ":" + "mergeManifest");
+    String namespace = namespace(root.getName(), gradle);
+    File outputFile = new File(root, "build/bin/AndroidManifest.xml");
+    File mainManifest = new File(root, "src/main/AndroidManifest.xml");
+    if (!outputFile.getParentFile().exists()) {
+      outputFile.getParentFile().mkdirs();
+    }
+
+    if (!mainManifest.getParentFile().exists()) {
+      throw new IOException("Unable to find the main manifest file");
+    }
+
+    int minSdk = getModule().getMinSdk(gradle);
+    int targetSdk = getModule().getTargetSdk(gradle);
+    int versionCode = getModule().getVersionCode(gradle);
+    String versionName = getModule().getVersionName(gradle);
+    merge(mainManifest, namespace, minSdk, targetSdk, versionCode, versionName, outputFile);
+  }
+
+  public void merge(
+      File mainManifest,
+      String namespace,
+      int minSdk,
+      int targetSdk,
+      int versionCode,
+      String versionName,
+      File outputFile)
+      throws IOException, CompilationFailedException {
+
+    ManifestMerger2.Invoker<?> invoker =
+        ManifestMerger2.newMerger(mainManifest, getLogger(), ManifestMerger2.MergeType.LIBRARY);
+    invoker.setOverride(SystemProperty.PACKAGE, namespace);
+    invoker.setOverride(SystemProperty.MIN_SDK_VERSION, String.valueOf(minSdk));
+    invoker.setOverride(SystemProperty.TARGET_SDK_VERSION, String.valueOf(targetSdk));
+    invoker.setOverride(SystemProperty.VERSION_CODE, String.valueOf(versionCode));
+    invoker.setOverride(SystemProperty.VERSION_NAME, versionName);
+    invoker.setVerbose(false);
+    try {
+      MergingReport report = invoker.merge();
+      if (report.getResult().isError()) {
+        report.log(getLogger());
+        throw new CompilationFailedException(report.getReportString());
+      }
+      if (report.getMergedDocument().isPresent()) {
+        Document document = report.getMergedDocument().get().getXml();
+        // inject the tools namespace, some libraries may use the tools attribute but
+        // the main manifest may not have it defined
+        document
+            .getDocumentElement()
+            .setAttribute(
+                SdkConstants.XMLNS_PREFIX + SdkConstants.TOOLS_PREFIX, SdkConstants.TOOLS_URI);
+        String contents =
+            XmlPrettyPrinter.prettyPrint(
+                document,
+                XmlFormatPreferences.defaults(),
+                XmlFormatStyle.get(document),
+                null,
+                false);
+        FileUtils.writeStringToFile(outputFile, contents, Charset.defaultCharset());
+      }
+    } catch (ManifestMerger2.MergeFailureException e) {
+      throw new CompilationFailedException(e);
+    }
+  }
+
   private String getApplicationId() throws IOException {
     String packageName = getModule().getNameSpace();
     String content = parseString(getModule().getGradleFile());
@@ -162,5 +228,19 @@ public class ManifestMergeTask extends Task<AndroidModule> {
       }
     }
     return null;
+  }
+
+  private String namespace(String root, File gradle) throws IOException {
+    String packageName = getModule().getNameSpace(gradle);
+    String content = parseString(gradle);
+
+    if (content != null) {
+      if (!content.contains("namespace")) {
+        throw new IOException("Unable to find namespace in " + root + "/build.gradle file");
+      }
+    } else {
+      throw new IOException("Unable to read " + root + "/build.gradle file");
+    }
+    return packageName;
   }
 }

@@ -13,6 +13,7 @@ import com.tyron.builder.compiler.Task;
 import com.tyron.builder.compiler.buildconfig.GenerateDebugBuildConfigTask;
 import com.tyron.builder.compiler.buildconfig.GenerateReleaseBuildConfigTask;
 import com.tyron.builder.compiler.jar.BuildJarTask;
+import com.tyron.builder.compiler.manifest.ManifestMergeTask;
 import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.internal.jar.AssembleJar;
 import com.tyron.builder.log.ILogger;
@@ -335,7 +336,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     File gradleFile = new File(projectDir, projectName + "/build.gradle");
     File jarDir = new File(projectDir, projectName + "/build/outputs/jar");
     File jarFileDir = new File(jarDir, projectName + ".jar");
-
+    File root = new File(projectDir, projectName);
     File javaDir = new File(projectDir, projectName + "/src/main/java");
     File kotlinDir = new File(projectDir, projectName + "/src/main/kotlin");
     File javaClassesDir = new File(projectDir, projectName + "/build/classes/java/main");
@@ -350,6 +351,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     File buildDir = new File(projectDir, projectName + "/build");
     File buildGenDir = new File(projectDir, projectName + "/build/gen");
     File viewBindingDir = new File(projectDir, projectName + "/build/view_binding");
+    File manifestBinFileDir = new File(projectDir, projectName + "/build/bin/AndroidManifest.xml");
     File manifestFileDir = new File(projectDir, projectName + "/src/main/AndroidManifest.xml");
     File assetsDir = new File(projectDir, projectName + "/src/main/assets");
     File aarDir = new File(projectDir, projectName + "/build/bin/aar");
@@ -462,6 +464,10 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
           generateDebugBuildConfigTask.GenerateBuildConfig(
               getModule().getNameSpace(gradleFile), buildGenDir);
         }
+        ManifestMergeTask manifestMergeTask =
+            new ManifestMergeTask(getProject(), getModule(), getLogger());
+        manifestMergeTask.merge(root, gradleFile);
+
         if (resDir.exists()) {
           if (javaClassesDir.exists()) {
             FileUtils.deleteDirectory(javaClassesDir);
@@ -472,7 +478,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
           List<File> librariesToCompile = getLibraries(projectName, binResDir);
           compileRes(resDir, binResDir, projectName);
           compileLibraries(librariesToCompile, projectName, binResDir);
-          linkRes(binResDir, projectName, manifestFileDir, assetsDir);
+          linkRes(binResDir, projectName, manifestBinFileDir, assetsDir);
         }
 
         javaFiles.addAll(getFiles(buildGenDir, ".java"));
@@ -523,6 +529,9 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
           generateDebugBuildConfigTask.GenerateBuildConfig(
               getModule().getNameSpace(gradleFile), buildGenDir);
         }
+        ManifestMergeTask manifestMergeTask =
+            new ManifestMergeTask(getProject(), getModule(), getLogger());
+        manifestMergeTask.merge(root, gradleFile);
         if (resDir.exists()) {
           if (javaClassesDir.exists()) {
             FileUtils.deleteDirectory(javaClassesDir);
@@ -533,7 +542,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
           List<File> librariesToCompile = getLibraries(projectName, binResDir);
           compileRes(resDir, binResDir, projectName);
           compileLibraries(librariesToCompile, projectName, binResDir);
-          linkRes(binResDir, projectName, manifestFileDir, assetsDir);
+          linkRes(binResDir, projectName, manifestBinFileDir, assetsDir);
         }
 
         javaFiles.addAll(getFiles(buildGenDir, ".java"));

@@ -263,6 +263,11 @@ public class AndroidModuleImpl extends JavaModuleImpl implements AndroidModule {
     return parseTargetSdk(getGradleFile());
   }
 
+  @Override
+  public int getTargetSdk(File gradle) {
+    return parseTargetSdk(gradle);
+  }
+
   private int parseTargetSdk(File gradle) {
     if (gradle != null && gradle.exists()) {
       try {
@@ -300,6 +305,11 @@ public class AndroidModuleImpl extends JavaModuleImpl implements AndroidModule {
     return parseMinSdk(getGradleFile());
   }
 
+  @Override
+  public int getMinSdk(File gradle) {
+    return parseMinSdk(gradle);
+  }
+
   private int parseMinSdk(File gradle) {
     if (gradle != null && gradle.exists()) {
       try {
@@ -335,6 +345,11 @@ public class AndroidModuleImpl extends JavaModuleImpl implements AndroidModule {
     return parseVersionCode(getGradleFile());
   }
 
+  @Override
+  public int getVersionCode(File gradle) {
+    return parseVersionCode(gradle);
+  }
+
   private int parseVersionCode(File gradle) {
     if (gradle != null && gradle.exists()) {
       try {
@@ -368,6 +383,11 @@ public class AndroidModuleImpl extends JavaModuleImpl implements AndroidModule {
   @Override
   public String getVersionName() {
     return parseVersionName(getGradleFile());
+  }
+
+  @Override
+  public String getVersionName(File gradle) {
+    return parseVersionName(gradle);
   }
 
   private String parseVersionName(File gradle) {

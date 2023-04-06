@@ -28,11 +28,19 @@ public interface AndroidModule extends JavaModule, KotlinModule {
 
   int getTargetSdk();
 
+  int getTargetSdk(File file);
+
   int getMinSdk();
+
+  int getMinSdk(File file);
 
   int getVersionCode();
 
+  int getVersionCode(File file);
+
   String getVersionName();
+
+  String getVersionName(File file);
 
   boolean getViewBindingEnabled();
 
