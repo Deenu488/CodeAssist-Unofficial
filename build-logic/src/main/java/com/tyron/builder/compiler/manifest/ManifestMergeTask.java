@@ -126,15 +126,15 @@ public class ManifestMergeTask extends Task<AndroidModule> {
     String packageName = getModule().getNameSpace();
     String content = parseString(getModule().getGradleFile());
 
-    if (content != null && content.contains("namespace")) {
-      if (!content.contains("applicationId")) {
-        throw new IOException(
-            "Unable to find applicationId in "
-                + getModule().getRootFile().getName()
-                + "/build.gradle file");
-      }
-    } else {
-      if (content != null && content.contains("applicationId")) {
+    if (content != null) {
+      if (content.contains("namespace")) {
+        if (!content.contains("applicationId")) {
+          throw new IOException(
+              "Unable to find applicationId in "
+                  + getModule().getRootFile().getName()
+                  + "/build.gradle file");
+        }
+      } else if (content.contains("applicationId")) {
         packageName = getModule().getApplicationId();
       } else {
         throw new IOException(
@@ -142,6 +142,9 @@ public class ManifestMergeTask extends Task<AndroidModule> {
                 + getModule().getRootFile().getName()
                 + "/build.gradle file");
       }
+    } else {
+      throw new IOException(
+          "Unable to read " + getModule().getRootFile().getName() + "/build.gradle file");
     }
 
     return packageName;
