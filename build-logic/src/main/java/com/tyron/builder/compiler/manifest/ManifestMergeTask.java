@@ -170,10 +170,6 @@ public class ManifestMergeTask extends Task<AndroidModule> {
         Document document = report.getMergedDocument().get().getXml();
         // inject the tools namespace, some libraries may use the tools attribute but
         // the main manifest may not have it defined
-        document
-            .getDocumentElement()
-            .setAttribute(
-                SdkConstants.XMLNS_PREFIX + SdkConstants.TOOLS_PREFIX, SdkConstants.TOOLS_URI);
         String contents =
             XmlPrettyPrinter.prettyPrint(
                 document,
