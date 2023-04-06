@@ -88,7 +88,8 @@ dependencies {
 
     // TODO: language processing should be on its own module
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'org.antlr:antlr4-runtime:4.9.2'
+    implementation 'com.google.code.gson:gson:2.8.8'
+	implementation 'org.antlr:antlr4-runtime:4.9.2'
     // TODO: completion providers should not be included on the main module
     implementation project(path: ':code-editor')
     implementation project(path: ':xml-completion')
@@ -150,8 +151,7 @@ dependencies {
 
     implementation 'androidx.preference:preference:1.2.0'
     implementation 'com.github.TutorialsAndroid:crashx:v6.0.19'
-    implementation project(path: ':eclipse-formatter')
-	
+    implementation project(path: ':eclipse-formatter')	
 	//git
 	    implementation 'org.slf4j:slf4j-api:2.0.5'
 	    implementation 'com.blankj:utilcodex:1.31.1'
