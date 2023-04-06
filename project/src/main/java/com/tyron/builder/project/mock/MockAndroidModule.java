@@ -243,8 +243,24 @@ public class MockAndroidModule extends MockJavaModule implements AndroidModule {
 
   public static int parseTargetSdk(String readString) throws IOException {
     Pattern TARGET_SDK = Pattern.compile("\\s*(targetSdk)\\s*()([a-zA-Z0-9.'/-:\\-]+)()");
+    Pattern TARGET_SDK_VERSION =
+        Pattern.compile("\\s*(targetSdkVersion)\\s*()([a-zA-Z0-9.'/-:\\-]+)()");
 
     Matcher matcher = TARGET_SDK.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null & !declaration.isEmpty()) {
+
+        try {
+          int targetSdk = Integer.parseInt(String.valueOf(declaration));
+          return targetSdk;
+        } catch (NumberFormatException e) {
+          // Handle the exception here, such as logging an error or returning a default value
+          e.printStackTrace();
+        }
+      }
+    }
+    matcher = TARGET_SDK_VERSION.matcher(readString);
     while (matcher.find()) {
       String declaration = matcher.group(3);
       if (declaration != null & !declaration.isEmpty()) {
@@ -285,7 +301,21 @@ public class MockAndroidModule extends MockJavaModule implements AndroidModule {
 
   public static int parseMinSdk(String readString) throws IOException {
     Pattern MIN_SDK = Pattern.compile("\\s*(minSdk)\\s*()([a-zA-Z0-9.'/-:\\-]+)()");
+    Pattern MIN_SDK_VERSION = Pattern.compile("\\s*(minSdkVersion)\\s*()([a-zA-Z0-9.'/-:\\-]+)()");
     Matcher matcher = MIN_SDK.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null & !declaration.isEmpty()) {
+        try {
+          int minSdk = Integer.parseInt(String.valueOf(declaration));
+          return minSdk;
+        } catch (NumberFormatException e) {
+          // Handle the exception here, such as logging an error or returning a default value
+          e.printStackTrace();
+        }
+      }
+    }
+    matcher = MIN_SDK_VERSION.matcher(readString);
     while (matcher.find()) {
       String declaration = matcher.group(3);
       if (declaration != null & !declaration.isEmpty()) {

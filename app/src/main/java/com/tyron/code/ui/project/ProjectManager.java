@@ -173,8 +173,11 @@ public class ProjectManager {
             new IncrementalAapt2Task(project, (AndroidModule) module, logger, false);
         try {
           logger.debug("> Task :" + module.getRootFile().getName() + ":" + "generatingResources");
-          manifestMergeTask.prepare(BuildType.DEBUG);
-          manifestMergeTask.run();
+          String packageName = getApplicationId(((AndroidModule) module));
+          if (packageName != null) {
+            manifestMergeTask.prepare(BuildType.DEBUG);
+            manifestMergeTask.run();
+          }
           task.prepare(BuildType.DEBUG);
           task.run();
         } catch (IOException | CompilationFailedException e) {
