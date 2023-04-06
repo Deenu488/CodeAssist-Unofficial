@@ -6,6 +6,7 @@ apply plugin: 'com.diffplug.spotless'
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
+	namespace "com.tyron.layoutpreview"
 	
 	spotless {
 		java {

@@ -7,6 +7,7 @@ apply plugin: 'com.diffplug.spotless'
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
+	namespace "com.tyron.viewbinding.task"
 	
 	spotless {
 		java {

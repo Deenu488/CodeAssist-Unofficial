@@ -3,8 +3,9 @@ apply plugin: 'kotlin-android'
 apply plugin: 'com.diffplug.spotless'
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdkVersion 33
+    buildToolsVersion '33.0.0' 
+	namespace "com.tyron.code" 
 	
 	spotless {
 		java {
@@ -14,11 +15,11 @@ android {
 		}
 	
     defaultConfig {
-        applicationId rootProject.ext.applicationId
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode rootProject.ext.versionCode
-        versionName rootProject.ext.versionName
+        targetSdkVersion 33
+		minSdkVersion 26		
+		applicationId "com.tyron.code"
+		versionCode 29
+		versionName "0.2.9-alpha03"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

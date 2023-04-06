@@ -6,7 +6,8 @@ apply plugin: 'com.diffplug.spotless'
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
-
+	namespace "com.tyron.completion"
+	
     defaultConfig {
         minSdk 21
         targetSdk 32

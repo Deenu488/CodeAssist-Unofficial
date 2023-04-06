@@ -142,21 +142,9 @@ public class AndroidModuleImpl extends JavaModuleImpl implements AndroidModule {
   }
 
   public String parseNameSpace(String readString) throws IOException {
-    Pattern NAMESPLACE = Pattern.compile("\\s*(namespace)\\s*(')([a-zA-Z0-9.'/-:\\-]+)(')");
-    Pattern NAMESPLACE_QUOT = Pattern.compile("\\s*(namespace)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
-
+    Pattern NAMESPLACE = Pattern.compile("\\s*(namespace)\\s*([\"'])([a-zA-Z0-9._'/\\\\:-]+)\\2");
     readString = readString.replaceAll("\\s*//.*", "");
     Matcher matcher = NAMESPLACE.matcher(readString);
-    while (matcher.find()) {
-      String declaration = matcher.group(3);
-      if (declaration != null) {
-        String namespace = String.valueOf(declaration);
-        if (namespace != null && !namespace.isEmpty()) {
-          return namespace;
-        }
-      }
-    }
-    matcher = NAMESPLACE_QUOT.matcher(readString);
     while (matcher.find()) {
       String declaration = matcher.group(3);
       if (declaration != null) {

@@ -47,7 +47,10 @@ public class GenerateReleaseBuildConfigTask extends Task<AndroidModule> {
     } else {
       packageDir.mkdirs();
     }
-
+    File parentDir = buildConfigClass.getParentFile();
+    if (!parentDir.exists()) {
+      parentDir.mkdirs();
+    }
     if (!buildConfigClass.exists() && !buildConfigClass.createNewFile()) {
       throw new IOException("Unable to generate BuildConfig.java");
     }
@@ -98,7 +101,10 @@ public class GenerateReleaseBuildConfigTask extends Task<AndroidModule> {
       genDir.mkdirs();
       dir.mkdirs();
     }
-
+    File parentDir = buildConfigClass.getParentFile();
+    if (!parentDir.exists()) {
+      parentDir.mkdirs();
+    }
     if (!buildConfigClass.exists() && !buildConfigClass.createNewFile()) {
       throw new IOException("Unable to generate BuildConfig.java");
     }

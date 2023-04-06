@@ -7,6 +7,7 @@ apply plugin: 'com.diffplug.spotless'
 
 android {
     compileSdk 31
+	namespace "com.tyron.completion.java"
 	
 	spotless {
 		java {
