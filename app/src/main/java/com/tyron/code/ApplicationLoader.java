@@ -67,6 +67,8 @@ public class ApplicationLoader extends Application {
   @Override
   public void onCreate() {
     super.onCreate();
+Logger.initialize(this);
+;
     setupTheme();
 
     mEventManager = new EventManager();
