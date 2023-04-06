@@ -13,7 +13,7 @@ dependencies {
     implementation project(path: ':common')
     // for manifest  parsing
     implementation project(path: ':manifmerger')
-
+	compileOnly 'com.google.code.gson:gson:2.8.8'
     // user data holder
     implementation project(path: ':kotlinc')
     compileOnly project(path: ':android-stubs')
