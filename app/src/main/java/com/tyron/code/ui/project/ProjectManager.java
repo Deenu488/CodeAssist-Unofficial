@@ -190,13 +190,11 @@ public class ProjectManager {
 
             XmlRepository xmlRepository = index.get(project, module);
             try {
-              String packageName = ((AndroidModule) module).getNameSpace();
+              String packageName = getApplicationId(((AndroidModule) module));
               if (packageName != null) {
                 logger.debug(
                     "> Task :" + module.getRootFile().getName() + ":" + "indexingResources");
                 xmlRepository.initialize((AndroidModule) module);
-              } else {
-                throw new IOException("Unable to find namespace in build.gradle file");
               }
             } catch (IOException e) {
               String message =
@@ -216,14 +214,12 @@ public class ProjectManager {
           JavaCompilerService service = provider.get(project, module);
           if (res.exists()) {
             if (module instanceof AndroidModule) {
-              String packageName = ((AndroidModule) module).getNameSpace();
+              String packageName = getApplicationId(((AndroidModule) module));
               if (packageName != null) {
                 InjectResourcesTask.inject(project, (AndroidModule) module);
                 InjectViewBindingTask.inject(project, (AndroidModule) module);
                 logger.debug(
                     "> Task :" + module.getRootFile().getName() + ":" + "injectingResources");
-              } else {
-                throw new IOException("Unable to find namespace in build.gradle file");
               }
             }
           }
@@ -318,5 +314,51 @@ public class ProjectManager {
 
     FileUtils.writeStringToFile(classFile, code, Charsets.UTF_8);
     return classFile;
+  }
+
+  private String getApplicationId(AndroidModule module) {
+    try {
+      String packageName = module.getNameSpace();
+      String content = parseString(module.getGradleFile());
+
+      if (content != null) {
+        if (content.contains("namespace") && !content.contains("applicationId")) {
+          throw new IOException(
+              "Unable to find applicationId in "
+                  + module.getRootFile().getName()
+                  + "/build.gradle file");
+
+        } else if (content.contains("applicationId") && content.contains("namespace")) {
+          return packageName;
+        } else if (content.contains("applicationId") && !content.contains("namespace")) {
+          packageName = module.getApplicationId();
+        } else {
+          throw new IOException(
+              "Unable to find namespace or applicationId in "
+                  + module.getRootFile().getName()
+                  + "/build.gradle file");
+        }
+      } else {
+        throw new IOException(
+            "Unable to read " + module.getRootFile().getName() + "/build.gradle file");
+      }
+    } catch (IOException e) {
+
+    }
+    return null;
+  }
+
+  private String parseString(File gradle) {
+    if (gradle != null && gradle.exists()) {
+      try {
+        String readString = FileUtils.readFileToString(gradle, Charset.defaultCharset());
+        if (readString != null && !readString.isEmpty()) {
+          return readString;
+        }
+      } catch (IOException e) {
+        // handle the exception here, if needed
+      }
+    }
+    return null;
   }
 }
