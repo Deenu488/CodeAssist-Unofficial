@@ -124,34 +124,47 @@ public class AndroidModuleImpl extends JavaModuleImpl implements AndroidModule {
     return null;
   }
 
+  @Override
+  public String getApplicationId() {
+    return parseApplicationId(getGradleFile());
+  }
+
+  private String parseApplicationId(File gradle) {
+    if (gradle != null && gradle.exists()) {
+      try {
+        String readString = FileUtils.readFileToString(gradle, Charset.defaultCharset());
+        return parseApplicationId(readString);
+      } catch (IOException e) {
+        // handle the exception here, if needed
+      }
+    }
+    return null;
+  }
+
   public String parseNameSpace(String readString) throws IOException {
     Pattern NAMESPLACE = Pattern.compile("\\s*(namespace)\\s*(')([a-zA-Z0-9.'/-:\\-]+)(')");
     Pattern NAMESPLACE_QUOT = Pattern.compile("\\s*(namespace)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
 
-    if (readString != null && readString.contains("namespace")) {
-      readString = readString.replaceAll("\\s*//.*", "");
-      Matcher matcher = NAMESPLACE.matcher(readString);
-      while (matcher.find()) {
-        String declaration = matcher.group(3);
-        if (declaration != null) {
-          String namespace = String.valueOf(declaration);
-          if (namespace != null && !namespace.isEmpty()) {
-            return namespace;
-          }
+    readString = readString.replaceAll("\\s*//.*", "");
+    Matcher matcher = NAMESPLACE.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null) {
+        String namespace = String.valueOf(declaration);
+        if (namespace != null && !namespace.isEmpty()) {
+          return namespace;
         }
       }
-      matcher = NAMESPLACE_QUOT.matcher(readString);
-      while (matcher.find()) {
-        String declaration = matcher.group(3);
-        if (declaration != null) {
-          String namespace = String.valueOf(declaration);
-          if (namespace != null && !namespace.isEmpty()) {
-            return namespace;
-          }
+    }
+    matcher = NAMESPLACE_QUOT.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(3);
+      if (declaration != null) {
+        String namespace = String.valueOf(declaration);
+        if (namespace != null && !namespace.isEmpty()) {
+          return namespace;
         }
       }
-    } else {
-      parseApplicationId(readString);
     }
     return null;
   }
@@ -189,6 +202,11 @@ public class AndroidModuleImpl extends JavaModuleImpl implements AndroidModule {
   @Override
   public String getNameSpace(File gradle) {
     return parseNameSpace(gradle);
+  }
+
+  @Override
+  public String getApplicationId(File gradle) {
+    return parseApplicationId(gradle);
   }
 
   @Override

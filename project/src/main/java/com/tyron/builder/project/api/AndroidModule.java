@@ -20,6 +20,10 @@ public interface AndroidModule extends JavaModule, KotlinModule {
 
   String getNameSpace(File file);
 
+  String getApplicationId();
+
+  String getApplicationId(File file);
+
   File getManifestFile();
 
   int getTargetSdk();
