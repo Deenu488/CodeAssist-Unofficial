@@ -256,7 +256,7 @@ public class InjectLoggerTask extends Task<AndroidModule> {
           if (pair.first.equals("android:name")) {
             String name = pair.second;
             if (name.startsWith(".")) {
-              return getModule().getNameSpace() + name;
+              return getApplicationId() + name;
             } else {
               return name;
             }
@@ -295,7 +295,7 @@ public class InjectLoggerTask extends Task<AndroidModule> {
       throw new IOException("Unable to create LoggerApplication");
     }
 
-    String classString = "package " + getModule().getNameSpace() + ";\n" + APPLICATION_CLASS;
+    String classString = "package " + getApplicationId() + ";\n" + APPLICATION_CLASS;
     FileUtils.writeStringToFile(output, classString, Charset.defaultCharset());
     getModule().addJavaFile(output);
   }
@@ -324,7 +324,7 @@ public class InjectLoggerTask extends Task<AndroidModule> {
     Log.d(TAG, "Creating Logger.java");
 
     File packageDir =
-        new File(getModule().getJavaDirectory(), getModule().getNameSpace().replace('.', '/'));
+        new File(getModule().getJavaDirectory(), getApplicationId().replace('.', '/'));
     File loggerClass = new File(packageDir, "/Logger.java");
     if (packageDir.exists()) {
     } else {
@@ -334,7 +334,7 @@ public class InjectLoggerTask extends Task<AndroidModule> {
       throw new IOException("Unable to create Logger.java");
     }
 
-    String loggerString = "package " + getModule().getNameSpace() + ";\n" + LOGGER_CLASS;
+    String loggerString = "package " + getApplicationId() + ";\n" + LOGGER_CLASS;
     FileUtils.writeStringToFile(loggerClass, loggerString, Charset.defaultCharset());
     mLoggerFile = loggerClass;
     getModule().addJavaFile(loggerClass);
