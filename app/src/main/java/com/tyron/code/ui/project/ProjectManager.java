@@ -28,6 +28,7 @@ import com.tyron.completion.xml.task.InjectResourcesTask;
 import com.tyron.viewbinding.task.InjectViewBindingTask;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
