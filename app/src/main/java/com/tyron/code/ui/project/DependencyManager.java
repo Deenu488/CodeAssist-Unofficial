@@ -10,6 +10,7 @@ import com.google.gson.reflect.TypeToken;
 import com.tyron.builder.log.ILogger;
 import com.tyron.builder.model.Library;
 import com.tyron.builder.model.ModuleSettings;
+import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.builder.project.api.JavaModule;
 import com.tyron.builder.project.api.Module;
 import com.tyron.code.ApplicationLoader;
@@ -167,9 +168,19 @@ public class DependencyManager {
       throws IOException {
     List<Dependency> declaredApiDependencies =
         DependencyUtils.parseDependencies(mRepository, gradleFile, logger, ScopeType.API);
+
     List<Dependency> declaredImplementationDependencies =
         DependencyUtils.parseDependencies(
             mRepository, gradleFile, logger, ScopeType.IMPLEMENTATION);
+
+    AndroidModule androidModule = (AndroidModule) project;
+    if (project instanceof AndroidModule) {
+      if (androidModule.getViewBindingEnabled() && project.getRootFile().getName().equals(name)) {
+        Dependency databindingDependency =
+            new Dependency("androidx.databinding", "viewbinding", "8.1.0-alpha11");
+        declaredImplementationDependencies.add(databindingDependency);
+      }
+    }
     List<Dependency> declaredCompileOnlyDependencies =
         DependencyUtils.parseDependencies(mRepository, gradleFile, logger, ScopeType.COMPILE_ONLY);
     List<Dependency> declaredRuntimeOnlyDependencies =
