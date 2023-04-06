@@ -38,14 +38,10 @@ public class GenerateDebugBuildConfigTask extends Task<AndroidModule> {
 
   private void GenerateBuildConfig() throws IOException {
     Log.d(TAG, "Generating BuildConfig.java");
-    String packageName = getModule().getNameSpace();
-    if (packageName == null) {
-      throw new IOException("Unable to find namespace in build.gradle file");
-    }
+    String packageName = getApplicationId();
 
     File packageDir =
-        new File(
-            getModule().getBuildDirectory() + "/gen", getModule().getNameSpace().replace('.', '/'));
+        new File(getModule().getBuildDirectory() + "/gen", packageName.replace('.', '/'));
     File buildConfigClass = new File(packageDir, "/BuildConfig.java");
     if (packageDir.exists()) {
     } else {
@@ -64,7 +60,7 @@ public class GenerateDebugBuildConfigTask extends Task<AndroidModule> {
             + "*/"
             + "\n"
             + "package "
-            + getModule().getNameSpace()
+            + packageName
             + ";\n"
             + "\n"
             + "public final class BuildConfig {"
@@ -73,7 +69,7 @@ public class GenerateDebugBuildConfigTask extends Task<AndroidModule> {
             + "Boolean.parseBoolean(\"true\")"
             + ";\n"
             + "    public static final String APPLICATION_ID = "
-            + "\"$package_name\"".replace("$package_name", getModule().getNameSpace())
+            + "\"$package_name\"".replace("$package_name", packageName)
             + ";\n"
             + "    public static final String BUILD_TYPE = "
             + "\"debug\""
@@ -130,5 +126,47 @@ public class GenerateDebugBuildConfigTask extends Task<AndroidModule> {
             + "}\n";
 
     FileUtils.writeStringToFile(buildConfigClass, buildConfigString, Charset.defaultCharset());
+  }
+
+  private String getApplicationId() throws IOException {
+    String packageName = getModule().getNameSpace();
+    String content = parseString(getModule().getGradleFile());
+
+    if (content != null) {
+      if (content.contains("namespace") && !content.contains("applicationId")) {
+        throw new IOException(
+            "Unable to find applicationId in "
+                + getModule().getRootFile().getName()
+                + "/build.gradle file");
+
+      } else if (content.contains("applicationId") && content.contains("namespace")) {
+        return packageName;
+      } else if (content.contains("applicationId") && !content.contains("namespace")) {
+        packageName = getModule().getApplicationId();
+      } else {
+        throw new IOException(
+            "Unable to find namespace or applicationId in "
+                + getModule().getRootFile().getName()
+                + "/build.gradle file");
+      }
+    } else {
+      throw new IOException(
+          "Unable to read " + getModule().getRootFile().getName() + "/build.gradle file");
+    }
+    return packageName;
+  }
+
+  private String parseString(File gradle) {
+    if (gradle != null && gradle.exists()) {
+      try {
+        String readString = FileUtils.readFileToString(gradle, Charset.defaultCharset());
+        if (readString != null && !readString.isEmpty()) {
+          return readString;
+        }
+      } catch (IOException e) {
+        // handle the exception here, if needed
+      }
+    }
+    return null;
   }
 }
