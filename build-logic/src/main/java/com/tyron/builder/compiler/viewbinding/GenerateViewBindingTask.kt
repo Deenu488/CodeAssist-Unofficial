@@ -22,7 +22,6 @@ import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
-import com.tyron.builder.compiler.manifest.ManifestMergeTask
 /**
  * @param addToClasspath true if the generated binding classes
  * should be added to the module classpath for compilation
@@ -88,8 +87,7 @@ class GenerateViewBindingTask(
 
     private fun generateClassesToBundle(): ResourceBundle {
         // it doesn't matter what we pass to the 2nd argument, we won't be using data binding anyways
-       val manifestMergeTask = ManifestMergeTask(project, module, logger)
-       val nameSpace: String =   manifestMergeTask.packageName
+       val nameSpace: String =   module.namespace
 
         val resourceBundle = ResourceBundle(nameSpace, true)
         val resDir = module.androidResourcesDirectory

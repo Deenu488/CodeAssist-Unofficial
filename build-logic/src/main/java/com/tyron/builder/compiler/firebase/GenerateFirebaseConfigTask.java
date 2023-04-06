@@ -4,7 +4,6 @@ import android.util.Log;
 import androidx.annotation.VisibleForTesting;
 import com.tyron.builder.compiler.BuildType;
 import com.tyron.builder.compiler.Task;
-import com.tyron.builder.compiler.manifest.ManifestMergeTask;
 import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.log.ILogger;
 import com.tyron.builder.project.Project;
@@ -74,9 +73,8 @@ public class GenerateFirebaseConfigTask extends Task<AndroidModule> {
       Log.d(TAG, "No google-services.json found.");
       return;
     }
-    ManifestMergeTask manifestMergeTask =
-        new ManifestMergeTask(getProject(), getModule(), getLogger());
-    String packageName = manifestMergeTask.getPackageName();
+
+    String packageName = getApplicationId();
 
     String contents = FileUtils.readFileToString(mConfigFile, Charset.defaultCharset());
     try {
@@ -202,5 +200,47 @@ public class GenerateFirebaseConfigTask extends Task<AndroidModule> {
       return FIREBASE_DATABASE_URL;
     }
     return key;
+  }
+
+  private String getApplicationId() throws IOException {
+    String packageName = getModule().getNameSpace();
+    String content = parseString(getModule().getGradleFile());
+
+    if (content != null) {
+      if (content.contains("namespace") && !content.contains("applicationId")) {
+        throw new IOException(
+            "Unable to find applicationId in "
+                + getModule().getRootFile().getName()
+                + "/build.gradle file");
+
+      } else if (content.contains("applicationId") && content.contains("namespace")) {
+        return packageName;
+      } else if (content.contains("applicationId") && !content.contains("namespace")) {
+        packageName = getModule().getApplicationId();
+      } else {
+        throw new IOException(
+            "Unable to find namespace or applicationId in "
+                + getModule().getRootFile().getName()
+                + "/build.gradle file");
+      }
+    } else {
+      throw new IOException(
+          "Unable to read " + getModule().getRootFile().getName() + "/build.gradle file");
+    }
+    return packageName;
+  }
+
+  private String parseString(File gradle) {
+    if (gradle != null && gradle.exists()) {
+      try {
+        String readString = FileUtils.readFileToString(gradle, Charset.defaultCharset());
+        if (readString != null && !readString.isEmpty()) {
+          return readString;
+        }
+      } catch (IOException e) {
+        // handle the exception here, if needed
+      }
+    }
+    return null;
   }
 }
