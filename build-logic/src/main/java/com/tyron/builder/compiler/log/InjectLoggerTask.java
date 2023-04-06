@@ -159,7 +159,7 @@ public class InjectLoggerTask extends Task<AndroidModule> {
 
       String applicationClass = getApplicationClass();
       if (applicationClass == null) {
-        applicationClass = getModule().getNameSpace() + ".LoggerApplication";
+        applicationClass = getApplicationId() + ".LoggerApplication";
         createApplicationClass(applicationClass);
       } else {
         isNewApplicationClass = false;
@@ -338,5 +338,47 @@ public class InjectLoggerTask extends Task<AndroidModule> {
     FileUtils.writeStringToFile(loggerClass, loggerString, Charset.defaultCharset());
     mLoggerFile = loggerClass;
     getModule().addJavaFile(loggerClass);
+  }
+
+  private String getApplicationId() throws IOException {
+    String packageName = getModule().getNameSpace();
+    String content = parseString(getModule().getGradleFile());
+
+    if (content != null) {
+      if (content.contains("namespace") && !content.contains("applicationId")) {
+        throw new IOException(
+            "Unable to find applicationId in "
+                + getModule().getRootFile().getName()
+                + "/build.gradle file");
+
+      } else if (content.contains("applicationId") && content.contains("namespace")) {
+        return packageName;
+      } else if (content.contains("applicationId") && !content.contains("namespace")) {
+        packageName = getModule().getApplicationId();
+      } else {
+        throw new IOException(
+            "Unable to find namespace or applicationId in "
+                + getModule().getRootFile().getName()
+                + "/build.gradle file");
+      }
+    } else {
+      throw new IOException(
+          "Unable to read " + getModule().getRootFile().getName() + "/build.gradle file");
+    }
+    return packageName;
+  }
+
+  private String parseString(File gradle) {
+    if (gradle != null && gradle.exists()) {
+      try {
+        String readString = FileUtils.readFileToString(gradle, Charset.defaultCharset());
+        if (readString != null && !readString.isEmpty()) {
+          return readString;
+        }
+      } catch (IOException e) {
+        // handle the exception here, if needed
+      }
+    }
+    return null;
   }
 }
