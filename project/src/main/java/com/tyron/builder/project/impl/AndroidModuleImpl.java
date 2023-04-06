@@ -124,32 +124,62 @@ public class AndroidModuleImpl extends JavaModuleImpl implements AndroidModule {
     return null;
   }
 
-  public static String parseNameSpace(String readString) throws IOException {
+  public String parseNameSpace(String readString) throws IOException {
     Pattern NAMESPLACE = Pattern.compile("\\s*(namespace)\\s*(')([a-zA-Z0-9.'/-:\\-]+)(')");
     Pattern NAMESPLACE_QUOT = Pattern.compile("\\s*(namespace)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
 
+    if (readString != null && readString.contains("namespace")) {
+      readString = readString.replaceAll("\\s*//.*", "");
+      Matcher matcher = NAMESPLACE.matcher(readString);
+      while (matcher.find()) {
+        String declaration = matcher.group(3);
+        if (declaration != null) {
+          String namespace = String.valueOf(declaration);
+          if (namespace != null && !namespace.isEmpty()) {
+            return namespace;
+          }
+        }
+      }
+      matcher = NAMESPLACE_QUOT.matcher(readString);
+      while (matcher.find()) {
+        String declaration = matcher.group(3);
+        if (declaration != null) {
+          String namespace = String.valueOf(declaration);
+          if (namespace != null && !namespace.isEmpty()) {
+            return namespace;
+          }
+        }
+      }
+    } else {
+      parseApplicationId(readString);
+    }
+    return null;
+  }
+
+  public String parseApplicationId(String readString) throws IOException {
+    Pattern APPLICATION_ID = Pattern.compile("\\s*(applicationId)\\s*(')([a-zA-Z0-9.'/-:\\-]+)(')");
+    Pattern APPLICATION_ID_QUOT =
+        Pattern.compile("\\s*(applicationId)\\s*(\")([a-zA-Z0-9.'/-:\\-]+)(\")");
+
     readString = readString.replaceAll("\\s*//.*", "");
-    Matcher matcher = NAMESPLACE.matcher(readString);
+
+    Matcher matcher = APPLICATION_ID.matcher(readString);
     while (matcher.find()) {
       String declaration = matcher.group(3);
       if (declaration != null) {
-        String namespace = String.valueOf(declaration);
-        if (namespace != null && !namespace.isEmpty()) {
-          return namespace;
-        } else {
-          throw new IOException("Unable to find namespace in build.gradle file");
+        String applicationId = String.valueOf(declaration);
+        if (applicationId != null && !applicationId.isEmpty()) {
+          return applicationId;
         }
       }
     }
-    matcher = NAMESPLACE_QUOT.matcher(readString);
+    matcher = APPLICATION_ID_QUOT.matcher(readString);
     while (matcher.find()) {
       String declaration = matcher.group(3);
       if (declaration != null) {
-        String namespace = String.valueOf(declaration);
-        if (namespace != null && !namespace.isEmpty()) {
-          return namespace;
-        } else {
-          throw new IOException("Unable to find namespace in build.gradle file");
+        String applicationId = String.valueOf(declaration);
+        if (applicationId != null && !applicationId.isEmpty()) {
+          return applicationId;
         }
       }
     }

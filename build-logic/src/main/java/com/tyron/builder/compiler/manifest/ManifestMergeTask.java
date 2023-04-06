@@ -124,9 +124,30 @@ public class ManifestMergeTask extends Task<AndroidModule> {
 
   private String getApplicationId() throws IOException {
     String packageName = getModule().getNameSpace();
-    if (packageName == null) {
-      throw new IOException("Unable to find namespace in build.gradle file");
+    String content = parseString(getModule().getGradleFile());
+    if (content != null && content.contains("namespace")) {
+      if (!content.contains("applicationId")) {
+        throw new IOException(
+            "Unable to find applicationId in "
+                + getModule().getRootFile().getName()
+                + "/build.gradle file");
+      }
     }
+
     return packageName;
+  }
+
+  private String parseString(File gradle) {
+    if (gradle != null && gradle.exists()) {
+      try {
+        String readString = FileUtils.readFileToString(gradle, Charset.defaultCharset());
+        if (readString != null && !readString.isEmpty()) {
+          return readString;
+        }
+      } catch (IOException e) {
+        // handle the exception here, if needed
+      }
+    }
+    return null;
   }
 }
