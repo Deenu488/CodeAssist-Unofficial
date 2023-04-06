@@ -22,6 +22,7 @@ import org.apache.commons.io.FileUtils
 import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
+import java.nio.charset.Charset
 /**
  * @param addToClasspath true if the generated binding classes
  * should be added to the module classpath for compilation
@@ -84,33 +85,48 @@ class GenerateViewBindingTask(
         // add classes to module classpath
         addToClasspath()
     }
-
+   
+   @Throws(IOException::class)
     private fun generateClassesToBundle(): ResourceBundle {
-        // it doesn't matter what we pass to the 2nd argument, we won't be using data binding anyways
-       val nameSpace: String =   module.namespace
+    // it doesn't matter what we pass to the 2nd argument, we won't be using data binding anyways
+    val content = parseString(module.gradleFile)
 
-        val resourceBundle = ResourceBundle(nameSpace, true)
-        val resDir = module.androidResourcesDirectory
-
-        resDir.walkTopDown().filter {
-            val isXmlFile = it.isFile && it.name.endsWith(".xml")
-            val isLayoutFile = it.parentFile.name == "layout" || it.parentFile.name.startsWith("layout-")
-            val applicable = isXmlFile && isLayoutFile
-
-            applicable
-        }.forEach { file ->
-            val bundle = LayoutFileParser.parseXml(
-                RelativizableFile.fromAbsoluteFile(file),
-                nameSpace,
-                getUpToDateFileContent(module, file),
-                true
+    val packageName = when {
+        content != null -> when {
+            content.contains("namespace") && !content.contains("applicationId") -> throw IOException(
+                "Unable to find applicationId in " + module.rootFile.name + "/build.gradle file"
             )
-            if (bundle != null) {
-                resourceBundle.addLayoutBundle(bundle, true)
-            }
+            content.contains("applicationId") && content.contains("namespace") -> module.nameSpace
+            content.contains("applicationId") && !content.contains("namespace") -> module.applicationId
+            else -> throw IOException(
+                "Unable to find namespace or applicationId in " + module.rootFile.name + "/build.gradle file"
+            )
         }
-        resourceBundle.validateAndRegisterErrors()
-        return resourceBundle
+        else -> throw IOException("Unable to read " + module.rootFile.name + "/build.gradle file")
+    }
+    
+    val resourceBundle = ResourceBundle(packageName, true)
+    val resDir = module.androidResourcesDirectory
+
+    resDir.walkTopDown().filter {
+        val isXmlFile = it.isFile && it.name.endsWith(".xml")
+        val isLayoutFile = it.parentFile.name == "layout" || it.parentFile.name.startsWith("layout-")
+        val applicable = isXmlFile && isLayoutFile
+
+        applicable
+    }.forEach { file ->
+        val bundle = LayoutFileParser.parseXml(
+            RelativizableFile.fromAbsoluteFile(file),
+            packageName,
+            getUpToDateFileContent(module, file),
+            true
+        )
+        if (bundle != null) {
+            resourceBundle.addLayoutBundle(bundle, true)
+        }
+    }
+    resourceBundle.validateAndRegisterErrors()
+    return resourceBundle
     }
 
     private fun writeClassesToDisk(resourceBundle: ResourceBundle) {
@@ -162,5 +178,17 @@ class GenerateViewBindingTask(
             return null
         }
     }
-
+    private fun parseString(gradle: File?): String? {
+       if (gradle != null && gradle.exists()) {
+          try {
+              val readString = FileUtils.readFileToString(gradle, Charset.defaultCharset())
+              if (readString != null && readString.isNotEmpty()) {
+                 return readString
+              }
+          } catch (e: IOException) {
+            // handle the exception here, if needed
+       }
+     }
+    return null
+  }
 }
