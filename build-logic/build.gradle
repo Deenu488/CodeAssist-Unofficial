@@ -15,7 +15,8 @@ dependencies {
     // required so internal classes would be included 
     api project(path: ':jaxp')
     api project(path: ':kotlinc')
-
+    
+    compileOnly 'com.google.code.gson:gson:2.8.8'
     implementation project(path: ':logging')
     implementation project(path: ':manifmerger')
     implementation project(path: ':project')
