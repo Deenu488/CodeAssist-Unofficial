@@ -1,0 +1,4 @@
+{
+  "api_libraries": "[{\"declaration\":\"org.apache.bcel:bcel:6.5.0\",\"sourceFile\":\"/storage/emulated/0/Android/data/com.tyron.code/files/cache/maven/org/apache/bcel/bcel/6.5.0/bcel-6.5.0.jar\"},{\"declaration\":\"org.jsoup:jsoup:1.14.3\",\"sourceFile\":\"/storage/emulated/0/Android/data/com.tyron.code/files/cache/maven/org/jsoup/jsoup/1.14.3/jsoup-1.14.3.jar\"},{\"declaration\":\"com.google.code.findbugs:jsr305:3.0.2\",\"sourceFile\":\"/storage/emulated/0/Android/data/com.tyron.code/files/cache/maven/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar\"}]",
+  "apiFiles_libraries": "[]"
+}

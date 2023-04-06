@@ -1,0 +1,4 @@
+{
+  "api_libraries": "[{\"declaration\":\"com.github.marschall:zipfilesystem-standalone:1.0.1\",\"sourceFile\":\"/storage/emulated/0/Android/data/com.tyron.code/files/cache/maven/com/github/marschall/zipfilesystem-standalone/1.0.1/zipfilesystem-standalone-1.0.1.jar\"}]",
+  "apiFiles_libraries": "[{\"sourceFile\":\"/storage/emulated/0/CodeAssistProjects/CodeAssist-ALPHA-0.2.9/javac/libs/jrt-fs.jar\"},{\"sourceFile\":\"/storage/emulated/0/CodeAssistProjects/CodeAssist-ALPHA-0.2.9/javac/libs/javac-new.jar\"},{\"sourceFile\":\"/storage/emulated/0/CodeAssistProjects/CodeAssist-ALPHA-0.2.9/javac/libs/javac.jar\"},{\"sourceFile\":\"/storage/emulated/0/CodeAssistProjects/CodeAssist-ALPHA-0.2.9/javac/libs/nb-javac-17.0.0.0-api.jar\"},{\"sourceFile\":\"/storage/emulated/0/CodeAssistProjects/CodeAssist-ALPHA-0.2.9/javac/libs/nb-javac-17.0.0.0.jar\"}]"
+}
