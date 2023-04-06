@@ -177,6 +177,11 @@ public class ProjectManager {
           if (packageName != null) {
             manifestMergeTask.prepare(BuildType.DEBUG);
             manifestMergeTask.run();
+          } else {
+            throw new IOException(
+                "Unable to find namespace or applicationId in "
+                    + module.getRootFile().getName()
+                    + "/build.gradle file");
           }
           task.prepare(BuildType.DEBUG);
           task.run();
