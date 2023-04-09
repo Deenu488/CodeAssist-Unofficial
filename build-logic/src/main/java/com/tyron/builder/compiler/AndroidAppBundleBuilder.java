@@ -8,6 +8,7 @@ import com.tyron.builder.compiler.incremental.dex.IncrementalD8Task;
 import com.tyron.builder.compiler.incremental.java.IncrementalJavaTask;
 import com.tyron.builder.compiler.incremental.kotlin.IncrementalKotlinCompiler;
 import com.tyron.builder.compiler.incremental.resource.IncrementalAapt2Task;
+import com.tyron.builder.compiler.incremental.resource.IncrementalAssembleLibraryTask;
 import com.tyron.builder.compiler.java.CheckLibrariesTask;
 import com.tyron.builder.compiler.manifest.ManifestMergeTask;
 import com.tyron.builder.compiler.symbol.MergeSymbolsTask;
@@ -30,6 +31,7 @@ public class AndroidAppBundleBuilder extends BuilderImpl<AndroidModule> {
     List<Task<? super AndroidModule>> tasks = new ArrayList<>();
     tasks.add(new CleanTask(getProject(), getModule(), getLogger()));
     tasks.add(new CheckLibrariesTask(getProject(), getModule(), getLogger()));
+    tasks.add(new IncrementalAssembleLibraryTask(getProject(), getModule(), getLogger()));
     tasks.add(new ManifestMergeTask(getProject(), getModule(), getLogger()));
     tasks.add(new GenerateReleaseBuildConfigTask(getProject(), getModule(), getLogger()));
     tasks.add(new GenerateFirebaseConfigTask(getProject(), getModule(), getLogger()));

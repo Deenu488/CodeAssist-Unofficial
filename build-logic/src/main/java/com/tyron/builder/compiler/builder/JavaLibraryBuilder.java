@@ -5,6 +5,7 @@ import com.tyron.builder.compiler.BuilderImpl;
 import com.tyron.builder.compiler.CleanTask;
 import com.tyron.builder.compiler.Task;
 import com.tyron.builder.compiler.incremental.java.IncrementalJavaTask;
+import com.tyron.builder.compiler.incremental.kotlin.IncrementalKotlinCompiler;
 import com.tyron.builder.compiler.incremental.resource.IncrementalAssembleLibraryTask;
 import com.tyron.builder.compiler.jar.BuildJarTask;
 import com.tyron.builder.compiler.java.CheckLibrariesTask;
@@ -28,8 +29,9 @@ public class JavaLibraryBuilder extends BuilderImpl<AndroidModule> {
 
     List<Task<? super AndroidModule>> tasks = new ArrayList<>();
     tasks.add(new CleanTask(getProject(), module, logger));
-    tasks.add(new IncrementalAssembleLibraryTask(getProject(), module, getLogger()));
     tasks.add(new CheckLibrariesTask(getProject(), module, getLogger()));
+    tasks.add(new IncrementalAssembleLibraryTask(getProject(), module, getLogger()));
+    tasks.add(new IncrementalKotlinCompiler(getProject(), module, logger));
     tasks.add(new IncrementalJavaTask(getProject(), module, getLogger()));
     tasks.add(new BuildJarTask(getProject(), module, getLogger()));
     return tasks;
