@@ -41,9 +41,19 @@ public class ApkSignerTool {
   private static File mTestKeyFile;
   private static File mTestCertFile;
 
+  private static KeyStore mKeyStore = null;
+  private static ApkSigner.SignerConfig signerConfig = null;
+
   public ApkSignerTool() {}
 
-  public static void main(String[] args) throws IOException {}
+  public static void main(String[] args) throws IOException {
+
+    /*	ApkSigner.SignerConfig signerConfig = new ApkSigner.SignerConfig.Builder(key, cert).build();
+    ApkSigner apkSigner = new ApkSigner.Builder(Arrays.asList(signerConfig)).setInputApk(new File(inputApkPath))
+    		.setOutputApk(new File(outputApkPath)).build();
+    apkSigner.sign();*/
+
+  }
 
   public static boolean isSuccess() {
     return success;
