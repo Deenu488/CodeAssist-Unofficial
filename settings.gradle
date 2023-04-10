@@ -19,6 +19,7 @@ include ':constraintlayout'
 include ':vector-parser'
 
 include ':common'
+include ':apksigner'
 include ':code-editor'
 include ':dependency-resolver'
 include ':android-stubs'

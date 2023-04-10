@@ -1,7 +1,6 @@
 package com.tyron.builder.compiler.apk;
 
 import android.util.Log;
-import com.tyron.builder.compiler.ApkSigner;
 import com.tyron.builder.compiler.BuildType;
 import com.tyron.builder.compiler.Task;
 import com.tyron.builder.exception.CompilationFailedException;
@@ -10,7 +9,6 @@ import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
 import java.io.File;
 import java.io.IOException;
-import org.apache.commons.io.FileUtils;
 
 public class SignTask extends Task<AndroidModule> {
 
@@ -44,7 +42,7 @@ public class SignTask extends Task<AndroidModule> {
 
   @Override
   public void run() throws IOException, CompilationFailedException {
-    ApkSigner signer =
+    /* ApkSigner signer =
         new ApkSigner(
             mInputApk.getAbsolutePath(), mOutputApk.getAbsolutePath(), ApkSigner.Mode.TEST);
 
@@ -54,6 +52,6 @@ public class SignTask extends Task<AndroidModule> {
       throw new CompilationFailedException(e);
     }
 
-    FileUtils.forceDelete(mInputApk);
+    FileUtils.forceDelete(mInputApk);*/
   }
 }

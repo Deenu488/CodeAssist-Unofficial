@@ -1,0 +1,22 @@
+plugins {
+    id 'java-library'
+}
+
+apply plugin: 'com.diffplug.spotless'
+
+dependencies {
+	implementation project(path: ':common')
+    api "com.android.tools.build:apksig:8.1.0-alpha11"   
+    api "org.bouncycastle:bcprov-jdk15on:1.70"
+}
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+spotless {
+		java {
+			target "**/*.java"
+			googleJavaFormat()
+			}
+}

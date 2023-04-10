@@ -107,6 +107,7 @@ dependencies {
     implementation project(path: ':logging')
     implementation project(path: ':jaxp')
     implementation project(path: ':common')
+	implementation project(path: ':apksigner')
     implementation project(path: ':lint')
     implementation project(path: ':layout-preview')
     implementation project(path: ':kotlin-completion')
