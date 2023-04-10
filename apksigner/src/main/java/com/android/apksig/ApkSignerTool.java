@@ -25,12 +25,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
+import com.android.apksig.apk.ApkFormatException;
 
 public class ApkSignerTool {
 
-  private static String mApkInputPath;
-  private static String mApkOutputPath;
-  private static boolean success;
+  private static File mInputFile;
+  private static File mOutputFile;  
   private static String SIGNER_NAME;
 
   private static File mStoreFile;
@@ -41,22 +41,40 @@ public class ApkSignerTool {
   private static File mTestKeyFile;
   private static File mTestCertFile;
 
-  private static KeyStore mKeyStore = null;
-  private static ApkSigner.SignerConfig signerConfig = null;
-
   public ApkSignerTool() {}
 
-  public static void main(String[] args) throws IOException {
-
-    /*	ApkSigner.SignerConfig signerConfig = new ApkSigner.SignerConfig.Builder(key, cert).build();
-    ApkSigner apkSigner = new ApkSigner.Builder(Arrays.asList(signerConfig)).setInputApk(new File(inputApkPath))
-    		.setOutputApk(new File(outputApkPath)).build();
-    apkSigner.sign();*/
+  public static void main(String[] args) throws IOException, ApkFormatException, Exception {
+	 	
+    //InputStream inputStream = new FileInputStream(getTestCertFile());
+	//KeyStore keyStore = getKeyStore(inputStream, getKeyPassword());			
+    //ApkSigner.SignerConfig signerConfig = new ApkSigner.SignerConfig.Builder(getSignerConfig(keyStore,getKeyAlias(),getStorePassword()),false).build();
+    
+	ApkSigner apkSigner = new ApkSigner.Builder(ImmutableList.of(getDebugSignerConfig())).setInputApk(getInputFile())
+    		.setOutputApk(getOutPutFile()).build();
+    apkSigner.sign();
 
   }
+  
+  public static void setInputFile(File input) {
+    mInputFile = input;
+  }
 
-  public static boolean isSuccess() {
-    return success;
+  public static void setOutPutFile(File output) {
+    mOutputFile = output;
+  }
+  
+  public static File getInputFile() {
+    if (mInputFile != null) {
+      return new File( mInputFile.getAbsolutePath());
+    }
+    return null;
+  }
+
+  public static File getOutPutFile() {
+    if (mOutputFile != null) {
+      return new File(mOutputFile.getAbsolutePath());
+    }
+    return null;
   }
 
   public static void setStoreFile(File store_file) {
@@ -148,7 +166,6 @@ public class ApkSignerTool {
   public static ApkSigner.SignerConfig getDebugSignerConfig() throws Exception {
 
     byte[] privateKeyBlob = Files.readAllBytes(Paths.get(getTestKeyFile()));
-
     InputStream pemInputStream = new FileInputStream(getTestCertFile());
 
     PrivateKey privateKey;
