@@ -1,8 +1,5 @@
 package com.android.apksig;
 
-import android.content.Context;
-import android.content.res.AssetManager;
-import com.android.apksig.JavaKeyStore;
 import com.google.common.collect.ImmutableList;
 import java.io.*;
 import java.io.BufferedInputStream;
@@ -12,6 +9,8 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
@@ -39,59 +38,84 @@ public class ApkSignerTool {
   private static String mStorePassword;
   private static String mKeyPassword;
 
+  private static File mTestKeyFile;
+  private static File mTestCertFile;
+
   public ApkSignerTool() {}
 
   public static void main(String[] args) throws IOException {}
 
-  public boolean isSuccess() {
+  public static boolean isSuccess() {
     return success;
   }
 
-  public void setStoreFile(File store_file) {
+  public static void setStoreFile(File store_file) {
     mStoreFile = store_file;
   }
 
-  public void setKeyAlias(String key_alias) {
+  public static void setKeyAlias(String key_alias) {
     mKeyAlias = key_alias;
   }
 
-  public void setStorePassword(String password) {
+  public static void setStorePassword(String password) {
     mStorePassword = password;
   }
 
-  public void setKeyPassword(String keyPassword) {
+  public static void setKeyPassword(String keyPassword) {
     mKeyPassword = keyPassword;
   }
 
-  public String getStoreFile() {
+  public static String getStoreFile() {
     if (mStoreFile != null) {
       return mStoreFile.getAbsolutePath();
     }
     return null;
   }
 
-  public String getKeyAlias() {
+  public static String getKeyAlias() {
     if (mKeyAlias != null) {
       return mKeyAlias;
     }
     return null;
   }
 
-  public String getStorePassword() {
+  public static String getStorePassword() {
     if (mStorePassword != null) {
       return mStorePassword;
     }
     return null;
   }
 
-  public String getKeyPassword() {
+  public static String getKeyPassword() {
     if (mKeyPassword != null) {
       return mKeyPassword;
     }
     return null;
   }
 
-  private static PrivateKey loadPkcs8EncodedPrivateKey(PKCS8EncodedKeySpec spec)
+  public static void setTestKeyFile(File file) {
+    mTestKeyFile = file;
+  }
+
+  public static void setTestCertFile(File file) {
+    mTestCertFile = file;
+  }
+
+  public static String getTestKeyFile() {
+    if (mTestKeyFile != null) {
+      return mTestKeyFile.getAbsolutePath();
+    }
+    return null;
+  }
+
+  public static String getTestCertFile() {
+    if (mTestCertFile != null) {
+      return mTestCertFile.getAbsolutePath();
+    }
+    return null;
+  }
+
+  public static PrivateKey loadPkcs8EncodedPrivateKey(PKCS8EncodedKeySpec spec)
       throws NoSuchAlgorithmException, InvalidKeySpecException {
     try {
       return KeyFactory.getInstance("RSA").generatePrivate(spec);
@@ -111,23 +135,23 @@ public class ApkSignerTool {
     throw new InvalidKeySpecException("Not an RSA, EC, or DSA private key");
   }
 
-  public static ApkSigner.SignerConfig getDebugSignerConfig(Context context) throws Exception {
-    final AssetManager assets = context.getAssets();
+  public static ApkSigner.SignerConfig getDebugSignerConfig() throws Exception {
+
+    byte[] privateKeyBlob = Files.readAllBytes(Paths.get(getTestKeyFile()));
+
+    InputStream pemInputStream = new FileInputStream(getTestCertFile());
+
     PrivateKey privateKey;
-    try (final InputStream in = assets.open("testkey.pk8")) {
-      final byte[] privateKeyBlob = readAllBytes(in);
+    try {
       final PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyBlob);
-      try {
-        privateKey = loadPkcs8EncodedPrivateKey(keySpec);
-      } catch (InvalidKeySpecException e) {
-        throw new InvalidKeySpecException("Failed to load PKCS #8 encoded private key ", e);
-      }
+      privateKey = loadPkcs8EncodedPrivateKey(keySpec);
+    } catch (InvalidKeySpecException e) {
+      throw new InvalidKeySpecException("Failed to load PKCS #8 encoded private key ", e);
     }
+
     final List<Certificate> certs =
         ImmutableList.copyOf(
-            CertificateFactory.getInstance("X.509")
-                .generateCertificates(assets.open("testkey.x509.pem"))
-                .stream()
+            CertificateFactory.getInstance("X.509").generateCertificates(pemInputStream).stream()
                 .map(c -> (Certificate) c)
                 .collect(Collectors.toList()));
 
@@ -138,10 +162,13 @@ public class ApkSignerTool {
         Collections.checkedList(
             certs.stream().map(c -> (X509Certificate) c).collect(Collectors.toList()),
             X509Certificate.class);
+
+    pemInputStream.close();
+
     return new ApkSigner.SignerConfig.Builder(SIGNER_NAME, privateKey, x509Certs).build();
   }
 
-  private static byte[] readAllBytes(InputStream inputStream) throws IOException {
+  public static byte[] readAllBytes(InputStream inputStream) throws IOException {
     final byte[] buffer = new byte[8192];
     int bytesRead;
     final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -151,7 +178,7 @@ public class ApkSignerTool {
     return outputStream.toByteArray();
   }
 
-  private static void initSignerName(X509Certificate cert) {
+  public static void initSignerName(X509Certificate cert) {
     final String defaultName = "CERT";
     try {
       final Properties properties = new Properties();
@@ -176,7 +203,7 @@ public class ApkSignerTool {
     return keystore;
   }
 
-  private static boolean isJKS(InputStream data) {
+  public static boolean isJKS(InputStream data) {
     try (final DataInputStream dis = new DataInputStream(new BufferedInputStream(data))) {
       return dis.readInt() == 0xfeedfeed;
     } catch (Exception e) {
