@@ -3,13 +3,12 @@ package com.android.apksig;
 import com.google.common.collect.ImmutableList;
 import java.io.*;
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
@@ -19,6 +18,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -75,19 +75,33 @@ public class SignUtils {
     return new ApkSigner.SignerConfig.Builder("CERT", privateKey, x509Certs).build();
   }
 
-  public static KeyStore getKeyStore(File jksFile, String password) throws Exception {
-    InputStream inputStream = new FileInputStream(jksFile);
-
-    ByteArrayOutputStream outputStream = new ByteArrayOutputStream(inputStream.available());
-    byte[] buffer = new byte[4096];
-    int bytesRead;
-    while ((bytesRead = inputStream.read(buffer)) != -1) {
-      outputStream.write(buffer, 0, bytesRead);
+  public static ApkSigner.SignerConfig getSignerConfig(
+      KeyStore keyStore, String keyAlias, String keyPassword) throws Exception {
+    Key key = keyStore.getKey(keyAlias, keyPassword.toCharArray());
+    if (key == null) {
+      throw new RuntimeException("No key found with alias '" + keyAlias + "' in keystore.");
     }
-    ByteArrayInputStream data = new ByteArrayInputStream(outputStream.toByteArray());
-    KeyStore keystore = isJKS(data) ? new JavaKeyStore() : KeyStore.getInstance("PKCS12");
-    keystore.load(data, password.toCharArray());
-    return keystore;
+    if (!(key instanceof PrivateKey)) {
+      throw new RuntimeException(
+          "Key with alias '" + keyAlias + "' in keystore is not a private key.");
+    }
+    Certificate[] chain = keyStore.getCertificateChain(keyAlias);
+    if (chain == null || chain.length == 0) {
+      throw new RuntimeException(
+          "No certificate chain found with alias '" + keyAlias + "' in keystore.");
+    }
+    X509Certificate[] certificates = Arrays.copyOf(chain, chain.length, X509Certificate[].class);
+    return new ApkSigner.SignerConfig.Builder(
+            keyAlias, (PrivateKey) key, ImmutableList.copyOf(certificates))
+        .build();
+  }
+
+  public static KeyStore getKeyStore(File keyStoreFile, String keyStorePassword) throws Exception {
+    KeyStore keyStore = KeyStore.getInstance("PKCS12");
+    try (InputStream in = new FileInputStream(keyStoreFile)) {
+      keyStore.load(in, keyStorePassword.toCharArray());
+    }
+    return keyStore;
   }
 
   public static boolean isJKS(InputStream data) {

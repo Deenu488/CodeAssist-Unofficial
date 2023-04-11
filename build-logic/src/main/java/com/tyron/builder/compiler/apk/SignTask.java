@@ -15,6 +15,7 @@ import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.common.util.Decompress;
 import java.io.File;
 import java.io.IOException;
+import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
@@ -24,8 +25,15 @@ public class SignTask extends Task<AndroidModule> {
   private File mInputApk;
   private File mOutputApk;
   private BuildType mBuildType;
+
+  private String mStoreFile;
+  private String mKeyAlias;
+  private String mStorePassword;
+  private String mKeyPassword;
+
   private HashMap<String, String> signingConfigs;
   private ApkSigner.SignerConfig signerConfig;
+  private KeyStore mKeyStore;
 
   public SignTask(Project project, AndroidModule module, ILogger logger) {
     super(project, module, logger);
@@ -85,33 +93,42 @@ public class SignTask extends Task<AndroidModule> {
 
           if (key.equals("storeFile")) {
             if (value == null || value.equals("") || value.isEmpty()) {
-				throw new CompilationFailedException("Unable to get storeFile.");
+              throw new CompilationFailedException("Unable to get storeFile.");
             }
-            getLogger().debug(value);
+            mStoreFile = value;
 
           } else if (key.equals("keyAlias")) {
             if (value == null || value.equals("") || value.isEmpty()) {
-				throw new CompilationFailedException("Unable to get keyAlias.");
+              throw new CompilationFailedException("Unable to get keyAlias.");
             }
-
-            getLogger().debug(value);
+            mKeyAlias = value;
 
           } else if (key.equals("storePassword")) {
             if (value == null || value.equals("") || value.isEmpty()) {
-				throw new CompilationFailedException("Unable to get storePassword.");
+              throw new CompilationFailedException("Unable to get storePassword.");
             }
-            getLogger().debug(value);
+            mStorePassword = value;
 
           } else if (key.equals("keyPassword")) {
             if (value == null || value.equals("") || value.isEmpty()) {
-				throw new CompilationFailedException("Unable to get keyPassword.");
+              throw new CompilationFailedException("Unable to get keyPassword.");
             }
-            getLogger().debug(value);
+            mKeyPassword = value;
           }
         }
 
-        signerConfig =
-            SignUtils.getDefaultSignerConfig(testKey.getAbsolutePath(), testCert.getAbsolutePath());
+        File jks = new File(getModule().getRootFile(), mStoreFile);
+        if (!jks.exists()) {
+          throw new CompilationFailedException(
+              "Unable to get store file "
+                  + getModule().getRootFile().getAbsolutePath()
+                  + "/"
+                  + mStoreFile);
+        }
+
+        mKeyStore = SignUtils.getKeyStore(jks, mStorePassword);
+        signerConfig = SignUtils.getSignerConfig(mKeyStore, mKeyAlias, mKeyPassword);
+
       } catch (Exception e) {
         throw new CompilationFailedException(e);
       }
