@@ -16,6 +16,7 @@ import com.tyron.common.util.Decompress;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.io.FileUtils;
 
 public class SignTask extends Task<AndroidModule> {
@@ -57,7 +58,6 @@ public class SignTask extends Task<AndroidModule> {
   public void run() throws IOException, CompilationFailedException {
 
     signingConfigs.putAll(getModule().getSigningConfigs());
-    getLogger().debug(signingConfigs.toString());
 
     File testKey = new File(getTestKeyFile());
     if (!testKey.exists()) {
@@ -78,6 +78,38 @@ public class SignTask extends Task<AndroidModule> {
       }
     } else {
       try {
+
+        for (Map.Entry<String, String> entry : signingConfigs.entrySet()) {
+          String key = entry.getKey();
+          String value = entry.getValue();
+
+          if (key.equals("storeFile")) {
+            if (value == null || value.equals("") || value.isEmpty()) {
+              throw new IOException("Unable to get storeFile.");
+            }
+            getLogger().debug(value);
+
+          } else if (key.equals("keyAlias")) {
+            if (value == null || value.equals("") || value.isEmpty()) {
+              throw new IOException("Unable to get keyAlias.");
+            }
+
+            getLogger().debug(value);
+
+          } else if (key.equals("storePassword")) {
+            if (value == null || value.equals("") || value.isEmpty()) {
+              throw new IOException("Unable to get storePassword.");
+            }
+            getLogger().debug(value);
+
+          } else if (key.equals("keyPassword")) {
+            if (value == null || value.equals("") || value.isEmpty()) {
+              throw new IOException("Unable to get keyPassword.");
+            }
+            getLogger().debug(value);
+          }
+        }
+
         signerConfig =
             SignUtils.getDefaultSignerConfig(testKey.getAbsolutePath(), testCert.getAbsolutePath());
       } catch (Exception e) {

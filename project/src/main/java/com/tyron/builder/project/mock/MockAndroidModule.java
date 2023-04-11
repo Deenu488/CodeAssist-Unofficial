@@ -592,10 +592,26 @@ public class MockAndroidModule extends MockJavaModule implements AndroidModule {
       String storePassword = matcher.group(3);
       String keyPassword = matcher.group(4);
 
-      signingConfigs.put("storeFile", storeFile);
-      signingConfigs.put("keyAlias", keyAlias);
-      signingConfigs.put("storePassword", storePassword);
-      signingConfigs.put("keyPassword", keyPassword);
+      if (storeFile != null && !storeFile.isEmpty()) {
+        signingConfigs.put("storeFile", storeFile);
+      } else {
+        signingConfigs.put("storeFile", "");
+      }
+      if (keyAlias != null && !keyAlias.isEmpty()) {
+        signingConfigs.put("keyAlias", keyAlias);
+      } else {
+        signingConfigs.put("keyAlias", "");
+      }
+      if (storePassword != null && !storePassword.isEmpty()) {
+        signingConfigs.put("storePassword", storePassword);
+      } else {
+        signingConfigs.put("storePassword", "");
+      }
+      if (keyPassword != null && !keyPassword.isEmpty()) {
+        signingConfigs.put("keyPassword", keyPassword);
+      } else {
+        signingConfigs.put("keyPassword", "");
+      }
     }
     return signingConfigs;
   }
