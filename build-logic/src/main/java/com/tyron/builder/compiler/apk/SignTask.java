@@ -85,26 +85,26 @@ public class SignTask extends Task<AndroidModule> {
 
           if (key.equals("storeFile")) {
             if (value == null || value.equals("") || value.isEmpty()) {
-              throw new IOException("Unable to get storeFile.");
+				throw new CompilationFailedException("Unable to get storeFile.");
             }
             getLogger().debug(value);
 
           } else if (key.equals("keyAlias")) {
             if (value == null || value.equals("") || value.isEmpty()) {
-              throw new IOException("Unable to get keyAlias.");
+				throw new CompilationFailedException("Unable to get keyAlias.");
             }
 
             getLogger().debug(value);
 
           } else if (key.equals("storePassword")) {
             if (value == null || value.equals("") || value.isEmpty()) {
-              throw new IOException("Unable to get storePassword.");
+				throw new CompilationFailedException("Unable to get storePassword.");
             }
             getLogger().debug(value);
 
           } else if (key.equals("keyPassword")) {
             if (value == null || value.equals("") || value.isEmpty()) {
-              throw new IOException("Unable to get keyPassword.");
+				throw new CompilationFailedException("Unable to get keyPassword.");
             }
             getLogger().debug(value);
           }
