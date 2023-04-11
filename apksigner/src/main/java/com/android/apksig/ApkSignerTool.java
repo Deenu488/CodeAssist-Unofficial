@@ -1,5 +1,6 @@
 package com.android.apksig;
 
+import com.android.apksig.apk.ApkFormatException;
 import com.google.common.collect.ImmutableList;
 import java.io.*;
 import java.io.BufferedInputStream;
@@ -23,127 +24,143 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 import java.util.stream.Collectors;
-import com.android.apksig.apk.ApkFormatException;
 
 public class ApkSignerTool {
 
-  private static File mInputFile;
-  private static File mOutputFile;  
-  private static String SIGNER_NAME;
+  private boolean debug = false;
+  private File mInputFile;
+  private File mOutputFile;
+  private String SIGNER_NAME;
 
-  private static File mStoreFile;
-  private static String mKeyAlias;
-  private static String mStorePassword;
-  private static String mKeyPassword;
+  private File mStoreFile;
+  private String mKeyAlias;
+  private String mStorePassword;
+  private String mKeyPassword;
 
-  private static File mTestKeyFile;
-  private static File mTestCertFile;
+  private File mTestKeyFile;
+  private File mTestCertFile;
+
+  private ApkSigner.SignerConfig signerConfig;
 
   public ApkSignerTool() {}
 
-  public static void main(String[] args) throws IOException, ApkFormatException, Exception {
-	 	
-    //InputStream inputStream = new FileInputStream(getTestCertFile());
-	//KeyStore keyStore = getKeyStore(inputStream, getKeyPassword());			
-    //ApkSigner.SignerConfig signerConfig = new ApkSigner.SignerConfig.Builder(getSignerConfig(keyStore,getKeyAlias(),getStorePassword()),false).build();
-    
-	ApkSigner apkSigner = new ApkSigner.Builder(ImmutableList.of(getDebugSignerConfig())).setInputApk(getInputFile())
-    		.setOutputApk(getOutPutFile()).build();
-    apkSigner.sign();
+  public void sign() throws IOException, ApkFormatException, Exception {
 
+    if (isDebug()) {
+      signerConfig = getDebugSignerConfig();
+    } else {
+      signerConfig = getCustomSignerConfig();
+    }
+
+    ApkSigner apkSigner =
+        new ApkSigner.Builder(ImmutableList.of(signerConfig))
+            .setInputApk(getInputFile())
+            .setOutputApk(getOutPutFile())
+            .build();
+    apkSigner.sign();
   }
-  
-  public static void setInputFile(File input) {
+
+  public void setDebug(boolean isDebug) {
+    debug = isDebug;
+  }
+
+  public boolean isDebug() {
+    if (debug) {
+      return true;
+    }
+    return false;
+  }
+
+  public void setInputFile(File input) {
     mInputFile = input;
   }
 
-  public static void setOutPutFile(File output) {
+  public void setOutPutFile(File output) {
     mOutputFile = output;
   }
-  
-  public static File getInputFile() {
+
+  public File getInputFile() {
     if (mInputFile != null) {
-      return new File( mInputFile.getAbsolutePath());
+      return new File(mInputFile.getAbsolutePath());
     }
     return null;
   }
 
-  public static File getOutPutFile() {
+  public File getOutPutFile() {
     if (mOutputFile != null) {
       return new File(mOutputFile.getAbsolutePath());
     }
     return null;
   }
 
-  public static void setStoreFile(File store_file) {
+  public void setStoreFile(File store_file) {
     mStoreFile = store_file;
   }
 
-  public static void setKeyAlias(String key_alias) {
+  public void setKeyAlias(String key_alias) {
     mKeyAlias = key_alias;
   }
 
-  public static void setStorePassword(String password) {
+  public void setStorePassword(String password) {
     mStorePassword = password;
   }
 
-  public static void setKeyPassword(String keyPassword) {
+  public void setKeyPassword(String keyPassword) {
     mKeyPassword = keyPassword;
   }
 
-  public static String getStoreFile() {
+  public String getStoreFile() {
     if (mStoreFile != null) {
       return mStoreFile.getAbsolutePath();
     }
     return null;
   }
 
-  public static String getKeyAlias() {
+  public String getKeyAlias() {
     if (mKeyAlias != null) {
       return mKeyAlias;
     }
     return null;
   }
 
-  public static String getStorePassword() {
+  public String getStorePassword() {
     if (mStorePassword != null) {
       return mStorePassword;
     }
     return null;
   }
 
-  public static String getKeyPassword() {
+  public String getKeyPassword() {
     if (mKeyPassword != null) {
       return mKeyPassword;
     }
     return null;
   }
 
-  public static void setTestKeyFile(File file) {
+  public void setTestKeyFile(File file) {
     mTestKeyFile = file;
   }
 
-  public static void setTestCertFile(File file) {
+  public void setTestCertFile(File file) {
     mTestCertFile = file;
   }
 
-  public static String getTestKeyFile() {
+  public String getTestKeyFile() {
     if (mTestKeyFile != null) {
       return mTestKeyFile.getAbsolutePath();
     }
     return null;
   }
 
-  public static String getTestCertFile() {
+  public String getTestCertFile() {
     if (mTestCertFile != null) {
       return mTestCertFile.getAbsolutePath();
     }
     return null;
   }
 
-  public static PrivateKey loadPkcs8EncodedPrivateKey(PKCS8EncodedKeySpec spec)
+  public PrivateKey loadPkcs8EncodedPrivateKey(PKCS8EncodedKeySpec spec)
       throws NoSuchAlgorithmException, InvalidKeySpecException {
     try {
       return KeyFactory.getInstance("RSA").generatePrivate(spec);
@@ -163,7 +180,7 @@ public class ApkSignerTool {
     throw new InvalidKeySpecException("Not an RSA, EC, or DSA private key");
   }
 
-  public static ApkSigner.SignerConfig getDebugSignerConfig() throws Exception {
+  public ApkSigner.SignerConfig getDebugSignerConfig() throws Exception {
 
     byte[] privateKeyBlob = Files.readAllBytes(Paths.get(getTestKeyFile()));
     InputStream pemInputStream = new FileInputStream(getTestCertFile());
@@ -182,9 +199,6 @@ public class ApkSignerTool {
                 .map(c -> (Certificate) c)
                 .collect(Collectors.toList()));
 
-    X509Certificate cert = (X509Certificate) certs.get(0);
-    initSignerName(cert);
-
     final List<X509Certificate> x509Certs =
         Collections.checkedList(
             certs.stream().map(c -> (X509Certificate) c).collect(Collectors.toList()),
@@ -192,54 +206,14 @@ public class ApkSignerTool {
 
     pemInputStream.close();
 
-    return new ApkSigner.SignerConfig.Builder(SIGNER_NAME, privateKey, x509Certs).build();
+    return new ApkSigner.SignerConfig.Builder("CERT", privateKey, x509Certs).build();
   }
 
-  public static byte[] readAllBytes(InputStream inputStream) throws IOException {
-    final byte[] buffer = new byte[8192];
-    int bytesRead;
-    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    while ((bytesRead = inputStream.read(buffer)) != -1) {
-      outputStream.write(buffer, 0, bytesRead);
-    }
-    return outputStream.toByteArray();
-  }
-
-  public static void initSignerName(X509Certificate cert) {
-    final String defaultName = "CERT";
-    try {
-      final Properties properties = new Properties();
-      final String subjectName = cert.getSubjectX500Principal().getName().replace(',', '\n');
-      properties.load(new StringReader(subjectName));
-      SIGNER_NAME = properties.getProperty("CN", defaultName);
-    } catch (Exception e) {
-      SIGNER_NAME = defaultName;
-    }
-  }
-
-  public static KeyStore getKeyStore(InputStream inputStream, String password) throws Exception {
-    ByteArrayOutputStream outputStream = new ByteArrayOutputStream(inputStream.available());
-    byte[] buffer = new byte[4096];
-    int bytesRead;
-    while ((bytesRead = inputStream.read(buffer)) != -1) {
-      outputStream.write(buffer, 0, bytesRead);
-    }
-    ByteArrayInputStream data = new ByteArrayInputStream(outputStream.toByteArray());
-    KeyStore keystore = isJKS(data) ? new JavaKeyStore() : KeyStore.getInstance("PKCS12");
-    keystore.load(data, password.toCharArray());
-    return keystore;
-  }
-
-  public static boolean isJKS(InputStream data) {
-    try (final DataInputStream dis = new DataInputStream(new BufferedInputStream(data))) {
-      return dis.readInt() == 0xfeedfeed;
-    } catch (Exception e) {
-      return false;
-    }
-  }
-
-  public static ApkSigner.SignerConfig getSignerConfig(
-      KeyStore keystore, String keyAlias, String aliasPassword) throws Exception {
+  public ApkSigner.SignerConfig getCustomSignerConfig() throws Exception {
+    InputStream inputStream = new FileInputStream(getStoreFile());
+    KeyStore keystore = getKeyStore(inputStream, getKeyPassword());
+    String keyAlias = getKeyAlias();
+    String aliasPassword = getStorePassword();
     PrivateKey privateKey =
         (PrivateKey)
             keystore.getKey(
@@ -257,10 +231,40 @@ public class ApkSignerTool {
         Arrays.stream(certChain)
             .map(
                 cert -> {
-                  initSignerName(cert);
                   return cert;
                 })
             .collect(ImmutableList.toImmutableList());
-    return new ApkSigner.SignerConfig.Builder(SIGNER_NAME, privateKey, certificates).build();
+    return new ApkSigner.SignerConfig.Builder("CERT", privateKey, certificates).build();
+  }
+
+  public byte[] readAllBytes(InputStream inputStream) throws IOException {
+    final byte[] buffer = new byte[8192];
+    int bytesRead;
+    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    while ((bytesRead = inputStream.read(buffer)) != -1) {
+      outputStream.write(buffer, 0, bytesRead);
+    }
+    return outputStream.toByteArray();
+  }
+
+  public KeyStore getKeyStore(InputStream inputStream, String password) throws Exception {
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream(inputStream.available());
+    byte[] buffer = new byte[4096];
+    int bytesRead;
+    while ((bytesRead = inputStream.read(buffer)) != -1) {
+      outputStream.write(buffer, 0, bytesRead);
+    }
+    ByteArrayInputStream data = new ByteArrayInputStream(outputStream.toByteArray());
+    KeyStore keystore = isJKS(data) ? new JavaKeyStore() : KeyStore.getInstance("PKCS12");
+    keystore.load(data, password.toCharArray());
+    return keystore;
+  }
+
+  public boolean isJKS(InputStream data) {
+    try (final DataInputStream dis = new DataInputStream(new BufferedInputStream(data))) {
+      return dis.readInt() == 0xfeedfeed;
+    } catch (Exception e) {
+      return false;
+    }
   }
 }
