@@ -41,7 +41,7 @@ public class SignTask extends Task<AndroidModule> {
 
   @Override
   public String getName() {
-    return "sign";
+    return "validateSigningConfig";
   }
 
   @Override
@@ -125,7 +125,7 @@ public class SignTask extends Task<AndroidModule> {
                   + "/"
                   + mStoreFile);
         }
-
+        getLogger().debug("> Task :" + getModule().getRootFile().getName() + ":" + "sign");
         mKeyStore = SignUtils.getKeyStore(jks, mStorePassword);
         signerConfig = SignUtils.getSignerConfig(mKeyStore, mKeyAlias, mKeyPassword);
 

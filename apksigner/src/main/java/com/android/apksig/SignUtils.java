@@ -2,8 +2,6 @@ package com.android.apksig;
 
 import com.google.common.collect.ImmutableList;
 import java.io.*;
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -97,14 +95,15 @@ public class SignUtils {
   }
 
   public static KeyStore getKeyStore(File keyStoreFile, String keyStorePassword) throws Exception {
-    KeyStore keyStore = KeyStore.getInstance("PKCS12");
+    InputStream data = new FileInputStream(keyStoreFile);
+    KeyStore keyStore = isJKS(data) ? new JavaKeyStore() : KeyStore.getInstance("PKCS12");
     try (InputStream in = new FileInputStream(keyStoreFile)) {
       keyStore.load(in, keyStorePassword.toCharArray());
     }
     return keyStore;
   }
 
-  public static boolean isJKS(InputStream data) {
+  private static boolean isJKS(InputStream data) {
     try (final DataInputStream dis = new DataInputStream(new BufferedInputStream(data))) {
       return dis.readInt() == 0xfeedfeed;
     } catch (Exception e) {
