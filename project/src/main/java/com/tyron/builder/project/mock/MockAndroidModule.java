@@ -3,7 +3,6 @@ package com.tyron.builder.project.mock;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.common.collect.ImmutableMap;
-import com.tyron.builder.compiler.BuildType;
 import com.tyron.builder.model.ModuleSettings;
 import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.builder.project.api.FileManager;
@@ -26,11 +25,9 @@ public class MockAndroidModule extends MockJavaModule implements AndroidModule {
   private File mAndroidResourcesDir;
 
   private final ModuleSettings mockSettings = new MockModuleSettings();
-  private HashMap<String, String> signingConfigs;
 
   public MockAndroidModule(File rootDir, FileManager fileManager) {
     super(rootDir, fileManager);
-    signingConfigs = new HashMap<>();
   }
 
   @Override
@@ -565,78 +562,40 @@ public class MockAndroidModule extends MockJavaModule implements AndroidModule {
   }
 
   @Override
-  public HashMap<String, String> getSigningConfigs(BuildType type) {
-    return parseSigningConfigs(type, getGradleFile());
+  public HashMap<String, String> getSigningConfigs() {
+    return parseSigningConfigs(getGradleFile());
   }
 
-  private HashMap<String, String> parseSigningConfigs(BuildType type, File gradle) {
+  private HashMap<String, String> parseSigningConfigs(File gradle) {
     if (gradle != null && gradle.exists()) {
       try {
         String readString = FileUtils.readFileToString(gradle, Charset.defaultCharset());
-        return parseSigningConfigs(type, readString);
+        return parseSigningConfigs(readString);
       } catch (IOException e) {
       }
     }
-    return signingConfigs;
+    return null;
   }
 
-  private HashMap<String, String> parseSigningConfigs(BuildType buildType, String readString) {
-    Pattern PATTERN =
+  private HashMap<String, String> parseSigningConfigs(String readString) {
+    Pattern pattern =
         Pattern.compile(
-            "signingConfigs\\s*\\{\\s*(?<debug>debug)\\s*\\{[\\s\\S]*?\\}\\s*(?<release>release)\\s*\\{[\\s\\S]*?\\}\\s*\\}");
-    Matcher matcher = PATTERN.matcher(readString);
-    if (matcher.find()) {
-      String debug = matcher.group("debug");
-      String release = matcher.group("release");
-      if (debug != null && !debug.isEmpty() || release != null && !release.isEmpty()) {
-        String build = buildType.getStringValue();
-        if (build != null && !build.isEmpty()) {
-          if (build.toLowerCase().equals(debug)) {
-            setSigningConfigValues(debug);
-          }
-          if (release.toLowerCase().equals(release)) {
-            setSigningConfigValues(release);
-          }
-        }
-      }
-    }
-    return signingConfigs;
-  }
+            "storeFile\\s*file\\s*\\(['\"](.*)['\"]\\)\\s*keyAlias\\s*['\"](.*)['\"]\\s*storePassword\\s*['\"](.*)['\"]\\s*keyPassword\\s*['\"](.*)['\"]");
+    readString = readString.replaceAll("\\s*//.*", "");
+    Matcher matcher = pattern.matcher(readString);
+    HashMap<String, String> signingConfigs = new HashMap<>();
 
-  public HashMap<String, String> setSigningConfigValues(String buildType) {
-    Pattern pattern = Pattern.compile("storeFile\\s*file\\s*\\(['\"](.*)['\"]\\)");
-    Matcher matcher = pattern.matcher(buildType);
     if (matcher.find()) {
+
       String storeFile = matcher.group(1);
-      if (storeFile != null && !storeFile.isEmpty()) {
-        signingConfigs.put("storeFile", storeFile);
-      }
-    }
-    pattern = Pattern.compile("keyAlias\\s*['\"](.*)['\"]");
-    matcher = pattern.matcher(buildType);
-    if (matcher.find()) {
-      String keyAlias = matcher.group(1);
-      if (keyAlias != null && !keyAlias.isEmpty()) {
-        signingConfigs.put("keyAlias", keyAlias);
-      }
-    }
+      String keyAlias = matcher.group(2);
+      String storePassword = matcher.group(3);
+      String keyPassword = matcher.group(4);
 
-    pattern = Pattern.compile("storePassword\\s*['\"](.*)['\"]");
-    matcher = pattern.matcher(buildType);
-    if (matcher.find()) {
-      String storePassword = matcher.group(1);
-      if (storePassword != null && !storePassword.isEmpty()) {
-        signingConfigs.put("storePassword", storePassword);
-      }
-    }
-
-    pattern = Pattern.compile("keyPassword\\s*['\"](.*)['\"]");
-    matcher = pattern.matcher(buildType);
-    if (matcher.find()) {
-      String keyPassword = matcher.group(1);
-      if (keyPassword != null && !keyPassword.isEmpty()) {
-        signingConfigs.put("keyPassword", keyPassword);
-      }
+      signingConfigs.put("storeFile", storeFile);
+      signingConfigs.put("keyAlias", keyAlias);
+      signingConfigs.put("storePassword", storePassword);
+      signingConfigs.put("keyPassword", keyPassword);
     }
     return signingConfigs;
   }

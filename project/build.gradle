@@ -11,6 +11,8 @@ java {
 dependencies {
     implementation 'androidx.annotation:annotation:1.3.0'
     implementation project(path: ':common')
+	implementation project(path: ':apksigner')
+	
     // for manifest  parsing
     implementation project(path: ':manifmerger')
 	compileOnly 'com.google.code.gson:gson:2.8.8'

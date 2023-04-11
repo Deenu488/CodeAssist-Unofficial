@@ -1,7 +1,6 @@
 package com.tyron.builder.project.api;
 
 import androidx.annotation.NonNull;
-import com.tyron.builder.compiler.BuildType;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +57,7 @@ public interface AndroidModule extends JavaModule, KotlinModule {
 
   List<String> getExcludes();
 
-  HashMap<String, String> getSigningConfigs(BuildType type);
+  HashMap<String, String> getSigningConfigs();
 
   /** Return a map of fully qualified name and the file object of an R.java class */
   Map<String, File> getResourceClasses();

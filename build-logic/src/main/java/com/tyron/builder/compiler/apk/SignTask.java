@@ -1,7 +1,10 @@
 package com.tyron.builder.compiler.apk;
 
 import android.util.Log;
-import com.android.apksig.ApkSignerTool;
+import com.android.apksig.ApkSigner;
+import com.android.apksig.SignUtils;
+import com.android.apksig.apk.ApkFormatException;
+import com.google.common.collect.ImmutableList;
 import com.tyron.builder.BuildModule;
 import com.tyron.builder.compiler.BuildType;
 import com.tyron.builder.compiler.Task;
@@ -13,7 +16,6 @@ import com.tyron.common.util.Decompress;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 import org.apache.commons.io.FileUtils;
 
 public class SignTask extends Task<AndroidModule> {
@@ -22,6 +24,7 @@ public class SignTask extends Task<AndroidModule> {
   private File mOutputApk;
   private BuildType mBuildType;
   private HashMap<String, String> signingConfigs;
+  private ApkSigner.SignerConfig signerConfig;
 
   public SignTask(Project project, AndroidModule module, ILogger logger) {
     super(project, module, logger);
@@ -52,8 +55,9 @@ public class SignTask extends Task<AndroidModule> {
 
   @Override
   public void run() throws IOException, CompilationFailedException {
-    
-	signingConfigs.putAll(getModule().getSigningConfigs(mBuildType));
+
+    signingConfigs.putAll(getModule().getSigningConfigs());
+    getLogger().debug(signingConfigs.toString());
 
     File testKey = new File(getTestKeyFile());
     if (!testKey.exists()) {
@@ -65,48 +69,32 @@ public class SignTask extends Task<AndroidModule> {
       throw new IOException("Unable to get test certificate file.");
     }
 
-    ApkSignerTool apkSignerTool = new ApkSignerTool();
-
     if (signingConfigs == null || signingConfigs.isEmpty()) {
-      apkSignerTool.setDebug(true);
-      apkSignerTool.setTestKeyFile(testKey);
-      apkSignerTool.setTestCertFile(testCert);
+      try {
+        signerConfig =
+            SignUtils.getDefaultSignerConfig(testKey.getAbsolutePath(), testCert.getAbsolutePath());
+      } catch (Exception e) {
+        throw new CompilationFailedException(e);
+      }
     } else {
-      for (Map.Entry<String, String> entry : signingConfigs.entrySet()) {
-        String key = entry.getKey();
-        String value = entry.getValue();
-        apkSignerTool.setDebug(false);
-
-        if (key.equals("storeFile")) {
-          if (value == null || value.isEmpty()) {
-            throw new IOException("Unable to get storeFile.");
-          }
-          apkSignerTool.setStoreFile(new File(getModule().getRootFile(), value));
-
-        } else if (key.equals("keyAlias")) {
-          if (value == null || value.isEmpty()) {
-            throw new IOException("Unable to get keyAlias.");
-          }
-          apkSignerTool.setKeyAlias(value);
-
-        } else if (key.equals("storePassword")) {
-          if (value == null || value.isEmpty()) {
-            throw new IOException("Unable to get storePassword.");
-          }
-          apkSignerTool.setStorePassword(value);
-        } else if (key.equals("keyPassword")) {
-          if (value == null || value.isEmpty()) {
-            throw new IOException("Unable to get keyPassword.");
-          }
-          apkSignerTool.setKeyPassword(value);
-        }
+      try {
+        signerConfig =
+            SignUtils.getDefaultSignerConfig(testKey.getAbsolutePath(), testCert.getAbsolutePath());
+      } catch (Exception e) {
+        throw new CompilationFailedException(e);
       }
     }
 
-    apkSignerTool.setInputFile(mInputApk);
-    apkSignerTool.setOutPutFile(mOutputApk);
     try {
-      apkSignerTool.sign();
+      ApkSigner apkSigner =
+          new ApkSigner.Builder(ImmutableList.of(signerConfig))
+              .setInputApk(mInputApk)
+              .setOutputApk(mOutputApk)
+              .build();
+
+      apkSigner.sign();
+    } catch (ApkFormatException e) {
+      throw new CompilationFailedException(e.toString());
     } catch (Exception e) {
       throw new CompilationFailedException(e);
     }
