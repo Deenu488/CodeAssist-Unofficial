@@ -12,12 +12,16 @@ import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.common.util.Decompress;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.io.FileUtils;
 
 public class SignTask extends Task<AndroidModule> {
 
   private File mInputApk;
   private File mOutputApk;
+  private BuildType mBuildType;
+  private HashMap<String, String> signingConfigs;
 
   public SignTask(Project project, AndroidModule module, ILogger logger) {
     super(project, module, logger);
@@ -30,8 +34,10 @@ public class SignTask extends Task<AndroidModule> {
 
   @Override
   public void prepare(BuildType type) throws IOException {
+    mBuildType = type;
     mInputApk = new File(getModule().getBuildDirectory(), "bin/aligned.apk");
     mOutputApk = new File(getModule().getBuildDirectory(), "bin/signed.apk");
+    signingConfigs = new HashMap<>();
 
     if (!mInputApk.exists()) {
       mInputApk = new File(getModule().getBuildDirectory(), "bin/generated.apk");
@@ -46,6 +52,8 @@ public class SignTask extends Task<AndroidModule> {
 
   @Override
   public void run() throws IOException, CompilationFailedException {
+    
+	signingConfigs.putAll(getModule().getSigningConfigs(mBuildType));
 
     File testKey = new File(getTestKeyFile());
     if (!testKey.exists()) {
@@ -58,12 +66,45 @@ public class SignTask extends Task<AndroidModule> {
     }
 
     ApkSignerTool apkSignerTool = new ApkSignerTool();
-    apkSignerTool.setDebug(true);
-    apkSignerTool.setTestKeyFile(testKey);
-    apkSignerTool.setTestCertFile(testCert);
+
+    if (signingConfigs == null || signingConfigs.isEmpty()) {
+      apkSignerTool.setDebug(true);
+      apkSignerTool.setTestKeyFile(testKey);
+      apkSignerTool.setTestCertFile(testCert);
+    } else {
+      for (Map.Entry<String, String> entry : signingConfigs.entrySet()) {
+        String key = entry.getKey();
+        String value = entry.getValue();
+        apkSignerTool.setDebug(false);
+
+        if (key.equals("storeFile")) {
+          if (value == null || value.isEmpty()) {
+            throw new IOException("Unable to get storeFile.");
+          }
+          apkSignerTool.setStoreFile(new File(getModule().getRootFile(), value));
+
+        } else if (key.equals("keyAlias")) {
+          if (value == null || value.isEmpty()) {
+            throw new IOException("Unable to get keyAlias.");
+          }
+          apkSignerTool.setKeyAlias(value);
+
+        } else if (key.equals("storePassword")) {
+          if (value == null || value.isEmpty()) {
+            throw new IOException("Unable to get storePassword.");
+          }
+          apkSignerTool.setStorePassword(value);
+        } else if (key.equals("keyPassword")) {
+          if (value == null || value.isEmpty()) {
+            throw new IOException("Unable to get keyPassword.");
+          }
+          apkSignerTool.setKeyPassword(value);
+        }
+      }
+    }
+
     apkSignerTool.setInputFile(mInputApk);
     apkSignerTool.setOutPutFile(mOutputApk);
-
     try {
       apkSignerTool.sign();
     } catch (Exception e) {
