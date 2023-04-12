@@ -11,6 +11,7 @@ import java.security.KeyFactory;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -20,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class SignUtils {
 
@@ -95,6 +97,7 @@ public class SignUtils {
   }
 
   public static KeyStore getKeyStore(File keyStoreFile, String keyStorePassword) throws Exception {
+    Security.addProvider(new BouncyCastleProvider());
     InputStream data = new FileInputStream(keyStoreFile);
     KeyStore keyStore = isJKS(data) ? new JavaKeyStore() : KeyStore.getInstance("PKCS12");
     try (InputStream in = new FileInputStream(keyStoreFile)) {
