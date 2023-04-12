@@ -34,6 +34,7 @@ public class ProjectActionGroup extends ActionGroup {
     event.getPresentation().setEnabled(true);
     event.getPresentation().setEnabled(true);
     event.getPresentation().setEnabled(true);
+    event.getPresentation().setEnabled(true);
     event.getPresentation().setText(context.getString(R.string.item_project));
     event.getPresentation().setIcon(ContextCompat.getDrawable(context, R.drawable.round_folder_24));
   }
@@ -50,7 +51,8 @@ public class ProjectActionGroup extends ActionGroup {
       new RefreshProjectAction(),
       new DrawableManagerAction(),
       new IconManagerAction(),
-      new GitAction()
+      new GitAction(),
+      new CompileAabAction()
     };
   }
 }
