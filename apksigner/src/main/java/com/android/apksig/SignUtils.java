@@ -45,8 +45,8 @@ public class SignUtils {
     throw new InvalidKeySpecException("Not an RSA, EC, or DSA private key");
   }
 
-  public static ApkSigner.SignerConfig getDefaultSignerConfig(
-      String testKeyFile, String testCertFile) throws Exception {
+  public static ApkSigner.SignerConfig getSignerConfig(String testKeyFile, String testCertFile)
+      throws Exception {
 
     byte[] privateKeyBlob = Files.readAllBytes(Paths.get(testKeyFile));
     InputStream pemInputStream = new FileInputStream(testCertFile);

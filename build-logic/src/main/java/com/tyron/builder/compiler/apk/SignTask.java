@@ -26,6 +26,9 @@ public class SignTask extends Task<AndroidModule> {
   private File mOutputApk;
   private BuildType mBuildType;
 
+  private File testKey;
+  private File testCert;
+
   private String mStoreFile;
   private String mKeyAlias;
   private String mStorePassword;
@@ -67,20 +70,51 @@ public class SignTask extends Task<AndroidModule> {
 
     signingConfigs.putAll(getModule().getSigningConfigs());
 
-    File testKey = new File(getTestKeyFile());
-    if (!testKey.exists()) {
-      throw new IOException("Unable to get test key file.");
-    }
-
-    File testCert = new File(getTestCertFile());
-    if (!testCert.exists()) {
-      throw new IOException("Unable to get test certificate file.");
-    }
-
     if (signingConfigs == null || signingConfigs.isEmpty()) {
       try {
-        signerConfig =
-            SignUtils.getDefaultSignerConfig(testKey.getAbsolutePath(), testCert.getAbsolutePath());
+        File[] files = getModule().getRootFile().listFiles();
+        if (files != null) {
+          for (File file : files) {
+            if (file.isFile()) {
+              if (file.getName().endsWith(".pk8")) {
+                testKey = file;
+              }
+              if (file.getName().endsWith(".pem")) {
+                testCert = file;
+              }
+            }
+          }
+          if (testKey != null && testCert != null) {
+            if (!testKey.exists()) {
+              throw new IOException(
+                  "Unable to get custom pk8 key file in "
+                      + getModule().getRootFile().getAbsolutePath());
+            }
+            if (!testCert.exists()) {
+              throw new IOException(
+                  "Unable to get custom pem certificate file "
+                      + getModule().getRootFile().getAbsolutePath());
+            }
+            getLogger().debug("> Task :" + getModule().getRootFile().getName() + ":" + "sign");
+            signerConfig =
+                SignUtils.getSignerConfig(testKey.getAbsolutePath(), testCert.getAbsolutePath());
+
+          } else {
+            testKey = new File(getTestKeyFile());
+            if (!testKey.exists()) {
+              throw new IOException("Unable to get test key file.");
+            }
+
+            testCert = new File(getTestCertFile());
+            if (!testCert.exists()) {
+              throw new IOException("Unable to get test certificate file.");
+            }
+
+            getLogger().debug("> Task :" + getModule().getRootFile().getName() + ":" + "sign");
+            signerConfig =
+                SignUtils.getSignerConfig(testKey.getAbsolutePath(), testCert.getAbsolutePath());
+          }
+        }
       } catch (Exception e) {
         throw new CompilationFailedException(e);
       }
