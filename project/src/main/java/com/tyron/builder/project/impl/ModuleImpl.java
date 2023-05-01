@@ -543,4 +543,34 @@ public class ModuleImpl implements Module {
     }
     return null;
   }
+
+  @Override
+  public String getMainClass() {
+    return parseMainClass(getGradleFile());
+  }
+
+  private String parseMainClass(File gradleFile) {
+    try {
+      String readString = FileUtils.readFileToString(gradleFile, Charset.defaultCharset());
+      return parseMainClass(readString);
+    } catch (IOException e) {
+    }
+    return null;
+  }
+
+  private String parseMainClass(String readString) {
+    final Pattern mainClass = Pattern.compile("mainClass\\s*=\\s*[\"']([^\"']*)[\"']");
+
+    readString = readString.replaceAll("\\s*//.*", "");
+
+    Matcher matcher = mainClass.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(1);
+      if (declaration != null) {
+        return declaration;
+      }
+    }
+
+    return null;
+  }
 }

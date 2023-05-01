@@ -25,6 +25,8 @@ public interface Module extends UserDataHolderEx, CacheHolder {
 
   int getMinSdk();
 
+  String getMainClass();
+
   List<String> getPlugins();
 
   List<String> getPlugins(File file);
