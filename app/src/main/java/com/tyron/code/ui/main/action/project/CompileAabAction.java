@@ -54,6 +54,14 @@ public class CompileAabAction extends AnAction {
       return;
     }
 
+    Module module = project.getMainModule();
+    List<String> plugins = module.getPlugins();
+    String pluginType = plugins.toString();
+    if (!pluginType.contains("com.android.application")) {
+      presentation.setVisible(false);
+      return;
+    }
+
     MainViewModel mainViewModel = event.getData(MainFragment.MAIN_VIEW_MODEL_KEY);
     if (mainViewModel == null) {
       return;
