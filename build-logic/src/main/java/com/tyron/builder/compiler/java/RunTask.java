@@ -8,6 +8,7 @@ import com.tyron.builder.log.ILogger;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.common.util.BinaryExecutor;
+import com.tyron.common.util.ExecutionResult;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,8 +61,16 @@ public class RunTask extends Task<AndroidModule> {
 
       BinaryExecutor executor = new BinaryExecutor();
       executor.setCommands(args);
-      if (!executor.execute().isEmpty()) {
-        throw new CompilationFailedException(executor.getLog());
+      try {
+        ExecutionResult result = executor.run();
+        if (result.getExitValue() == 0) {
+          getLogger().debug(result.getOutput());
+        } else {
+          getLogger().error("Command failed with exit code " + result.getExitValue() + ":");
+          getLogger().error(result.getOutput());
+        }
+      } catch (InterruptedException e) {
+        getLogger().error(e.toString());
       }
 
     } else {

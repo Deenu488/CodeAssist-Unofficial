@@ -1,5 +1,8 @@
 package com.tyron.common.util;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Scanner;
@@ -33,5 +36,18 @@ public class BinaryExecutor {
 
   public String getLog() {
     return mWriter.toString();
+  }
+
+  public ExecutionResult run() throws IOException, InterruptedException {
+    Process process = mProcess.start();
+    BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+    StringBuilder output = new StringBuilder();
+    String line;
+    while ((line = reader.readLine()) != null) {
+      output.append(line).append("\n");
+    }
+    reader.close();
+    int exitValue = process.waitFor();
+    return new ExecutionResult(exitValue, output.toString());
   }
 }
