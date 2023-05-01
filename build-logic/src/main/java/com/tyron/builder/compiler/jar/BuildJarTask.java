@@ -10,6 +10,7 @@ import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.JavaModule;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Attributes;
 
@@ -31,12 +32,18 @@ public class BuildJarTask extends Task<JavaModule> {
 
   @Override
   public void run() throws IOException, CompilationFailedException {
-    File classes = new File(getModule().getRootFile(), "build/bin/java/classes");
+    File javaClasses = new File(getModule().getRootFile(), "build/bin/java/classes");
+    File kotlinClasses = new File(getModule().getRootFile(), "build/bin/kotlin/classes");
     File out =
         new File(
             getModule().getRootFile(),
             "build/outputs/jar/" + getModule().getRootFile().getName() + ".jar");
-    assembleJar(classes, out);
+
+    List<File> inputFolders = new ArrayList<>();
+    inputFolders.add(javaClasses);
+    inputFolders.add(kotlinClasses);
+
+    assembleJar(inputFolders, out);
   }
 
   public void assembleJar(File input, File out) throws IOException, CompilationFailedException {
