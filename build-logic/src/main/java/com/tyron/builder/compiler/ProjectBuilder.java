@@ -2,6 +2,7 @@ package com.tyron.builder.compiler;
 
 import androidx.annotation.NonNull;
 import com.tyron.builder.compiler.builder.AndroidLibraryBuilder;
+import com.tyron.builder.compiler.builder.JavaApplicationBuilder;
 import com.tyron.builder.compiler.builder.JavaLibraryBuilder;
 import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.log.ILogger;
@@ -45,6 +46,7 @@ public class ProjectBuilder {
             || plugin.equals("com.android.library")
             || plugin.equals("com.android.application")
             || plugin.equals("kotlin")
+            || plugin.equals("application")
             || plugin.equals("kotlin-android")) {
           plugins.add(plugin);
         }
@@ -68,7 +70,8 @@ public class ProjectBuilder {
         } else {
           builder = new AndroidAppBuilder(mProject, androidModule, mLogger);
         }
-
+      } else if (moduleType.equals("[application]")) {
+        builder = new JavaApplicationBuilder(mProject, androidModule, mLogger);
       } else if (moduleType.equals("[com.android.application, kotlin-android]")
           || moduleType.equals("[kotlin-android, com.android.application]")) {
         if (type == BuildType.AAB) {

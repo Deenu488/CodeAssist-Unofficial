@@ -104,6 +104,7 @@ public class ProjectManager {
             || plugin.equals("com.android.library")
             || plugin.equals("com.android.application")
             || plugin.equals("kotlin")
+            || plugin.equals("application")
             || plugin.equals("kotlin-android")) {
           plugins.add(plugin);
         } else {
