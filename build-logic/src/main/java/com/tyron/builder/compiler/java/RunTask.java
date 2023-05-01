@@ -61,18 +61,15 @@ public class RunTask extends Task<AndroidModule> {
 
       BinaryExecutor executor = new BinaryExecutor();
       executor.setCommands(args);
-      try {
-        ExecutionResult result = executor.run();
+      ExecutionResult result = executor.run();
+      if (result != null) {
         if (result.getExitValue() == 0) {
           getLogger().debug(result.getOutput());
         } else {
-          getLogger().error("Command failed with exit code " + result.getExitValue() + ":");
-          getLogger().error(result.getOutput());
+          getLogger().error("Execution failed with exit code " + result.getExitValue() + ":");
+          getLogger().error(executor.getLog());
         }
-      } catch (InterruptedException e) {
-        getLogger().error(e.toString());
       }
-
     } else {
       throw new CompilationFailedException(
           "Unable to find mainClass in project's build.gradle file.");

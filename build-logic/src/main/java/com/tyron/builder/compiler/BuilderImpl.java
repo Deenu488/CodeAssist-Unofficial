@@ -87,8 +87,14 @@ public abstract class BuilderImpl<T extends Module> implements Builder<T> {
     }
     mTasksRan.forEach(Task::clean);
 
-    long seconds = TimeUnit.MILLISECONDS.toSeconds(Duration.between(now, Instant.now()).toMillis());
-    getLogger().info("TIME TOOK " + seconds + "s");
+    long milliseconds = Duration.between(now, Instant.now()).toMillis();
+    long seconds = TimeUnit.MILLISECONDS.toSeconds(milliseconds);
+    if (seconds > 60) {
+      long minutes = TimeUnit.MILLISECONDS.toMinutes(milliseconds);
+      getLogger().debug("TIME TOOK " + minutes + "m");
+    } else {
+      getLogger().debug("TIME TOOK " + seconds + "s");
+    }
   }
 
   public abstract List<Task<? super T>> getTasks(BuildType type);

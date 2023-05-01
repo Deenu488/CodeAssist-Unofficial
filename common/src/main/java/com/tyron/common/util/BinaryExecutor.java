@@ -38,16 +38,26 @@ public class BinaryExecutor {
     return mWriter.toString();
   }
 
-  public ExecutionResult run() throws IOException, InterruptedException {
-    Process process = mProcess.start();
-    BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-    StringBuilder output = new StringBuilder();
-    String line;
-    while ((line = reader.readLine()) != null) {
-      output.append(line).append("\n");
+  public ExecutionResult run() {
+    try {
+      Process process = mProcess.start();
+      Scanner scanner = new Scanner(process.getErrorStream());
+      while (scanner.hasNextLine()) {
+        mWriter.append(scanner.nextLine());
+        mWriter.append(System.lineSeparator());
+      }
+      BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+      StringBuilder output = new StringBuilder();
+      String line;
+      while ((line = reader.readLine()) != null) {
+        output.append(line).append("\n");
+      }
+      reader.close();
+      int exitValue = process.waitFor();
+      return new ExecutionResult(exitValue, output.toString());
+    } catch (IOException | InterruptedException e) {
+      mWriter.write(e.getMessage());
     }
-    reader.close();
-    int exitValue = process.waitFor();
-    return new ExecutionResult(exitValue, output.toString());
+    return null;
   }
 }

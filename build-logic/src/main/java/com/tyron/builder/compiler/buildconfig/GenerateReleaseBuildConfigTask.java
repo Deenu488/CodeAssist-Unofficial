@@ -141,21 +141,31 @@ public class GenerateReleaseBuildConfigTask extends Task<AndroidModule> {
     String content = parseString(getModule().getGradleFile());
 
     if (content != null) {
-      if (content.contains("namespace") && !content.contains("applicationId")) {
-        throw new IOException(
-            "Unable to find applicationId in "
-                + getModule().getRootFile().getName()
-                + "/build.gradle file");
+      boolean isAndroidLibrary = false;
+      if (content.contains("com.android.library")) {
+        isAndroidLibrary = true;
+      }
 
-      } else if (content.contains("applicationId") && content.contains("namespace")) {
+      if (isAndroidLibrary) {
         return packageName;
-      } else if (content.contains("applicationId") && !content.contains("namespace")) {
-        packageName = getModule().getApplicationId();
       } else {
-        throw new IOException(
-            "Unable to find namespace or applicationId in "
-                + getModule().getRootFile().getName()
-                + "/build.gradle file");
+
+        if (content.contains("namespace") && !content.contains("applicationId")) {
+          throw new IOException(
+              "Unable to find applicationId in "
+                  + getModule().getRootFile().getName()
+                  + "/build.gradle file");
+
+        } else if (content.contains("applicationId") && content.contains("namespace")) {
+          return packageName;
+        } else if (content.contains("applicationId") && !content.contains("namespace")) {
+          packageName = getModule().getApplicationId();
+        } else {
+          throw new IOException(
+              "Unable to find namespace or applicationId in "
+                  + getModule().getRootFile().getName()
+                  + "/build.gradle file");
+        }
       }
     } else {
       throw new IOException(
