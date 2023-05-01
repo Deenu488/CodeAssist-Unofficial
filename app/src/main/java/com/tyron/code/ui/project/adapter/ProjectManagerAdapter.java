@@ -168,6 +168,9 @@ public class ProjectManagerAdapter extends RecyclerView.Adapter<ProjectManagerAd
               if (plugins.contains("java-library")) {
                 icon.setImageResource(R.drawable.ic_java);
               }
+              if (plugins.contains("application")) {
+                icon.setImageResource(R.drawable.ic_java);
+              }
               if (plugins.contains("java")) {
                 icon.setImageResource(R.drawable.ic_java);
               }

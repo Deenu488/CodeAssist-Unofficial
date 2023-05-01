@@ -50,6 +50,11 @@ public class PackageTask extends Task<AndroidModule> {
     mApk = new File(mBinDir, "generated.apk");
     mDexFile = new File(mBinDir, "classes.dex");
     mGeneratedRes = new File(mBinDir, "generated.apk.res");
+
+    if (!mGeneratedRes.exists()) {
+      mGeneratedRes.createNewFile();
+    }
+
     File[] binFiles = mBinDir.listFiles();
     if (binFiles != null) {
       for (File child : binFiles) {
