@@ -4,6 +4,7 @@ import com.tyron.builder.compiler.BuildType;
 import com.tyron.builder.compiler.Task;
 import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.internal.jar.AssembleJar;
+import com.tyron.builder.internal.jar.JarOptionsImpl;
 import com.tyron.builder.log.ILogger;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.JavaModule;
@@ -16,6 +17,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.jar.Attributes;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileUtils;
@@ -38,12 +42,19 @@ public class BuildAarTask extends Task<JavaModule> {
 
   @Override
   public void run() throws IOException, CompilationFailedException {
-    File classes = new File(getModule().getRootFile(), "build/bin/java/classes");
+    File javaClasses = new File(getModule().getRootFile(), "build/bin/java/classes");
+    File kotlinClasses = new File(getModule().getRootFile(), "build/bin/kotlin/classes");
     File aar = new File(getModule().getRootFile(), "/build/bin/aar");
-    assembleAar(classes, aar);
+
+    List<File> inputFolders = new ArrayList<>();
+    inputFolders.add(javaClasses);
+    inputFolders.add(kotlinClasses);
+
+    assembleAar(inputFolders, aar);
   }
 
-  private void assembleAar(File input, File aar) throws IOException, CompilationFailedException {
+  private void assembleAar(List<File> inputFolders, File aar)
+      throws IOException, CompilationFailedException {
     if (!aar.exists()) {
       if (!aar.mkdirs()) {
         throw new IOException("Failed to create resource aar directory");
@@ -51,7 +62,8 @@ public class BuildAarTask extends Task<JavaModule> {
     }
     AssembleJar assembleJar = new AssembleJar(false);
     assembleJar.setOutputFile(new File(aar.getAbsolutePath(), "classes.jar"));
-    assembleJar.createJarArchive(input);
+    assembleJar.setJarOptions(new JarOptionsImpl(new Attributes()));
+    assembleJar.createJarArchive(inputFolders);
     File library = new File(getModule().getRootFile(), "/build/outputs/aar/");
 
     if (!library.exists()) {
