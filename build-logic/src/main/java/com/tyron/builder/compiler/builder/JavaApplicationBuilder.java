@@ -11,6 +11,7 @@ import com.tyron.builder.compiler.incremental.java.IncrementalJavaTask;
 import com.tyron.builder.compiler.incremental.kotlin.IncrementalKotlinCompiler;
 import com.tyron.builder.compiler.incremental.resource.IncrementalAssembleLibraryTask;
 import com.tyron.builder.compiler.java.CheckLibrariesTask;
+import com.tyron.builder.compiler.java.RunTask;
 import com.tyron.builder.log.ILogger;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
@@ -41,6 +42,7 @@ public class JavaApplicationBuilder extends BuilderImpl<AndroidModule> {
       tasks.add(new IncrementalD8Task(getProject(), module, getLogger()));
     }
     tasks.add(new PackageTask(getProject(), module, getLogger()));
+    tasks.add(new RunTask(getProject(), module, getLogger()));
 
     return tasks;
   }
