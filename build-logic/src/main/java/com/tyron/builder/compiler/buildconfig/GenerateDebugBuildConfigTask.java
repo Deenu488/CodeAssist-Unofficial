@@ -54,38 +54,75 @@ public class GenerateDebugBuildConfigTask extends Task<AndroidModule> {
     if (!buildConfigClass.exists() && !buildConfigClass.createNewFile()) {
       throw new IOException("Unable to generate BuildConfig.java");
     }
+    String content = parseString(getModule().getGradleFile());
 
-    String buildConfigString =
-        "/**"
-            + "\n"
-            + "* Automatically generated file. DO NOT MODIFY"
-            + "\n"
-            + "*/"
-            + "\n"
-            + "package "
-            + packageName
-            + ";\n"
-            + "\n"
-            + "public final class BuildConfig {"
-            + "\n"
-            + "    public static final boolean DEBUG = "
-            + "Boolean.parseBoolean(\"true\")"
-            + ";\n"
-            + "    public static final String APPLICATION_ID = "
-            + "\"$package_name\"".replace("$package_name", packageName)
-            + ";\n"
-            + "    public static final String BUILD_TYPE = "
-            + "\"debug\""
-            + ";\n"
-            + "    public static final int VERSION_CODE = "
-            + getModule().getVersionCode()
-            + ";\n"
-            + "    public static final String VERSION_NAME = "
-            + "\"$version_name\"".replace("$version_name", getModule().getVersionName())
-            + ";\n"
-            + "}\n";
+    if (content != null) {
+      boolean isAndroidLibrary = false;
+      if (content.contains("com.android.library")) {
+        isAndroidLibrary = true;
+      }
 
-    FileUtils.writeStringToFile(buildConfigClass, buildConfigString, Charset.defaultCharset());
+      if (!isAndroidLibrary) {
+        String buildConfigString =
+            "/**"
+                + "\n"
+                + "* Automatically generated file. DO NOT MODIFY"
+                + "\n"
+                + "*/"
+                + "\n"
+                + "package "
+                + packageName
+                + ";\n"
+                + "\n"
+                + "public final class BuildConfig {"
+                + "\n"
+                + "    public static final boolean DEBUG = "
+                + "Boolean.parseBoolean(\"true\")"
+                + ";\n"
+                + "    public static final String APPLICATION_ID = "
+                + "\"$package_name\"".replace("$package_name", packageName)
+                + ";\n"
+                + "    public static final String BUILD_TYPE = "
+                + "\"debug\""
+                + ";\n"
+                + "    public static final int VERSION_CODE = "
+                + getModule().getVersionCode()
+                + ";\n"
+                + "    public static final String VERSION_NAME = "
+                + "\"$version_name\"".replace("$version_name", getModule().getVersionName())
+                + ";\n"
+                + "}\n";
+
+        FileUtils.writeStringToFile(buildConfigClass, buildConfigString, Charset.defaultCharset());
+
+      } else {
+        String buildConfigString =
+            "/**"
+                + "\n"
+                + "* Automatically generated file. DO NOT MODIFY"
+                + "\n"
+                + "*/"
+                + "\n"
+                + "package "
+                + packageName
+                + ";\n"
+                + "\n"
+                + "public final class BuildConfig {"
+                + "\n"
+                + "    public static final boolean DEBUG = "
+                + "Boolean.parseBoolean(\"true\")"
+                + ";\n"
+                + "    public static final String LIBRARY_PACKAGE_NAME = "
+                + "\"$package_name\"".replace("$package_name", packageName)
+                + ";\n"
+                + "    public static final String BUILD_TYPE = "
+                + "\"debug\""
+                + ";\n"
+                + "}\n";
+
+        FileUtils.writeStringToFile(buildConfigClass, buildConfigString, Charset.defaultCharset());
+      }
+    }
   }
 
   public void GenerateBuildConfig(String packageName, File genDir) throws IOException {
