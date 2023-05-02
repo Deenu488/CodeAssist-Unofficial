@@ -105,6 +105,14 @@ public class CheckLibrariesTask extends Task<JavaModule> {
     ScopeType runtimeOnly = ScopeType.RUNTIME_ONLY;
     String scopeTypeRuntimeOnly = runtimeOnly.getStringValue();
     checkLibraries(project, root, idea, logger, gradleFile, scopeTypeRuntimeOnly);
+
+    ScopeType compileOnlyApi = ScopeType.COMPILE_ONLY_API;
+    String scopeTypeCompileOnlyApi = compileOnlyApi.getStringValue();
+    checkLibraries(project, root, idea, logger, gradleFile, scopeTypeCompileOnlyApi);
+
+    ScopeType runtimeOnlyApi = ScopeType.RUNTIME_ONLY_API;
+    String scopeTypeRuntimeOnlyApi = runtimeOnlyApi.getStringValue();
+    checkLibraries(project, root, idea, logger, gradleFile, scopeTypeRuntimeOnlyApi);
   }
 
   // checkLibraries

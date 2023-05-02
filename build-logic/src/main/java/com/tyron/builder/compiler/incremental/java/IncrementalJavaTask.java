@@ -139,6 +139,16 @@ public class IncrementalJavaTask extends Task<JavaModule> {
     File compileOnly_libs =
         new File(getModule().getRootFile(), "/build/libraries/compileOnly_libs");
 
+    File runtimeOnlyApi_files =
+        new File(getModule().getRootFile(), "/build/libraries/runtimeOnlyApi_files/libs");
+    File runtimeOnlyApi_libs =
+        new File(getModule().getRootFile(), "/build/libraries/runtimeOnlyApi_libs");
+
+    File compileOnlyApi_files =
+        new File(getModule().getRootFile(), "/build/libraries/compileOnlyApi_files/libs");
+    File compileOnlyApi_libs =
+        new File(getModule().getRootFile(), "/build/libraries/compileOnlyApi_libs");
+
     List<File> compileClassPath = new ArrayList<>();
     compileClassPath.addAll(getJarFiles(api_files));
     compileClassPath.addAll(getJarFiles(api_libs));
@@ -146,6 +156,9 @@ public class IncrementalJavaTask extends Task<JavaModule> {
     compileClassPath.addAll(getJarFiles(implementation_libs));
     compileClassPath.addAll(getJarFiles(compileOnly_files));
     compileClassPath.addAll(getJarFiles(compileOnly_libs));
+    compileClassPath.addAll(getJarFiles(compileOnlyApi_files));
+    compileClassPath.addAll(getJarFiles(compileOnlyApi_libs));
+
     compileClassPath.addAll(getModule().getLibraries());
     compileClassPath.add(javaOutputDir);
     compileClassPath.add(kotlinOutputDir);
@@ -156,6 +169,9 @@ public class IncrementalJavaTask extends Task<JavaModule> {
     List<File> runtimeClassPath = new ArrayList<>();
     runtimeClassPath.addAll(getJarFiles(runtimeOnly_files));
     runtimeClassPath.addAll(getJarFiles(runtimeOnly_libs));
+    runtimeClassPath.addAll(getJarFiles(runtimeOnlyApi_files));
+    runtimeClassPath.addAll(getJarFiles(runtimeOnlyApi_libs));
+
     runtimeClassPath.add(getModule().getBootstrapJarFile());
     runtimeClassPath.add(getModule().getLambdaStubsJarFile());
     runtimeClassPath.addAll(getJarFiles(api_files));

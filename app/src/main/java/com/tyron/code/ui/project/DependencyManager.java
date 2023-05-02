@@ -186,6 +186,11 @@ public class DependencyManager {
     List<Dependency> declaredRuntimeOnlyDependencies =
         DependencyUtils.parseDependencies(mRepository, gradleFile, logger, ScopeType.RUNTIME_ONLY);
 
+    List<Dependency> declaredCompileOnlyApiDependencies =
+        DependencyUtils.parseDependencies(mRepository, gradleFile, logger, ScopeType.COMPILE_ONLY);
+    List<Dependency> declaredRuntimeOnlyApiDependencies =
+        DependencyUtils.parseDependencies(mRepository, gradleFile, logger, ScopeType.RUNTIME_ONLY);
+
     DependencyResolver mResolver = new DependencyResolver(mRepository);
 
     mResolver.setResolveListener(
@@ -212,6 +217,14 @@ public class DependencyManager {
       resolvedCompileOnlyPoms.clear();
     }
     List<Pom> resolvedRuntimeOnlyPoms = new ArrayList<>();
+    if (resolvedRuntimeOnlyPoms != null) {
+      resolvedRuntimeOnlyPoms.clear();
+    }
+    List<Pom> resolvedCompileOnlyApiPoms = new ArrayList<>();
+    if (resolvedCompileOnlyPoms != null) {
+      resolvedCompileOnlyPoms.clear();
+    }
+    List<Pom> resolvedRuntimeOnlyApiPoms = new ArrayList<>();
     if (resolvedRuntimeOnlyPoms != null) {
       resolvedRuntimeOnlyPoms.clear();
     }
@@ -268,6 +281,27 @@ public class DependencyManager {
 
     checkLibraries(project, root, idea, logger, gradleFile, scopeTypeCompileOnly);
 
+    ScopeType compileOnlyApi = ScopeType.COMPILE_ONLY_API;
+    String scopeTypeCompileOnlyApi = compileOnlyApi.getStringValue();
+
+    if (!declaredCompileOnlyApiDependencies.isEmpty()) {
+      resolvedCompileOnlyApiPoms =
+          mResolver.resolveDependencies(declaredCompileOnlyApiDependencies);
+      List<Library> compileOnlyApiLibraries = getFiles(resolvedCompileOnlyApiPoms, logger);
+      checkDependencies(
+          project,
+          root,
+          idea,
+          logger,
+          compileOnlyApiLibraries,
+          gradleFile,
+          scopeTypeCompileOnlyApi);
+      resolvedCompileOnlyApiPoms.clear();
+      compileOnlyApiLibraries.clear();
+    }
+
+    checkLibraries(project, root, idea, logger, gradleFile, scopeTypeCompileOnlyApi);
+
     ScopeType runtimeOnly = ScopeType.RUNTIME_ONLY;
     String scopeTypeRuntimeOnly = runtimeOnly.getStringValue();
 
@@ -281,6 +315,27 @@ public class DependencyManager {
     }
 
     checkLibraries(project, root, idea, logger, gradleFile, scopeTypeRuntimeOnly);
+
+    ScopeType runtimeOnlyApi = ScopeType.RUNTIME_ONLY_API;
+    String scopeTypeRuntimeOnlyApi = runtimeOnlyApi.getStringValue();
+
+    if (!declaredRuntimeOnlyApiDependencies.isEmpty()) {
+      resolvedRuntimeOnlyApiPoms =
+          mResolver.resolveDependencies(declaredRuntimeOnlyApiDependencies);
+      List<Library> runtimeOnlyApiLibraries = getFiles(resolvedRuntimeOnlyApiPoms, logger);
+      checkDependencies(
+          project,
+          root,
+          idea,
+          logger,
+          runtimeOnlyApiLibraries,
+          gradleFile,
+          scopeTypeRuntimeOnlyApi);
+      resolvedRuntimeOnlyApiPoms.clear();
+      runtimeOnlyApiLibraries.clear();
+    }
+
+    checkLibraries(project, root, idea, logger, gradleFile, scopeTypeRuntimeOnlyApi);
 
     listener.onTaskStarted("Checking libraries");
     logger.debug("> Task :" + name + ":" + "checkingLibraries");
