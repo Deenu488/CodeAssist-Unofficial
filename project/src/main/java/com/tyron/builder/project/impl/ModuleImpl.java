@@ -379,6 +379,15 @@ public class ModuleImpl implements Module {
     final Pattern RUNTIME_ONLY_PROJECT =
         Pattern.compile("runtimeOnly project\\(\\s*['\"]([^'\"]+)['\"]\\)");
 
+    final Pattern COMPILE_ONLY_API_PROJECT_PATH =
+        Pattern.compile("compileOnlyApi project\\(path:\\s*['\"]([^'\"]+)['\"]\\)");
+    final Pattern COMPILE_ONLY_API_PROJECT =
+        Pattern.compile("compileOnlyApi project\\(\\s*['\"]([^'\"]+)['\"]\\)");
+    final Pattern RUNTIME_ONLY_API_PROJECT_PATH =
+        Pattern.compile("runtimeOnlyApi project\\(path:\\s*['\"]([^'\"]+)['\"]\\)");
+    final Pattern RUNTIME_ONLY_API_PROJECT =
+        Pattern.compile("runtimeOnlyApi project\\(\\s*['\"]([^'\"]+)['\"]\\)");
+
     readString = readString.replaceAll("\\s*//.*", "");
     List<String> projects = new ArrayList<>();
 
@@ -446,6 +455,42 @@ public class ModuleImpl implements Module {
     }
 
     matcher = RUNTIME_ONLY_PROJECT.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(1);
+      if (declaration != null) {
+        declaration = declaration.replaceAll(":", "/");
+        projects.add(declaration);
+      }
+    }
+
+    matcher = COMPILE_ONLY_API_PROJECT_PATH.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(1);
+      if (declaration != null) {
+        declaration = declaration.replaceAll(":", "/");
+        projects.add(declaration);
+      }
+    }
+
+    matcher = COMPILE_ONLY_API_PROJECT.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(1);
+      if (declaration != null) {
+        declaration = declaration.replaceAll(":", "/");
+        projects.add(declaration);
+      }
+    }
+
+    matcher = RUNTIME_ONLY_API_PROJECT_PATH.matcher(readString);
+    while (matcher.find()) {
+      String declaration = matcher.group(1);
+      if (declaration != null) {
+        declaration = declaration.replaceAll(":", "/");
+        projects.add(declaration);
+      }
+    }
+
+    matcher = RUNTIME_ONLY_API_PROJECT.matcher(readString);
     while (matcher.find()) {
       String declaration = matcher.group(1);
       if (declaration != null) {

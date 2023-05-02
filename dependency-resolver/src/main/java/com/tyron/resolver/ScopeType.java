@@ -6,7 +6,9 @@ public enum ScopeType {
   API("api"),
   IMPLEMENTATION("implementation"),
   COMPILE_ONLY("compileOnly"),
-  RUNTIME_ONLY("runtimeOnly");
+  COMPILE_ONLY_API("compileOnlyApi"),
+  RUNTIME_ONLY("runtimeOnly"),
+  RUNTIME_ONLY_API("runtimeOnlyApi");
 
   private final String stringValue;
 
