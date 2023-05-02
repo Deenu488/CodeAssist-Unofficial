@@ -71,11 +71,15 @@ public class BuildAarTask extends Task<JavaModule> {
         throw new IOException("Failed to create resource libs directory");
       }
     }
-    copyResources(
-        new File(getModule().getRootFile(), "/src/main/AndroidManifest.xml"),
-        aar.getAbsolutePath());
-    copyResources(new File(getModule().getRootFile(), "/src/main/res"), aar.getAbsolutePath());
+    File manifest = new File(getModule().getRootFile(), "/src/main/AndroidManifest.xml");
+    if (manifest.exists()) {
+      copyResources(manifest, aar.getAbsolutePath());
+    }
 
+    File res = new File(getModule().getRootFile(), "/src/main/res");
+    if (res.exists()) {
+      copyResources(res, aar.getAbsolutePath());
+    }
     File assets = new File(getModule().getRootFile(), "/src/main/assets");
     File jniLibs = new File(getModule().getRootFile(), "/src/main/jniLibs");
 
