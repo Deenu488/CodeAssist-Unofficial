@@ -187,9 +187,11 @@ public class DependencyManager {
         DependencyUtils.parseDependencies(mRepository, gradleFile, logger, ScopeType.RUNTIME_ONLY);
 
     List<Dependency> declaredCompileOnlyApiDependencies =
-        DependencyUtils.parseDependencies(mRepository, gradleFile, logger, ScopeType.COMPILE_ONLY);
+        DependencyUtils.parseDependencies(
+            mRepository, gradleFile, logger, ScopeType.COMPILE_ONLY_API);
     List<Dependency> declaredRuntimeOnlyApiDependencies =
-        DependencyUtils.parseDependencies(mRepository, gradleFile, logger, ScopeType.RUNTIME_ONLY);
+        DependencyUtils.parseDependencies(
+            mRepository, gradleFile, logger, ScopeType.RUNTIME_ONLY_API);
 
     DependencyResolver mResolver = new DependencyResolver(mRepository);
 
