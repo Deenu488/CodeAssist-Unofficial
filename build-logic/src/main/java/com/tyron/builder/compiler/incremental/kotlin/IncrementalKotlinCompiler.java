@@ -151,7 +151,7 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         classpath.stream()
             .map(File::getAbsolutePath)
             .collect(Collectors.joining(File.pathSeparator)));
-
+    arguments.add("-Xskip-metadata-version-check");
     File javaDir = new File(getModule().getRootFile() + "/src/main/java");
     File kotlinDir = new File(getModule().getRootFile() + "/src/main/kotlin");
     File buildGenDir = new File(getModule().getRootFile() + "/build/gen");
