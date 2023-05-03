@@ -50,17 +50,26 @@ public class SignTask extends Task<AndroidModule> {
   @Override
   public void prepare(BuildType type) throws IOException {
     mBuildType = type;
-    mInputApk = new File(getModule().getBuildDirectory(), "bin/aligned.apk");
-    mOutputApk = new File(getModule().getBuildDirectory(), "bin/signed.apk");
+    if (type == BuildType.AAB) {
+      mInputApk = new File(getModule().getBuildDirectory(), "bin/app-module-aligned.aab");
+      mOutputApk = new File(getModule().getBuildDirectory(), "bin/app-module-signed.aab");
+      if (!mInputApk.exists()) {
+        mInputApk = new File(getModule().getBuildDirectory(), "bin/app-module.aab");
+      }
+      if (!mInputApk.exists()) {
+        throw new IOException("Unable to find built aab file.");
+      }
+    } else {
+      mInputApk = new File(getModule().getBuildDirectory(), "bin/aligned.apk");
+      mOutputApk = new File(getModule().getBuildDirectory(), "bin/signed.apk");
+      if (!mInputApk.exists()) {
+        mInputApk = new File(getModule().getBuildDirectory(), "bin/generated.apk");
+      }
+      if (!mInputApk.exists()) {
+        throw new IOException("Unable to find generated apk file.");
+      }
+    }
     signingConfigs = new HashMap<>();
-
-    if (!mInputApk.exists()) {
-      mInputApk = new File(getModule().getBuildDirectory(), "bin/generated.apk");
-    }
-
-    if (!mInputApk.exists()) {
-      throw new IOException("Unable to find generated apk file.");
-    }
 
     Log.d(getName().toString(), "Signing APK.");
   }
@@ -173,6 +182,7 @@ public class SignTask extends Task<AndroidModule> {
           new ApkSigner.Builder(ImmutableList.of(signerConfig))
               .setInputApk(mInputApk)
               .setOutputApk(mOutputApk)
+              .setMinSdkVersion(getModule().getMinSdk())
               .build();
 
       apkSigner.sign();

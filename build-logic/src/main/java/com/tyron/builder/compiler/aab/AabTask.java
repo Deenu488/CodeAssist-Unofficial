@@ -17,7 +17,6 @@ import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.common.util.BinaryExecutor;
 import com.tyron.common.util.Decompress;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +33,6 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -101,9 +99,6 @@ public class AabTask extends Task<AndroidModule> {
       baseZip();
       copyLibraries();
       aab();
-      buildApks();
-      extractApks();
-
     } catch (SignedJarBuilder.IZipEntryFilter.ZipAbortException e) {
       String message = e.getMessage();
       if (e instanceof DuplicateFileException) {
@@ -129,56 +124,6 @@ public class AabTask extends Task<AndroidModule> {
       FileUtils.deleteDirectory(base);
     } catch (IOException ignore) {
 
-    }
-  }
-
-  private void extractApks() throws IOException {
-    Log.d(TAG, "Extracting Apks");
-    String Apks = mBinDir.getAbsolutePath() + "/app.apks";
-    String dApks = mBinDir.getAbsolutePath() + "";
-    uApks(Apks, dApks);
-  }
-
-  private static void uApks(String Apks, String dApks) throws IOException {
-    File dir = new File(dApks);
-    // create output directory if it doesn't exist
-    if (!dir.exists() && !dir.mkdirs()) {
-      throw new IOException("Failed to create directory: " + dir);
-    }
-
-    try (FileInputStream fis = new FileInputStream(Apks)) {
-      byte[] buffer = new byte[1024];
-      try (ZipInputStream zis = new ZipInputStream(fis)) {
-        ZipEntry ze = zis.getNextEntry();
-        while (ze != null) {
-          String fileName = ze.getName();
-          File newFile = new File(dApks + File.separator + fileName);
-          // create directories for sub directories in zip
-          File parent = newFile.getParentFile();
-          if (parent != null) {
-            if (!parent.exists() && !parent.mkdirs()) {
-              throw new IOException("Failed to create directories: " + parent);
-            }
-          }
-          try (FileOutputStream fos = new FileOutputStream(newFile)) {
-            int len;
-            while ((len = zis.read(buffer)) > 0) {
-              fos.write(buffer, 0, len);
-            }
-          }
-          ze = zis.getNextEntry();
-        }
-      }
-    }
-  }
-
-  private void buildApks() throws CompilationFailedException {
-    Log.d(TAG, "Building Apks");
-    BundleTool signer = new BundleTool(mOutputApk.getAbsolutePath(), mOutputApks.getAbsolutePath());
-    try {
-      signer.apk();
-    } catch (Exception e) {
-      throw new CompilationFailedException(e);
     }
   }
 

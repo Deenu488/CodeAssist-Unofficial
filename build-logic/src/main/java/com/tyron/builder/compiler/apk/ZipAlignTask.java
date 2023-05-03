@@ -21,6 +21,8 @@ public class ZipAlignTask extends Task<AndroidModule> {
   private static final String TAG = "zipAlign";
 
   private File mApkFile;
+  private File mOutputApk;
+  private BuildType mBuildType;
 
   public ZipAlignTask(Project project, AndroidModule module, ILogger logger) {
     super(project, module, logger);
@@ -33,10 +35,19 @@ public class ZipAlignTask extends Task<AndroidModule> {
 
   @Override
   public void prepare(BuildType type) throws IOException {
-    mApkFile = new File(getModule().getBuildDirectory(), "bin/generated.apk");
-
-    if (!mApkFile.exists()) {
-      throw new IOException("Unable to find signed apk file in projects build path");
+    mBuildType = type;
+    if (type == BuildType.AAB) {
+      mApkFile = new File(getModule().getBuildDirectory(), "bin/app-module.aab");
+      mOutputApk = new File(getModule().getBuildDirectory(), "bin/app-module-aligned.aab");
+      if (!mApkFile.exists()) {
+        throw new IOException("Unable to find built aab file in projects build path");
+      }
+    } else {
+      mApkFile = new File(getModule().getBuildDirectory(), "bin/generated.apk");
+      mOutputApk = new File(getModule().getBuildDirectory(), "bin/aligned.apk");
+      if (!mApkFile.exists()) {
+        throw new IOException("Unable to find generated apk file in projects build path");
+      }
     }
   }
 
@@ -48,7 +59,7 @@ public class ZipAlignTask extends Task<AndroidModule> {
     args.add("-f");
     args.add("4");
     args.add(mApkFile.getAbsolutePath());
-    args.add(mApkFile.getParent() + "/aligned.apk");
+    args.add(mOutputApk.getAbsolutePath());
     BinaryExecutor executor = new BinaryExecutor();
     executor.setCommands(args);
 
