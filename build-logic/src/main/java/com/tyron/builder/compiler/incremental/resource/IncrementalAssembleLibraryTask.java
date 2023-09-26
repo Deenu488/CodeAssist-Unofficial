@@ -1132,9 +1132,9 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     List<String> options = new ArrayList<>();
     options.add("-proc:none");
     options.add("-source");
-    options.add("1.8");
+    options.add("17");
     options.add("-target");
-    options.add("1.8");
+    options.add("17");
     options.add("-Xlint:cast");
     options.add("-Xlint:deprecation");
     options.add("-Xlint:empty");
