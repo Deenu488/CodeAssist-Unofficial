@@ -106,7 +106,7 @@ public class CompilationEnvironment implements Closeable {
             sourcePath,
             getEnvironment(),
             mModule,
-            JvmTarget.JVM_1_8);
+            JvmTarget.JVM_17);
     return new Pair<>(container, trace);
   }
 
@@ -121,10 +121,10 @@ public class CompilationEnvironment implements Closeable {
     switch (target) {
       case "default":
         return JvmTarget.DEFAULT;
-      case "1.6":
-        return JvmTarget.JVM_1_6;
       case "1.8":
         return JvmTarget.JVM_1_8;
+      case "17":
+        return JvmTarget.JVM_17;
       default:
         return null;
     }
