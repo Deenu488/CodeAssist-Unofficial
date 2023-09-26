@@ -179,7 +179,7 @@ public class CompileBatch implements AutoCloseable {
             Arrays.asList(CompletionModule.getAndroidJar(), CompletionModule.getLambdaStubs())));
     Collections.addAll(list, "-cp", joinPath(classPath));
 
-    Collections.addAll(list, "-target", "1.8", "-source", "1.8");
+    Collections.addAll(list, "-target", "17", "-source", "17");
 
     //        Collections.addAll(list, "--add-modules", "ALL-MODULE-PATH");
     Collections.addAll(list, "-proc:none");
