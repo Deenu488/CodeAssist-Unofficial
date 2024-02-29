@@ -280,6 +280,9 @@
     <string name="menu_close_file">Close</string>
     <string name="menu_close_others">Close others</string>
     <string name="menu_close_all">Close all</string>
+    
+    <string name="menu_close">Close</string>
+    <string name="error_dir_access">Error Dir Access</string>
 
     <!-- Editor -->
     <string name="editor_error_file">An error has occurred while reading the file. Changes will not be saved.</string>
