@@ -1,5 +1,7 @@
 package com.tyron.code.ui.editor.log;
 
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -10,21 +12,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Toast;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tyron.builder.log.LogViewModel;
 import com.tyron.builder.model.DiagnosticWrapper;
 import com.tyron.builder.project.Project;
 import com.tyron.code.ApplicationLoader;
 import com.tyron.code.R;
+import com.tyron.code.ui.editor.impl.FileEditorManagerImpl;
+import com.tyron.code.ui.editor.impl.text.rosemoe.CodeEditorFragment;
 import com.tyron.code.ui.editor.impl.text.rosemoe.CodeEditorView;
 import com.tyron.code.ui.editor.scheme.CompiledEditorScheme;
 import com.tyron.code.ui.main.MainViewModel;
 import com.tyron.code.ui.project.ProjectManager;
 import com.tyron.common.SharedPreferenceKeys;
+import com.tyron.fileeditor.api.FileEditorManager;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Handler;
@@ -44,6 +51,7 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
   }
 
   private CodeEditorView mEditor;
+  private FloatingActionButton copyText;
   private View mRoot;
   private int id;
   private MainViewModel mMainViewModel;
@@ -71,10 +79,31 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
   public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     mEditor = view.findViewById(R.id.output_text);
+    copyText = view.findViewById(R.id.copy_text);
+
+    copyText.setOnClickListener(
+        v -> {
+          String content = mEditor.getText().toString();
+          if (content != null && !content.isEmpty()) {
+            copyContent(content);
+            Toast toast =
+                Toast.makeText(requireContext(), R.string.copied_to_clipoard, Toast.LENGTH_LONG);
+            toast.show();
+          }
+        });
+
     mEditor.setEditable(false);
     configureEditor(mEditor);
 
     mModel.getLogs(id).observe(getViewLifecycleOwner(), this::process);
+  }
+
+  private void copyContent(String content) {
+    ClipboardManager clipboard =
+        (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
+    clipboard.setText(content);
+    Toast toast = Toast.makeText(requireContext(), R.string.copied_to_clipboard, Toast.LENGTH_LONG);
+    toast.show();
   }
 
   private void configureEditor(@NonNull CodeEditorView editor) {
@@ -162,7 +191,27 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
     ClickableSpan span =
         new ClickableSpan() {
           @Override
-          public void onClick(@NonNull View view) {}
+          public void onClick(@NonNull View view) {
+            if (diagnostic.getSource() != null) {
+              if (getContext() != null) {
+                FileEditorManager manager = FileEditorManagerImpl.getInstance();
+                manager.openFile(
+                    requireContext(),
+                    diagnostic.getSource(),
+                    it -> {
+                      if (diagnostic.getLineNumber() > 0 && diagnostic.getColumnNumber() > 0) {
+                        Bundle bundle = new Bundle(it.getFragment().getArguments());
+                        bundle.putInt(
+                            CodeEditorFragment.KEY_LINE, (int) diagnostic.getLineNumber());
+                        bundle.putInt(
+                            CodeEditorFragment.KEY_COLUMN, (int) diagnostic.getColumnNumber());
+                        it.getFragment().setArguments(bundle);
+                        manager.openFileEditor(it);
+                      }
+                    });
+              }
+            }
+          }
         };
 
     String label = diagnostic.getSource().getName();
