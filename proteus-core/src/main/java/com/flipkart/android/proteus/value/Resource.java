@@ -68,6 +68,7 @@ public class Resource extends Value {
     this.resId = -1;
     this.name = name;
   }
+
   /**
    * @param resId only provide this for android resources
    * @param name the name of the resource, including the prefix

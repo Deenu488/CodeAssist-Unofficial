@@ -128,6 +128,7 @@ public abstract class BaseAnalyzeManager<V> implements AnalyzeManager {
   private class AnalyzeThread extends Thread {
 
     private volatile boolean cancelled = false;
+
     /** Single instance for text storing */
     private final StringBuilder textContainer = new StringBuilder();
 

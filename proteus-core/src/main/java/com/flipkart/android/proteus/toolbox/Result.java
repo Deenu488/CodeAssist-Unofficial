@@ -67,6 +67,7 @@ public class Result {
    * com.flipkart.android.proteus.value.Value}.
    */
   @ResultCode public final int RESULT_CODE;
+
   /**
    * The value at the specified data path. {@code value} will be null if {@code RESULT_CODE} !=
    * {@code RESULT_SUCCESS}

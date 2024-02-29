@@ -22,6 +22,7 @@ public class JSONBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements J
   public T visitJson(JSONParser.JsonContext ctx) {
     return visitChildren(ctx);
   }
+
   /**
    * {@inheritDoc}
    *
@@ -32,6 +33,7 @@ public class JSONBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements J
   public T visitObj(JSONParser.ObjContext ctx) {
     return visitChildren(ctx);
   }
+
   /**
    * {@inheritDoc}
    *
@@ -42,6 +44,7 @@ public class JSONBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements J
   public T visitPair(JSONParser.PairContext ctx) {
     return visitChildren(ctx);
   }
+
   /**
    * {@inheritDoc}
    *
@@ -52,6 +55,7 @@ public class JSONBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements J
   public T visitArr(JSONParser.ArrContext ctx) {
     return visitChildren(ctx);
   }
+
   /**
    * {@inheritDoc}
    *

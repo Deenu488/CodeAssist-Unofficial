@@ -16,6 +16,7 @@ public class CommonDataKeys {
   public static final Key<File> FILE = Key.create("file");
 
   public static final Key<Activity> ACTIVITY = Key.create("activity");
+
   /** The current accessible context */
   public static final Key<Context> CONTEXT = Key.create("context");
 

@@ -319,6 +319,7 @@ public class VectorDrawable extends Drawable {
         canvas.drawPath(mRenderPath, strokePaint);
       }
     }
+
     /**
      * Build the "current" path based on the current group TODO: improve memory use & performance or
      * move to C++
@@ -603,6 +604,7 @@ public class VectorDrawable extends Drawable {
     private void addNode(ArrayList<VNode> list, char cmd, float[] val) {
       list.add(new VectorDrawable.VNode(cmd, val));
     }
+
     /**
      * parse the floats in the string this is an optimized version of parseFloat(s.split(",|\\s"));
      *
@@ -633,6 +635,7 @@ public class VectorDrawable extends Drawable {
         throw e;
       }
     }
+
     /**
      * calculate the position of the next comma or space
      *
@@ -706,6 +709,7 @@ public class VectorDrawable extends Drawable {
       mVGPathMap.put(id, path);
       mVGList.add(path);
     }
+
     /**
      * Must return in order of adding
      *
@@ -1041,6 +1045,7 @@ public class VectorDrawable extends Drawable {
       cy = tcx * sinTheta + cy * cosTheta;
       arcToBezier(p, cx, cy, a, b, x0, y0, thetaD, eta0, sweep);
     }
+
     /**
      * Converts an arc to cubic Bezier segments and records them in p.
      *

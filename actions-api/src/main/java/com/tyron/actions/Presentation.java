@@ -14,10 +14,13 @@ public class Presentation {
 
   /** value: String */
   public static final String PROP_DESCRIPTION = " description";
+
   /** value: Drawable */
   public static final String PROP_ICON = "icon";
+
   /** value: Boolean */
   public static final String PROP_VISIBLE = "visible";
+
   /** value: Boolean */
   public static final String PROP_ENABLED = "enabled";
 

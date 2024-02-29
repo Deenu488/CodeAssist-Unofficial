@@ -125,6 +125,7 @@ public class FileManagerFragment extends Fragment {
       }
     }
   }
+
   /**
    * Checks if the current file is equal to the root file if so, it disables the
    * OnBackPressedCallback

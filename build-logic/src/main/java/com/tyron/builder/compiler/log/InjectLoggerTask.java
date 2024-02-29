@@ -229,7 +229,10 @@ public class InjectLoggerTask extends Task<AndroidModule> {
   }
 
   private String getApplicationClass()
-      throws XmlPullParserException, IOException, ParserConfigurationException, SAXException,
+      throws XmlPullParserException,
+          IOException,
+          ParserConfigurationException,
+          SAXException,
           TransformerException {
     File manifest =
         new File(

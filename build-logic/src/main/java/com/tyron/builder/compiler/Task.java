@@ -29,6 +29,7 @@ public abstract class Task<T extends Module> {
   protected Project getProject() {
     return mProject;
   }
+
   /**
    * @return the Module that this task belongs to
    */

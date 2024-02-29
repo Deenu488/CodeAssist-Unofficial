@@ -81,6 +81,7 @@ public class CallSuperDetector extends Detector implements Detector.JavaScanner 
       }
     }
   }
+
   /**
    * Checks whether the given method overrides a method which requires the super method to be
    * invoked, and if so, returns it (otherwise returns null)

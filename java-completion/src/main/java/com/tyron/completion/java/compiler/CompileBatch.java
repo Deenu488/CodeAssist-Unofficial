@@ -35,6 +35,7 @@ public class CompileBatch implements AutoCloseable {
 
   public final JavaCompilerService parent;
   public final ReusableCompiler.Borrow borrow;
+
   /** Indicates the task that requested the compilation is finished with it. */
   public boolean closed;
 

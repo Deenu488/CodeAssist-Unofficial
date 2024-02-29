@@ -21,12 +21,16 @@ public class PackageTask extends Task<AndroidModule> {
 
   /** List of extra dex files not including the main dex file */
   private final List<File> mDexFiles = new ArrayList<>();
+
   /** List of each jar files of libraries */
   private final List<File> mLibraries = new ArrayList<>();
+
   /** Main dex file */
   private File mDexFile;
+
   /** The generated.apk.res file */
   private File mGeneratedRes;
+
   /** The output apk file */
   private File mApk;
 

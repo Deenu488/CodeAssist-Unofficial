@@ -47,6 +47,7 @@ public class FileManager {
   private final ExecutorService service = Executors.newFixedThreadPool(4);
 
   private Project mCurrentProject;
+
   /**
    * Cache of java class files, keys can contain Dex files, Java class files and the values are the
    * files corresponding to it

@@ -18,6 +18,7 @@ public class JSONBaseListener implements JSONListener {
    */
   @Override
   public void enterJson(JSONParser.JsonContext ctx) {}
+
   /**
    * {@inheritDoc}
    *
@@ -25,6 +26,7 @@ public class JSONBaseListener implements JSONListener {
    */
   @Override
   public void exitJson(JSONParser.JsonContext ctx) {}
+
   /**
    * {@inheritDoc}
    *
@@ -32,6 +34,7 @@ public class JSONBaseListener implements JSONListener {
    */
   @Override
   public void enterObj(JSONParser.ObjContext ctx) {}
+
   /**
    * {@inheritDoc}
    *
@@ -39,6 +42,7 @@ public class JSONBaseListener implements JSONListener {
    */
   @Override
   public void exitObj(JSONParser.ObjContext ctx) {}
+
   /**
    * {@inheritDoc}
    *
@@ -46,6 +50,7 @@ public class JSONBaseListener implements JSONListener {
    */
   @Override
   public void enterPair(JSONParser.PairContext ctx) {}
+
   /**
    * {@inheritDoc}
    *
@@ -53,6 +58,7 @@ public class JSONBaseListener implements JSONListener {
    */
   @Override
   public void exitPair(JSONParser.PairContext ctx) {}
+
   /**
    * {@inheritDoc}
    *
@@ -60,6 +66,7 @@ public class JSONBaseListener implements JSONListener {
    */
   @Override
   public void enterArr(JSONParser.ArrContext ctx) {}
+
   /**
    * {@inheritDoc}
    *
@@ -67,6 +74,7 @@ public class JSONBaseListener implements JSONListener {
    */
   @Override
   public void exitArr(JSONParser.ArrContext ctx) {}
+
   /**
    * {@inheritDoc}
    *
@@ -74,6 +82,7 @@ public class JSONBaseListener implements JSONListener {
    */
   @Override
   public void enterValue(JSONParser.ValueContext ctx) {}
+
   /**
    * {@inheritDoc}
    *
@@ -89,6 +98,7 @@ public class JSONBaseListener implements JSONListener {
    */
   @Override
   public void enterEveryRule(ParserRuleContext ctx) {}
+
   /**
    * {@inheritDoc}
    *
@@ -96,6 +106,7 @@ public class JSONBaseListener implements JSONListener {
    */
   @Override
   public void exitEveryRule(ParserRuleContext ctx) {}
+
   /**
    * {@inheritDoc}
    *
@@ -103,6 +114,7 @@ public class JSONBaseListener implements JSONListener {
    */
   @Override
   public void visitTerminal(TerminalNode node) {}
+
   /**
    * {@inheritDoc}
    *

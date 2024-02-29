@@ -196,6 +196,7 @@ public class WrapperUtils {
       new Class<?>[] {
         int.class, short.class, long.class, float.class, byte.class, double.class, char.class
       };
+
   /*
    * Converts an array of fully qualified names to objects
    * @return null if an error has occurred

@@ -528,6 +528,7 @@ public abstract class BaseIncrementalAnalyzeManager<S, T>
 
     private final long start;
     private final long end;
+
     /** null for deletion */
     private final CharSequence changedText;
 

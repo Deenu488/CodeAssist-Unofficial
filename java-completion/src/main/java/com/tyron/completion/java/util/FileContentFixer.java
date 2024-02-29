@@ -30,6 +30,7 @@ public class FileContentFixer {
           TokenKind.SUPER,
           TokenKind.CLASS,
           TokenKind.STAR);
+
   /** Token kinds that can not be right after a memeber selection. */
   private static final Set<TokenKind> INVALID_MEMBER_SELECTION_SUFFIXES =
       ImmutableSet.of(TokenKind.RBRACE);

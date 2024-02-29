@@ -232,6 +232,7 @@ public class Util implements SuffixConstants {
   public static final String LINE_SEPARATOR = System.getProperty("line.separator"); // $NON-NLS-1$
 
   public static final String EMPTY_STRING = new String(CharOperation.NO_CHAR);
+
   /**
    * @since 3.14
    */
@@ -380,6 +381,7 @@ public class Util implements SuffixConstants {
     }
     return visibility;
   }
+
   /**
    * Returns the contents of the given file as a byte array.
    *
@@ -400,6 +402,7 @@ public class Util implements SuffixConstants {
       }
     }
   }
+
   /**
    * Returns the contents of the given file as a char array. When encoding is null, then the
    * platform default one is used
@@ -641,6 +644,7 @@ public class Util implements SuffixConstants {
     }
     return m + 2;
   }
+
   /**
    * Returns the contents of the given zip entry as a byte array.
    *
@@ -677,6 +681,7 @@ public class Util implements SuffixConstants {
     }
     return result;
   }
+
   /**
    * Returns whether the given name is potentially a zip archive file name (it has a file extension
    * and it is not ".java" nor ".class")
@@ -774,6 +779,7 @@ public class Util implements SuffixConstants {
     }
     return true;
   }
+
   /**
    * Returns true iff str.toLowerCase().endsWith(".class") implementation is not creating extra
    * strings.
@@ -790,6 +796,7 @@ public class Util implements SuffixConstants {
     }
     return true;
   }
+
   /* TODO (philippe) should consider promoting it to CharOperation
    * Returns whether the given resource path matches one of the inclusion/exclusion
    * patterns.
@@ -933,6 +940,7 @@ public class Util implements SuffixConstants {
       reverseQuickSort(list, left, original_right, result);
     }
   }
+
   /** INTERNAL USE-ONLY Search the column number corresponding to a specific position */
   public static final int searchColumnNumber(int[] startLineIndexes, int lineNumber, int position) {
     switch (lineNumber) {
@@ -963,6 +971,7 @@ public class Util implements SuffixConstants {
       return Boolean.FALSE;
     }
   }
+
   /** Converts an array of Objects into String. */
   public static String toString(Object[] objects) {
     return toString(
@@ -1103,6 +1112,7 @@ public class Util implements SuffixConstants {
       classFile.recordInnerClasses(typeBinding, onBottomForBug445231);
     }
   }
+
   /*
    * External API
    */

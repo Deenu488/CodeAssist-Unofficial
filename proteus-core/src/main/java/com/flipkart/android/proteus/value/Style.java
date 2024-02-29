@@ -16,6 +16,7 @@ public class Style extends Value {
   private static final String STYLE_PREFIX = "@style/";
 
   private final String name;
+
   /** The name of the parent of this style */
   private final String parent;
 

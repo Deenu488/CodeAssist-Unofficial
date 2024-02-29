@@ -36,6 +36,7 @@ public abstract class FileEditorManager {
    * @param callback the callback after the user has selected an editor
    */
   public abstract void openFile(@NonNull Context context, File file, Consumer<FileEditor> callback);
+
   /**
    * @param file file to open. Parameter cannot be null. File should be valid.
    * @return array of opened editors

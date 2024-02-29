@@ -35,6 +35,7 @@ public abstract class IssueRegistry {
 
   private static final Implementation DUMMY_IMPLEMENTATION =
       new Implementation(Detector.class, EnumSet.noneOf(Scope.class));
+
   /**
    * Issue reported by lint (not a specific detector) when it cannot even parse an XML file prior to
    * analysis

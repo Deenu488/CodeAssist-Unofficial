@@ -53,6 +53,7 @@ public class CompilerService extends Service {
   private Project mProject;
   private ApkBuilder.OnResultListener onResultListener;
   private ILogger external;
+
   /** Logger that delegates logs to the external logger set */
   private final ILogger logger =
       new ILogger() {

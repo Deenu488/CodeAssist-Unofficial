@@ -277,6 +277,7 @@ public class EcjParser extends JavaParser {
     public Collection<CompilationUnitDeclaration> getCompilationUnits() {
       return mSourceToUnit.values();
     }
+
     /**
      * Returns the compilation unit parsed from the given source unit, if any
      *
@@ -297,6 +298,7 @@ public class EcjParser extends JavaParser {
     void removeCompilationUnit(@NonNull EcjSourceFile sourceUnit) {
       mSourceToUnit.remove(sourceUnit);
     }
+
     /**
      * Disposes this parser result, allowing various ECJ data structures to be freed up even if the
      * parser instance hangs around.

@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 public class AttrResourceValueImpl extends ResourceValueImpl implements AttrResourceValue {
   /** The keys are enum or flag names, the values are corresponding numeric values. */
   @Nullable private Map<String, Integer> valueMap;
+
   /** The keys are enum or flag names, the values are the value descriptions. */
   @Nullable private Map<String, String> valueDescriptionMap;
 

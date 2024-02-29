@@ -42,7 +42,9 @@ public class StyleResource extends Value {
   public final int attributeId;
 
   private StyleResource(String value, Context context)
-      throws IllegalArgumentException, NoSuchFieldException, IllegalAccessException,
+      throws IllegalArgumentException,
+          NoSuchFieldException,
+          IllegalAccessException,
           ClassNotFoundException {
     String[] tokens = value.substring(1).split(":");
     String style = tokens[0];

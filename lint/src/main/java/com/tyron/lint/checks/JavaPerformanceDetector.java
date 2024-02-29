@@ -85,6 +85,7 @@ public class JavaPerformanceDetector extends Detector implements Detector.JavaSc
   private static class Visitor extends JavaVoidVisitor {
 
     private final JavaContext mContext;
+
     /** Whether allocations should be "flagged" in the current method */
     private boolean mFlagAllocations;
 

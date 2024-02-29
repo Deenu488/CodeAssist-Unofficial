@@ -336,8 +336,7 @@ public class LayoutEditorFragment extends Fragment implements ProjectManager.OnP
 
     // need to wrap the context to a default theme so
     // material widgets wont use CodeAssist's theme
-    ContextThemeWrapper wrapper =
-        new ContextThemeWrapper(requireContext(), R.style.AppThemeNew);
+    ContextThemeWrapper wrapper = new ContextThemeWrapper(requireContext(), R.style.AppThemeNew);
     mInflater = new PreviewLayoutInflater(wrapper, (AndroidModule) module);
     mInflater
         .parseResources(mService)
