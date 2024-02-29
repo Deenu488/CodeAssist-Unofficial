@@ -3,8 +3,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'com.diffplug.spotless'
 
 android {
-    compileSdkVersion 33
-    buildToolsVersion '33.0.0' 
+    compileSdkVersion 34
+    buildToolsVersion '34.0.0' 
 	namespace "com.tyron.code" 
 	
 	spotless {
@@ -15,11 +15,11 @@ android {
 		}
 	
     defaultConfig {
-        targetSdkVersion 33
+        targetSdkVersion 34
 		minSdkVersion 26		
 		applicationId "com.tyron.code"
-		versionCode 29
-		versionName "0.2.9-alpha03"
+		versionCode 1
+		versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -27,6 +27,10 @@ android {
         coreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
 
     testOptions {
@@ -59,7 +63,7 @@ android {
         }
     }
 	
-buildFeatures {
+    buildFeatures {
         viewBinding true
     }
 	

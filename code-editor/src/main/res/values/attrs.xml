@@ -35,6 +35,8 @@
         <attr name="scrollbarsEnabled" format="boolean"/>
         <attr name="verticalScrollbarEnabled" format="boolean"/>
         <attr name="horizontalScrollbarEnabled" format="boolean"/>
+        <attr name="colorControlHighlight" format="color" />
+
     </declare-styleable>
 
 </resources>
