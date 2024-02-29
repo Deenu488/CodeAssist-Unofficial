@@ -36,7 +36,7 @@ public class AndroidManifestAddPermissionsAction extends AnAction {
 
   private static File getOrExtractPermissions() {
     File filesDir = XmlCompletionModule.getContext().getFilesDir();
-    File check = new File(filesDir, "sources/android-33/data/permissions.txt");
+    File check = new File(filesDir, "sources/android-34/data/permissions.txt");
     if (check.exists()) {
       return check;
     }

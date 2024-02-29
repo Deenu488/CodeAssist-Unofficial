@@ -82,7 +82,7 @@ public class AndroidResourceRepository extends SimpleResourceRepository {
 
   public static File getOrExtractFiles() {
     File filesDir = ApplicationProvider.getApplicationContext().getFilesDir();
-    File check = new File(filesDir, "sources/android-33/data/res/values/attrs.xml");
+    File check = new File(filesDir, "sources/android-34/data/res/values/attrs.xml");
     if (check.exists()) {
       return check;
     }

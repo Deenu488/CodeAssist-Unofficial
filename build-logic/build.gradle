@@ -27,14 +27,14 @@ dependencies {
     implementation project(path: ':javac')
     implementation project(path: ':xml-repository')
     // bundletool
-    api 'com.android.tools.build:bundletool:1.14.1'
+    api 'com.android.tools.build:bundletool:1.15.6'
     
     testImplementation 'junit:junit:4.13.2'
     testImplementation "com.google.truth:truth:1.1.3"
     testImplementation "org.robolectric:robolectric:4.7.3"
     testImplementation project(path: ':jaxp')
 
-    api 'com.android.tools:r8:8.0.40'
+    api 'com.android.tools:r8:8.2.47'
 
     compileOnly project(path: ':android-stubs')
 }

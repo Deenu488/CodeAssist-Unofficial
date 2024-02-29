@@ -1,3 +1,4 @@
 {
-  "compileOnlyFiles_libraries": "[]"
+  "compileOnlyFiles_libraries": "[]",
+  "compileOnly_libraries": "[{\"declaration\":\"androidx.annotation:annotation:1.3.0\",\"sourceFile\":\"/storage/emulated/0/Android/data/com.tyron.code/files/cache/google-maven/androidx/annotation/annotation/1.3.0/annotation-1.3.0.jar\"},{\"declaration\":\"com.google.code.gson:gson:2.8.8\",\"sourceFile\":\"/storage/emulated/0/Android/data/com.tyron.code/files/cache/maven/com/google/code/gson/gson/2.8.8/gson-2.8.8.jar\"}]"
 }

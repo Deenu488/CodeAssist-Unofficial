@@ -184,7 +184,7 @@ public class PreviewLayoutInflater {
           mParser.parse(mProject);
 
           File sources = extractAndGetAndroidXml();
-          File valuesFile = new File(sources, "android-31/data/res/values");
+          File valuesFile = new File(sources, "android-34/data/res/values");
           if (valuesFile.exists()) {
             File[] children = valuesFile.listFiles(c -> c.getName().endsWith(".xml"));
             if (children != null) {
