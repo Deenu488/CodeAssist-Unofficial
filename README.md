@@ -1,6 +1,6 @@
 <p align='center'>
-<img width='300px%' height='300px' src='https://raw.githubusercontent.com/deenu143/CodeAssist-ALPHA-0.2.9/CodeAssist/main/logo-dark.png#gh-dark-mode-only' >
-<img width='300px' height='300px' src='https://raw.githubusercontent.com/deenu143/CodeAssist-ALPHA-0.2.9/CodeAssist/main/logo-light.png#gh-light-mode-only'>
+<img width='300px%' height='300px' src='https://github.com/Deenu488/CodeAssist-Unofficial/blob/main/logo-dark.png#gh-dark-mode-only' >
+<img width='300px' height='300px' src='https://github.com/Deenu488/CodeAssist-Unofficial/blob/main/logo-light.png#gh-light-mode-only'>
 </p>
 
 <h2 align="center"><b>CodeAssist Unofficial</b></h2>
@@ -13,7 +13,7 @@ Forked of Official CodeAssist Version Alpha-0.2.9
 [![stability-alpha](https://img.shields.io/badge/stability-alpha-f4d03f.svg)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#alpha)
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da)](https://discord.gg/pffnyE6prs)
 ![Repository Size](https://img.shields.io/github/repo-size/Deenu143/CodeAssist-ALPHA-0.2.9)
-![CI](https://github.com/Deenu143/CodeAssist-ALPHA-0.2.9/actions/workflows/build-apk.yml/badge.svg)
+![CI](https://github.com/Deenu143/CodeAssist-ALPHA-0.2.9/actions/workflows/build-release-apk.yml/badge.svg)
 [![Total downloads](https://img.shields.io/github/downloads/Deenu143/CodeAssist-ALPHA-0.2.9/total)](https://github.com/Deenu143/CodeAssist-ALPHA-0.2.9/releases)
 ![Commit Activity](https://img.shields.io/github/commit-activity/m/Deenu143/CodeAssist-ALPHA-0.2.9)
 <img src="https://img.shields.io/github/v/release/Deenu143/CodeAssist-ALPHA-0.2.9?include_prereleases&amp;label=latest%20release" alt="Latest release">
