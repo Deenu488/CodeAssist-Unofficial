@@ -5,7 +5,7 @@
 
 <h2 align="center"><b>CodeAssist Unofficial</b></h2>
 <p align="center">
-Forked of Official Codeassist version Alpha-0.2.9
+Forked of Official CodeAssist Version Alpha-0.2.9
 <p><br>
 
 <div align='center'>
@@ -54,11 +54,9 @@ Forked of Official Codeassist version Alpha-0.2.9
 
 - [x] Debugger
 
-- [ ] Lint 
-
 - [x] Git Integration
 
-- [x] Multiple Projects (85%)
+- [x] Multiple Projects Support (Multi Mudule)
 
 <img style=" width: 100%;" src=".github/resources/images/hr.jpg">
 
@@ -94,4 +92,4 @@ Clone this repository to your local device and then open it on Android Studio.
 
 - Ilyasse Salama
 
-# CodeAssist-ALPHA-0.2.9
+# CodeAssist-Unofficial
