@@ -13,7 +13,7 @@ Forked of Official CodeAssist Version Alpha-0.2.9
 [![stability-alpha](https://img.shields.io/badge/stability-alpha-f4d03f.svg)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#alpha)
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da)](https://discord.gg/pffnyE6prs)
 ![Repository Size](https://img.shields.io/github/repo-size/Deenu143/CodeAssist-ALPHA-0.2.9)
-![CI](https://github.com/Deenu143/CodeAssist-ALPHA-0.2.9/actions/workflows/build-release-apk.yml/badge.svg)
+![CI](https://github.com/Deenu143/CodeAssist-ALPHA-0.2.9/actions/workflows/release-apk.yml/badge.svg)
 [![Total downloads](https://img.shields.io/github/downloads/Deenu143/CodeAssist-ALPHA-0.2.9/total)](https://github.com/Deenu143/CodeAssist-ALPHA-0.2.9/releases)
 ![Commit Activity](https://img.shields.io/github/commit-activity/m/Deenu143/CodeAssist-ALPHA-0.2.9)
 <img src="https://img.shields.io/github/v/release/Deenu143/CodeAssist-ALPHA-0.2.9?include_prereleases&amp;label=latest%20release" alt="Latest release">
