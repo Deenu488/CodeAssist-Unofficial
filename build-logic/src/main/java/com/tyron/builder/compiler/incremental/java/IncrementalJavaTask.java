@@ -207,9 +207,9 @@ public class IncrementalJavaTask extends Task<JavaModule> {
     List<String> options = new ArrayList<>();
     options.add("-proc:none");
     options.add("-source");
-    options.add("17");
+    options.add("1.8");
     options.add("-target");
-    options.add("17");
+    options.add("1.8");
     options.add("-Xlint:cast");
     options.add("-Xlint:deprecation");
     options.add("-Xlint:empty");
