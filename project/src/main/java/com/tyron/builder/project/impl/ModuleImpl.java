@@ -7,6 +7,7 @@ import com.tyron.builder.project.api.Module;
 import com.tyron.builder.project.cache.CacheHolder.CacheKey;
 import com.tyron.common.util.Cache;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.AbstractMap;
@@ -23,6 +24,8 @@ import org.jetbrains.kotlin.com.intellij.openapi.util.Key;
 import org.jetbrains.kotlin.com.intellij.openapi.util.KeyWithDefaultValue;
 import org.jetbrains.kotlin.com.intellij.util.concurrency.AtomicFieldUpdater;
 import org.jetbrains.kotlin.com.intellij.util.keyFMap.KeyFMap;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ModuleImpl implements Module {
 
@@ -44,6 +47,32 @@ public class ModuleImpl implements Module {
     if (!codeassist.exists()) {
       if (!codeassist.mkdirs()) {}
     }
+
+    File buildSettings = new File(getProjectDir() + "/.idea/build_settings.json");
+
+    if (!buildSettings.exists()) {
+
+      try {
+        JSONObject javaSettings = new JSONObject();
+        javaSettings.put("sourceCompatibility", "1.8");
+        javaSettings.put("targetCompatibility", "1.8");
+
+        JSONObject kotlinSettings = new JSONObject();
+        kotlinSettings.put("jvmTarget", "1.8");
+
+        JSONObject buildSettingsJson = new JSONObject();
+        buildSettingsJson.put("useNewBuildSystem", "true");
+        buildSettingsJson.put("java", javaSettings);
+        buildSettingsJson.put("kotlin", kotlinSettings);
+
+        FileWriter fileWriter = new FileWriter(buildSettings, true);
+        fileWriter.write(buildSettingsJson.toString(1));
+        fileWriter.close();
+      } catch (JSONException e) {
+        e.printStackTrace();
+      }
+    }
+
     myModuleSettings =
         new ModuleSettings(new File(codeassist, getRootFile().getName() + "_libraries.json"));
   }

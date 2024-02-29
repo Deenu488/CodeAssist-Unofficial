@@ -136,22 +136,25 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
   private void process(List<DiagnosticWrapper> texts) {
     SpannableStringBuilder combinedText = new SpannableStringBuilder();
 
-    for (DiagnosticWrapper diagnostic : texts) {
-      if (diagnostic.getKind() != null) {
-        combinedText.append(diagnostic.getKind().name()).append(": ");
+    if (texts != null) {
+      for (DiagnosticWrapper diagnostic : texts) {
+        if (diagnostic != null) {
+          if (diagnostic.getKind() != null) {
+            combinedText.append(diagnostic.getKind().name()).append(": ");
+          }
+          if (diagnostic.getKind() == Diagnostic.Kind.ERROR) {
+            combinedText.append(diagnostic.getMessage(Locale.getDefault()));
+          } else {
+            combinedText.append(diagnostic.getMessage(Locale.getDefault()));
+          }
+          if (diagnostic.getSource() != null) {
+            combinedText.append(' ');
+            addClickableFile(combinedText, diagnostic);
+          }
+          combinedText.append("\n");
+        }
       }
-      if (diagnostic.getKind() == Diagnostic.Kind.ERROR) {
-        combinedText.append(diagnostic.getMessage(Locale.getDefault()));
-      } else {
-        combinedText.append(diagnostic.getMessage(Locale.getDefault()));
-      }
-      if (diagnostic.getSource() != null) {
-        combinedText.append(' ');
-        addClickableFile(combinedText, diagnostic);
-      }
-      combinedText.append("\n");
     }
-
     mEditor.setText(combinedText);
   }
 

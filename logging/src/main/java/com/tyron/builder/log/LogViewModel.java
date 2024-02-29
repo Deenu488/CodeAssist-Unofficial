@@ -34,7 +34,9 @@ public class LogViewModel extends ViewModel {
       log = init();
     }
     MutableLiveData<List<DiagnosticWrapper>> logData = this.log.get(id);
-    logData.setValue(diagnostics);
+    if (logData != null) {
+      logData.setValue(diagnostics);
+    }
   }
 
   private List<MutableLiveData<List<DiagnosticWrapper>>> init() {
@@ -48,7 +50,9 @@ public class LogViewModel extends ViewModel {
   public void clear(int id) {
     MutableLiveData<List<DiagnosticWrapper>> data =
         (MutableLiveData<List<DiagnosticWrapper>>) getLogs(id);
-    data.setValue(new ArrayList<>());
+    if (data != null) {
+      data.setValue(new ArrayList<>());
+    }
   }
 
   public void e(int id, DiagnosticWrapper diagnostic) {

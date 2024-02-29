@@ -9,6 +9,7 @@ public class BuildModule {
   private static Context sApplicationContext;
   private static File sAndroidJar;
   private static File sLambdaStubs;
+  private static File sKotlincZip;
 
   public static void initialize(Context applicationContext) {
     sApplicationContext = applicationContext.getApplicationContext();
@@ -47,5 +48,17 @@ public class BuildModule {
       }
     }
     return sLambdaStubs;
+  }
+
+  public static File getKotlinc() {
+    if (sKotlincZip == null) {
+      sKotlincZip = new File(BuildModule.getContext().getFilesDir(), "kotlinc.jar");
+
+      if (!sKotlincZip.exists()) {
+        Decompress.unzipFromAssets(
+            BuildModule.getContext(), "kotlinc.zip", sKotlincZip.getParentFile().getAbsolutePath());
+      }
+    }
+    return sKotlincZip;
   }
 }

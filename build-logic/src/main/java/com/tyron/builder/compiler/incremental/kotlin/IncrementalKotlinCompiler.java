@@ -11,9 +11,13 @@ import com.tyron.builder.log.ILogger;
 import com.tyron.builder.model.DiagnosticWrapper;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,6 +40,7 @@ import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation;
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector;
 import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler;
 import org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunnerKt;
+import org.json.JSONObject;
 
 public class IncrementalKotlinCompiler extends Task<AndroidModule> {
 
@@ -144,6 +149,7 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
     classpath.addAll(getModule().getLibraries());
     classpath.addAll(compileClassPath);
     classpath.addAll(runtimeClassPath);
+
     List<String> arguments = new ArrayList<>();
     Collections.addAll(
         arguments,
@@ -168,69 +174,98 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
       javaSourceRoots.addAll(getFiles(viewBindingDir, ".java"));
     }
 
+    File buildSettings = new File(getModule().getProjectDir() + "/.idea/build_settings.json");
+    String content = new String(Files.readAllBytes(Paths.get(buildSettings.getAbsolutePath())));
+
     try {
-      K2JVMCompiler compiler = new K2JVMCompiler();
-      K2JVMCompilerArguments args = new K2JVMCompilerArguments();
-      compiler.parseArguments(arguments.toArray(new String[0]), args);
+      JSONObject buildSettingsJson = new JSONObject(content);
+      boolean isNewSystem =
+          Boolean.parseBoolean(buildSettingsJson.optString("useNewBuildSystem", "true"));
+      if (isNewSystem) {
 
-      args.setUseJavac(false);
-      args.setCompileJava(false);
-      args.setIncludeRuntime(false);
-      args.setNoJdk(true);
-      args.setModuleName(getModule().getRootFile().getName());
-      args.setNoReflect(true);
-      args.setNoStdlib(true);
-      args.setSuppressWarnings(true);
-      args.setJavaSourceRoots(
-          javaSourceRoots.stream().map(File::getAbsolutePath).toArray(String[]::new));
-      // args.setKotlinHome(mKotlinHome.getAbsolutePath());
-      args.setDestination(mClassOutput.getAbsolutePath());
+        ProcessBuilder processBuilder = new ProcessBuilder("");
+        processBuilder.redirectErrorStream(true);
 
-      List<File> plugins = getPlugins();
-      getLogger().debug("Loading kotlin compiler plugins: " + plugins);
+        Process process = processBuilder.start();
 
-      args.setPluginClasspaths(plugins.stream().map(File::getAbsolutePath).toArray(String[]::new));
-      args.setPluginOptions(getPluginOptions());
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        StringBuilder output = new StringBuilder(); // To store the output
 
-      File cacheDir = new File(getModule().getBuildDirectory(), "kotlin/compileKotlin/cacheable");
-      List<File> fileList = new ArrayList<>();
-      if (javaDir.exists()) {
-        fileList.add(javaDir);
+        String line;
+        while ((line = reader.readLine()) != null) {
+          output.append(line).append("\n"); // Append each line to the output
+        }
+
+        getLogger().info(output.toString());
+
+        process.waitFor();
+
+      } else {
+
+        K2JVMCompiler compiler = new K2JVMCompiler();
+        K2JVMCompilerArguments args = new K2JVMCompilerArguments();
+        compiler.parseArguments(arguments.toArray(new String[0]), args);
+
+        args.setUseJavac(false);
+        args.setCompileJava(false);
+        args.setIncludeRuntime(false);
+        args.setNoJdk(true);
+        args.setModuleName(getModule().getRootFile().getName());
+        args.setNoReflect(true);
+        args.setNoStdlib(true);
+        args.setSuppressWarnings(true);
+        args.setJavaSourceRoots(
+            javaSourceRoots.stream().map(File::getAbsolutePath).toArray(String[]::new));
+        // args.setKotlinHome(mKotlinHome.getAbsolutePath());
+        args.setDestination(mClassOutput.getAbsolutePath());
+
+        List<File> plugins = getPlugins();
+        getLogger().debug("Loading kotlin compiler plugins: " + plugins);
+
+        args.setPluginClasspaths(
+            plugins.stream().map(File::getAbsolutePath).toArray(String[]::new));
+        args.setPluginOptions(getPluginOptions());
+
+        File cacheDir = new File(getModule().getBuildDirectory(), "kotlin/compileKotlin/cacheable");
+        List<File> fileList = new ArrayList<>();
+        if (javaDir.exists()) {
+          fileList.add(javaDir);
+        }
+        if (buildGenDir.exists()) {
+          fileList.add(buildGenDir);
+        }
+        if (viewBindingDir.exists()) {
+          fileList.add(viewBindingDir);
+        }
+        if (kotlinDir.exists()) {
+          fileList.add(kotlinDir);
+        }
+
+        IncrementalJvmCompilerRunnerKt.makeIncrementally(
+            cacheDir,
+            Arrays.asList(fileList.toArray(new File[0])),
+            args,
+            mCollector,
+            new ICReporterBase() {
+              @Override
+              public void report(@NonNull Function0<String> function0) {
+                // getLogger().info()
+                function0.invoke();
+              }
+
+              @Override
+              public void reportVerbose(@NonNull Function0<String> function0) {
+                // getLogger().verbose()
+                function0.invoke();
+              }
+
+              @Override
+              public void reportCompileIteration(
+                  boolean incremental,
+                  @NonNull Collection<? extends File> sources,
+                  @NonNull ExitCode exitCode) {}
+            });
       }
-      if (buildGenDir.exists()) {
-        fileList.add(buildGenDir);
-      }
-      if (viewBindingDir.exists()) {
-        fileList.add(viewBindingDir);
-      }
-      if (kotlinDir.exists()) {
-        fileList.add(kotlinDir);
-      }
-
-      IncrementalJvmCompilerRunnerKt.makeIncrementally(
-          cacheDir,
-          Arrays.asList(fileList.toArray(new File[0])),
-          args,
-          mCollector,
-          new ICReporterBase() {
-            @Override
-            public void report(@NonNull Function0<String> function0) {
-              // getLogger().info()
-              function0.invoke();
-            }
-
-            @Override
-            public void reportVerbose(@NonNull Function0<String> function0) {
-              // getLogger().verbose()
-              function0.invoke();
-            }
-
-            @Override
-            public void reportCompileIteration(
-                boolean incremental,
-                @NonNull Collection<? extends File> sources,
-                @NonNull ExitCode exitCode) {}
-          });
     } catch (Exception e) {
       throw new CompilationFailedException(Throwables.getStackTraceAsString(e));
     }
