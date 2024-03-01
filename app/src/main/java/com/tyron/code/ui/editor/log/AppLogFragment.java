@@ -5,9 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Looper;
 import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,14 +23,11 @@ import com.tyron.builder.model.DiagnosticWrapper;
 import com.tyron.builder.project.Project;
 import com.tyron.code.ApplicationLoader;
 import com.tyron.code.R;
-import com.tyron.code.ui.editor.impl.FileEditorManagerImpl;
-import com.tyron.code.ui.editor.impl.text.rosemoe.CodeEditorFragment;
 import com.tyron.code.ui.editor.impl.text.rosemoe.CodeEditorView;
 import com.tyron.code.ui.editor.scheme.CompiledEditorScheme;
 import com.tyron.code.ui.main.MainViewModel;
 import com.tyron.code.ui.project.ProjectManager;
 import com.tyron.common.SharedPreferenceKeys;
-import com.tyron.fileeditor.api.FileEditorManager;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Handler;
@@ -95,7 +91,9 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
     mEditor.setEditable(false);
     configureEditor(mEditor);
 
-    mModel.getLogs(id).observe(getViewLifecycleOwner(), this::process);
+    if (mModel != null) {
+      mModel.getLogs(id).observe(getViewLifecycleOwner(), this::process);
+    }
   }
 
   private void copyContent(String content) {
@@ -134,28 +132,35 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
   }
 
   private void process(List<DiagnosticWrapper> texts) {
-    SpannableStringBuilder combinedText = new SpannableStringBuilder();
+    final android.os.Handler handler = new android.os.Handler(Looper.getMainLooper());
+    if (handler != null) {
 
-    if (texts != null) {
-      for (DiagnosticWrapper diagnostic : texts) {
-        if (diagnostic != null) {
-          if (diagnostic.getKind() != null) {
-            combinedText.append(diagnostic.getKind().name()).append(": ");
-          }
-          if (diagnostic.getKind() == Diagnostic.Kind.ERROR) {
-            combinedText.append(diagnostic.getMessage(Locale.getDefault()));
-          } else {
-            combinedText.append(diagnostic.getMessage(Locale.getDefault()));
-          }
-          if (diagnostic.getSource() != null) {
-            combinedText.append(' ');
-            addClickableFile(combinedText, diagnostic);
-          }
-          combinedText.append("\n");
-        }
-      }
+      handler.postDelayed(
+          () -> {
+            SpannableStringBuilder combinedText = new SpannableStringBuilder();
+
+            if (texts != null) {
+              for (DiagnosticWrapper diagnostic : texts) {
+                if (diagnostic != null) {
+                  if (diagnostic.getKind() != null) {
+                    combinedText.append(diagnostic.getKind().name()).append(": ");
+                  }
+                  if (diagnostic.getKind() == Diagnostic.Kind.ERROR) {
+                    combinedText.append(diagnostic.getMessage(Locale.getDefault()));
+                  } else {
+                    combinedText.append(diagnostic.getMessage(Locale.getDefault()));
+                  }
+                  if (diagnostic.getSource() != null) {
+                    combinedText.append(' ');
+                  }
+                  combinedText.append("\n");
+                }
+              }
+            }
+            mEditor.setText(combinedText);
+          },
+          300);
     }
-    mEditor.setText(combinedText);
   }
 
   @Override
@@ -174,52 +179,5 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
       default:
         return 0xffFFFFFF;
     }
-  }
-
-  private void addClickableFile(SpannableStringBuilder sb, final DiagnosticWrapper diagnostic) {
-    if (diagnostic.getSource() == null || !diagnostic.getSource().exists()) {
-      return;
-    }
-    if (diagnostic.getOnClickListener() != null) {
-      ClickableSpan span =
-          new ClickableSpan() {
-            @Override
-            public void onClick(@NonNull View widget) {
-              diagnostic.getOnClickListener().onClick(widget);
-            }
-          };
-      sb.append("[" + diagnostic.getExtra() + "]", span, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-      return;
-    }
-    ClickableSpan span =
-        new ClickableSpan() {
-          @Override
-          public void onClick(@NonNull View view) {
-            if (diagnostic.getSource() != null) {
-              if (getContext() != null) {
-                FileEditorManager manager = FileEditorManagerImpl.getInstance();
-                manager.openFile(
-                    requireContext(),
-                    diagnostic.getSource(),
-                    it -> {
-                      if (diagnostic.getLineNumber() > 0 && diagnostic.getColumnNumber() > 0) {
-                        Bundle bundle = new Bundle(it.getFragment().getArguments());
-                        bundle.putInt(
-                            CodeEditorFragment.KEY_LINE, (int) diagnostic.getLineNumber());
-                        bundle.putInt(
-                            CodeEditorFragment.KEY_COLUMN, (int) diagnostic.getColumnNumber());
-                        it.getFragment().setArguments(bundle);
-                        manager.openFileEditor(it);
-                      }
-                    });
-              }
-            }
-          }
-        };
-
-    String label = diagnostic.getSource().getName();
-    label = label + ":" + diagnostic.getLineNumber();
-
-    sb.append("[" + label + "]", span, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
   }
 }
