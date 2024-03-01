@@ -154,11 +154,9 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
     List<String> arguments = new ArrayList<>();
     Collections.addAll(
         arguments,
-        "-cp",
         classpath.stream()
             .map(File::getAbsolutePath)
             .collect(Collectors.joining(File.pathSeparator)));
-    arguments.add("-Xskip-metadata-version-check");
 
     File javaDir = new File(getModule().getRootFile() + "/src/main/java");
     File kotlinDir = new File(getModule().getRootFile() + "/src/main/kotlin");
@@ -212,11 +210,12 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
               "-no-jdk",
               "-no-stdlib",
               Arrays.toString(fileList.toArray(new File[0])).replace("[", "").replace("]", ""),
+              "-cp",
+              Arrays.toString(arguments.toArray(new String[0])).replace("[", "").replace("]", ""),
               "-d",
               mClassOutput.getAbsolutePath(),
               "-module-name",
               getModule().getRootFile().getName(),
-              Arrays.toString(arguments.toArray(new String[0])).replace("[", "").replace("]", ""),
             };
 
         ProcessBuilder processBuilder = new ProcessBuilder(command);
