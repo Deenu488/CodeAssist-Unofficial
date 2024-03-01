@@ -159,7 +159,7 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
             }
             mEditor.setText(combinedText);
           },
-          300);
+          100);
     }
   }
 
