@@ -34,7 +34,8 @@ public class LogViewModel extends ViewModel {
       log = init();
     }
     MutableLiveData<List<DiagnosticWrapper>> logData = this.log.get(id);
-    if (logData != null) {
+    if (logData != null && diagnostics !=null ) {
+        
       logData.setValue(diagnostics);
     }
   }
@@ -97,7 +98,10 @@ public class LogViewModel extends ViewModel {
     if (list == null) {
       list = new ArrayList<>();
     }
-    list.add(diagnosticWrapper);
+
+    if (diagnosticWrapper!=null) {
+       list.add(diagnosticWrapper);
+    }
     maybePost(id, list);
   }
 
@@ -110,9 +114,13 @@ public class LogViewModel extends ViewModel {
   private void maybePost(int id, List<DiagnosticWrapper> current) {
     if (Thread.currentThread() != Looper.getMainLooper().getThread()) {
       // Using postValue will ignore all values except the last one, we don't want that
-      mainHandler.post(() -> log.get(id).setValue(current));
+     (current!=null) {
+         mainHandler.post(() -> log.get(id).setValue(current));
+      }
     } else {
-      log.get(id).setValue(current);
+      if (current!=null) {
+         log.get(id).setValue(current);
+      }
     }
   }
 }
