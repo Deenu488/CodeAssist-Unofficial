@@ -114,7 +114,7 @@ public class LogViewModel extends ViewModel {
   private void maybePost(int id, List<DiagnosticWrapper> current) {
     if (Thread.currentThread() != Looper.getMainLooper().getThread()) {
       // Using postValue will ignore all values except the last one, we don't want that
-     (current!=null) {
+    if (current!=null) {
          mainHandler.post(() -> log.get(id).setValue(current));
       }
     } else {
