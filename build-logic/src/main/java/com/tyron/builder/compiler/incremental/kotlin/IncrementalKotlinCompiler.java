@@ -93,6 +93,7 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
     File api_libs = new File(getModule().getRootFile(), "/build/libraries/api_libs");
     File kotlinOutputDir = new File(getModule().getBuildDirectory(), "bin/kotlin/classes");
     File javaOutputDir = new File(getModule().getBuildDirectory(), "bin/java/classes");
+
     File implementation_files =
         new File(getModule().getRootFile(), "/build/libraries/implementation_files/libs");
     File implementation_libs =
@@ -129,6 +130,7 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
     compileClassPath.addAll(getJarFiles(compileOnlyApi_libs));
 
     compileClassPath.add(javaOutputDir);
+
     compileClassPath.add(kotlinOutputDir);
 
     List<File> runtimeClassPath = new ArrayList<>();
@@ -140,7 +142,9 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
     runtimeClassPath.add(getModule().getLambdaStubsJarFile());
     runtimeClassPath.addAll(getJarFiles(api_files));
     runtimeClassPath.addAll(getJarFiles(api_libs));
+
     runtimeClassPath.add(javaOutputDir);
+
     runtimeClassPath.add(kotlinOutputDir);
 
     List<File> classpath = new ArrayList<>();
@@ -188,13 +192,19 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
       fileList.add(kotlinDir);
     }
 
+    List<File> plugins = getPlugins();
+    getLogger().debug("Loading kotlin compiler plugins: " + plugins);
+
     File buildSettings = new File(getModule().getProjectDir() + "/.idea/build_settings.json");
     String content = new String(Files.readAllBytes(Paths.get(buildSettings.getAbsolutePath())));
 
     try {
       JSONObject buildSettingsJson = new JSONObject(content);
+
       boolean isNewSystem =
-          Boolean.parseBoolean(buildSettingsJson.optString("useNewBuildSystem", "true"));
+          Boolean.parseBoolean(buildSettingsJson.optString("useLatestCompiler", "true"));
+      String jvm_target = buildSettingsJson.optJSONObject("kotlin").optString("jvmTarget", "1.8");
+
       if (isNewSystem) {
 
         String[] command =
@@ -209,14 +219,41 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
               "-no-reflect",
               "-no-jdk",
               "-no-stdlib",
-              Arrays.toString(fileList.toArray(new File[0])).replace("[", "").replace("]", ""),
+              "-jvm-target",
+              jvm_target,
               "-cp",
               Arrays.toString(arguments.toArray(new String[0])).replace("[", "").replace("]", ""),
-              "-d",
-              mClassOutput.getAbsolutePath(),
-              "-module-name",
-              getModule().getRootFile().getName(),
+              "-Xjava-source-roots="
+                  + Arrays.toString(
+                          javaSourceRoots.stream()
+                              .map(File::getAbsolutePath)
+                              .toArray(String[]::new))
+                      .replace("[", "")
+                      .replace("]", "")
             };
+
+        for (File file : fileList) {
+          command = appendElement(command, file.getAbsolutePath());
+        }
+
+        command = appendElement(command, "-d");
+        command = appendElement(command, mClassOutput.getAbsolutePath());
+        command = appendElement(command, "-module-name");
+        command = appendElement(command, getModule().getRootFile().getName());
+        command = appendElement(command, "-P");
+
+        String plugin = "";
+        String pluginString =
+            Arrays.toString(plugins.stream().map(File::getAbsolutePath).toArray(String[]::new))
+                .replace("[", "")
+                .replace("]", "");
+
+        String pluginOptionsString =
+            Arrays.toString(getPluginOptions()).replace("[", "").replace("]", "");
+
+        plugin = pluginString + ":" + (pluginOptionsString.isEmpty() ? ":=" : pluginOptionsString);
+
+        command = appendElement(command, "plugin:" + plugin);
 
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.redirectErrorStream(true);
@@ -231,6 +268,7 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
           output.append(line).append("\n"); // Append each line to the output
         }
 
+        getLogger().info(Arrays.toString(command));
         getLogger().info(output.toString());
 
         process.waitFor();
@@ -257,9 +295,6 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
             javaSourceRoots.stream().map(File::getAbsolutePath).toArray(String[]::new));
         // args.setKotlinHome(mKotlinHome.getAbsolutePath());
         args.setDestination(mClassOutput.getAbsolutePath());
-
-        List<File> plugins = getPlugins();
-        getLogger().debug("Loading kotlin compiler plugins: " + plugins);
 
         args.setPluginClasspaths(
             plugins.stream().map(File::getAbsolutePath).toArray(String[]::new));
@@ -299,6 +334,13 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
     } catch (Exception e) {
       throw new CompilationFailedException(Throwables.getStackTraceAsString(e));
     }
+  }
+
+  private String[] appendElement(String[] array, String element) {
+    String[] newArray = new String[array.length + 1];
+    System.arraycopy(array, 0, newArray, 0, array.length);
+    newArray[array.length] = element;
+    return newArray;
   }
 
   private List<File> getSourceFiles(File dir) {
