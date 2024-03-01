@@ -4,6 +4,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import com.google.common.base.Throwables;
+import com.tyron.builder.BuildModule;
 import com.tyron.builder.compiler.BuildType;
 import com.tyron.builder.compiler.Task;
 import com.tyron.builder.exception.CompilationFailedException;
@@ -158,6 +159,7 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
             .map(File::getAbsolutePath)
             .collect(Collectors.joining(File.pathSeparator)));
     arguments.add("-Xskip-metadata-version-check");
+
     File javaDir = new File(getModule().getRootFile() + "/src/main/java");
     File kotlinDir = new File(getModule().getRootFile() + "/src/main/kotlin");
     File buildGenDir = new File(getModule().getRootFile() + "/build/gen");
@@ -174,6 +176,20 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
       javaSourceRoots.addAll(getFiles(viewBindingDir, ".java"));
     }
 
+    List<File> fileList = new ArrayList<>();
+    if (javaDir.exists()) {
+      fileList.add(javaDir);
+    }
+    if (buildGenDir.exists()) {
+      fileList.add(buildGenDir);
+    }
+    if (viewBindingDir.exists()) {
+      fileList.add(viewBindingDir);
+    }
+    if (kotlinDir.exists()) {
+      fileList.add(kotlinDir);
+    }
+
     File buildSettings = new File(getModule().getProjectDir() + "/.idea/build_settings.json");
     String content = new String(Files.readAllBytes(Paths.get(buildSettings.getAbsolutePath())));
 
@@ -183,7 +199,27 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
           Boolean.parseBoolean(buildSettingsJson.optString("useNewBuildSystem", "true"));
       if (isNewSystem) {
 
-        ProcessBuilder processBuilder = new ProcessBuilder("");
+        String[] command =
+            new String[] {
+              "dalvikvm",
+              "-Xcompiler-option",
+              "--compiler-filter=speed",
+              "-Xmx256m",
+              "-cp",
+              BuildModule.getKotlinc().getAbsolutePath(),
+              "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler",
+              "-no-reflect",
+              "-no-jdk",
+              "-no-stdlib",
+              Arrays.toString(fileList.toArray(new File[0])).replace("[", "").replace("]", ""),
+              "-d",
+              mClassOutput.getAbsolutePath(),
+              "-module-name",
+              getModule().getRootFile().getName(),
+              Arrays.toString(arguments.toArray(new String[0])).replace("[", "").replace("]", ""),
+            };
+
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.redirectErrorStream(true);
 
         Process process = processBuilder.start();
@@ -199,6 +235,10 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         getLogger().info(output.toString());
 
         process.waitFor();
+
+        if (output.toString().contains("error")) {
+          throw new CompilationFailedException("Compilation failed, see logs for more details");
+        }
 
       } else {
 
@@ -227,19 +267,6 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         args.setPluginOptions(getPluginOptions());
 
         File cacheDir = new File(getModule().getBuildDirectory(), "kotlin/compileKotlin/cacheable");
-        List<File> fileList = new ArrayList<>();
-        if (javaDir.exists()) {
-          fileList.add(javaDir);
-        }
-        if (buildGenDir.exists()) {
-          fileList.add(buildGenDir);
-        }
-        if (viewBindingDir.exists()) {
-          fileList.add(viewBindingDir);
-        }
-        if (kotlinDir.exists()) {
-          fileList.add(kotlinDir);
-        }
 
         IncrementalJvmCompilerRunnerKt.makeIncrementally(
             cacheDir,
@@ -265,13 +292,13 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
                   @NonNull Collection<? extends File> sources,
                   @NonNull ExitCode exitCode) {}
             });
+
+        if (mCollector.hasErrors()) {
+          throw new CompilationFailedException("Compilation failed, see logs for more details");
+        }
       }
     } catch (Exception e) {
       throw new CompilationFailedException(Throwables.getStackTraceAsString(e));
-    }
-
-    if (mCollector.hasErrors()) {
-      throw new CompilationFailedException("Compilation failed, see logs for more details");
     }
   }
 
