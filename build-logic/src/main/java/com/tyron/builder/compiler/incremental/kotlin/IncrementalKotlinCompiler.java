@@ -386,6 +386,8 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
               "-no-stdlib",
               "-jvm-target",
               jvm_target,
+              "-language-version",
+              language_version,
               "-cp",
               Arrays.toString(arguments.toArray(new String[0])).replace("[", "").replace("]", ""),
               "-Xjava-source-roots="
