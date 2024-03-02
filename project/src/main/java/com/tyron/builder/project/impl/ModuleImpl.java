@@ -26,6 +26,8 @@ import org.jetbrains.kotlin.com.intellij.util.concurrency.AtomicFieldUpdater;
 import org.jetbrains.kotlin.com.intellij.util.keyFMap.KeyFMap;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jetbrains.kotlin.com.intellij.util.ReflectionUtil;
+import java.lang.reflect.Method;
 
 public class ModuleImpl implements Module {
 
@@ -54,16 +56,28 @@ public class ModuleImpl implements Module {
 
       try {
         JSONObject javaSettings = new JSONObject();
-        javaSettings.put("sourceCompatibility", "1.8");
-        javaSettings.put("targetCompatibility", "1.8");
+			JSONObject jcompilerSettings = new JSONObject();	
+			jcompilerSettings.put("version","17.0.3");
+			jcompilerSettings.put("compilerPath",getJavac().getAbsolutePath());
+			
+			javaSettings.put("compiler",jcompilerSettings);			
+			javaSettings.put("sourceCompatibility", "1.8");
+			javaSettings.put("targetCompatibility", "1.8");
 
-        JSONObject kotlinSettings = new JSONObject();
-        kotlinSettings.put("jvmTarget", "1.8");
+			JSONObject kotlinSettings = new JSONObject();	
+			JSONObject kcompilerSettings = new JSONObject();	
+			kcompilerSettings.put("version","1.9.0");
+			kcompilerSettings.put("compilerPath", getKotlinc().getAbsolutePath());
+		
+			kotlinSettings.put("compiler",kcompilerSettings);
+			kotlinSettings.put("jvmTarget", "1.8");
+			kotlinSettings.put("languageVersion","2.1");
 
-        JSONObject buildSettingsJson = new JSONObject();
-        buildSettingsJson.put("useNewCompiler", "true");
-        buildSettingsJson.put("java", javaSettings);
-        buildSettingsJson.put("kotlin", kotlinSettings);
+			JSONObject buildSettingsJson = new JSONObject();
+			buildSettingsJson.put("useNewCompiler", "true");
+			buildSettingsJson.put("java", javaSettings);
+			buildSettingsJson.put("kotlin", kotlinSettings);
+			
 
         FileWriter fileWriter = new FileWriter(buildSettings, true);
         fileWriter.write(buildSettingsJson.toString(1));
@@ -647,4 +661,29 @@ public class ModuleImpl implements Module {
 
     return null;
   }
+
+    
+  public File getKotlinc() {
+    try {
+      Method getLambdaStubs =
+          ReflectionUtil.getDeclaredMethod(
+              Class.forName("com.tyron.builder.BuildModule"), "getKotlinc");
+      return (File) getLambdaStubs.invoke(null);
+    } catch (Throwable e) {
+      throw new Error(e);
+    }
+  }
+
+   public File getJavac() {
+    try {
+      Method getLambdaStubs =
+          ReflectionUtil.getDeclaredMethod(
+              Class.forName("com.tyron.builder.BuildModule"), "getJavac");
+      return (File) getLambdaStubs.invoke(null);
+    } catch (Throwable e) {
+      throw new Error(e);
+    }
+  }
+
+
 }

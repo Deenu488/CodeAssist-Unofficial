@@ -10,6 +10,7 @@ public class BuildModule {
   private static File sAndroidJar;
   private static File sLambdaStubs;
   private static File sKotlincZip;
+  private static File sJavacZip;
 
   public static void initialize(Context applicationContext) {
     sApplicationContext = applicationContext.getApplicationContext();
@@ -60,5 +61,17 @@ public class BuildModule {
       }
     }
     return sKotlincZip;
+  }
+
+  public static File getJavac() {
+    if (sJavacZip == null) {
+      sJavacZip = new File(BuildModule.getContext().getFilesDir(), "javac.jar");
+
+      if (!sJavacZip.exists()) {
+        Decompress.unzipFromAssets(
+            BuildModule.getContext(), "javac.zip", sJavacZip.getParentFile().getAbsolutePath());
+      }
+    }
+    return sJavacZip;
   }
 }
