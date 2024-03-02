@@ -56,20 +56,18 @@ public class ModuleImpl implements Module {
 
       try {
         JSONObject javaSettings = new JSONObject();
-        JSONObject jcompilerSettings = new JSONObject();
-        jcompilerSettings.put("version", "17.0.3");
+        JSONObject jcompilerSettings = new JSONObject();        
         jcompilerSettings.put("compilerPath", getJavac().getAbsolutePath());
         jcompilerSettings.put("mainClass", "openjdk.tools.javac.Main");
-
+        
         javaSettings.put("compiler", jcompilerSettings);
         javaSettings.put("sourceCompatibility", "1.8");
         javaSettings.put("targetCompatibility", "1.8");
 
         JSONObject kotlinSettings = new JSONObject();
-        JSONObject kcompilerSettings = new JSONObject();
-        kcompilerSettings.put("version", "1.9.0");
+        JSONObject kcompilerSettings = new JSONObject();        
         kcompilerSettings.put("compilerPath", getKotlinc().getAbsolutePath());
-        kcompilerSettings.put("mainClass", "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler");
+        kcompilerSettings.put("mainClass", "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler");        
 
         kotlinSettings.put("compiler", kcompilerSettings);
         kotlinSettings.put("jvmTarget", "1.8");
