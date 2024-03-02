@@ -61,8 +61,7 @@ public class CompilerClassPath implements Closeable {
       javaSourceRoots.addAll(getFiles(viewBindingDir, ".java"));
     }
 
-    mJavaSourcePath.addAll(
-        javaSourceRoots.values().stream().map(File::toPath).collect(Collectors.toList()));
+    mJavaSourcePath.addAll(javaSourceRoots.stream().map(File::toPath).collect(Collectors.toList()));
 
     mClassPath =
         project.getLibraries().stream()

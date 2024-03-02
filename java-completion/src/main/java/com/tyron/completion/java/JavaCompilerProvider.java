@@ -3,6 +3,7 @@ package com.tyron.completion.java;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.tyron.builder.project.Project;
+import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.builder.project.api.JavaModule;
 import com.tyron.builder.project.api.Module;
 import com.tyron.completion.index.CompilerProvider;
@@ -10,6 +11,7 @@ import com.tyron.completion.index.CompilerService;
 import com.tyron.completion.java.compiler.JavaCompilerService;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -64,6 +66,19 @@ public class JavaCompilerProvider extends CompilerProvider<JavaCompilerService> 
         paths.addAll(((JavaModule) dependency).getLibraries());
         paths.addAll(((JavaModule) dependency).getInjectedClasses().values());
       }
+
+      if (dependency instanceof AndroidModule) {
+        File buildGenDir = new File(dependency.getRootFile() + "/build/gen");
+        File viewBindingDir = new File(dependency.getRootFile() + "/build/view_binding");
+
+        if (buildGenDir.exists()) {
+          paths.addAll(getFiles(buildGenDir, ".java"));
+        }
+
+        if (viewBindingDir.exists()) {
+          paths.addAll(getFiles(viewBindingDir, ".java"));
+        }
+      }
     }
 
     if (mProvider == null || changed(mCachedPaths, paths)) {
@@ -96,6 +111,27 @@ public class JavaCompilerProvider extends CompilerProvider<JavaCompilerService> 
     }
 
     return false;
+  }
+
+  public Set<File> getFiles(File dir, String ext) {
+    Set<File> Files = new HashSet<>();
+
+    File[] files = dir.listFiles();
+    if (files == null) {
+      return Collections.emptySet();
+    }
+
+    for (File file : files) {
+      if (file.isDirectory()) {
+        Files.addAll(getFiles(file, ext));
+      } else {
+        if (file.getName().endsWith(ext)) {
+          Files.add(file);
+        }
+      }
+    }
+
+    return Files;
   }
 
   public static File getOrCreateResourceClass(JavaModule module) throws IOException {
