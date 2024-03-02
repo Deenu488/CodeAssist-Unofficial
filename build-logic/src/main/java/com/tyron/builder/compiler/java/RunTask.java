@@ -1,5 +1,6 @@
 package com.tyron.builder.compiler.java;
 
+import android.os.Build;
 import com.tyron.builder.BuildModule;
 import com.tyron.builder.compiler.BuildType;
 import com.tyron.builder.compiler.Task;
@@ -39,6 +40,9 @@ public class RunTask extends Task<AndroidModule> {
     }
     zipFile = new File(mApkFile.getParent(), "classes.dex.zip");
     mApkFile.renameTo(zipFile);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+      mApkFile.setReadOnly();
+    }
 
     if (!zipFile.exists()) {
       throw new IOException("Unable to find classes.dex.zip File in projects build path");
