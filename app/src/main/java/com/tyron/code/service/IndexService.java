@@ -1,5 +1,7 @@
 package com.tyron.code.service;
 
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED;
+
 import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
@@ -15,6 +17,7 @@ import com.tyron.builder.project.Project;
 import com.tyron.code.R;
 import com.tyron.code.ui.project.ProjectManager;
 import java.lang.ref.WeakReference;
+import android.os.Build;
 
 public class IndexService extends Service {
 
@@ -57,7 +60,13 @@ public class IndexService extends Service {
             .setContentText("Preparing")
             .build();
     updateNotification(notification);
-    startForeground(NOTIFICATION_ID, notification);
+
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+      startForeground(NOTIFICATION_ID, notification);
+    } else {
+      startForeground(NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED);
+    }
+
     return START_STICKY;
   }
 

@@ -1,5 +1,8 @@
 package com.tyron.code.service;
 
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED;
+import android.os.Build;
+
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -110,7 +113,11 @@ public class CompilerService extends Service {
   public int onStartCommand(Intent intent, int flags, int startId) {
 
     Notification notification = setupNotification();
-    startForeground(201, notification);
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+      startForeground(201, notification);
+    } else {
+      startForeground(201, notification, FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED);
+    }
 
     return START_STICKY;
   }

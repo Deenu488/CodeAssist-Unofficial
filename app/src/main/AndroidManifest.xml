@@ -3,11 +3,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.tyron.code">
 
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!-- have full network access -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- view network connections -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- modify or delete the contents of your shared storage -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!-- read the contents of your shared storage -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- view Wi-Fi connections -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <!-- run foreground service -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <!-- change network connectivity -->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+
+    <!-- connect and disconnect from Wi-Fi -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+
+    <!-- modify system settings -->
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+
+    <!-- run foreground service -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" />
 
     <application
         android:name=".ApplicationLoader"
@@ -24,6 +49,7 @@
         <service
             android:name=".service.IndexService"
             android:enabled="true"
+            android:foregroundServiceType="systemExempted"
             android:exported="false" />
 
         <activity
@@ -43,7 +69,9 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".service.CompilerService" />
+        <service android:name=".service.CompilerService"
+        android:foregroundServiceType="systemExempted"
+         />
 
         <provider
             android:name="androidx.core.content.FileProvider"
