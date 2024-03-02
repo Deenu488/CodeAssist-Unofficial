@@ -97,9 +97,31 @@ class KotlinEnvironment private constructor(val module: KotlinModule, disposable
 
         if (kotlinModule is AndroidModule) {
             val file = File(kotlinModule.buildDirectory, "injected/resource")
+            val javaDir =  File(kotlinModule.getRootFile() , "/src/main/java")
+            val kotlinDir =  File(kotlinModule.getRootFile() , "/src/main/kotlin")
+            val buildGenDir =  File(kotlinModule.getRootFile() , "/build/gen")
+            val viewBindingDir =  File(kotlinModule.getRootFile() , "/build/view_binding")        
+         
             if (file.exists()) {
                 addToClassPath(file)
             }
+        
+            if (javaDir.exists()) {
+                addToClassPath(javaDir)
+            } 
+          
+            if (kotlinDir.exists()) {
+                addToClassPath(kotlinDir)
+            }
+         
+            if (buildGenDir.exists()) {
+                addToClassPath(buildGenDir)
+            }
+        
+            if (viewBindingDir.exists()) {
+                addToClassPath(viewBindingDir)
+            }
+          
         }
     }
 

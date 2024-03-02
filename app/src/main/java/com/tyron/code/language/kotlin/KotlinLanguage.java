@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import com.tyron.code.ApplicationLoader;
 import com.tyron.code.language.CompletionItemWrapper;
 import com.tyron.completion.model.CompletionItem;
+import com.tyron.completion.model.CompletionList;
 import com.tyron.editor.Editor;
 import io.github.rosemoe.sora.lang.Language;
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager;
@@ -26,7 +27,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Token;
-import com.tyron.completion.model.CompletionList;
 
 public class KotlinLanguage implements Language {
 

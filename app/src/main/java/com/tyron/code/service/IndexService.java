@@ -6,6 +6,7 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -17,7 +18,6 @@ import com.tyron.builder.project.Project;
 import com.tyron.code.R;
 import com.tyron.code.ui.project.ProjectManager;
 import java.lang.ref.WeakReference;
-import android.os.Build;
 
 public class IndexService extends Service {
 
