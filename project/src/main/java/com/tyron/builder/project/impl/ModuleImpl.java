@@ -61,7 +61,7 @@ public class ModuleImpl implements Module {
         kotlinSettings.put("jvmTarget", "1.8");
 
         JSONObject buildSettingsJson = new JSONObject();
-        buildSettingsJson.put("useLatestCompiler", "true");
+        buildSettingsJson.put("useNewCompiler", "true");
         buildSettingsJson.put("java", javaSettings);
         buildSettingsJson.put("kotlin", kotlinSettings);
 

@@ -257,8 +257,10 @@ public abstract class BaseIncrementalAnalyzeManager<S, T>
                       int endLine = IntPair.getFirst(mod.end);
                       if (mod.changedText == null) {
                         shadowed.delete(
-                            IntPair.getFirst(mod.start), IntPair.getSecond(mod.start),
-                            IntPair.getFirst(mod.end), IntPair.getSecond(mod.end));
+                            IntPair.getFirst(mod.start),
+                            IntPair.getSecond(mod.start),
+                            IntPair.getFirst(mod.end),
+                            IntPair.getSecond(mod.end));
                         S state =
                             startLine == 0 ? getInitialState() : states.get(startLine - 1).state;
                         // Remove states
@@ -398,12 +400,7 @@ public abstract class BaseIncrementalAnalyzeManager<S, T>
       private LockedSpans.Line line;
 
       public void moveToLine(int line) {
-        if (line < 0) {
-          if (this.line != null) {
-            this.line.lock.unlock();
-          }
-          this.line = null;
-        } else if (line >= lines.size()) {
+        if (line < 0 || lines == null || line >= lines.size()) {
           if (this.line != null) {
             this.line.lock.unlock();
           }
@@ -437,12 +434,16 @@ public abstract class BaseIncrementalAnalyzeManager<S, T>
 
       @Override
       public int getSpanCount() {
-        return line == null ? 1 : line.spans.size();
+        return line == null || line.spans == null ? 1 : line.spans.size();
       }
 
       @Override
       public Span getSpanAt(int index) {
-        return line == null ? Span.obtain(0, EditorColorScheme.TEXT_NORMAL) : line.spans.get(index);
+        if (line == null || line.spans == null || index < 0 || index >= line.spans.size()) {
+          return Span.obtain(0, EditorColorScheme.TEXT_NORMAL);
+        } else {
+          return line.spans.get(Math.min(index, line.spans.size() - 1));
+        }
       }
 
       @Override
@@ -500,7 +501,9 @@ public abstract class BaseIncrementalAnalyzeManager<S, T>
       public void addLineAt(int line, List<Span> spans) {
         lock.lock();
         try {
-          lines.add(line, new LockedSpans.Line(spans));
+          if (lines != null) {
+            lines.add(line, new LockedSpans.Line(spans));
+          }
         } finally {
           lock.unlock();
         }
@@ -510,12 +513,16 @@ public abstract class BaseIncrementalAnalyzeManager<S, T>
       public void deleteLineAt(int line) {
         lock.lock();
         try {
-          Line obj = lines.get(line);
-          obj.lock.lock();
-          try {
-            lines.remove(line);
-          } finally {
-            obj.lock.unlock();
+          if (lines != null && line >= 0 && line < lines.size()) {
+            Line obj = lines.get(line);
+            if (obj != null) {
+              obj.lock.lock();
+              try {
+                lines.remove(line);
+              } finally {
+                obj.lock.unlock();
+              }
+            }
           }
         } finally {
           lock.unlock();

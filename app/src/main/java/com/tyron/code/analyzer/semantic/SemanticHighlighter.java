@@ -15,7 +15,7 @@ public class SemanticHighlighter extends TreePathScanner<Void, Void> {
 
   @Override
   public Void scan(Tree tree, Void unused) {
-    if (mCancelFlag.get()) {
+    if (tree == null || mCancelFlag.get()) {
       return null;
     }
     return super.scan(tree, unused);
@@ -23,7 +23,7 @@ public class SemanticHighlighter extends TreePathScanner<Void, Void> {
 
   @Override
   public Void scan(Iterable<? extends Tree> iterable, Void unused) {
-    if (mCancelFlag.get()) {
+    if (iterable == null || mCancelFlag.get()) {
       return null;
     }
     return super.scan(iterable, unused);
@@ -31,7 +31,7 @@ public class SemanticHighlighter extends TreePathScanner<Void, Void> {
 
   @Override
   public Void scan(TreePath treePath, Void unused) {
-    if (mCancelFlag.get()) {
+    if (treePath == null || mCancelFlag.get()) {
       return null;
     }
     return super.scan(treePath, unused);
@@ -39,7 +39,7 @@ public class SemanticHighlighter extends TreePathScanner<Void, Void> {
 
   @Override
   public Void reduce(Void unused, Void r1) {
-    if (mCancelFlag.get()) {
+    if (unused == null || r1 == null || mCancelFlag.get()) {
       return null;
     }
     return super.reduce(unused, r1);

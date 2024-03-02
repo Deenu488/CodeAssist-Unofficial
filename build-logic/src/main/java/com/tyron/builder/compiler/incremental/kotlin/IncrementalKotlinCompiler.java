@@ -201,11 +201,11 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
     try {
       JSONObject buildSettingsJson = new JSONObject(content);
 
-      boolean isNewSystem =
-          Boolean.parseBoolean(buildSettingsJson.optString("useLatestCompiler", "true"));
+      boolean useNewCompiler =
+          Boolean.parseBoolean(buildSettingsJson.optString("useNewCompiler", "false"));
       String jvm_target = buildSettingsJson.optJSONObject("kotlin").optString("jvmTarget", "1.8");
 
-      if (isNewSystem) {
+      if (useNewCompiler) {
 
         String[] command =
             new String[] {
@@ -268,7 +268,6 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
           output.append(line).append("\n"); // Append each line to the output
         }
 
-        getLogger().info(Arrays.toString(command));
         getLogger().info(output.toString());
 
         process.waitFor();
