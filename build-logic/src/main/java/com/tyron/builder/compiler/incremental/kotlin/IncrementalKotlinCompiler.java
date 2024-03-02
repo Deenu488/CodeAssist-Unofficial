@@ -89,123 +89,288 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
       return;
     }
 
-    File api_files = new File(getModule().getRootFile(), "/build/libraries/api_files/libs");
-    File api_libs = new File(getModule().getRootFile(), "/build/libraries/api_libs");
-    File kotlinOutputDir = new File(getModule().getBuildDirectory(), "bin/kotlin/classes");
-    File javaOutputDir = new File(getModule().getBuildDirectory(), "bin/java/classes");
-
-    File implementation_files =
-        new File(getModule().getRootFile(), "/build/libraries/implementation_files/libs");
-    File implementation_libs =
-        new File(getModule().getRootFile(), "/build/libraries/implementation_libs");
-
-    File runtimeOnly_files =
-        new File(getModule().getRootFile(), "/build/libraries/runtimeOnly_files/libs");
-    File runtimeOnly_libs =
-        new File(getModule().getRootFile(), "/build/libraries/runtimeOnly_libs");
-
-    File compileOnly_files =
-        new File(getModule().getRootFile(), "/build/libraries/compileOnly_files/libs");
-    File compileOnly_libs =
-        new File(getModule().getRootFile(), "/build/libraries/compileOnly_libs");
-
-    File runtimeOnlyApi_files =
-        new File(getModule().getRootFile(), "/build/libraries/runtimeOnlyApi_files/libs");
-    File runtimeOnlyApi_libs =
-        new File(getModule().getRootFile(), "/build/libraries/runtimeOnlyApi_libs");
-
-    File compileOnlyApi_files =
-        new File(getModule().getRootFile(), "/build/libraries/compileOnlyApi_files/libs");
-    File compileOnlyApi_libs =
-        new File(getModule().getRootFile(), "/build/libraries/compileOnlyApi_libs");
-
-    List<File> compileClassPath = new ArrayList<>();
-    compileClassPath.addAll(getJarFiles(api_files));
-    compileClassPath.addAll(getJarFiles(api_libs));
-    compileClassPath.addAll(getJarFiles(implementation_files));
-    compileClassPath.addAll(getJarFiles(implementation_libs));
-    compileClassPath.addAll(getJarFiles(compileOnly_files));
-    compileClassPath.addAll(getJarFiles(compileOnly_libs));
-    compileClassPath.addAll(getJarFiles(compileOnlyApi_files));
-    compileClassPath.addAll(getJarFiles(compileOnlyApi_libs));
-
-    compileClassPath.add(javaOutputDir);
-
-    compileClassPath.add(kotlinOutputDir);
-
-    List<File> runtimeClassPath = new ArrayList<>();
-    runtimeClassPath.addAll(getJarFiles(runtimeOnly_files));
-    runtimeClassPath.addAll(getJarFiles(runtimeOnly_libs));
-    runtimeClassPath.addAll(getJarFiles(runtimeOnlyApi_files));
-    runtimeClassPath.addAll(getJarFiles(runtimeOnlyApi_libs));
-    runtimeClassPath.add(getModule().getBootstrapJarFile());
-    runtimeClassPath.add(getModule().getLambdaStubsJarFile());
-    runtimeClassPath.addAll(getJarFiles(api_files));
-    runtimeClassPath.addAll(getJarFiles(api_libs));
-
-    runtimeClassPath.add(javaOutputDir);
-
-    runtimeClassPath.add(kotlinOutputDir);
-
-    List<File> classpath = new ArrayList<>();
-    classpath.add(getModule().getBootstrapJarFile());
-    classpath.add(getModule().getLambdaStubsJarFile());
-    classpath.add(getModule().getBuildClassesDirectory());
-    classpath.addAll(getModule().getLibraries());
-    classpath.addAll(compileClassPath);
-    classpath.addAll(runtimeClassPath);
-
-    List<String> arguments = new ArrayList<>();
-    Collections.addAll(
-        arguments,
-        classpath.stream()
-            .map(File::getAbsolutePath)
-            .collect(Collectors.joining(File.pathSeparator)));
-
-    File javaDir = new File(getModule().getRootFile() + "/src/main/java");
-    File kotlinDir = new File(getModule().getRootFile() + "/src/main/kotlin");
-    File buildGenDir = new File(getModule().getRootFile() + "/build/gen");
-    File viewBindingDir = new File(getModule().getRootFile() + "/build/view_binding");
-
-    List<File> javaSourceRoots = new ArrayList<>();
-    if (javaDir.exists()) {
-      javaSourceRoots.addAll(getFiles(javaDir, ".java"));
-    }
-    if (buildGenDir.exists()) {
-      javaSourceRoots.addAll(getFiles(buildGenDir, ".java"));
-    }
-    if (viewBindingDir.exists()) {
-      javaSourceRoots.addAll(getFiles(viewBindingDir, ".java"));
-    }
-
-    List<File> fileList = new ArrayList<>();
-    if (javaDir.exists()) {
-      fileList.add(javaDir);
-    }
-    if (buildGenDir.exists()) {
-      fileList.add(buildGenDir);
-    }
-    if (viewBindingDir.exists()) {
-      fileList.add(viewBindingDir);
-    }
-    if (kotlinDir.exists()) {
-      fileList.add(kotlinDir);
-    }
-
-    List<File> plugins = getPlugins();
-    getLogger().debug("Loading kotlin compiler plugins: " + plugins);
-
-    File buildSettings = new File(getModule().getProjectDir() + "/.idea/build_settings.json");
-    String content = new String(Files.readAllBytes(Paths.get(buildSettings.getAbsolutePath())));
-
     try {
+      File buildSettings = new File(getModule().getProjectDir() + "/.idea/build_settings.json");
+      String content = new String(Files.readAllBytes(Paths.get(buildSettings.getAbsolutePath())));
+
       JSONObject buildSettingsJson = new JSONObject(content);
 
       boolean useNewCompiler =
           Boolean.parseBoolean(buildSettingsJson.optString("useNewCompiler", "false"));
       String jvm_target = buildSettingsJson.optJSONObject("kotlin").optString("jvmTarget", "1.8");
+      String language_version =
+          buildSettingsJson.optJSONObject("kotlin").optString("languageVersion", "2.1");
+      String compiler_path =
+          buildSettingsJson
+              .optJSONObject("kotlin")
+              .optJSONObject("compiler")
+              .optString("compilerPath", BuildModule.getKotlinc().getAbsolutePath());
+      String main_class =
+          buildSettingsJson
+              .optJSONObject("kotlin")
+              .optJSONObject("compiler")
+              .optString("mainClass", "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler");
 
-      if (useNewCompiler) {
+      if (!useNewCompiler) {
+
+        File api_files = new File(getModule().getRootFile(), "/build/libraries/api_files/libs");
+        File api_libs = new File(getModule().getRootFile(), "/build/libraries/api_libs");
+        File kotlinOutputDir = new File(getModule().getBuildDirectory(), "bin/kotlin/classes");
+        File javaOutputDir = new File(getModule().getBuildDirectory(), "bin/java/classes");
+        File implementation_files =
+            new File(getModule().getRootFile(), "/build/libraries/implementation_files/libs");
+        File implementation_libs =
+            new File(getModule().getRootFile(), "/build/libraries/implementation_libs");
+
+        File runtimeOnly_files =
+            new File(getModule().getRootFile(), "/build/libraries/runtimeOnly_files/libs");
+        File runtimeOnly_libs =
+            new File(getModule().getRootFile(), "/build/libraries/runtimeOnly_libs");
+
+        File compileOnly_files =
+            new File(getModule().getRootFile(), "/build/libraries/compileOnly_files/libs");
+        File compileOnly_libs =
+            new File(getModule().getRootFile(), "/build/libraries/compileOnly_libs");
+
+        File runtimeOnlyApi_files =
+            new File(getModule().getRootFile(), "/build/libraries/runtimeOnlyApi_files/libs");
+        File runtimeOnlyApi_libs =
+            new File(getModule().getRootFile(), "/build/libraries/runtimeOnlyApi_libs");
+
+        File compileOnlyApi_files =
+            new File(getModule().getRootFile(), "/build/libraries/compileOnlyApi_files/libs");
+        File compileOnlyApi_libs =
+            new File(getModule().getRootFile(), "/build/libraries/compileOnlyApi_libs");
+
+        List<File> compileClassPath = new ArrayList<>();
+        compileClassPath.addAll(getJarFiles(api_files));
+        compileClassPath.addAll(getJarFiles(api_libs));
+        compileClassPath.addAll(getJarFiles(implementation_files));
+        compileClassPath.addAll(getJarFiles(implementation_libs));
+        compileClassPath.addAll(getJarFiles(compileOnly_files));
+        compileClassPath.addAll(getJarFiles(compileOnly_libs));
+        compileClassPath.addAll(getJarFiles(compileOnlyApi_files));
+        compileClassPath.addAll(getJarFiles(compileOnlyApi_libs));
+
+        compileClassPath.add(javaOutputDir);
+        compileClassPath.add(kotlinOutputDir);
+
+        List<File> runtimeClassPath = new ArrayList<>();
+        runtimeClassPath.addAll(getJarFiles(runtimeOnly_files));
+        runtimeClassPath.addAll(getJarFiles(runtimeOnly_libs));
+        runtimeClassPath.addAll(getJarFiles(runtimeOnlyApi_files));
+        runtimeClassPath.addAll(getJarFiles(runtimeOnlyApi_libs));
+        runtimeClassPath.add(getModule().getBootstrapJarFile());
+        runtimeClassPath.add(getModule().getLambdaStubsJarFile());
+        runtimeClassPath.addAll(getJarFiles(api_files));
+        runtimeClassPath.addAll(getJarFiles(api_libs));
+        runtimeClassPath.add(javaOutputDir);
+        runtimeClassPath.add(kotlinOutputDir);
+
+        List<File> classpath = new ArrayList<>();
+        classpath.add(getModule().getBootstrapJarFile());
+        classpath.add(getModule().getLambdaStubsJarFile());
+        classpath.add(getModule().getBuildClassesDirectory());
+        classpath.addAll(getModule().getLibraries());
+        classpath.addAll(compileClassPath);
+        classpath.addAll(runtimeClassPath);
+        List<String> arguments = new ArrayList<>();
+        Collections.addAll(
+            arguments,
+            "-cp",
+            classpath.stream()
+                .map(File::getAbsolutePath)
+                .collect(Collectors.joining(File.pathSeparator)));
+        arguments.add("-Xskip-metadata-version-check");
+        File javaDir = new File(getModule().getRootFile() + "/src/main/java");
+        File kotlinDir = new File(getModule().getRootFile() + "/src/main/kotlin");
+        File buildGenDir = new File(getModule().getRootFile() + "/build/gen");
+        File viewBindingDir = new File(getModule().getRootFile() + "/build/view_binding");
+
+        List<File> javaSourceRoots = new ArrayList<>();
+        if (javaDir.exists()) {
+          javaSourceRoots.addAll(getFiles(javaDir, ".java"));
+        }
+        if (buildGenDir.exists()) {
+          javaSourceRoots.addAll(getFiles(buildGenDir, ".java"));
+        }
+        if (viewBindingDir.exists()) {
+          javaSourceRoots.addAll(getFiles(viewBindingDir, ".java"));
+        }
+
+        K2JVMCompiler compiler = new K2JVMCompiler();
+        K2JVMCompilerArguments args = new K2JVMCompilerArguments();
+        compiler.parseArguments(arguments.toArray(new String[0]), args);
+
+        args.setUseJavac(false);
+        args.setCompileJava(false);
+        args.setIncludeRuntime(false);
+        args.setNoJdk(true);
+        args.setModuleName(getModule().getRootFile().getName());
+        args.setNoReflect(true);
+        args.setNoStdlib(true);
+        args.setSuppressWarnings(true);
+        args.setJavaSourceRoots(
+            javaSourceRoots.stream().map(File::getAbsolutePath).toArray(String[]::new));
+        // args.setKotlinHome(mKotlinHome.getAbsolutePath());
+        args.setDestination(mClassOutput.getAbsolutePath());
+
+        List<File> plugins = getPlugins();
+        getLogger().debug("Loading kotlin compiler plugins: " + plugins);
+
+        args.setPluginClasspaths(
+            plugins.stream().map(File::getAbsolutePath).toArray(String[]::new));
+        args.setPluginOptions(getPluginOptions());
+
+        File cacheDir = new File(getModule().getBuildDirectory(), "kotlin/compileKotlin/cacheable");
+        List<File> fileList = new ArrayList<>();
+        if (javaDir.exists()) {
+          fileList.add(javaDir);
+        }
+        if (buildGenDir.exists()) {
+          fileList.add(buildGenDir);
+        }
+        if (viewBindingDir.exists()) {
+          fileList.add(viewBindingDir);
+        }
+        if (kotlinDir.exists()) {
+          fileList.add(kotlinDir);
+        }
+
+        IncrementalJvmCompilerRunnerKt.makeIncrementally(
+            cacheDir,
+            Arrays.asList(fileList.toArray(new File[0])),
+            args,
+            mCollector,
+            new ICReporterBase() {
+              @Override
+              public void report(@NonNull Function0<String> function0) {
+                // getLogger().info()
+                function0.invoke();
+              }
+
+              @Override
+              public void reportVerbose(@NonNull Function0<String> function0) {
+                // getLogger().verbose()
+                function0.invoke();
+              }
+
+              @Override
+              public void reportCompileIteration(
+                  boolean incremental,
+                  @NonNull Collection<? extends File> sources,
+                  @NonNull ExitCode exitCode) {}
+            });
+        if (mCollector.hasErrors()) {
+          throw new CompilationFailedException("Compilation failed, see logs for more details");
+        }
+
+      } else {
+        File api_files = new File(getModule().getRootFile(), "/build/libraries/api_files/libs");
+        File api_libs = new File(getModule().getRootFile(), "/build/libraries/api_libs");
+        File kotlinOutputDir = new File(getModule().getBuildDirectory(), "bin/kotlin/classes");
+        File javaOutputDir = new File(getModule().getBuildDirectory(), "bin/java/classes");
+
+        File implementation_files =
+            new File(getModule().getRootFile(), "/build/libraries/implementation_files/libs");
+        File implementation_libs =
+            new File(getModule().getRootFile(), "/build/libraries/implementation_libs");
+
+        File runtimeOnly_files =
+            new File(getModule().getRootFile(), "/build/libraries/runtimeOnly_files/libs");
+        File runtimeOnly_libs =
+            new File(getModule().getRootFile(), "/build/libraries/runtimeOnly_libs");
+
+        File compileOnly_files =
+            new File(getModule().getRootFile(), "/build/libraries/compileOnly_files/libs");
+        File compileOnly_libs =
+            new File(getModule().getRootFile(), "/build/libraries/compileOnly_libs");
+
+        File runtimeOnlyApi_files =
+            new File(getModule().getRootFile(), "/build/libraries/runtimeOnlyApi_files/libs");
+        File runtimeOnlyApi_libs =
+            new File(getModule().getRootFile(), "/build/libraries/runtimeOnlyApi_libs");
+
+        File compileOnlyApi_files =
+            new File(getModule().getRootFile(), "/build/libraries/compileOnlyApi_files/libs");
+        File compileOnlyApi_libs =
+            new File(getModule().getRootFile(), "/build/libraries/compileOnlyApi_libs");
+
+        List<File> compileClassPath = new ArrayList<>();
+        compileClassPath.addAll(getJarFiles(api_files));
+        compileClassPath.addAll(getJarFiles(api_libs));
+        compileClassPath.addAll(getJarFiles(implementation_files));
+        compileClassPath.addAll(getJarFiles(implementation_libs));
+        compileClassPath.addAll(getJarFiles(compileOnly_files));
+        compileClassPath.addAll(getJarFiles(compileOnly_libs));
+        compileClassPath.addAll(getJarFiles(compileOnlyApi_files));
+        compileClassPath.addAll(getJarFiles(compileOnlyApi_libs));
+
+        compileClassPath.add(javaOutputDir);
+
+        compileClassPath.add(kotlinOutputDir);
+
+        List<File> runtimeClassPath = new ArrayList<>();
+        runtimeClassPath.addAll(getJarFiles(runtimeOnly_files));
+        runtimeClassPath.addAll(getJarFiles(runtimeOnly_libs));
+        runtimeClassPath.addAll(getJarFiles(runtimeOnlyApi_files));
+        runtimeClassPath.addAll(getJarFiles(runtimeOnlyApi_libs));
+        runtimeClassPath.add(getModule().getBootstrapJarFile());
+        runtimeClassPath.add(getModule().getLambdaStubsJarFile());
+        runtimeClassPath.addAll(getJarFiles(api_files));
+        runtimeClassPath.addAll(getJarFiles(api_libs));
+
+        runtimeClassPath.add(javaOutputDir);
+
+        runtimeClassPath.add(kotlinOutputDir);
+
+        List<File> classpath = new ArrayList<>();
+        classpath.add(getModule().getBootstrapJarFile());
+        classpath.add(getModule().getLambdaStubsJarFile());
+        classpath.add(getModule().getBuildClassesDirectory());
+        classpath.addAll(getModule().getLibraries());
+        classpath.addAll(compileClassPath);
+        classpath.addAll(runtimeClassPath);
+
+        List<String> arguments = new ArrayList<>();
+        Collections.addAll(
+            arguments,
+            classpath.stream()
+                .map(File::getAbsolutePath)
+                .collect(Collectors.joining(File.pathSeparator)));
+
+        File javaDir = new File(getModule().getRootFile() + "/src/main/java");
+        File kotlinDir = new File(getModule().getRootFile() + "/src/main/kotlin");
+        File buildGenDir = new File(getModule().getRootFile() + "/build/gen");
+        File viewBindingDir = new File(getModule().getRootFile() + "/build/view_binding");
+
+        List<File> javaSourceRoots = new ArrayList<>();
+        if (javaDir.exists()) {
+          javaSourceRoots.addAll(getFiles(javaDir, ".java"));
+        }
+        if (buildGenDir.exists()) {
+          javaSourceRoots.addAll(getFiles(buildGenDir, ".java"));
+        }
+        if (viewBindingDir.exists()) {
+          javaSourceRoots.addAll(getFiles(viewBindingDir, ".java"));
+        }
+
+        List<File> fileList = new ArrayList<>();
+        if (javaDir.exists()) {
+          fileList.add(javaDir);
+        }
+        if (buildGenDir.exists()) {
+          fileList.add(buildGenDir);
+        }
+        if (viewBindingDir.exists()) {
+          fileList.add(viewBindingDir);
+        }
+        if (kotlinDir.exists()) {
+          fileList.add(kotlinDir);
+        }
+
+        List<File> plugins = getPlugins();
+        getLogger().debug("Loading kotlin compiler plugins: " + plugins);
 
         String[] command =
             new String[] {
@@ -214,8 +379,8 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
               "--compiler-filter=speed",
               "-Xmx256m",
               "-cp",
-              BuildModule.getKotlinc().getAbsolutePath(),
-              "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler",
+              compiler_path,
+              main_class,
               "-no-reflect",
               "-no-jdk",
               "-no-stdlib",
@@ -275,61 +440,8 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         if (output.toString().contains("error")) {
           throw new CompilationFailedException("Compilation failed, see logs for more details");
         }
-
-      } else {
-
-        K2JVMCompiler compiler = new K2JVMCompiler();
-        K2JVMCompilerArguments args = new K2JVMCompilerArguments();
-        compiler.parseArguments(arguments.toArray(new String[0]), args);
-
-        args.setUseJavac(false);
-        args.setCompileJava(false);
-        args.setIncludeRuntime(false);
-        args.setNoJdk(true);
-        args.setModuleName(getModule().getRootFile().getName());
-        args.setNoReflect(true);
-        args.setNoStdlib(true);
-        args.setSuppressWarnings(true);
-        args.setJavaSourceRoots(
-            javaSourceRoots.stream().map(File::getAbsolutePath).toArray(String[]::new));
-        // args.setKotlinHome(mKotlinHome.getAbsolutePath());
-        args.setDestination(mClassOutput.getAbsolutePath());
-
-        args.setPluginClasspaths(
-            plugins.stream().map(File::getAbsolutePath).toArray(String[]::new));
-        args.setPluginOptions(getPluginOptions());
-
-        File cacheDir = new File(getModule().getBuildDirectory(), "kotlin/compileKotlin/cacheable");
-
-        IncrementalJvmCompilerRunnerKt.makeIncrementally(
-            cacheDir,
-            Arrays.asList(fileList.toArray(new File[0])),
-            args,
-            mCollector,
-            new ICReporterBase() {
-              @Override
-              public void report(@NonNull Function0<String> function0) {
-                // getLogger().info()
-                function0.invoke();
-              }
-
-              @Override
-              public void reportVerbose(@NonNull Function0<String> function0) {
-                // getLogger().verbose()
-                function0.invoke();
-              }
-
-              @Override
-              public void reportCompileIteration(
-                  boolean incremental,
-                  @NonNull Collection<? extends File> sources,
-                  @NonNull ExitCode exitCode) {}
-            });
-
-        if (mCollector.hasErrors()) {
-          throw new CompilationFailedException("Compilation failed, see logs for more details");
-        }
       }
+
     } catch (Exception e) {
       throw new CompilationFailedException(Throwables.getStackTraceAsString(e));
     }
