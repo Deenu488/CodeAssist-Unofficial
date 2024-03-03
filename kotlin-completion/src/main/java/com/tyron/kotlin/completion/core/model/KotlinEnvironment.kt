@@ -246,6 +246,33 @@ private fun getConfiguration(module: KotlinModule): CompilerConfiguration {
 
     if (module is AndroidModule) {
         configuration.addJavaSourceRoot(File("${module.buildDirectory}/injected"))
+        
+            val file = File(module.buildDirectory, "injected/resource")
+            val javaDir =  File(module.getRootFile() , "/src/main/java")
+            val kotlinDir =  File(module.getRootFile() , "/src/main/kotlin")
+            val buildGenDir =  File(module.getRootFile() , "/build/gen")
+            val viewBindingDir =  File(module.getRootFile() , "/build/view_binding")                            
+           
+            if (file.exists()) {
+                configuration.addJavaSourceRoot(file)
+            } 
+        
+            if (javaDir.exists()) {
+                configuration.addJavaSourceRoot(javaDir)
+            } 
+          
+            if (kotlinDir.exists()) {
+                configuration.addJavaSourceRoot(kotlinDir)
+            }
+         
+            if (buildGenDir.exists()) {
+                configuration.addJavaSourceRoot(buildGenDir)
+            }
+        
+            if (viewBindingDir.exists()) {
+                configuration.addJavaSourceRoot(viewBindingDir)
+            }
+        
     }
 
     return configuration
