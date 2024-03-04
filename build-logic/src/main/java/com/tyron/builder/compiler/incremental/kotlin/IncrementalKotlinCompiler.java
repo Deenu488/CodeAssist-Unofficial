@@ -111,12 +111,6 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
               .optJSONObject("compiler")
               .optString("compilerPath", BuildModule.getKotlinc().getAbsolutePath());
 
-      String main_class =
-          buildSettingsJson
-              .optJSONObject("kotlin")
-              .optJSONObject("compiler")
-              .optString("mainClass", "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler");
-
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         BuildModule.getKotlinc().setReadOnly();
       }
@@ -391,7 +385,7 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
               "-Xmx256m",
               "-cp",
               compiler_path,
-              main_class,
+              "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler",
               "-no-reflect",
               "-no-jdk",
               "-no-stdlib",
@@ -446,7 +440,11 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
           output.append(line).append("\n"); // Append each line to the output
         }
 
-        getLogger().info(output.toString());
+        String message = output.toString();
+
+        if (!message.isEmpty()) {
+          getLogger().info(output.toString());
+        }
 
         process.waitFor();
 

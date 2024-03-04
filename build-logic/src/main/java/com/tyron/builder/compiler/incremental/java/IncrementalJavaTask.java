@@ -120,18 +120,6 @@ public class IncrementalJavaTask extends Task<JavaModule> {
       String targetCompatibility =
           buildSettingsJson.optJSONObject("java").optString("targetCompatibility", "1.8");
 
-      String compiler_path =
-          buildSettingsJson
-              .optJSONObject("java")
-              .optJSONObject("compiler")
-              .optString("compilerPath", BuildModule.getJavac().getAbsolutePath());
-
-      String main_class =
-          buildSettingsJson
-              .optJSONObject("java")
-              .optJSONObject("compiler")
-              .optString("mainClass", "com.sun.tools.javac.MainKt");
-
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         BuildModule.getJavac().setReadOnly();
       }
@@ -411,8 +399,8 @@ public class IncrementalJavaTask extends Task<JavaModule> {
               "--compiler-filter=speed",
               "-Xmx256m",
               "-cp",
-              compiler_path,
-              main_class,
+              BuildModule.getJavac().getAbsolutePath(),
+              "com.sun.tools.javac.MainKt",
               "-sourcepath",
               mJavaFiles.stream().map(File::toString).collect(Collectors.joining(":")),
               "-d",
@@ -440,7 +428,11 @@ public class IncrementalJavaTask extends Task<JavaModule> {
           output.append(line).append("\n"); // Append each line to the output
         }
 
-        getLogger().info(output.toString());
+        String message = output.toString();
+
+        if (!message.isEmpty()) {
+          getLogger().info(output.toString());
+        }
 
         process.waitFor();
 
