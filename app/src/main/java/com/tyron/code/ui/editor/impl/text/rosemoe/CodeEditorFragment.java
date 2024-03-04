@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -444,23 +445,51 @@ public class CodeEditorFragment extends Fragment
   /** Show the popup menu with the actions api */
   private void showPopupMenu(LongPressEvent event) {
     MotionEvent e = event.getCausingEvent();
+    if (e == null || requireContext() == null || mEditor == null) {
+      // Handle null values here
+      return;
+    }
+
     CoordinatePopupMenu popupMenu =
         new CoordinatePopupMenu(requireContext(), mEditor, Gravity.BOTTOM);
+    if (popupMenu == null) {
+      // Handle null popupMenu here
+      return;
+    }
+
     DataContext dataContext = createDataContext();
-    ActionManager.getInstance()
-        .fillMenu(dataContext, popupMenu.getMenu(), ActionPlaces.EDITOR, true, false);
+    if (dataContext == null) {
+      // Handle null dataContext here
+      return;
+    }
+
+    ActionManager actionManager = ActionManager.getInstance();
+    if (actionManager == null) {
+      // Handle null actionManager here
+      return;
+    }
+
+    Menu menu = popupMenu.getMenu();
+    if (menu == null) {
+      // Handle null menu here
+      return;
+    }
+
+    actionManager.fillMenu(dataContext, menu, ActionPlaces.EDITOR, true, false);
     popupMenu.show((int) e.getX(), ((int) e.getY()) - AndroidUtilities.dp(24));
 
     // we don't want to enable the drag to open listener right away,
     // this may cause the buttons to be clicked right away
     // so wait for a few ms
-    ProgressManager.getInstance()
-        .runLater(
-            () -> {
-              popupMenu.setOnDismissListener(d -> mDragToOpenListener = null);
-              mDragToOpenListener = popupMenu.getDragToOpenListener();
-            },
-            300);
+    ProgressManager progressManager = ProgressManager.getInstance();
+    if (progressManager != null) {
+      progressManager.runLater(
+          () -> {
+            popupMenu.setOnDismissListener(d -> mDragToOpenListener = null);
+            mDragToOpenListener = popupMenu.getDragToOpenListener();
+          },
+          300);
+    }
   }
 
   @Override

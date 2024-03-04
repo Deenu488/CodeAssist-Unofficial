@@ -28,6 +28,7 @@ import com.tyron.code.ui.editor.scheme.CompiledEditorScheme;
 import com.tyron.code.ui.main.MainViewModel;
 import com.tyron.code.ui.project.ProjectManager;
 import com.tyron.common.SharedPreferenceKeys;
+import com.tyron.editor.Caret;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Handler;
@@ -79,12 +80,19 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
 
     copyText.setOnClickListener(
         v -> {
-          String content = mEditor.getText().toString();
-          if (content != null && !content.isEmpty()) {
-            copyContent(content);
-            Toast toast =
-                Toast.makeText(requireContext(), R.string.copied_to_clipoard, Toast.LENGTH_LONG);
-            toast.show();
+          Caret caret = mEditor.getCaret();
+          if (!(caret.getStartLine() == caret.getEndLine()
+              && caret.getStartColumn() == caret.getEndColumn())) {
+
+            CharSequence textToCopy =
+                mEditor.getContent().subSequence(caret.getStart(), caret.getEnd());
+            copyContent(textToCopy.toString());
+          } else {
+
+            String content = mEditor.getText().toString();
+            if (content != null && !content.isEmpty()) {
+              copyContent(content);
+            }
           }
         });
 
@@ -110,7 +118,7 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
     editor.setBackgroundAnalysisEnabled(false);
     editor.setTypefaceText(
         ResourcesCompat.getFont(requireContext(), R.font.jetbrains_mono_regular));
-  editor.setLigatureEnabled(true);
+    editor.setLigatureEnabled(true);
     editor.setHighlightCurrentBlock(true);
     editor.setEdgeEffectColor(Color.TRANSPARENT);
     editor.setInputType(
