@@ -209,8 +209,8 @@ public class IncrementalJavaTask extends Task<JavaModule> {
         compileClassPath.addAll(getParentJavaFiles(buildGenDir));
         compileClassPath.addAll(getParentJavaFiles(viewBindingDir));
 
-        compileClassPath.add(BuildModule.getBootstrapJarFile());
-        compileClassPath.add(BuildModule.getLambdaStubsJarFile());
+        compileClassPath.add(BuildModule.getAndroidJar());
+        compileClassPath.add(BuildModule.getLambdaStubs());
 
         List<File> runtimeClassPath = new ArrayList<>();
         runtimeClassPath.addAll(getJarFiles(runtimeOnly_files));
@@ -227,8 +227,8 @@ public class IncrementalJavaTask extends Task<JavaModule> {
         runtimeClassPath.addAll(getParentJavaFiles(buildGenDir));
         runtimeClassPath.addAll(getParentJavaFiles(viewBindingDir));
 
-        runtimeClassPath.add(BuildModule.getBootstrapJarFile());
-        runtimeClassPath.add(BuildModule.getLambdaStubsJarFile());
+        runtimeClassPath.add(BuildModule.getAndroidJar());
+        runtimeClassPath.add(BuildModule.getLambdaStubs());
 
         standardJavaFileManager.setLocation(
             StandardLocation.CLASS_OUTPUT, Collections.singletonList(mOutputDir));
@@ -383,8 +383,8 @@ public class IncrementalJavaTask extends Task<JavaModule> {
         compileClassPath.addAll(getParentJavaFiles(buildGenDir));
         compileClassPath.addAll(getParentJavaFiles(viewBindingDir));
 
-        compileClassPath.add(BuildModule.getBootstrapJarFile());
-        compileClassPath.add(BuildModule.getLambdaStubsJarFile());
+        compileClassPath.add(BuildModule.getAndroidJar());
+        compileClassPath.add(BuildModule.getLambdaStubs());
 
         List<File> runtimeClassPath = new ArrayList<>();
         runtimeClassPath.addAll(getJarFiles(runtimeOnly_files));
@@ -401,8 +401,8 @@ public class IncrementalJavaTask extends Task<JavaModule> {
         runtimeClassPath.addAll(getParentJavaFiles(buildGenDir));
         runtimeClassPath.addAll(getParentJavaFiles(viewBindingDir));
 
-        runtimeClassPath.add(BuildModule.getBootstrapJarFile());
-        runtimeClassPath.add(BuildModule.getLambdaStubsJarFile());
+        runtimeClassPath.add(BuildModule.getAndroidJar());
+        runtimeClassPath.add(BuildModule.getLambdaStubs());
 
         String[] command =
             new String[] {
