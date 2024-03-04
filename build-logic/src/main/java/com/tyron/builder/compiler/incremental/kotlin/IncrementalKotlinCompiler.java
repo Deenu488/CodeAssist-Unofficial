@@ -95,23 +95,28 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
 
       JSONObject buildSettingsJson = new JSONObject(content);
 
-      boolean useNewCompiler =
-          Boolean.parseBoolean(buildSettingsJson.optString("useNewCompiler", "false"));
+      boolean isCompilerEnabled =
+          Boolean.parseBoolean(
+              buildSettingsJson.optJSONObject("kotlin").optString("isCompilerEnabled", "false"));
+
       String jvm_target = buildSettingsJson.optJSONObject("kotlin").optString("jvmTarget", "1.8");
-      String language_version =
-          buildSettingsJson.optJSONObject("kotlin").optString("languageVersion", "2.1");
+
+      // String language_version =
+      //     buildSettingsJson.optJSONObject("kotlin").optString("languageVersion", "2.1");
+
       String compiler_path =
           buildSettingsJson
               .optJSONObject("kotlin")
               .optJSONObject("compiler")
               .optString("compilerPath", BuildModule.getKotlinc().getAbsolutePath());
+
       String main_class =
           buildSettingsJson
               .optJSONObject("kotlin")
               .optJSONObject("compiler")
               .optString("mainClass", "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler");
 
-      if (!useNewCompiler) {
+      if (!isCompilerEnabled) {
 
         File api_files = new File(getModule().getRootFile(), "/build/libraries/api_files/libs");
         File api_libs = new File(getModule().getRootFile(), "/build/libraries/api_libs");
@@ -387,8 +392,8 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
               "-no-stdlib",
               "-jvm-target",
               jvm_target,
-              "-language-version",
-              language_version,
+              //  "-language-version",
+              //  language_version,
               "-cp",
               Arrays.toString(arguments.toArray(new String[0])).replace("[", "").replace("]", ""),
               "-Xjava-source-roots="
