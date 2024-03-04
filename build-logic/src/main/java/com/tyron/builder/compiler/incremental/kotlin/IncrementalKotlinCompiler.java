@@ -1,5 +1,6 @@
 package com.tyron.builder.compiler.incremental.kotlin;
 
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 import androidx.annotation.NonNull;
@@ -116,6 +117,10 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
               .optJSONObject("compiler")
               .optString("mainClass", "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler");
 
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        BuildModule.getKotlinc().setReadOnly();
+      }
+
       if (!isCompilerEnabled) {
 
         File api_files = new File(getModule().getRootFile(), "/build/libraries/api_files/libs");
@@ -165,16 +170,17 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         runtimeClassPath.addAll(getJarFiles(runtimeOnly_libs));
         runtimeClassPath.addAll(getJarFiles(runtimeOnlyApi_files));
         runtimeClassPath.addAll(getJarFiles(runtimeOnlyApi_libs));
-        runtimeClassPath.add(getModule().getBootstrapJarFile());
-        runtimeClassPath.add(getModule().getLambdaStubsJarFile());
+
         runtimeClassPath.addAll(getJarFiles(api_files));
         runtimeClassPath.addAll(getJarFiles(api_libs));
         runtimeClassPath.add(javaOutputDir);
         runtimeClassPath.add(kotlinOutputDir);
 
         List<File> classpath = new ArrayList<>();
-        classpath.add(getModule().getBootstrapJarFile());
-        classpath.add(getModule().getLambdaStubsJarFile());
+
+        classpath.add(BuildModule.getBootstrapJarFile());
+        classpath.add(BuildModule.getLambdaStubsJarFile());
+
         classpath.add(getModule().getBuildClassesDirectory());
         classpath.addAll(getModule().getLibraries());
         classpath.addAll(compileClassPath);
@@ -313,7 +319,6 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         compileClassPath.addAll(getJarFiles(compileOnlyApi_libs));
 
         compileClassPath.add(javaOutputDir);
-
         compileClassPath.add(kotlinOutputDir);
 
         List<File> runtimeClassPath = new ArrayList<>();
@@ -321,18 +326,18 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         runtimeClassPath.addAll(getJarFiles(runtimeOnly_libs));
         runtimeClassPath.addAll(getJarFiles(runtimeOnlyApi_files));
         runtimeClassPath.addAll(getJarFiles(runtimeOnlyApi_libs));
-        runtimeClassPath.add(getModule().getBootstrapJarFile());
-        runtimeClassPath.add(getModule().getLambdaStubsJarFile());
+
         runtimeClassPath.addAll(getJarFiles(api_files));
         runtimeClassPath.addAll(getJarFiles(api_libs));
 
         runtimeClassPath.add(javaOutputDir);
-
         runtimeClassPath.add(kotlinOutputDir);
 
         List<File> classpath = new ArrayList<>();
-        classpath.add(getModule().getBootstrapJarFile());
-        classpath.add(getModule().getLambdaStubsJarFile());
+
+        classpath.add(BuildModule.getBootstrapJarFile());
+        classpath.add(BuildModule.getLambdaStubsJarFile());
+
         classpath.add(getModule().getBuildClassesDirectory());
         classpath.addAll(getModule().getLibraries());
         classpath.addAll(compileClassPath);

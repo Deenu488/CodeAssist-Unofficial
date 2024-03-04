@@ -1,5 +1,6 @@
 package com.tyron.builder.compiler.incremental.java;
 
+import android.os.Build;
 import android.util.Log;
 import androidx.annotation.VisibleForTesting;
 import com.sun.source.util.JavacTask;
@@ -15,8 +16,10 @@ import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.JavaModule;
 import com.tyron.builder.project.cache.CacheHolder;
 import com.tyron.common.util.Cache;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -31,6 +34,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 import java.util.zip.ZipException;
 import javax.tools.DiagnosticListener;
 import javax.tools.JavaFileObject;
@@ -128,6 +132,10 @@ public class IncrementalJavaTask extends Task<JavaModule> {
               .optJSONObject("compiler")
               .optString("mainClass", "com.sun.tools.javac.MainKt");
 
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        BuildModule.getJavac().setReadOnly();
+      }
+
       if (!isCompilerEnabled) {
 
         Log.d(TAG, "Compiling java files");
@@ -150,6 +158,7 @@ public class IncrementalJavaTask extends Task<JavaModule> {
             tool.getStandardFileManager(
                 diagnosticCollector, Locale.getDefault(), Charset.defaultCharset());
         standardJavaFileManager.setSymbolFileEnabled(false);
+
         File javaDir = new File(getModule().getRootFile() + "/src/main/java");
         File buildGenDir = new File(getModule().getRootFile() + "/build/gen");
         File viewBindingDir = new File(getModule().getRootFile() + "/build/view_binding");
@@ -200,14 +209,15 @@ public class IncrementalJavaTask extends Task<JavaModule> {
         compileClassPath.addAll(getParentJavaFiles(buildGenDir));
         compileClassPath.addAll(getParentJavaFiles(viewBindingDir));
 
+        compileClassPath.add(BuildModule.getBootstrapJarFile());
+        compileClassPath.add(BuildModule.getLambdaStubsJarFile());
+
         List<File> runtimeClassPath = new ArrayList<>();
         runtimeClassPath.addAll(getJarFiles(runtimeOnly_files));
         runtimeClassPath.addAll(getJarFiles(runtimeOnly_libs));
         runtimeClassPath.addAll(getJarFiles(runtimeOnlyApi_files));
         runtimeClassPath.addAll(getJarFiles(runtimeOnlyApi_libs));
 
-        runtimeClassPath.add(getModule().getBootstrapJarFile());
-        runtimeClassPath.add(getModule().getLambdaStubsJarFile());
         runtimeClassPath.addAll(getJarFiles(api_files));
         runtimeClassPath.addAll(getJarFiles(api_libs));
         runtimeClassPath.addAll(getModule().getLibraries());
@@ -216,6 +226,9 @@ public class IncrementalJavaTask extends Task<JavaModule> {
         runtimeClassPath.addAll(getParentJavaFiles(javaDir));
         runtimeClassPath.addAll(getParentJavaFiles(buildGenDir));
         runtimeClassPath.addAll(getParentJavaFiles(viewBindingDir));
+
+        runtimeClassPath.add(BuildModule.getBootstrapJarFile());
+        runtimeClassPath.add(BuildModule.getLambdaStubsJarFile());
 
         standardJavaFileManager.setLocation(
             StandardLocation.CLASS_OUTPUT, Collections.singletonList(mOutputDir));
@@ -320,6 +333,120 @@ public class IncrementalJavaTask extends Task<JavaModule> {
 
       } else {
 
+        File javaDir = new File(getModule().getRootFile() + "/src/main/java");
+        File buildGenDir = new File(getModule().getRootFile() + "/build/gen");
+        File viewBindingDir = new File(getModule().getRootFile() + "/build/view_binding");
+
+        File api_files = new File(getModule().getRootFile(), "/build/libraries/api_files/libs");
+        File api_libs = new File(getModule().getRootFile(), "/build/libraries/api_libs");
+        File kotlinOutputDir = new File(getModule().getBuildDirectory(), "bin/kotlin/classes");
+        File javaOutputDir = new File(getModule().getBuildDirectory(), "bin/java/classes");
+        File implementation_files =
+            new File(getModule().getRootFile(), "/build/libraries/implementation_files/libs");
+        File implementation_libs =
+            new File(getModule().getRootFile(), "/build/libraries/implementation_libs");
+
+        File runtimeOnly_files =
+            new File(getModule().getRootFile(), "/build/libraries/runtimeOnly_files/libs");
+        File runtimeOnly_libs =
+            new File(getModule().getRootFile(), "/build/libraries/runtimeOnly_libs");
+
+        File compileOnly_files =
+            new File(getModule().getRootFile(), "/build/libraries/compileOnly_files/libs");
+        File compileOnly_libs =
+            new File(getModule().getRootFile(), "/build/libraries/compileOnly_libs");
+
+        File runtimeOnlyApi_files =
+            new File(getModule().getRootFile(), "/build/libraries/runtimeOnlyApi_files/libs");
+        File runtimeOnlyApi_libs =
+            new File(getModule().getRootFile(), "/build/libraries/runtimeOnlyApi_libs");
+
+        File compileOnlyApi_files =
+            new File(getModule().getRootFile(), "/build/libraries/compileOnlyApi_files/libs");
+        File compileOnlyApi_libs =
+            new File(getModule().getRootFile(), "/build/libraries/compileOnlyApi_libs");
+
+        List<File> compileClassPath = new ArrayList<>();
+        compileClassPath.addAll(getJarFiles(api_files));
+        compileClassPath.addAll(getJarFiles(api_libs));
+        compileClassPath.addAll(getJarFiles(implementation_files));
+        compileClassPath.addAll(getJarFiles(implementation_libs));
+        compileClassPath.addAll(getJarFiles(compileOnly_files));
+        compileClassPath.addAll(getJarFiles(compileOnly_libs));
+        compileClassPath.addAll(getJarFiles(compileOnlyApi_files));
+        compileClassPath.addAll(getJarFiles(compileOnlyApi_libs));
+
+        compileClassPath.addAll(getModule().getLibraries());
+        compileClassPath.add(javaOutputDir);
+        compileClassPath.add(kotlinOutputDir);
+        compileClassPath.addAll(getParentJavaFiles(javaDir));
+        compileClassPath.addAll(getParentJavaFiles(buildGenDir));
+        compileClassPath.addAll(getParentJavaFiles(viewBindingDir));
+
+        compileClassPath.add(BuildModule.getBootstrapJarFile());
+        compileClassPath.add(BuildModule.getLambdaStubsJarFile());
+
+        List<File> runtimeClassPath = new ArrayList<>();
+        runtimeClassPath.addAll(getJarFiles(runtimeOnly_files));
+        runtimeClassPath.addAll(getJarFiles(runtimeOnly_libs));
+        runtimeClassPath.addAll(getJarFiles(runtimeOnlyApi_files));
+        runtimeClassPath.addAll(getJarFiles(runtimeOnlyApi_libs));
+
+        runtimeClassPath.addAll(getJarFiles(api_files));
+        runtimeClassPath.addAll(getJarFiles(api_libs));
+        runtimeClassPath.addAll(getModule().getLibraries());
+        runtimeClassPath.add(javaOutputDir);
+        runtimeClassPath.add(kotlinOutputDir);
+        runtimeClassPath.addAll(getParentJavaFiles(javaDir));
+        runtimeClassPath.addAll(getParentJavaFiles(buildGenDir));
+        runtimeClassPath.addAll(getParentJavaFiles(viewBindingDir));
+
+        runtimeClassPath.add(BuildModule.getBootstrapJarFile());
+        runtimeClassPath.add(BuildModule.getLambdaStubsJarFile());
+
+        String[] command =
+            new String[] {
+              "dalvikvm",
+              "-Xcompiler-option",
+              "--compiler-filter=speed",
+              "-Xmx256m",
+              "-cp",
+              compiler_path,
+              main_class,
+              "-sourcepath",
+              mJavaFiles.stream().map(File::toString).collect(Collectors.joining(":")),
+              "-d",
+              mOutputDir.getAbsolutePath(),
+              "-bootclasspath",
+              runtimeClassPath.stream().map(File::toString).collect(Collectors.joining(":")),
+              "-classpath",
+              compileClassPath.stream().map(File::toString).collect(Collectors.joining(":")),
+              "-source",
+              sourceCompatibility,
+              "-target",
+              targetCompatibility
+            };
+
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        processBuilder.redirectErrorStream(true);
+
+        Process process = processBuilder.start();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        StringBuilder output = new StringBuilder(); // To store the output
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+          output.append(line).append("\n"); // Append each line to the output
+        }
+
+        getLogger().info(output.toString());
+
+        process.waitFor();
+
+        if (output.toString().contains("error")) {
+          throw new CompilationFailedException("Compilation failed, see logs for more details");
+        }
       }
 
     } catch (Exception e) {
