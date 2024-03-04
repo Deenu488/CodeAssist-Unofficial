@@ -60,7 +60,7 @@ public class ModuleImpl implements Module {
         
         JSONObject jcompilerSettings = new JSONObject();
         jcompilerSettings.put("compilerPath", getJavac().getAbsolutePath());
-        jcompilerSettings.put("mainClass", "");
+        jcompilerSettings.put("mainClass", "com.sun.tools.javac.MainKt");
 
         javaSettings.put("compiler", jcompilerSettings);
         javaSettings.put("sourceCompatibility", "1.8");

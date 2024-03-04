@@ -126,7 +126,7 @@ public class IncrementalJavaTask extends Task<JavaModule> {
           buildSettingsJson
               .optJSONObject("java")
               .optJSONObject("compiler")
-              .optString("mainClass", "");
+              .optString("mainClass", "com.sun.tools.javac.MainKt");
 
       if (!isCompilerEnabled) {
 
