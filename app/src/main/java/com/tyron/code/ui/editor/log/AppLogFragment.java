@@ -107,8 +107,11 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
   private void configureEditor(@NonNull CodeEditorView editor) {
     editor.setEditable(false);
     editor.setColorScheme(new CompiledEditorScheme(requireContext()));
+    editor.setBackgroundAnalysisEnabled(false);
     editor.setTypefaceText(
         ResourcesCompat.getFont(requireContext(), R.font.jetbrains_mono_regular));
+  editor.setLigatureEnabled(true);
+    editor.setHighlightCurrentBlock(true);
     editor.setEdgeEffectColor(Color.TRANSPARENT);
     editor.setInputType(
         EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS

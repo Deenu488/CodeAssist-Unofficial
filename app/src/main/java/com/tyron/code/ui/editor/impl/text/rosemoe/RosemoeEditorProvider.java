@@ -14,7 +14,7 @@ public class RosemoeEditorProvider implements FileEditorProvider {
       ImmutableSet.<String>builder()
           .add("jar", "zip", "png", "jpg")
           .add("jpeg", "mp4", "mp3", "ogg")
-          .add("7zip", "tar")
+          .add("7zip", "tar", "apk", "class", "dex")
           .build();
   private static final String TYPE_ID = "rosemoe-code-editor";
 

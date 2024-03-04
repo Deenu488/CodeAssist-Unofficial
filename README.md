@@ -33,7 +33,7 @@ Forked of Official CodeAssist Version Alpha-0.2.9
 
 - [x] AAB Support
 
-- [x] Java
+- [x] Java 17
 
 - [x] Kotlin  
 
