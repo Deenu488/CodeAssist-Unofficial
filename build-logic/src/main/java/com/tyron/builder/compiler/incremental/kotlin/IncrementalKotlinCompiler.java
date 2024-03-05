@@ -13,10 +13,10 @@ import com.tyron.builder.log.ILogger;
 import com.tyron.builder.model.DiagnosticWrapper;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
-import java.io.BufferedReader;
+import com.tyron.common.util.BinaryExecutor;
+import com.tyron.common.util.ExecutionResult;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -185,6 +185,7 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
                 .map(File::getAbsolutePath)
                 .collect(Collectors.joining(File.pathSeparator)));
         arguments.add("-Xskip-metadata-version-check");
+    
         File javaDir = new File(getModule().getRootFile() + "/src/main/java");
         File kotlinDir = new File(getModule().getRootFile() + "/src/main/kotlin");
         File buildGenDir = new File(getModule().getRootFile() + "/build/gen");
@@ -194,21 +195,21 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         if (javaDir.exists()) {
           Set<File> files = getFiles(javaDir, ".java");
           if (!files.isEmpty()) {
-            javaSourceRoots.addAll(files);
+            javaSourceRoots.add(javaDir);
           }
         }
         if (buildGenDir.exists()) {
 
           Set<File> files = getFiles(buildGenDir, ".java");
           if (!files.isEmpty()) {
-            javaSourceRoots.addAll(files);
+            javaSourceRoots.add(buildGenDir);
           }
         }
         if (viewBindingDir.exists()) {
 
           Set<File> files = getFiles(viewBindingDir, ".java");
           if (!files.isEmpty()) {
-            javaSourceRoots.addAll(files);
+            javaSourceRoots.add(viewBindingDir);
           }
         }
 
@@ -282,7 +283,7 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         }
 
       } else {
-      
+
         File api_files = new File(getModule().getRootFile(), "/build/libraries/api_files/libs");
         File api_libs = new File(getModule().getRootFile(), "/build/libraries/api_libs");
         File kotlinOutputDir = new File(getModule().getBuildDirectory(), "bin/kotlin/classes");
@@ -323,9 +324,6 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         compileClassPath.addAll(getJarFiles(compileOnlyApi_files));
         compileClassPath.addAll(getJarFiles(compileOnlyApi_libs));
 
-        compileClassPath.add(javaOutputDir);
-        compileClassPath.add(kotlinOutputDir);
-
         List<File> runtimeClassPath = new ArrayList<>();
         runtimeClassPath.addAll(getJarFiles(runtimeOnly_files));
         runtimeClassPath.addAll(getJarFiles(runtimeOnly_libs));
@@ -334,9 +332,6 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
 
         runtimeClassPath.addAll(getJarFiles(api_files));
         runtimeClassPath.addAll(getJarFiles(api_libs));
-
-        runtimeClassPath.add(javaOutputDir);
-        runtimeClassPath.add(kotlinOutputDir);
 
         List<File> classpath = new ArrayList<>();
 
@@ -347,6 +342,9 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         classpath.addAll(getModule().getLibraries());
         classpath.addAll(compileClassPath);
         classpath.addAll(runtimeClassPath);
+
+        classpath.add(javaOutputDir);
+        classpath.add(kotlinOutputDir);
 
         List<String> arguments = new ArrayList<>();
         Collections.addAll(
@@ -364,21 +362,21 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         if (javaDir.exists()) {
           Set<File> files = getFiles(javaDir, ".java");
           if (!files.isEmpty()) {
-            javaSourceRoots.addAll(files);
+            javaSourceRoots.add(javaDir);
           }
         }
         if (buildGenDir.exists()) {
 
           Set<File> files = getFiles(buildGenDir, ".java");
           if (!files.isEmpty()) {
-            javaSourceRoots.addAll(files);
+            javaSourceRoots.add(buildGenDir);
           }
         }
         if (viewBindingDir.exists()) {
 
           Set<File> files = getFiles(viewBindingDir, ".java");
           if (!files.isEmpty()) {
-            javaSourceRoots.addAll(files);
+            javaSourceRoots.add(viewBindingDir);
           }
         }
 
@@ -400,7 +398,7 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         List<File> plugins = getPlugins();
         getLogger().debug("Loading kotlin compiler plugins: " + plugins);
 
-        String[] command =
+        /*  String[] command =
             new String[] {
               "dalvikvm",
               "-Xcompiler-option",
@@ -473,6 +471,50 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
 
         if (output.toString().contains("error")) {
           throw new CompilationFailedException("Compilation failed, see logs for more details");
+        }*/
+
+        List<String> args = new ArrayList<>();
+        args.add("dalvikvm");
+        args.add("-Xcompiler-option");
+        args.add("--compiler-filter=speed");
+        args.add("-Xmx256m");
+        args.add("-cp");
+        args.add(BuildModule.getKotlinc().getAbsolutePath());
+        args.add("org.jetbrains.kotlin.cli.jvm.K2JVMCompiler");
+
+        args.add("-no-jdk");
+        args.add("-no-stdlib");
+        args.add("-no-reflect");
+        args.add("-jvm-target");
+        args.add(jvm_target);
+        args.add("-cp");
+        args.add(String.join(", ", arguments));
+        args.add(
+            "-Xjava-source-roots="
+                + String.join(
+                    ", ",
+                    javaSourceRoots.stream().map(File::getAbsolutePath).toArray(String[]::new)));
+
+        for (File file : fileList) {
+          args.add(file.getAbsolutePath());
+        }
+        args.add("-d");
+        args.add(mClassOutput.getAbsolutePath());
+
+        args.add("-module-name");
+        args.add(getModule().getRootFile().getName());
+
+        BinaryExecutor executor = new BinaryExecutor();
+        executor.setCommands(args);
+        ExecutionResult result = executor.run();
+
+        getLogger().info(executor.getLog().trim());
+
+        if (result != null) {
+          if (result.getExitValue() != 0) {
+            getLogger().info(result.getOutput().trim());
+            throw new CompilationFailedException("Compilation failed, see logs for more details");
+          }
         }
       }
 
