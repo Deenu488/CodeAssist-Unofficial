@@ -1,6 +1,7 @@
 package com.tyron.code.ui.editor.impl;
 
 import androidx.annotation.NonNull;
+import com.tyron.code.ui.editor.impl.cls.ClsEditorProvider;
 import com.tyron.code.ui.editor.impl.image.ImageEditorProvider;
 import com.tyron.code.ui.editor.impl.text.rosemoe.RosemoeEditorProvider;
 import com.tyron.code.ui.editor.impl.xml.LayoutTextEditorProvider;
@@ -34,6 +35,7 @@ public class FileEditorProviderManagerImpl implements FileEditorProviderManager 
     registerProvider(new RosemoeEditorProvider());
     registerProvider(new LayoutTextEditorProvider());
     registerProvider(new ImageEditorProvider());
+    registerProvider(new ClsEditorProvider());
   }
 
   @Override
