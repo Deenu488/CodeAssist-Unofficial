@@ -495,6 +495,20 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         args.add("-module-name");
         args.add(getModule().getRootFile().getName());
 
+        String plugin = "";
+        String pluginString =
+            Arrays.toString(plugins.stream().map(File::getAbsolutePath).toArray(String[]::new))
+                .replace("[", "")
+                .replace("]", "");
+
+        String pluginOptionsString =
+            Arrays.toString(getPluginOptions()).replace("[", "").replace("]", "");
+
+        plugin = pluginString + ":" + (pluginOptionsString.isEmpty() ? ":=" : pluginOptionsString);
+
+        args.add("-P");
+        args.add("plugin:" + plugin);
+
         BinaryExecutor executor = new BinaryExecutor();
         executor.setCommands(args);
         ExecutionResult result = executor.run();
