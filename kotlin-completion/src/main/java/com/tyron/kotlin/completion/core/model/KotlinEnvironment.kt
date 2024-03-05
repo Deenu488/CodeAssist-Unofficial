@@ -100,8 +100,9 @@ class KotlinEnvironment private constructor(val module: KotlinModule, disposable
             val javaDir =  File(kotlinModule.getRootFile() , "/src/main/java")
             val kotlinDir =  File(kotlinModule.getRootFile() , "/src/main/kotlin")
             val buildGenDir =  File(kotlinModule.getRootFile() , "/build/gen")
-            val viewBindingDir =  File(kotlinModule.getRootFile() , "/build/view_binding")        
-         
+            val viewBindingDir =  File(kotlinModule.getRootFile() , "/build/view_binding")                 
+            val viewBindingDirInjected =  File(kotlinModule.getRootFile() , "/build/injected/view_binding")        
+       
             if (file.exists()) {
                 addToClassPath(file)
             }
@@ -120,6 +121,10 @@ class KotlinEnvironment private constructor(val module: KotlinModule, disposable
         
             if (viewBindingDir.exists()) {
                 addToClassPath(viewBindingDir)
+            }
+        
+            if (viewBindingDirInjected.exists()) {
+                addToClassPath(viewBindingDirInjected)
             }
           
         }
@@ -252,7 +257,8 @@ private fun getConfiguration(module: KotlinModule): CompilerConfiguration {
             val kotlinDir =  File(module.getRootFile() , "/src/main/kotlin")
             val buildGenDir =  File(module.getRootFile() , "/build/gen")
             val viewBindingDir =  File(module.getRootFile() , "/build/view_binding")                            
-           
+            val viewBindingDirInjected =  File(module.getRootFile() , "/build/injected/view_binding")        
+
             if (file.exists()) {
                 configuration.addJavaSourceRoot(file)
             } 
@@ -272,6 +278,12 @@ private fun getConfiguration(module: KotlinModule): CompilerConfiguration {
             if (viewBindingDir.exists()) {
                 configuration.addJavaSourceRoot(viewBindingDir)
             }
+        
+            if (viewBindingDirInjected.exists()) {
+                configuration.addJavaSourceRoot(viewBindingDirInjected)
+            }
+            
+            
         
     }
 
