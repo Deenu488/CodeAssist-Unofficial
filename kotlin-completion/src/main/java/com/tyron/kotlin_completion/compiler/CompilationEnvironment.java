@@ -106,7 +106,7 @@ public class CompilationEnvironment implements Closeable {
             sourcePath,
             getEnvironment(),
             mModule,
-            JvmTarget.JVM_1_8);
+            JvmTarget.JVM_17);
     return new Pair<>(container, trace);
   }
 

@@ -167,10 +167,10 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         runtimeClassPath.addAll(getJarFiles(api_libs));
         runtimeClassPath.add(javaOutputDir);
         runtimeClassPath.add(kotlinOutputDir);
+        runtimeClassPath.add(getModule().getBootstrapJarFile());
+        runtimeClassPath.add(getModule().getLambdaStubsJarFile());
 
         List<File> classpath = new ArrayList<>();
-        classpath.add(getModule().getBootstrapJarFile());
-        classpath.add(getModule().getLambdaStubsJarFile());
         classpath.add(getModule().getBuildClassesDirectory());
         classpath.addAll(getModule().getLibraries());
         classpath.addAll(compileClassPath);

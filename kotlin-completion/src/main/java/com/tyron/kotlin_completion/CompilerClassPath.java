@@ -10,10 +10,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import kotlin.collections.SetsKt;
@@ -44,25 +41,6 @@ public class CompilerClassPath implements Closeable {
         project.getResourceClasses().values().stream()
             .map(File::toPath)
             .collect(Collectors.toList()));
-
-    File javaDir = new File(project.getRootFile() + "/src/main/java");
-    File kotlinDir = new File(project.getRootFile() + "/src/main/kotlin");
-    File buildGenDir = new File(project.getRootFile() + "/build/gen");
-    File viewBindingDir = new File(project.getRootFile() + "/build/view_binding");
-
-    List<File> javaSourceRoots = new ArrayList<>();
-    if (javaDir.exists()) {
-      javaSourceRoots.addAll(getFiles(javaDir, ".java"));
-    }
-    if (buildGenDir.exists()) {
-      javaSourceRoots.addAll(getFiles(buildGenDir, ".java"));
-    }
-    if (viewBindingDir.exists()) {
-      javaSourceRoots.addAll(getFiles(viewBindingDir, ".java"));
-    }
-
-    mJavaSourcePath.addAll(javaSourceRoots.stream().map(File::toPath).collect(Collectors.toList()));
-
     mClassPath =
         project.getLibraries().stream()
             .map(file -> new ClassPathEntry(file.toPath(), null))
@@ -133,27 +111,6 @@ public class CompilerClassPath implements Closeable {
 
   public Compiler getCompiler() {
     return compiler;
-  }
-
-  public Set<File> getFiles(File dir, String ext) {
-    Set<File> Files = new HashSet<>();
-
-    File[] files = dir.listFiles();
-    if (files == null) {
-      return Collections.emptySet();
-    }
-
-    for (File file : files) {
-      if (file.isDirectory()) {
-        Files.addAll(getFiles(file, ext));
-      } else {
-        if (file.getName().endsWith(ext)) {
-          Files.add(file);
-        }
-      }
-    }
-
-    return Files;
   }
 
   @Override

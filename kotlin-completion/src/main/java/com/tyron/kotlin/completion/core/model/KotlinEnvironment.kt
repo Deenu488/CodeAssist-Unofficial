@@ -125,8 +125,7 @@ class KotlinEnvironment private constructor(val module: KotlinModule, disposable
         
             if (viewBindingDirInjected.exists()) {
                 addToClassPath(viewBindingDirInjected)
-            }
-          
+            }          
         }
     }
 
@@ -251,40 +250,37 @@ private fun getConfiguration(module: KotlinModule): CompilerConfiguration {
 
     if (module is AndroidModule) {
         configuration.addJavaSourceRoot(File("${module.buildDirectory}/injected"))
-        
-            val file = File(module.buildDirectory, "injected/resource")
-            val javaDir =  File(module.getRootFile() , "/src/main/java")
-            val kotlinDir =  File(module.getRootFile() , "/src/main/kotlin")
-            val buildGenDir =  File(module.getRootFile() , "/build/gen")
-            val viewBindingDir =  File(module.getRootFile() , "/build/view_binding")                            
-            val viewBindingDirInjected =  File(module.getRootFile() , "/build/injected/view_binding")        
+     
+        val file = File(module.buildDirectory, "injected/resource")
+        val javaDir =  File(module.getRootFile() , "/src/main/java")
+        val kotlinDir =  File(module.getRootFile() , "/src/main/kotlin")
+        val buildGenDir =  File(module.getRootFile() , "/build/gen")
+        val viewBindingDir =  File(module.getRootFile() , "/build/view_binding")                            
+        val viewBindingDirInjected =  File(module.getRootFile() , "/build/injected/view_binding")        
 
-            if (file.exists()) {
-                configuration.addJavaSourceRoot(file)
-            } 
+        if (file.exists()) {
+           configuration.addJavaSourceRoot(file)
+        } 
         
-            if (javaDir.exists()) {
-                configuration.addJavaSourceRoot(javaDir)
-            } 
+        if (javaDir.exists()) {
+           configuration.addJavaSourceRoot(javaDir)
+        } 
           
-            if (kotlinDir.exists()) {
-                configuration.addJavaSourceRoot(kotlinDir)
-            }
+        if (kotlinDir.exists()) {
+           configuration.addJavaSourceRoot(kotlinDir)
+        }
          
-            if (buildGenDir.exists()) {
-                configuration.addJavaSourceRoot(buildGenDir)
-            }
+        if (buildGenDir.exists()) {
+           configuration.addJavaSourceRoot(buildGenDir)
+        }
         
-            if (viewBindingDir.exists()) {
-                configuration.addJavaSourceRoot(viewBindingDir)
-            }
+        if (viewBindingDir.exists()) {
+           configuration.addJavaSourceRoot(viewBindingDir)
+        }
         
-            if (viewBindingDirInjected.exists()) {
-                configuration.addJavaSourceRoot(viewBindingDirInjected)
-            }
-            
-            
-        
+        if (viewBindingDirInjected.exists()) {
+           configuration.addJavaSourceRoot(viewBindingDirInjected)
+        }
     }
 
     return configuration

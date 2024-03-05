@@ -218,8 +218,8 @@ public class IncrementalJavaTask extends Task<JavaModule> {
         runtimeClassPath.addAll(getParentJavaFiles(buildGenDir));
         runtimeClassPath.addAll(getParentJavaFiles(viewBindingDir));
 
-        runtimeClassPath.add(BuildModule.getAndroidJar());
-        runtimeClassPath.add(BuildModule.getLambdaStubs());
+        runtimeClassPath.add(getModule().getBootstrapJarFile());
+        runtimeClassPath.add(getModule().getLambdaStubsJarFile());
 
         standardJavaFileManager.setLocation(
             StandardLocation.CLASS_OUTPUT, Collections.singletonList(mOutputDir));
@@ -392,8 +392,8 @@ public class IncrementalJavaTask extends Task<JavaModule> {
         runtimeClassPath.addAll(getParentJavaFiles(buildGenDir));
         runtimeClassPath.addAll(getParentJavaFiles(viewBindingDir));
 
-        runtimeClassPath.add(BuildModule.getAndroidJar());
-        runtimeClassPath.add(BuildModule.getLambdaStubs());
+        runtimeClassPath.add(getModule().getBootstrapJarFile());
+        runtimeClassPath.add(getModule().getLambdaStubsJarFile());
 
         String[] command =
             new String[] {
