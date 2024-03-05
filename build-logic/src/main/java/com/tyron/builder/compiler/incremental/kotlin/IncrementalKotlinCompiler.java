@@ -91,7 +91,10 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
     }
 
     try {
-      File buildSettings = new File(getModule().getProjectDir() + "/.idea/build_settings.json");
+      File buildSettings =
+          new File(
+              getModule().getProjectDir(),
+              ".idea/" + getModule().getRootFile().getName() + "_compiler_settings.json");
       String content = new String(Files.readAllBytes(Paths.get(buildSettings.getAbsolutePath())));
 
       JSONObject buildSettingsJson = new JSONObject(content);
@@ -104,12 +107,6 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
 
       // String language_version =
       //     buildSettingsJson.optJSONObject("kotlin").optString("languageVersion", "2.1");
-
-      String compiler_path =
-          buildSettingsJson
-              .optJSONObject("kotlin")
-              .optJSONObject("compiler")
-              .optString("compilerPath", BuildModule.getKotlinc().getAbsolutePath());
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         BuildModule.getKotlinc().setReadOnly();
@@ -195,13 +192,24 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
 
         List<File> javaSourceRoots = new ArrayList<>();
         if (javaDir.exists()) {
-          javaSourceRoots.addAll(getFiles(javaDir, ".java"));
+          Set<File> files = getFiles(javaDir, ".java");
+          if (!files.isEmpty()) {
+            javaSourceRoots.addAll(files);
+          }
         }
         if (buildGenDir.exists()) {
-          javaSourceRoots.addAll(getFiles(buildGenDir, ".java"));
+
+          Set<File> files = getFiles(buildGenDir, ".java");
+          if (!files.isEmpty()) {
+            javaSourceRoots.addAll(files);
+          }
         }
         if (viewBindingDir.exists()) {
-          javaSourceRoots.addAll(getFiles(viewBindingDir, ".java"));
+
+          Set<File> files = getFiles(viewBindingDir, ".java");
+          if (!files.isEmpty()) {
+            javaSourceRoots.addAll(files);
+          }
         }
 
         K2JVMCompiler compiler = new K2JVMCompiler();
@@ -229,18 +237,20 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         args.setPluginOptions(getPluginOptions());
 
         File cacheDir = new File(getModule().getBuildDirectory(), "kotlin/compileKotlin/cacheable");
+
         List<File> fileList = new ArrayList<>();
         if (javaDir.exists()) {
-          fileList.add(javaDir);
+          Set<File> javaFiles = getFiles(javaDir, ".kt");
+          if (!javaFiles.isEmpty()) {
+            fileList.add(javaDir);
+          }
         }
-        if (buildGenDir.exists()) {
-          fileList.add(buildGenDir);
-        }
-        if (viewBindingDir.exists()) {
-          fileList.add(viewBindingDir);
-        }
+
         if (kotlinDir.exists()) {
-          fileList.add(kotlinDir);
+          Set<File> kotlinFiles = getFiles(kotlinDir, ".kt");
+          if (!kotlinFiles.isEmpty()) {
+            fileList.add(kotlinDir);
+          }
         }
 
         IncrementalJvmCompilerRunnerKt.makeIncrementally(
@@ -272,6 +282,7 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         }
 
       } else {
+      
         File api_files = new File(getModule().getRootFile(), "/build/libraries/api_files/libs");
         File api_libs = new File(getModule().getRootFile(), "/build/libraries/api_libs");
         File kotlinOutputDir = new File(getModule().getBuildDirectory(), "bin/kotlin/classes");
@@ -351,27 +362,39 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
 
         List<File> javaSourceRoots = new ArrayList<>();
         if (javaDir.exists()) {
-          javaSourceRoots.addAll(getFiles(javaDir, ".java"));
+          Set<File> files = getFiles(javaDir, ".java");
+          if (!files.isEmpty()) {
+            javaSourceRoots.addAll(files);
+          }
         }
         if (buildGenDir.exists()) {
-          javaSourceRoots.addAll(getFiles(buildGenDir, ".java"));
+
+          Set<File> files = getFiles(buildGenDir, ".java");
+          if (!files.isEmpty()) {
+            javaSourceRoots.addAll(files);
+          }
         }
         if (viewBindingDir.exists()) {
-          javaSourceRoots.addAll(getFiles(viewBindingDir, ".java"));
+
+          Set<File> files = getFiles(viewBindingDir, ".java");
+          if (!files.isEmpty()) {
+            javaSourceRoots.addAll(files);
+          }
         }
 
         List<File> fileList = new ArrayList<>();
         if (javaDir.exists()) {
-          fileList.add(javaDir);
+          Set<File> javaFiles = getFiles(javaDir, ".kt");
+          if (!javaFiles.isEmpty()) {
+            fileList.add(javaDir);
+          }
         }
-        if (buildGenDir.exists()) {
-          fileList.add(buildGenDir);
-        }
-        if (viewBindingDir.exists()) {
-          fileList.add(viewBindingDir);
-        }
+
         if (kotlinDir.exists()) {
-          fileList.add(kotlinDir);
+          Set<File> kotlinFiles = getFiles(kotlinDir, ".kt");
+          if (!kotlinFiles.isEmpty()) {
+            fileList.add(kotlinDir);
+          }
         }
 
         List<File> plugins = getPlugins();
