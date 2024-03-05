@@ -50,7 +50,7 @@ public class ModuleImpl implements Module {
       if (!codeassist.mkdirs()) {}
     }
 
-    File buildSettings = new File(getProjectDir() + "/.idea/build_settings.json");
+    File buildSettings = new File(codeassist, getRootFile().getName() + "_compiler_settings.json");
 
     if (!buildSettings.exists()) {
 

@@ -105,7 +105,10 @@ public class IncrementalJavaTask extends Task<JavaModule> {
     }
 
     try {
-      File buildSettings = new File(getModule().getProjectDir() + "/.idea/build_settings.json");
+      File buildSettings =
+          new File(
+              getModule().getProjectDir(),
+              ".idea/" + getModule().getRootFile().getName() + "_compiler_settings.json");
       String content = new String(Files.readAllBytes(Paths.get(buildSettings.getAbsolutePath())));
 
       JSONObject buildSettingsJson = new JSONObject(content);
