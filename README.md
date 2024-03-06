@@ -33,19 +33,19 @@ Forked of Official CodeAssist Version Alpha-0.2.9
 
 - [x] AAB Support
 
-- [x] Java (17 Only Compile)
+- [x] Java 17 (Only Compile)
 
-- [x] Kotlin (21 Only Compile)
+- [x] Kotlin 21 (Only Compile)
 
 - [x] R8/ProGuard
 
 - [x] Java Code Completions (1.8)
 
-- [x] Kotlin Code Completions (Unstable) (1.8)
+- [x] Kotlin Code Completions (1.8 Unstable)
 
 - [x] Quick fixes (Import missing class and Implement Abstract Methods)  
 
-- [x] Layout Preview (80%) (Material3 Teme)
+- [x] Layout Preview (80%) (Material3 Theme)
 
 - [x] Automatic dependency resolution  
 
