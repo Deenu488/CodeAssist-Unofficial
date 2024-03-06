@@ -15,11 +15,11 @@ import com.tyron.builder.model.DiagnosticWrapper;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.JavaModule;
 import com.tyron.builder.project.cache.CacheHolder;
+import com.tyron.common.util.BinaryExecutor;
 import com.tyron.common.util.Cache;
-import java.io.BufferedReader;
+import com.tyron.common.util.ExecutionResult;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -395,7 +395,7 @@ public class IncrementalJavaTask extends Task<JavaModule> {
         runtimeClassPath.add(getModule().getBootstrapJarFile());
         runtimeClassPath.add(getModule().getLambdaStubsJarFile());
 
-        String[] command =
+        /* String[] command =
             new String[] {
               "dalvikvm",
               "-Xcompiler-option",
@@ -441,6 +441,40 @@ public class IncrementalJavaTask extends Task<JavaModule> {
 
         if (output.toString().contains("error")) {
           throw new CompilationFailedException("Compilation failed, see logs for more details");
+        }*/
+
+        List<String> args = new ArrayList<>();
+        args.add("dalvikvm");
+        args.add("-Xcompiler-option");
+        args.add("--compiler-filter=speed");
+        args.add("-Xmx256m");
+        args.add("-cp");
+        args.add(BuildModule.getJavac().getAbsolutePath());
+        args.add("com.sun.tools.javac.MainKt");
+        args.add("-sourcepath");
+        args.add(mJavaFiles.stream().map(File::toString).collect(Collectors.joining(":")));
+        args.add("-d");
+        args.add(mOutputDir.getAbsolutePath());
+        args.add("-bootclasspath");
+        args.add(runtimeClassPath.stream().map(File::toString).collect(Collectors.joining(":")));
+        args.add("-classpath");
+        args.add(compileClassPath.stream().map(File::toString).collect(Collectors.joining(":")));
+        args.add("-source");
+        args.add(sourceCompatibility);
+        args.add("-target");
+        args.add(targetCompatibility);
+
+        BinaryExecutor executor = new BinaryExecutor();
+        executor.setCommands(args);
+        ExecutionResult result = executor.run();
+
+        getLogger().info(executor.getLog().trim());
+
+        if (result != null) {
+          if (result.getExitValue() != 0) {
+            getLogger().info(result.getOutput().trim());
+            throw new CompilationFailedException("Compilation failed, see logs for more details");
+          }
         }
       }
 
