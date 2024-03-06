@@ -468,11 +468,14 @@ public class IncrementalJavaTask extends Task<JavaModule> {
         executor.setCommands(args);
         ExecutionResult result = executor.run();
 
-        getLogger().info(executor.getLog().trim());
+        String message = result.getOutput().trim();
+        if (!message.isEmpty()) {
+          getLogger().info(message);
+        }
 
         if (result != null) {
           if (result.getExitValue() != 0) {
-            getLogger().info(result.getOutput().trim());
+            getLogger().info(executor.getLog().trim());
             throw new CompilationFailedException("Compilation failed, see logs for more details");
           }
         }
