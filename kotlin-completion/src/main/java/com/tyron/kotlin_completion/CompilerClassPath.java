@@ -10,6 +10,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -35,24 +36,35 @@ public class CompilerClassPath implements Closeable {
 
     mJavaSourcePath =
         project.getJavaFiles().values().stream().map(File::toPath).collect(Collectors.toSet());
-    mJavaSourcePath.addAll(
-        project.getJavaFiles().values().stream().map(File::toPath).collect(Collectors.toSet()));
+
     mJavaSourcePath.addAll(
         project.getResourceClasses().values().stream()
             .map(File::toPath)
             .collect(Collectors.toList()));
+
     mClassPath =
         project.getLibraries().stream()
             .map(file -> new ClassPathEntry(file.toPath(), null))
             .collect(Collectors.toSet());
+
     mClassPath.add(new ClassPathEntry(BuildModule.getAndroidJar().toPath(), null));
+
+    File javaDir = new File(project.getRootFile() + "/src/main/java");
+    File buildGenDir = new File(project.getRootFile() + "/build/gen");
+    File viewBindingDir = new File(project.getRootFile() + "/build/view_binding");
+
+    mJavaSourcePath.addAll(getFiles(javaDir, ".java"));
+
+    mJavaSourcePath.addAll(getFiles(buildGenDir, ".java"));
+
+    mJavaSourcePath.addAll(getFiles(viewBindingDir, ".java"));
 
     compiler =
         new Compiler(
             project,
             mJavaSourcePath,
             mClassPath.stream().map(ClassPathEntry::getCompiledJar).collect(Collectors.toSet()));
-    // compiler.updateConfiguration(mConfiguration);
+    //   compiler.updateConfiguration(mConfiguration);
   }
 
   private boolean refresh(boolean updateClassPath, boolean updateJavaSourcePath) {
@@ -94,7 +106,28 @@ public class CompilerClassPath implements Closeable {
   }
 
   private void updateCompilerConfiguration() {
-    // compiler.updateConfiguration(mConfiguration);
+    //  compiler.updateConfiguration(mConfiguration);
+  }
+
+  public static Set<Path> getFiles(File dir, String ext) {
+    Set<Path> files = new HashSet<>();
+
+    File[] fileList = dir.listFiles();
+    if (fileList == null) {
+      return Collections.emptySet();
+    }
+
+    for (File file : fileList) {
+      if (file.isDirectory()) {
+        files.addAll(getFiles(file, ext));
+      } else {
+        if (file.getName().endsWith(ext)) {
+          files.add(file.toPath());
+        }
+      }
+    }
+
+    return files;
   }
 
   public <T> void syncPaths(
