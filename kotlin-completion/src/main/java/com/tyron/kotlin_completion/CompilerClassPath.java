@@ -38,6 +38,9 @@ public class CompilerClassPath implements Closeable {
         project.getJavaFiles().values().stream().map(File::toPath).collect(Collectors.toSet());
 
     mJavaSourcePath.addAll(
+        project.getJavaFiles().values().stream().map(File::toPath).collect(Collectors.toSet()));
+
+    mJavaSourcePath.addAll(
         project.getResourceClasses().values().stream()
             .map(File::toPath)
             .collect(Collectors.toList()));
