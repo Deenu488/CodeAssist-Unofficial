@@ -225,6 +225,7 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         args.setPluginOptions(getPluginOptions());
 
         File cacheDir = new File(getModule().getBuildDirectory(), "kotlin/compileKotlin/cacheable");
+
         List<File> fileList = new ArrayList<>();
         if (javaDir.exists()) {
           fileList.add(javaDir);
@@ -272,7 +273,6 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         File api_libs = new File(getModule().getRootFile(), "/build/libraries/api_libs");
         File kotlinOutputDir = new File(getModule().getBuildDirectory(), "bin/kotlin/classes");
         File javaOutputDir = new File(getModule().getBuildDirectory(), "bin/java/classes");
-
         File implementation_files =
             new File(getModule().getRootFile(), "/build/libraries/implementation_files/libs");
         File implementation_libs =
@@ -308,33 +308,27 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         compileClassPath.addAll(getJarFiles(compileOnlyApi_files));
         compileClassPath.addAll(getJarFiles(compileOnlyApi_libs));
 
+        compileClassPath.add(javaOutputDir);
+        compileClassPath.add(kotlinOutputDir);
+
         List<File> runtimeClassPath = new ArrayList<>();
         runtimeClassPath.addAll(getJarFiles(runtimeOnly_files));
         runtimeClassPath.addAll(getJarFiles(runtimeOnly_libs));
         runtimeClassPath.addAll(getJarFiles(runtimeOnlyApi_files));
         runtimeClassPath.addAll(getJarFiles(runtimeOnlyApi_libs));
-
+        runtimeClassPath.add(getModule().getBootstrapJarFile());
+        runtimeClassPath.add(getModule().getLambdaStubsJarFile());
         runtimeClassPath.addAll(getJarFiles(api_files));
         runtimeClassPath.addAll(getJarFiles(api_libs));
 
+        runtimeClassPath.add(javaOutputDir);
+        runtimeClassPath.add(kotlinOutputDir);
+
         List<File> classpath = new ArrayList<>();
-
-        classpath.add(BuildModule.getAndroidJar());
-        classpath.add(BuildModule.getLambdaStubs());
-
         classpath.add(getModule().getBuildClassesDirectory());
         classpath.addAll(getModule().getLibraries());
         classpath.addAll(compileClassPath);
         classpath.addAll(runtimeClassPath);
-
-        Set<File> javaOutputDirList = getFiles(javaOutputDir, ".class");
-        if (!javaOutputDirList.isEmpty()) {
-          classpath.add(javaOutputDir);
-        }
-        Set<File> kotlinOutputDirList = getFiles(kotlinOutputDir, ".class");
-        if (!kotlinOutputDirList.isEmpty()) {
-          classpath.add(kotlinOutputDir);
-        }
 
         List<String> arguments = new ArrayList<>();
         Collections.addAll(
@@ -350,39 +344,27 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
 
         List<File> javaSourceRoots = new ArrayList<>();
         if (javaDir.exists()) {
-          Set<File> files = getFiles(javaDir, ".java");
-          if (!files.isEmpty()) {
-            javaSourceRoots.add(javaDir);
-          }
+          javaSourceRoots.add(javaDir);
         }
         if (buildGenDir.exists()) {
-
-          Set<File> files = getFiles(buildGenDir, ".java");
-          if (!files.isEmpty()) {
-            javaSourceRoots.add(buildGenDir);
-          }
+          javaSourceRoots.add(buildGenDir);
         }
         if (viewBindingDir.exists()) {
-
-          Set<File> files = getFiles(viewBindingDir, ".java");
-          if (!files.isEmpty()) {
-            javaSourceRoots.add(viewBindingDir);
-          }
+          javaSourceRoots.add(viewBindingDir);
         }
 
         List<File> fileList = new ArrayList<>();
         if (javaDir.exists()) {
-          Set<File> javaFiles = getFiles(javaDir, ".kt");
-          if (!javaFiles.isEmpty()) {
-            fileList.add(javaDir);
-          }
+          fileList.add(javaDir);
         }
-
+        if (buildGenDir.exists()) {
+          fileList.add(buildGenDir);
+        }
+        if (viewBindingDir.exists()) {
+          fileList.add(viewBindingDir);
+        }
         if (kotlinDir.exists()) {
-          Set<File> kotlinFiles = getFiles(kotlinDir, ".kt");
-          if (!kotlinFiles.isEmpty()) {
-            fileList.add(kotlinDir);
-          }
+          fileList.add(kotlinDir);
         }
 
         List<File> plugins = getPlugins();
