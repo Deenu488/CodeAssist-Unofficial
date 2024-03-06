@@ -103,6 +103,9 @@ class KotlinEnvironment private constructor(val module: KotlinModule, disposable
             val viewBindingDir =  File(kotlinModule.getRootFile() , "/build/view_binding")                 
             val viewBindingDirInjected =  File(kotlinModule.getRootFile() , "/build/injected/view_binding")        
        
+            val kotlin_runtime_jar = File(kotlinModule.getRootFile(), "build/libraries/kotlin_runtime/" + kotlinModule.getRootFile().getName() + ".jar" )                 
+            addToClassPath(kotlin_runtime_jar)            
+       
             if (file.exists()) {
                 addToClassPath(file)
             }
@@ -226,12 +229,17 @@ private fun getConfiguration(module: KotlinModule): CompilerConfiguration {
     for (value in LanguageFeature.values()) {
         map[value] = LanguageFeature.State.ENABLED
     }
+
+    val analysisFlags: MutableMap<AnalysisFlag<*>, Any?> = HashMap()
+    analysisFlags[AnalysisFlags.skipMetadataVersionCheck] = false
+ 
     val settings: LanguageVersionSettings = LanguageVersionSettingsImpl(
         LATEST_STABLE,
         ApiVersion.createByLanguageVersion(LATEST_STABLE),
-        emptyMap(),
+        analysisFlags,
         map
     )
+    
     configuration.put(MODULE_NAME, module.name)
     configuration.put(LANGUAGE_VERSION_SETTINGS, settings)
     configuration.put(
@@ -257,7 +265,10 @@ private fun getConfiguration(module: KotlinModule): CompilerConfiguration {
         val buildGenDir =  File(module.getRootFile() , "/build/gen")
         val viewBindingDir =  File(module.getRootFile() , "/build/view_binding")                            
         val viewBindingDirInjected =  File(module.getRootFile() , "/build/injected/view_binding")        
-
+   
+        val kotlin_runtime_jar = File(module.getRootFile(), "build/libraries/kotlin_runtime/" + module.getRootFile().getName() + ".jar" )                
+        configuration.addJvmClasspathRoots(listOf(kotlin_runtime_jar) )   
+    
         if (file.exists()) {
            configuration.addJavaSourceRoot(file)
         } 

@@ -51,6 +51,13 @@ public class CompilerClassPath implements Closeable {
             .collect(Collectors.toSet());
 
     mClassPath.add(new ClassPathEntry(BuildModule.getAndroidJar().toPath(), null));
+    mClassPath.add(
+        new ClassPathEntry(
+            new File(
+                    project.getRootFile(),
+                    "/build/libraries/kotlin_runtime/" + project.getRootFile().getName() + ".jar")
+                .toPath(),
+            null));
 
     File javaDir = new File(project.getRootFile() + "/src/main/java");
     File buildGenDir = new File(project.getRootFile() + "/build/gen");
