@@ -27,6 +27,7 @@ import com.tyron.resolver.repository.Repository;
 import com.tyron.resolver.repository.RepositoryManager;
 import com.tyron.resolver.repository.RepositoryManagerImpl;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
@@ -41,6 +42,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
 
 public class DependencyManager {
 
@@ -341,6 +343,37 @@ public class DependencyManager {
 
     listener.onTaskStarted("Checking libraries");
     logger.debug("> Task :" + name + ":" + "checkingLibraries");
+
+    createCompilerSettings(idea, name);
+  }
+
+  private void createCompilerSettings(File idea, String name) {
+    File buildSettings = new File(idea, name + "_compiler_settings.json");
+
+    if (!buildSettings.exists()) {
+
+      try {
+        JSONObject javaSettings = new JSONObject();
+        javaSettings.put("isCompilerEnabled", "false");
+        javaSettings.put("sourceCompatibility", "1.8");
+        javaSettings.put("targetCompatibility", "1.8");
+
+        JSONObject kotlinSettings = new JSONObject();
+        kotlinSettings.put("isCompilerEnabled", "false");
+        kotlinSettings.put("jvmTarget", "1.8");
+        // kotlinSettings.put("languageVersion", "2.1");
+
+        JSONObject buildSettingsJson = new JSONObject();
+        buildSettingsJson.put("java", javaSettings);
+        buildSettingsJson.put("kotlin", kotlinSettings);
+
+        FileWriter fileWriter = new FileWriter(buildSettings, true);
+        fileWriter.write(buildSettingsJson.toString(1));
+        fileWriter.close();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
   }
 
   // checkDependencies

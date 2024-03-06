@@ -17,6 +17,7 @@ import com.tyron.common.util.Decompress;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
@@ -32,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
 
 /** Task responsible for copying aars/jars from libraries to build/libs */
 public class CheckLibrariesTask extends Task<JavaModule> {
@@ -73,13 +75,46 @@ public class CheckLibrariesTask extends Task<JavaModule> {
         if (!includedInBuildGradle.isEmpty()) {
           projects.addAll(includedInBuildGradle);
         }
+
+        File idea = new File(getModule().getProjectDir(), ".idea");
+
         File includeName = new File(getModule().getProjectDir(), include);
         String root = include.replaceFirst("/", "").replaceAll("/", ":");
         getLogger().debug("> Task :" + root + ":" + "checkingLibraries");
         try {
           checkLibraries(getModule(), includeName, getLogger(), gradleFile, root);
+          createCompilerSettings(idea, include);
         } catch (IOException e) {
         }
+      }
+    }
+  }
+
+  private void createCompilerSettings(File idea, String name) {
+    File buildSettings = new File(idea, name + "_compiler_settings.json");
+
+    if (!buildSettings.exists()) {
+
+      try {
+        JSONObject javaSettings = new JSONObject();
+        javaSettings.put("isCompilerEnabled", "false");
+        javaSettings.put("sourceCompatibility", "1.8");
+        javaSettings.put("targetCompatibility", "1.8");
+
+        JSONObject kotlinSettings = new JSONObject();
+        kotlinSettings.put("isCompilerEnabled", "false");
+        kotlinSettings.put("jvmTarget", "1.8");
+        // kotlinSettings.put("languageVersion", "2.1");
+
+        JSONObject buildSettingsJson = new JSONObject();
+        buildSettingsJson.put("java", javaSettings);
+        buildSettingsJson.put("kotlin", kotlinSettings);
+
+        FileWriter fileWriter = new FileWriter(buildSettings, true);
+        fileWriter.write(buildSettingsJson.toString(1));
+        fileWriter.close();
+      } catch (Exception e) {
+        e.printStackTrace();
       }
     }
   }
