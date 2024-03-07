@@ -99,7 +99,7 @@ public class InjectLoggerTask extends Task<AndroidModule> {
           + "                    }\n"
           + "                }\n"
           + "            } catch (IOException e) {\n"
-          + "                error(\"IOException occurred on Logger: \" + e.getMessage());\n"
+          + "                error(String.format(\"IOException occurred on Logger: \", e.getMessage()));\n"
           + "            }\n"
           + "        });\n"
           + "    }\n"
@@ -125,12 +125,15 @@ public class InjectLoggerTask extends Task<AndroidModule> {
           + "    }\n"
           + "\n"
           + "    private static void broadcast(String type, String message) {\n"
-          + "        Intent intent = new Intent(mContext.getPackageName() + \".LOG\");\n"
+          + "        StringBuilder intentAction = new StringBuilder();\n"
+          + "        intentAction.append(mContext.getPackageName()).append(\".LOG\");\n"
+          + "        Intent intent = new Intent(intentAction.toString());\n"
           + "        intent.putExtra(\"type\", type);\n"
           + "        intent.putExtra(\"message\", message);\n"
           + "        mContext.sendBroadcast(intent);\n"
           + "    }\n"
           + "}\n";
+
   private File mLoggerFile;
   private File mApplicationFile;
   private String mOriginalApplication;
