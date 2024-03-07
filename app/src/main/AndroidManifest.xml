@@ -40,6 +40,7 @@
             android:name=".service.IndexService"
             android:enabled="true"
             android:foregroundServiceType="systemExempted"
+            android:permission="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED"
             android:exported="false"/>
         <activity
             android:name=".ui.settings.SettingsActivity"
@@ -60,6 +61,7 @@
             android:name=".service.CompilerService"
             android:enabled="true"
             android:foregroundServiceType="systemExempted"
+            android:permission="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED"
             android:exported="false"/>
         <provider
             android:name="androidx.core.content.FileProvider"
