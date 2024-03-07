@@ -16,7 +16,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -152,7 +151,7 @@ public class CompileBatch implements AutoCloseable {
   private static ReusableCompiler.Borrow batchTask(
       JavaCompilerService parent, Collection<? extends JavaFileObject> sources) {
     parent.clearDiagnostics();
-    List<String> options = options(parent.classPath, parent.addExports);
+    List<String> options = options(parent, parent.classPath, parent.addExports);
     return parent.compiler.getTask(
         parent.mSourceFileManager,
         parent::addDiagnostic,
@@ -170,14 +169,22 @@ public class CompileBatch implements AutoCloseable {
         .collect(Collectors.joining(File.pathSeparator));
   }
 
-  private static List<String> options(Set<File> classPath, Set<String> addExports) {
+  private static List<String> options(
+      JavaCompilerService parent, Set<File> classPath, Set<String> addExports) {
     List<String> list = new ArrayList<>();
+    JavaModule module = parent.getCurrentModule();
 
-    Collections.addAll(
-        list,
-        "-bootclasspath",
-        joinPath(
-            Arrays.asList(CompletionModule.getAndroidJar(), CompletionModule.getLambdaStubs())));
+    List<File> bootClassPathEntries = new ArrayList<>(classPath);
+    bootClassPathEntries.add(CompletionModule.getAndroidJar());
+    bootClassPathEntries.add(CompletionModule.getLambdaStubs());
+    bootClassPathEntries.add(
+        new File(
+            module.getRootFile(),
+            "build/libraries/kotlin_runtime/" + module.getRootFile().getName() + ".jar"));
+
+    list.add("-bootclasspath");
+    list.add(joinPath(bootClassPathEntries));
+
     Collections.addAll(list, "-cp", joinPath(classPath));
 
     Collections.addAll(list, "-target", "1.8", "-source", "1.8");

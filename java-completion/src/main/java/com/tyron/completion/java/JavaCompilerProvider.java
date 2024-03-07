@@ -71,6 +71,11 @@ public class JavaCompilerProvider extends CompilerProvider<JavaCompilerService> 
         File buildGenDir = new File(dependency.getRootFile() + "/build/gen");
         File viewBindingDir = new File(dependency.getRootFile() + "/build/view_binding");
 
+        paths.add(
+            new File(
+                dependency.getRootFile(),
+                "/build/libraries/kotlin_runtime/" + project.getRootFile().getName() + ".jar"));
+
         if (buildGenDir.exists()) {
           paths.addAll(getFiles(buildGenDir, ".java"));
         }

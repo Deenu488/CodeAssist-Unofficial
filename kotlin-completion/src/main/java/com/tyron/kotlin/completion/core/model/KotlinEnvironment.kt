@@ -230,13 +230,14 @@ private fun getConfiguration(module: KotlinModule): CompilerConfiguration {
         map[value] = LanguageFeature.State.ENABLED
     }
 
-    val analysisFlags: MutableMap<AnalysisFlag<*>, Any?> = HashMap()
-    analysisFlags[AnalysisFlags.skipMetadataVersionCheck] = false
+    // val analysisFlags: MutableMap<AnalysisFlag<*>, Any?> = HashMap()
+    // analysisFlags[AnalysisFlags.skipMetadataVersionCheck] = false
  
     val settings: LanguageVersionSettings = LanguageVersionSettingsImpl(
         LATEST_STABLE,
         ApiVersion.createByLanguageVersion(LATEST_STABLE),
-        analysisFlags,
+       // analysisFlags,
+        emptyMap(),
         map
     )
     

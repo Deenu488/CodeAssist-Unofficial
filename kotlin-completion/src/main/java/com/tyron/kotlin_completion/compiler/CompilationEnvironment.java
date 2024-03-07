@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import kotlin.Pair;
@@ -20,8 +19,6 @@ import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment;
 import org.jetbrains.kotlin.cli.jvm.config.JvmContentRootsKt;
 import org.jetbrains.kotlin.com.intellij.openapi.Disposable;
 import org.jetbrains.kotlin.com.intellij.openapi.util.Disposer;
-import org.jetbrains.kotlin.config.AnalysisFlag;
-import org.jetbrains.kotlin.config.AnalysisFlags;
 import org.jetbrains.kotlin.config.ApiVersion;
 import org.jetbrains.kotlin.config.CommonConfigurationKeys;
 import org.jetbrains.kotlin.config.CompilerConfiguration;
@@ -67,14 +64,15 @@ public class CompilationEnvironment implements Closeable {
       map.put(value, LanguageFeature.State.ENABLED);
     }
 
-    Map<AnalysisFlag<?>, Object> analysisFlags = new HashMap<>();
-    analysisFlags.put(AnalysisFlags.getSkipMetadataVersionCheck(), false);
+    // Map<AnalysisFlag<?>, Object> analysisFlags = new HashMap<>();
+    // analysisFlags.put(AnalysisFlags.getSkipMetadataVersionCheck(), false);
 
     LanguageVersionSettings settings =
         new LanguageVersionSettingsImpl(
             LanguageVersion.LATEST_STABLE,
             ApiVersion.createByLanguageVersion(LanguageVersion.LATEST_STABLE),
-            analysisFlags,
+            // analysisFlags,
+            Collections.emptyMap(),
             map);
     configuration.put(CommonConfigurationKeys.MODULE_NAME, mModule.getName());
     configuration.put(CommonConfigurationKeys.LANGUAGE_VERSION_SETTINGS, settings);
