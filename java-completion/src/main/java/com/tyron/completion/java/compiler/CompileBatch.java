@@ -185,7 +185,7 @@ public class CompileBatch implements AutoCloseable {
     list.add("-bootclasspath");
     list.add(joinPath(bootClassPathEntries));
 
-    Collections.addAll(list, "-cp", joinPath(classPath));
+    Collections.addAll(list, "-cp", joinPath(bootClassPathEntries));
 
     Collections.addAll(list, "-target", "1.8", "-source", "1.8");
 
