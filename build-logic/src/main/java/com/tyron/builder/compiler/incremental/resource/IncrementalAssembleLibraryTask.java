@@ -1,5 +1,6 @@
 package com.tyron.builder.compiler.incremental.resource;
 
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 import androidx.annotation.NonNull;
@@ -24,13 +25,13 @@ import com.tyron.builder.model.ModuleSettings;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.builder.project.cache.CacheHolder;
+import com.tyron.common.util.BinaryExecutor;
 import com.tyron.common.util.Cache;
 import com.tyron.common.util.Decompress;
-import java.io.BufferedReader;
+import com.tyron.common.util.ExecutionResult;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
@@ -970,28 +971,26 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     }
 
     try {
-      File buildSettings = new File(getModule().getProjectDir() + "/.idea/build_settings.json");
+      File buildSettings =
+          new File(getModule().getProjectDir(), ".idea/" + name + "_compiler_settings.json");
       String content = new String(Files.readAllBytes(Paths.get(buildSettings.getAbsolutePath())));
 
       JSONObject buildSettingsJson = new JSONObject(content);
 
-      boolean useNewCompiler =
-          Boolean.parseBoolean(buildSettingsJson.optString("useNewCompiler", "false"));
-      String jvm_target = buildSettingsJson.optJSONObject("kotlin").optString("jvmTarget", "1.8");
-      String language_version =
-          buildSettingsJson.optJSONObject("kotlin").optString("languageVersion", "2.1");
-      String compiler_path =
-          buildSettingsJson
-              .optJSONObject("kotlin")
-              .optJSONObject("compiler")
-              .optString("compilerPath", BuildModule.getKotlinc().getAbsolutePath());
-      String main_class =
-          buildSettingsJson
-              .optJSONObject("kotlin")
-              .optJSONObject("compiler")
-              .optString("mainClass", "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler");
+      boolean isCompilerEnabled =
+          Boolean.parseBoolean(
+              buildSettingsJson.optJSONObject("kotlin").optString("isCompilerEnabled", "false"));
 
-      if (!useNewCompiler) {
+      String jvm_target = buildSettingsJson.optJSONObject("kotlin").optString("jvmTarget", "1.8");
+
+      // String language_version =
+      //     buildSettingsJson.optJSONObject("kotlin").optString("languageVersion", "2.1");
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        BuildModule.getKotlinc().setReadOnly();
+      }
+
+      if (!isCompilerEnabled) {
 
         List<File> mFilesToCompile = new ArrayList<>();
 
@@ -1153,15 +1152,14 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
         List<File> javaSourceRoots = new ArrayList<>();
         if (javaDir.exists()) {
-          javaSourceRoots.addAll(getFiles(javaDir, ".java"));
+          javaSourceRoots.add(javaDir);
         }
         if (buildGenDir.exists()) {
-          javaSourceRoots.addAll(getFiles(buildGenDir, ".java"));
+          javaSourceRoots.add(buildGenDir);
         }
         if (viewBindingDir.exists()) {
-          javaSourceRoots.addAll(getFiles(viewBindingDir, ".java"));
+          javaSourceRoots.add(viewBindingDir);
         }
-
         File cacheDir =
             new File(getModule().getProjectDir(), name + "/build/kotlin/compileKotlin/cacheable");
 
@@ -1182,42 +1180,36 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         List<File> plugins = getPlugins();
         getLogger().debug("Loading kotlin compiler plugins: " + plugins);
 
-        String[] command =
-            new String[] {
-              "dalvikvm",
-              "-Xcompiler-option",
-              "--compiler-filter=speed",
-              "-Xmx256m",
-              "-cp",
-              compiler_path,
-              main_class,
-              "-no-reflect",
-              "-no-jdk",
-              "-no-stdlib",
-              "-jvm-target",
-              jvm_target,
-              "-language-version",
-              language_version,
-              "-cp",
-              Arrays.toString(arguments.toArray(new String[0])).replace("[", "").replace("]", ""),
-              "-Xjava-source-roots="
-                  + Arrays.toString(
-                          javaSourceRoots.stream()
-                              .map(File::getAbsolutePath)
-                              .toArray(String[]::new))
-                      .replace("[", "")
-                      .replace("]", "")
-            };
+        List<String> args = new ArrayList<>();
+        args.add("dalvikvm");
+        args.add("-Xcompiler-option");
+        args.add("--compiler-filter=speed");
+        args.add("-Xmx256m");
+        args.add("-cp");
+        args.add(BuildModule.getKotlinc().getAbsolutePath());
+        args.add("org.jetbrains.kotlin.cli.jvm.K2JVMCompiler");
+
+        args.add("-no-jdk");
+        args.add("-no-stdlib");
+        args.add("-no-reflect");
+        args.add("-jvm-target");
+        args.add(jvm_target);
+        args.add("-cp");
+        args.add(String.join(", ", arguments));
+        args.add(
+            "-Xjava-source-roots="
+                + String.join(
+                    ", ",
+                    javaSourceRoots.stream().map(File::getAbsolutePath).toArray(String[]::new)));
 
         for (File file : fileList) {
-          command = appendElement(command, file.getAbsolutePath());
+          args.add(file.getAbsolutePath());
         }
+        args.add("-d");
+        args.add(out.getAbsolutePath());
 
-        command = appendElement(command, "-d");
-        command = appendElement(command, out.getAbsolutePath());
-        command = appendElement(command, "-module-name");
-        command = appendElement(command, getModule().getRootFile().getName());
-        command = appendElement(command, "-P");
+        args.add("-module-name");
+        args.add(getModule().getRootFile().getName());
 
         String plugin = "";
         String pluginString =
@@ -1230,29 +1222,20 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
         plugin = pluginString + ":" + (pluginOptionsString.isEmpty() ? ":=" : pluginOptionsString);
 
-        command = appendElement(command, "plugin:" + plugin);
+        args.add("-P");
+        args.add("plugin:" + plugin);
 
-        ProcessBuilder processBuilder = new ProcessBuilder(command);
-        processBuilder.redirectErrorStream(true);
+        BinaryExecutor executor = new BinaryExecutor();
+        executor.setCommands(args);
+        ExecutionResult result = executor.run();
 
-        Process process = processBuilder.start();
+        getLogger().info(executor.getLog().trim());
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        StringBuilder output = new StringBuilder(); // To store the output
-
-        String line;
-        while ((line = reader.readLine()) != null) {
-          output.append(line).append("\n"); // Append each line to the output
-        }
-
-        getLogger().info(output.toString());
-
-        process.waitFor();
-
-        if (output.toString().contains("error")) {
-          throw new CompilationFailedException("Compilation failed, see logs for more details");
-        } else {
-          getLogger().debug("> Task :" + name + ":" + "classes");
+        if (result != null) {
+          if (result.getExitValue() != 0) {
+            getLogger().info(result.getOutput().trim());
+            throw new CompilationFailedException("Compilation failed, see logs for more details");
+          }
         }
       }
 
@@ -1284,89 +1267,180 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       }
     }
 
-    List<File> mFilesToCompile = new ArrayList<>();
+    try {
+      File buildSettings =
+          new File(getModule().getProjectDir(), ".idea/" + name + "_compiler_settings.json");
+      String content = new String(Files.readAllBytes(Paths.get(buildSettings.getAbsolutePath())));
 
-    mClassCache = getModule().getCache(CACHE_KEY, new Cache<>());
-    for (Cache.Key<String> key : new HashSet<>(mClassCache.getKeys())) {
-      if (!mFilesToCompile.contains(key.file.toFile())) {
-        File file = mClassCache.get(key.file, "class").iterator().next();
-        deleteAllFiles(file, ".class");
-        mClassCache.remove(key.file, "class", "dex");
+      JSONObject buildSettingsJson = new JSONObject(content);
+
+      boolean isCompilerEnabled =
+          Boolean.parseBoolean(
+              buildSettingsJson.optJSONObject("java").optString("isCompilerEnabled", "false"));
+
+      String sourceCompatibility =
+          buildSettingsJson.optJSONObject("java").optString("sourceCompatibility", "1.8");
+
+      String targetCompatibility =
+          buildSettingsJson.optJSONObject("java").optString("targetCompatibility", "1.8");
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        BuildModule.getJavac().setReadOnly();
       }
-    }
 
-    runtimeClassPath.add(getModule().getBootstrapJarFile());
-    runtimeClassPath.add(getModule().getLambdaStubsJarFile());
+      if (!isCompilerEnabled) {
 
-    mFilesToCompile.addAll(javaFiles);
-    List<JavaFileObject> javaFileObjects = new ArrayList<>();
+        List<File> mFilesToCompile = new ArrayList<>();
 
-    if (mFilesToCompile.isEmpty()) {
-      getLogger().debug("> Task :" + name + ":" + "compileJava SKIPPED");
-      return;
-    } else {
-      getLogger().debug("> Task :" + name + ":" + "compileJava");
-    }
-
-    List<String> options = new ArrayList<>();
-    options.add("-proc:none");
-    options.add("-source");
-    options.add("1.8");
-    options.add("-target");
-    options.add("1.8");
-    options.add("-Xlint:cast");
-    options.add("-Xlint:deprecation");
-    options.add("-Xlint:empty");
-    options.add("-Xlint" + ":fallthrough");
-    options.add("-Xlint:finally");
-    options.add("-Xlint:path");
-    options.add("-Xlint:unchecked");
-    options.add("-Xlint" + ":varargs");
-    options.add("-Xlint:static");
-    for (File file : mFilesToCompile) {
-      javaFileObjects.add(
-          new SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
-            @Override
-            public CharSequence getCharContent(boolean ignoreEncodingErrors) throws IOException {
-              return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-            }
-          });
-    }
-
-    DiagnosticListener<JavaFileObject> diagnosticCollector =
-        diagnostic -> {
-          switch (diagnostic.getKind()) {
-            case ERROR:
-              mHasErrors = true;
-              getLogger().error(new DiagnosticWrapper(diagnostic));
-              break;
-            case WARNING:
-              getLogger().warning(new DiagnosticWrapper(diagnostic));
+        mClassCache = getModule().getCache(CACHE_KEY, new Cache<>());
+        for (Cache.Key<String> key : new HashSet<>(mClassCache.getKeys())) {
+          if (!mFilesToCompile.contains(key.file.toFile())) {
+            File file = mClassCache.get(key.file, "class").iterator().next();
+            deleteAllFiles(file, ".class");
+            mClassCache.remove(key.file, "class", "dex");
           }
-        };
+        }
 
-    JavacTool tool = JavacTool.create();
-    JavacFileManager standardJavaFileManager =
-        tool.getStandardFileManager(
-            diagnosticCollector, Locale.getDefault(), Charset.defaultCharset());
-    standardJavaFileManager.setSymbolFileEnabled(false);
-    standardJavaFileManager.setLocation(
-        StandardLocation.CLASS_OUTPUT, Collections.singletonList(out));
-    standardJavaFileManager.setLocation(StandardLocation.PLATFORM_CLASS_PATH, runtimeClassPath);
-    standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, compileClassPath);
-    standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, mFilesToCompile);
+        runtimeClassPath.add(getModule().getBootstrapJarFile());
+        runtimeClassPath.add(getModule().getLambdaStubsJarFile());
 
-    JavacTask task =
-        tool.getTask(
-            null, standardJavaFileManager, diagnosticCollector, options, null, javaFileObjects);
-    task.parse();
-    task.analyze();
-    task.generate();
+        mFilesToCompile.addAll(javaFiles);
+        List<JavaFileObject> javaFileObjects = new ArrayList<>();
 
-    if (mHasErrors) {
-      throw new CompilationFailedException("Compilation failed, check logs for more details");
-    } else {
-      getLogger().debug("> Task :" + name + ":" + "classes");
+        if (mFilesToCompile.isEmpty()) {
+          getLogger().debug("> Task :" + name + ":" + "compileJava SKIPPED");
+          return;
+        } else {
+          getLogger().debug("> Task :" + name + ":" + "compileJava");
+        }
+
+        List<String> options = new ArrayList<>();
+        options.add("-proc:none");
+        options.add("-source");
+        options.add("1.8");
+        options.add("-target");
+        options.add("1.8");
+        options.add("-Xlint:cast");
+        options.add("-Xlint:deprecation");
+        options.add("-Xlint:empty");
+        options.add("-Xlint" + ":fallthrough");
+        options.add("-Xlint:finally");
+        options.add("-Xlint:path");
+        options.add("-Xlint:unchecked");
+        options.add("-Xlint" + ":varargs");
+        options.add("-Xlint:static");
+        for (File file : mFilesToCompile) {
+          javaFileObjects.add(
+              new SimpleJavaFileObject(file.toURI(), JavaFileObject.Kind.SOURCE) {
+                @Override
+                public CharSequence getCharContent(boolean ignoreEncodingErrors)
+                    throws IOException {
+                  return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+                }
+              });
+        }
+
+        DiagnosticListener<JavaFileObject> diagnosticCollector =
+            diagnostic -> {
+              switch (diagnostic.getKind()) {
+                case ERROR:
+                  mHasErrors = true;
+                  getLogger().error(new DiagnosticWrapper(diagnostic));
+                  break;
+                case WARNING:
+                  getLogger().warning(new DiagnosticWrapper(diagnostic));
+              }
+            };
+
+        JavacTool tool = JavacTool.create();
+        JavacFileManager standardJavaFileManager =
+            tool.getStandardFileManager(
+                diagnosticCollector, Locale.getDefault(), Charset.defaultCharset());
+        standardJavaFileManager.setSymbolFileEnabled(false);
+        standardJavaFileManager.setLocation(
+            StandardLocation.CLASS_OUTPUT, Collections.singletonList(out));
+        standardJavaFileManager.setLocation(StandardLocation.PLATFORM_CLASS_PATH, runtimeClassPath);
+        standardJavaFileManager.setLocation(StandardLocation.CLASS_PATH, compileClassPath);
+        standardJavaFileManager.setLocation(StandardLocation.SOURCE_PATH, mFilesToCompile);
+
+        JavacTask task =
+            tool.getTask(
+                null, standardJavaFileManager, diagnosticCollector, options, null, javaFileObjects);
+        task.parse();
+        task.analyze();
+        task.generate();
+
+        if (mHasErrors) {
+          throw new CompilationFailedException("Compilation failed, check logs for more details");
+        } else {
+          getLogger().debug("> Task :" + name + ":" + "classes");
+        }
+
+      } else {
+
+        List<File> mFilesToCompile = new ArrayList<>();
+
+        mClassCache = getModule().getCache(CACHE_KEY, new Cache<>());
+        for (Cache.Key<String> key : new HashSet<>(mClassCache.getKeys())) {
+          if (!mFilesToCompile.contains(key.file.toFile())) {
+            File file = mClassCache.get(key.file, "class").iterator().next();
+            deleteAllFiles(file, ".class");
+            mClassCache.remove(key.file, "class", "dex");
+          }
+        }
+
+        runtimeClassPath.add(getModule().getBootstrapJarFile());
+        runtimeClassPath.add(getModule().getLambdaStubsJarFile());
+
+        mFilesToCompile.addAll(javaFiles);
+
+        if (mFilesToCompile.isEmpty()) {
+          getLogger().debug("> Task :" + name + ":" + "compileJava SKIPPED");
+          return;
+        } else {
+          getLogger().debug("> Task :" + name + ":" + "compileJava");
+        }
+
+        List<String> args = new ArrayList<>();
+        args.add("dalvikvm");
+        args.add("-Xcompiler-option");
+        args.add("--compiler-filter=speed");
+        args.add("-Xmx256m");
+        args.add("-cp");
+        args.add(BuildModule.getJavac().getAbsolutePath());
+        args.add("com.sun.tools.javac.MainKt");
+        args.add("-sourcepath");
+        args.add(javaFiles.stream().map(File::toString).collect(Collectors.joining(":")));
+        args.add("-d");
+        args.add(out.getAbsolutePath());
+        args.add("-bootclasspath");
+        args.add(runtimeClassPath.stream().map(File::toString).collect(Collectors.joining(":")));
+        args.add("-classpath");
+        args.add(compileClassPath.stream().map(File::toString).collect(Collectors.joining(":")));
+        args.add("-source");
+        args.add(sourceCompatibility);
+        args.add("-target");
+        args.add(targetCompatibility);
+
+        BinaryExecutor executor = new BinaryExecutor();
+        executor.setCommands(args);
+        ExecutionResult result = executor.run();
+
+        String message = result.getOutput().trim();
+        if (!message.isEmpty()) {
+          getLogger().info(message);
+        }
+
+        if (result != null) {
+          if (result.getExitValue() != 0) {
+            getLogger().info(executor.getLog().trim());
+            throw new CompilationFailedException("Compilation failed, see logs for more details");
+          }
+        }
+      }
+
+    } catch (Exception e) {
+      throw new CompilationFailedException(e);
     }
   }
 

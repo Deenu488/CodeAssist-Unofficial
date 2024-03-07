@@ -1,6 +1,7 @@
 package com.tyron.code.language.kotlin;
 
 import android.content.res.AssetManager;
+import android.os.Build;
 import com.tyron.builder.BuildModule;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
@@ -103,6 +104,9 @@ public class KotlinAnalyzer extends DiagnosticTextmateAnalyzer {
 
                   String jvm_target =
                       buildSettingsJson.optJSONObject("kotlin").optString("jvmTarget", "1.8");
+                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    BuildModule.getJavac().setReadOnly();
+                  }
 
                   if (isCompilerEnabled) {
 
