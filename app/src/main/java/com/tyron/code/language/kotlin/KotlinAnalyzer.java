@@ -110,8 +110,7 @@ public class KotlinAnalyzer extends DiagnosticTextmateAnalyzer {
                         new File(
                             module.getBuildDirectory(),
                             "libraries/kotlin_runtime/" + module.getRootFile().getName() + ".jar");
-                    if (mClassOutput.getParentFile().exists()) {
-                      mClassOutput.delete();
+                    if (mClassOutput.getParentFile().exists()) {                   
                       mClassOutput.getParentFile().mkdirs();
                     }
 
