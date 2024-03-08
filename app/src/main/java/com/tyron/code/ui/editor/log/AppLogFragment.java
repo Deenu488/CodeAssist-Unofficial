@@ -7,6 +7,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Looper;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +32,10 @@ import com.tyron.code.ui.main.MainViewModel;
 import com.tyron.code.ui.project.ProjectManager;
 import com.tyron.common.SharedPreferenceKeys;
 import com.tyron.editor.Caret;
+import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
+import io.github.rosemoe.sora.langs.textmate.theme.TextMateColorScheme;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Handler;
@@ -53,6 +60,7 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
   private int id;
   private MainViewModel mMainViewModel;
   private LogViewModel mModel;
+  private OnDiagnosticClickListener mListener;
 
   public AppLogFragment() {}
 
@@ -113,13 +121,14 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
   }
 
   private void configureEditor(@NonNull CodeEditorView editor) {
+
     editor.setEditable(false);
     editor.setColorScheme(new CompiledEditorScheme(requireContext()));
-    editor.setBackgroundAnalysisEnabled(false);
+    // editor.setBackgroundAnalysisEnabled(false);
     editor.setTypefaceText(
         ResourcesCompat.getFont(requireContext(), R.font.jetbrains_mono_regular));
-    editor.setLigatureEnabled(true);
-    editor.setHighlightCurrentBlock(true);
+    // editor.setLigatureEnabled(true);
+    // editor.setHighlightCurrentBlock(true);
     editor.setEdgeEffectColor(Color.TRANSPARENT);
     editor.setInputType(
         EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS
@@ -128,8 +137,26 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
             | EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
 
     SharedPreferences pref = ApplicationLoader.getDefaultPreferences();
-    editor.setWordwrap(pref.getBoolean(SharedPreferenceKeys.EDITOR_WORDWRAP, false));
+    // editor.setWordwrap(pref.getBoolean(SharedPreferenceKeys.EDITOR_WORDWRAP, false));
+    editor.setWordwrap(true);
     editor.setTextSize(Integer.parseInt(pref.getString(SharedPreferenceKeys.FONT_SIZE, "12")));
+
+    try {
+      InputStream jsonStream =
+          requireContext().getAssets().open("textmate/log/syntaxes/log.tmLanguage.json");
+      InputStream configStream =
+          requireContext().getAssets().open("textmate/log/language-configuration.json");
+
+      TextMateLanguage language =
+          TextMateLanguage.create(
+              "log.tmLanguage.json",
+              jsonStream,
+              new InputStreamReader(configStream),
+              ((TextMateColorScheme) editor.getColorScheme()).getRawTheme());
+
+      editor.setEditorLanguage(language);
+    } catch (Exception e) {
+    }
   }
 
   @Override
@@ -145,11 +172,9 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
   private void process(List<DiagnosticWrapper> texts) {
     final android.os.Handler handler = new android.os.Handler(Looper.getMainLooper());
     if (handler != null) {
-
       handler.postDelayed(
           () -> {
             SpannableStringBuilder combinedText = new SpannableStringBuilder();
-
             if (texts != null) {
               for (DiagnosticWrapper diagnostic : texts) {
                 if (diagnostic != null) {
@@ -164,6 +189,7 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
                   if (diagnostic.getSource() != null) {
                     combinedText.append(' ');
                   }
+                  addDiagnosticSpan(combinedText, diagnostic);
                   combinedText.append("\n");
                 }
               }
@@ -190,5 +216,52 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
       default:
         return 0xffFFFFFF;
     }
+  }
+
+  private void addDiagnosticSpan(SpannableStringBuilder sb, DiagnosticWrapper diagnostic) {
+    if (diagnostic.getSource() == null || !diagnostic.getSource().exists()) {
+      return;
+    }
+
+    if (diagnostic.getOnClickListener() != null) {
+      ClickableSpan span =
+          new ClickableSpan() {
+            @Override
+            public void onClick(@NonNull View widget) {
+              diagnostic.getOnClickListener().onClick(widget);
+            }
+
+            @Override
+            public void updateDrawState(TextPaint ds) {
+              super.updateDrawState(ds);
+              ds.setColor(getColor(diagnostic.getKind())); // set color
+              ds.setUnderlineText(false); // underline the link text
+            }
+          };
+      sb.append("[" + diagnostic.getExtra() + "]", span, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+      return;
+    }
+
+    ClickableSpan span =
+        new ClickableSpan() {
+          @Override
+          public void onClick(@NonNull View view) {
+            if (mListener != null) {
+              mListener.onClick(diagnostic);
+            }
+          }
+        };
+
+    String label = diagnostic.getSource().getName();
+    label = label + ":" + diagnostic.getLineNumber();
+    sb.append("[" + label + "]", span, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+  }
+
+  public interface OnDiagnosticClickListener {
+    void onClick(DiagnosticWrapper diagnostic);
+  }
+
+  public void setOnDiagnosticClickListener(OnDiagnosticClickListener listener) {
+    mListener = listener;
   }
 }
