@@ -1,5 +1,7 @@
 package com.tyron.code.ui.editor.log;
 
+import static io.github.rosemoe.sora2.text.EditorUtil.getDefaultColorScheme;
+
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -14,28 +16,35 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tyron.builder.log.LogViewModel;
 import com.tyron.builder.model.DiagnosticWrapper;
 import com.tyron.builder.project.Project;
 import com.tyron.code.ApplicationLoader;
 import com.tyron.code.R;
+import com.tyron.code.ui.editor.impl.FileEditorManagerImpl;
+import com.tyron.code.ui.editor.impl.text.rosemoe.CodeEditorFragment;
 import com.tyron.code.ui.editor.impl.text.rosemoe.CodeEditorView;
 import com.tyron.code.ui.editor.scheme.CompiledEditorScheme;
 import com.tyron.code.ui.main.MainViewModel;
 import com.tyron.code.ui.project.ProjectManager;
+import com.tyron.code.ui.theme.ThemeRepository;
 import com.tyron.common.SharedPreferenceKeys;
 import com.tyron.editor.Caret;
-import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
+import com.tyron.fileeditor.api.FileEditorManager;
 import io.github.rosemoe.sora.langs.textmate.theme.TextMateColorScheme;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import io.github.rosemoe.sora2.text.EditorUtil;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -56,12 +65,14 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
   }
 
   private CodeEditorView mEditor;
-  private FloatingActionButton copyText;
+  private FloatingActionButton copyText, errorsFab;
   private View mRoot;
   private int id;
   private MainViewModel mMainViewModel;
   private LogViewModel mModel;
   private OnDiagnosticClickListener mListener;
+  List<DiagnosticWrapper> diags = new ArrayList<>();
+  List<ErrorItem> errors = new ArrayList<>();
 
   public AppLogFragment() {}
 
@@ -86,6 +97,92 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
     super.onViewCreated(view, savedInstanceState);
     mEditor = view.findViewById(R.id.output_text);
     copyText = view.findViewById(R.id.copy_text);
+    errorsFab = view.findViewById(R.id.errors_fab);
+
+    errorsFab.setOnClickListener(
+        v -> {
+          if (errors != null) {
+            errors.clear();
+          }
+
+          for (DiagnosticWrapper diagnostic : diags) {
+            if (diagnostic != null) {
+
+              if (diagnostic.getKind() != null && diagnostic.getKind() == Diagnostic.Kind.ERROR) {
+                String error = diagnostic.getMessage(Locale.getDefault());
+                if (diagnostic.getSource() != null) {
+                  String label = diagnostic.getSource().getName();
+                  if (label != null) {
+                    label = label + " : line:" + diagnostic.getLineNumber() + " : " + error;
+                    errors.add(new ErrorItem(label, diagnostic.getSource(), diagnostic));
+                  }
+                }
+              }
+            }
+          }
+
+          if (errors != null && !errors.isEmpty()) {
+
+            ArrayAdapter<ErrorItem> adapter =
+                new ArrayAdapter<ErrorItem>(
+                    requireContext(),
+                    android.R.layout.select_dialog_item,
+                    android.R.id.text1,
+                    errors) {
+                  @NonNull
+                  @Override
+                  public View getView(
+                      int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                    View view = super.getView(position, convertView, parent);
+
+                    TextView textView = view.findViewById(android.R.id.text1);                   
+                    ErrorItem errorItem = getItem(position);
+
+                    textView.setTextSize(16);
+                    textView.setTextColor(0xffcf6679);
+                    textView.setText(errorItem.getMessage());
+                    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                        R.drawable.ic_error, 0, 0, 0);
+                    return view;
+                  }
+                };
+
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
+            builder.setTitle(getString(R.string.errors_found, String.valueOf(errors.size())));
+            builder.setAdapter(
+                adapter,
+                (dialog, which) -> {
+                  ErrorItem selectedErrorItem = errors.get(which);
+
+                  if (selectedErrorItem.getFile() != null) {
+                    if (getContext() != null) {
+                      FileEditorManager manager = FileEditorManagerImpl.getInstance();
+                      manager.openFile(
+                          requireContext(),
+                          selectedErrorItem.getFile(),
+                          it -> {
+                            if (selectedErrorItem.getDiagnosticWrapper().getLineNumber() > 0
+                                && selectedErrorItem.getDiagnosticWrapper().getColumnNumber() > 0) {
+                              Bundle bundle = new Bundle(it.getFragment().getArguments());
+                              bundle.putInt(
+                                  CodeEditorFragment.KEY_LINE,
+                                  (int) selectedErrorItem.getDiagnosticWrapper().getLineNumber());
+                              bundle.putInt(
+                                  CodeEditorFragment.KEY_COLUMN,
+                                  (int) selectedErrorItem.getDiagnosticWrapper().getColumnNumber());
+                              it.getFragment().setArguments(bundle);
+                              manager.openFileEditor(it);
+                            }
+                          });
+                    }
+                  }
+                });
+
+            builder.show();
+          } else {
+            Toast.makeText(requireContext(), R.string.no_errors_found, Toast.LENGTH_SHORT).show();
+          }
+        });
 
     copyText.setOnClickListener(
         v -> {
@@ -93,12 +190,9 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
           if (!(caret.getStartLine() == caret.getEndLine()
               && caret.getStartColumn() == caret.getEndColumn())) {
 
-            CharSequence textToCopy =
-                mEditor.getContent().subSequence(caret.getStart(), caret.getEnd());
-            copyContent(textToCopy.toString());
           } else {
 
-            String content = mEditor.getText().toString();
+            String content = mEditor.getText().toString().trim();
             if (content != null && !content.isEmpty()) {
               copyContent(content);
             }
@@ -125,6 +219,29 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
 
     editor.setEditable(false);
     editor.setColorScheme(new CompiledEditorScheme(requireContext()));
+
+    /*   String schemeValue =
+        ApplicationLoader.getDefaultPreferences().getString(SharedPreferenceKeys.SCHEME, null);
+    if (schemeValue != null
+        && new File(schemeValue).exists()
+        && ThemeRepository.getColorScheme(schemeValue) != null) {
+      TextMateColorScheme scheme = ThemeRepository.getColorScheme(schemeValue);
+      if (scheme != null) {
+        editor.setColorScheme(scheme);
+      }
+    }*/
+
+    String key =
+        EditorUtil.isDarkMode(requireContext())
+            ? ThemeRepository.DEFAULT_NIGHT
+            : ThemeRepository.DEFAULT_LIGHT;
+    TextMateColorScheme scheme = ThemeRepository.getColorScheme(key);
+    if (scheme == null) {
+      scheme = getDefaultColorScheme(requireContext());
+      ThemeRepository.putColorScheme(key, scheme);
+    }
+    mEditor.setColorScheme(scheme);
+
     // editor.setBackgroundAnalysisEnabled(false);
     editor.setTypefaceText(
         ResourcesCompat.getFont(requireContext(), R.font.jetbrains_mono_regular));
@@ -141,23 +258,6 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
     // editor.setWordwrap(pref.getBoolean(SharedPreferenceKeys.EDITOR_WORDWRAP, false));
     editor.setWordwrap(true);
     editor.setTextSize(Integer.parseInt(pref.getString(SharedPreferenceKeys.FONT_SIZE, "10")));
-
-    try {
-      InputStream jsonStream =
-          requireContext().getAssets().open("textmate/log/syntaxes/log.tmLanguage.json");
-      InputStream configStream =
-          requireContext().getAssets().open("textmate/log/language-configuration.json");
-
-      TextMateLanguage language =
-          TextMateLanguage.create(
-              "log.tmLanguage.json",
-              jsonStream,
-              new InputStreamReader(configStream),
-              ((TextMateColorScheme) editor.getColorScheme()).getRawTheme());
-
-      editor.setEditorLanguage(language);
-    } catch (Exception e) {
-    }
   }
 
   @Override
@@ -179,12 +279,14 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
 
             if (texts != null) {
               // Create a copy of the list to avoid ConcurrentModificationException
-              List<DiagnosticWrapper> textsCopy = new ArrayList<>(texts);
-
-              for (DiagnosticWrapper diagnostic : textsCopy) {
+              List<DiagnosticWrapper> diagnostics = new ArrayList<>(texts);
+              this.diags = diagnostics;
+              for (DiagnosticWrapper diagnostic : diagnostics) {
                 if (diagnostic != null) {
                   if (diagnostic.getKind() != null) {
                     combinedText.append(diagnostic.getKind().name()).append(": ");
+                    addDiagnosticSpan(combinedText, diagnostic);
+                    combinedText.append(' ');
                   }
 
                   if (diagnostic.getKind() == Diagnostic.Kind.ERROR) {
@@ -197,7 +299,6 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
                     combinedText.append(' ');
                   }
 
-                  addDiagnosticSpan(combinedText, diagnostic);
                   combinedText.append("\n");
                 }
               }
@@ -272,5 +373,39 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
 
   public void setOnDiagnosticClickListener(OnDiagnosticClickListener listener) {
     mListener = listener;
+  }
+
+  class ErrorItem {
+    private String message;
+    private String path;
+    private DiagnosticWrapper diagnostic;
+
+    public ErrorItem(String message, String path, DiagnosticWrapper diagnostic) {
+      this.message = message;
+      this.path = path;
+      this.diagnostic = diagnostic;
+    }
+
+    public ErrorItem(String message, File path, DiagnosticWrapper diagnostic) {
+      this.message = message;
+      this.path = path.getAbsolutePath();
+      this.diagnostic = diagnostic;
+    }
+
+    public String getMessage() {
+      return message;
+    }
+
+    private DiagnosticWrapper getDiagnosticWrapper() {
+      return diagnostic;
+    }
+
+    public String getPath() {
+      return path;
+    }
+
+    public File getFile() {
+      return new File(path);
+    }
   }
 }

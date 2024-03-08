@@ -354,5 +354,8 @@
     <!-- Drawable Manager -->
     <string name="drawable_manager_empty">Drawable folder is empty</string>
     <string name="drawable_manager_null_drawables">No drawable found</string>
-    
+
+    <string name="no_errors_found">No errors found</string>
+	<string name="errors_found">%1s errors found</string>
+
 </resources>
