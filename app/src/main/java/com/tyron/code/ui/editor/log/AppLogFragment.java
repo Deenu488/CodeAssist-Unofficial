@@ -135,10 +135,10 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
                       int position, @Nullable View convertView, @NonNull ViewGroup parent) {
                     View view = super.getView(position, convertView, parent);
 
-                    TextView textView = view.findViewById(android.R.id.text1);                   
+                    TextView textView = view.findViewById(android.R.id.text1);
                     ErrorItem errorItem = getItem(position);
-
-                    textView.setTextSize(16);
+                    textView.setPadding(12, 12, 12, 12);
+                    textView.setTextSize(12);
                     textView.setTextColor(0xffcf6679);
                     textView.setText(errorItem.getMessage());
                     textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
