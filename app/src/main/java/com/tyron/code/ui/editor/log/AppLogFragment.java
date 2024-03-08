@@ -36,6 +36,7 @@ import io.github.rosemoe.sora.langs.textmate.TextMateLanguage;
 import io.github.rosemoe.sora.langs.textmate.theme.TextMateColorScheme;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Handler;
@@ -139,7 +140,7 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
     SharedPreferences pref = ApplicationLoader.getDefaultPreferences();
     // editor.setWordwrap(pref.getBoolean(SharedPreferenceKeys.EDITOR_WORDWRAP, false));
     editor.setWordwrap(true);
-    editor.setTextSize(Integer.parseInt(pref.getString(SharedPreferenceKeys.FONT_SIZE, "12")));
+    editor.setTextSize(Integer.parseInt(pref.getString(SharedPreferenceKeys.FONT_SIZE, "10")));
 
     try {
       InputStream jsonStream =
@@ -175,25 +176,33 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
       handler.postDelayed(
           () -> {
             SpannableStringBuilder combinedText = new SpannableStringBuilder();
+
             if (texts != null) {
-              for (DiagnosticWrapper diagnostic : texts) {
+              // Create a copy of the list to avoid ConcurrentModificationException
+              List<DiagnosticWrapper> textsCopy = new ArrayList<>(texts);
+
+              for (DiagnosticWrapper diagnostic : textsCopy) {
                 if (diagnostic != null) {
                   if (diagnostic.getKind() != null) {
                     combinedText.append(diagnostic.getKind().name()).append(": ");
                   }
+
                   if (diagnostic.getKind() == Diagnostic.Kind.ERROR) {
                     combinedText.append(diagnostic.getMessage(Locale.getDefault()));
                   } else {
                     combinedText.append(diagnostic.getMessage(Locale.getDefault()));
                   }
+
                   if (diagnostic.getSource() != null) {
                     combinedText.append(' ');
                   }
+
                   addDiagnosticSpan(combinedText, diagnostic);
                   combinedText.append("\n");
                 }
               }
             }
+
             mEditor.setText(combinedText);
           },
           100);

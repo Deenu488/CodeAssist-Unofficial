@@ -12,6 +12,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
+    
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/copy_text"
         android:layout_width="wrap_content"
@@ -21,4 +22,6 @@
         android:layout_marginEnd="16dp"
         android:src="@drawable/round_content_copy_20"
         app:fabSize="normal"/>
+        
+        
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
