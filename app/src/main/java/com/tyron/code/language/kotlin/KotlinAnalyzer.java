@@ -105,7 +105,7 @@ public class KotlinAnalyzer extends DiagnosticTextmateAnalyzer {
                   String jvm_target =
                       buildSettingsJson.optJSONObject("kotlin").optString("jvmTarget", "1.8");
                   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    BuildModule.getJavac().setReadOnly();
+                    BuildModule.getKotlinc().setReadOnly();
                   }
 
                   if (isCompilerEnabled) {

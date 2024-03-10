@@ -8,19 +8,26 @@ import com.tyron.common.util.Debouncer;
 import com.tyron.completion.model.CachedCompletion;
 import com.tyron.completion.model.CompletionItem;
 import com.tyron.completion.model.CompletionList;
+import com.tyron.completion.model.DrawableKind;
+import com.tyron.kotlin_completion.classpath.ClassPathEntry;
 import com.tyron.kotlin_completion.completion.Completions;
 import com.tyron.kotlin_completion.diagnostic.ConvertDiagnosticKt;
 import com.tyron.kotlin_completion.util.AsyncExecutor;
 import com.tyron.kotlin_completion.util.StringUtilsKt;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import org.jetbrains.kotlin.diagnostics.Diagnostic;
@@ -150,6 +157,53 @@ public class CompletionEngine {
     String partialIdentifier = partialIdentifier(contents, cursor);
     cachedCompletion = new CachedCompletion(file, line, column, partialIdentifier, completions);
     return completions;
+  }
+
+  public CompletionList completeV2(
+      File file, String contents, String prefix, int line, int column, int cursor) {
+    if (isIndexing()) {
+      return CompletionList.EMPTY;
+    }
+
+    CompletionList.Builder builder = CompletionList.builder(prefix);
+
+    List<CompletionItem> items = new ArrayList<>();
+
+    if (builder.getPrefix().startsWith("p")) {
+      items.add(new CompletionItem("package", null, "package", DrawableKind.Keyword));
+    }
+    if (builder.getPrefix().startsWith("i")) {
+      items.add(new CompletionItem("import", null, "import", DrawableKind.Keyword));
+    }
+
+    Set<ClassPathEntry> jars = classPath.getClassPath();
+
+    for (ClassPathEntry entry : jars) {
+      Path compiledJar = entry.getCompiledJar();
+      Path sourceJar = entry.getSourceJar();
+
+      try (ZipFile zipFile = new ZipFile(compiledJar.toFile())) {
+        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+
+        while (entries.hasMoreElements()) {
+          ZipEntry zipEntry = entries.nextElement();
+          String filePath = zipEntry.getName();
+
+          if (filePath.endsWith(".class")) {
+            String className = filePath.replace("/", ".").replace(".class", ""). replace("$", ".");
+            items.add(new CompletionItem(className   , null, className , DrawableKind.Keyword));                                     
+          }  
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    builder.addItems(items);
+
+    CompletionList completionList = builder.build();
+
+    return completionList;
   }
 
   private String partialIdentifier(String contents, int end) {

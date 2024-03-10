@@ -1,5 +1,7 @@
 package com.tyron.code.ui.editor.impl.cls;
 
+import static io.github.rosemoe.sora2.text.EditorUtil.getDefaultColorScheme;
+
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -16,8 +18,11 @@ import com.tyron.code.ApplicationLoader;
 import com.tyron.code.R;
 import com.tyron.code.ui.editor.impl.text.rosemoe.CodeEditorView;
 import com.tyron.code.ui.editor.scheme.CompiledEditorScheme;
+import com.tyron.code.ui.theme.ThemeRepository;
 import com.tyron.code.util.TaskExecutor;
 import com.tyron.common.SharedPreferenceKeys;
+import io.github.rosemoe.sora.langs.textmate.theme.TextMateColorScheme;
+import io.github.rosemoe.sora2.text.EditorUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
@@ -44,7 +49,18 @@ public class ClsEditorFragment extends Fragment {
 
     editor.setEditable(false);
     editor.setColorScheme(new CompiledEditorScheme(requireContext()));
-    editor.setBackgroundAnalysisEnabled(false);
+    String key =
+        EditorUtil.isDarkMode(requireContext())
+            ? ThemeRepository.DEFAULT_NIGHT
+            : ThemeRepository.DEFAULT_LIGHT;
+    TextMateColorScheme scheme = ThemeRepository.getColorScheme(key);
+    if (scheme == null) {
+      scheme = getDefaultColorScheme(requireContext());
+      ThemeRepository.putColorScheme(key, scheme);
+    }
+    editor.setColorScheme(scheme);
+
+    // editor.setBackgroundAnalysisEnabled(false);
     editor.setTypefaceText(
         ResourcesCompat.getFont(requireContext(), R.font.jetbrains_mono_regular));
     editor.setLigatureEnabled(true);

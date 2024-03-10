@@ -14,7 +14,11 @@ import com.tyron.completion.model.CompletionList;
 import com.tyron.editor.Editor;
 import com.tyron.kotlin.completion.core.model.KotlinEnvironment;
 import com.tyron.kotlin_completion.CompletionEngine;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment;
+import org.json.JSONObject;
 
 public class KotlinAutoCompleteProvider extends AbstractAutoCompleteProvider {
 
@@ -70,13 +74,48 @@ public class KotlinAutoCompleteProvider extends AbstractAutoCompleteProvider {
       return null;
     }
 
-    // waiting for code editor to support async code completions
-    return engine.complete(
-        mEditor.getCurrentFile(),
-        String.valueOf(mEditor.getContent()),
-        prefix,
-        line,
-        column,
-        mEditor.getCaret().getStart());
+    Project currentProject = ProjectManager.getInstance().getCurrentProject();
+    if (currentProject != null) {
+      Module module = currentProject.getModule(mEditor.getCurrentFile());
+      if (module instanceof AndroidModule) {
+        try {
+          File buildSettings =
+              new File(
+                  module.getProjectDir(),
+                  ".idea/" + module.getRootFile().getName() + "_compiler_settings.json");
+          String json = new String(Files.readAllBytes(Paths.get(buildSettings.getAbsolutePath())));
+
+          JSONObject buildSettingsJson = new JSONObject(json);
+
+          boolean isKotlinCompletionV2 =
+              Boolean.parseBoolean(
+                  buildSettingsJson
+                      .optJSONObject("kotlin")
+                      .optString("isKotlinCompletionV2", "false"));
+
+          // waiting for code editor to support async code completions
+          if (!isKotlinCompletionV2) {
+            return engine.complete(
+                mEditor.getCurrentFile(),
+                String.valueOf(mEditor.getContent()),
+                prefix,
+                line,
+                column,
+                mEditor.getCaret().getStart());
+          } else {
+            return engine.completeV2(
+                mEditor.getCurrentFile(),
+                String.valueOf(mEditor.getContent()),
+                prefix,
+                line,
+                column,
+                mEditor.getCaret().getStart());
+          }
+        } catch (Exception e) {
+        }
+      }
+    }
+
+    return null;
   }
 }

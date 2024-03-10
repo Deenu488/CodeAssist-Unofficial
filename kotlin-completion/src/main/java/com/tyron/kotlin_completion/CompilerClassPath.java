@@ -77,6 +77,10 @@ public class CompilerClassPath implements Closeable {
     //   compiler.updateConfiguration(mConfiguration);
   }
 
+  public Set<ClassPathEntry> getClassPath() {
+    return mClassPath;
+  }
+
   private boolean refresh(boolean updateClassPath, boolean updateJavaSourcePath) {
     DefaultClassPathResolver resolver = new DefaultClassPathResolver(mProject.getLibraries());
     boolean refreshCompiler = updateJavaSourcePath;
