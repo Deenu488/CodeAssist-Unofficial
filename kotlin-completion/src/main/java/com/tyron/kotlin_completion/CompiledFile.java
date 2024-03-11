@@ -228,6 +228,8 @@ public class CompiledFile {
   public KtFile getParse() {
     return mParse;
   }
-   
-  
+
+  public String getContent() {
+    return mContent;
+  }
 }

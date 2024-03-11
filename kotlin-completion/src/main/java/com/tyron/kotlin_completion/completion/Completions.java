@@ -15,7 +15,7 @@ public class Completions {
     return CompletionUtilsKt.completions(file, cursor, index, partial);
   }
 
-  private String findPartialIdentifier(CompiledFile file, int cursor) {
+  public String findPartialIdentifier(CompiledFile file, int cursor) {
     String line = file.lineBefore(cursor);
     if (line.matches(String.valueOf(new Regex(".*\\.")))) {
       return "";

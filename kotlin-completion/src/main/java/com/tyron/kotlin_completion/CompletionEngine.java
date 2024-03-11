@@ -190,9 +190,9 @@ public class CompletionEngine {
           String filePath = zipEntry.getName();
 
           if (filePath.endsWith(".class")) {
-            String className = filePath.replace("/", ".").replace(".class", ""). replace("$", ".");
-            items.add(new CompletionItem(className   , null, className , DrawableKind.Keyword));                                     
-          }  
+            String className = filePath.replace("/", ".").replace(".class", "").replace("$", ".");
+            items.add(new CompletionItem(className, null, className, DrawableKind.Keyword));
+          }
         }
       } catch (IOException e) {
         e.printStackTrace();
