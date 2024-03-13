@@ -96,11 +96,11 @@ public class KotlinAnalyzer extends DiagnosticTextmateAnalyzer {
 
                   JSONObject buildSettingsJson = new JSONObject(json);
 
-                  boolean isCompilerEnabled =
+                  boolean isCompileRuntime =
                       Boolean.parseBoolean(
                           buildSettingsJson
                               .optJSONObject("kotlin")
-                              .optString("isCompilerEnabled", "false"));
+                              .optString("isCompileRuntime", "false"));
 
                   String jvm_target =
                       buildSettingsJson.optJSONObject("kotlin").optString("jvmTarget", "1.8");
@@ -108,7 +108,7 @@ public class KotlinAnalyzer extends DiagnosticTextmateAnalyzer {
                     BuildModule.getKotlinc().setReadOnly();
                   }
 
-                  if (isCompilerEnabled) {
+                  if (isCompileRuntime) {
 
                     File mClassOutput =
                         new File(
