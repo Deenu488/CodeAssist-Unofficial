@@ -9,8 +9,7 @@ java {
 }
 
 dependencies {
-	api files('libs/google-java-format-1.21.0.jar')
-    api 'com.google.auto.value:auto-value-annotations:1.10.1'
+	api files('libs/ktfmt-0.47.jar')
 }
 
 spotless {

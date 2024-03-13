@@ -80,6 +80,7 @@ android {
 		exclude 'api_database/*'
         exclude "about_files/*"
         exclude "META-INF/eclipse.inf"
+        pickFirst "META-INF/native-image/reflect-config.json"
     }
 }
 
@@ -130,6 +131,7 @@ dependencies {
 
     // formatters
     implementation project(path: ':google-java-format')
+    implementation project(path: ':ktfmt')
 
     // about
     implementation 'com.github.daniel-stoneuk:material-about-library:3.1.2'

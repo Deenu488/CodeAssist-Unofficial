@@ -20,6 +20,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -804,6 +805,12 @@ public class CodeEditorFragment extends Fragment
       //                }
       //            }
       mEditor.formatCodeAsync();
+    }
+  }
+
+  public void search() {
+    if (mEditor != null) {
+      new MaterialAlertDialogBuilder(requireContext()).setTitle("Search").show();
     }
   }
 

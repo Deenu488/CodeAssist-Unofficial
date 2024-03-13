@@ -127,7 +127,12 @@ public class JavaLanguage implements Language, EditorFormatter {
   @NonNull
   @Override
   public CharSequence format(@NonNull CharSequence contents, int start, int end) {
-    return com.tyron.eclipse.formatter.Formatter.format(contents.toString(), start, end - start);
+    CharSequence formatted =
+        com.tyron.eclipse.formatter.Formatter.format(contents.toString(), start, end - start);
+    if (formatted == null) {
+      formatted = contents;
+    }
+    return formatted;
   }
 
   @Override
