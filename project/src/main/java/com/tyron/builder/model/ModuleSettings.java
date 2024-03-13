@@ -1,6 +1,5 @@
 package com.tyron.builder.model;
 
-import com.google.gson.stream.JsonReader;
 import android.content.SharedPreferences;
 import android.util.Log;
 import androidx.annotation.Nullable;
@@ -8,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;

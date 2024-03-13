@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts.CreateDocument;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -47,6 +49,30 @@ public class ProjectSheetFragment extends BottomSheetDialogFragment {
   private SharedPreferences mPreferences;
   private RecyclerView mRecyclerView;
   private ProjectManagerAdapter mAdapter;
+  private Project project = null;
+  private final ActivityResultLauncher<String> zipContract =
+      registerForActivityResult(
+          new CreateDocument("application/zip"),
+          uri -> {
+            if (uri == null || uri.getPath() == null) {
+              return;
+            }
+
+            File root = project.getRootFile();
+            if (root == null) {
+              return;
+            }
+
+            ExportProjectProgressFragment exportProjectProgressFragment =
+                ExportProjectProgressFragment.Companion.newInstance(root.getAbsolutePath(), uri);
+            exportProjectProgressFragment.setOnSuccessListener(
+                new ExportProjectProgressFragment.OnSuccessListener() {
+                  @Override
+                  public void onSuccess() {}
+                });
+            exportProjectProgressFragment.show(
+                getChildFragmentManager(), ExportProjectProgressFragment.TAG);
+          });
 
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -113,7 +139,9 @@ public class ProjectSheetFragment extends BottomSheetDialogFragment {
   }
 
   private boolean inflateProjectMenus(View view, Project project) {
-    String[] option = {"Rename", "Delete", "Copy Path"};
+    this.project = project;
+
+    String[] option = {"Rename", "Delete", "Copy Path", "Export Project"};
     new MaterialAlertDialogBuilder(requireContext())
         .setItems(
             option,
@@ -209,6 +237,9 @@ public class ProjectSheetFragment extends BottomSheetDialogFragment {
                         Toast.makeText(
                             requireContext(), R.string.copied_to_clipboard, Toast.LENGTH_LONG);
                     toast.show();
+                    break;
+                  case 3:
+                    zipContract.launch(project.getRootFile().getName() + ".zip");
                     break;
                 }
               }
