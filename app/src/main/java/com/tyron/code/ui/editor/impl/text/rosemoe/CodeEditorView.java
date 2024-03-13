@@ -383,14 +383,24 @@ public class CodeEditorView extends CodeEditor implements Editor {
     if (isFormatting()) {
       return false;
     }
-    if (getEditorLanguage() instanceof EditorFormatter) {
+    if (getEditorLanguage() instanceof EditorFormatter
+        && getText() != null
+        && getEditorLanguage() != null) {
       ProgressManager.getInstance()
           .runNonCancelableAsync(
               () -> {
                 CharSequence originalText = getText();
-                final CharSequence formatted =
-                    ((EditorFormatter) getEditorLanguage()).format(originalText, start, end);
-                super.onFormatSucceed(originalText, formatted);
+                if (originalText != null) {
+                  final CharSequence formatted =
+                      ((EditorFormatter) getEditorLanguage()).format(originalText, start, end);
+                  if (formatted != null) {
+                    super.onFormatSucceed(originalText, formatted);
+                  } else {
+                    // Handle null formatted text
+                  }
+                } else {
+                  // Handle null original text
+                }
               });
       return true;
     }
