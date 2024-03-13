@@ -45,7 +45,7 @@ class ImportProjectProgressFragment : BottomSheetDialogFragment() {
     private var future: CompletableFuture<ProgressMonitor.Result?>? = null
     private var progressMonitor: ProgressMonitor? = null
     private var zipProjectPath: File? = null
-	
+	 
     interface OnButtonClickedListener {
         fun onButtonClicked()
     }
@@ -94,7 +94,9 @@ class ImportProjectProgressFragment : BottomSheetDialogFragment() {
         bottomSheetBehavior?.isHideable = false
         bottomSheetBehavior?.isDraggable = true
         setCancelable(false)
-        
+        binding.textButton.isEnabled = false
+        binding.textButton.text = getString(R.string.open_project)
+
         binding.textTitle.text = getString(R.string.importing_project)
         binding.textDescription.text = getString(R.string.preparing_for_import)
         binding.imageView.visibility = View.GONE
@@ -116,7 +118,7 @@ class ImportProjectProgressFragment : BottomSheetDialogFragment() {
             if (!projectDir.exists()) {
             projectDir.mkdirs()
         }
-             
+                  
         val inputStream: InputStream? = zipProjectUri?.let {
             requireContext().contentResolver.openInputStream(it)
         }

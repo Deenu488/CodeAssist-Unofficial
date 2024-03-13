@@ -29,6 +29,7 @@
     <string name="import_failed">Import Failed</string>
     <string name="project_import_cancelled">Project import cancelled</string>
     <string name="imported">Imported</string>
+    <string name="project_already_exists">Project: %1$s already exists</string>
 
     <string name="add_new_library">Add new libray</string>
 	<string name="new_library">New libray</string>

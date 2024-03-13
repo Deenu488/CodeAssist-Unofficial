@@ -1,10 +1,12 @@
 package com.tyron.code.ui.main;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -17,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -27,29 +30,14 @@ import com.tyron.builder.project.Project;
 import com.tyron.code.BuildConfig;
 import com.tyron.code.R;
 import com.tyron.code.tasks.git.GitCloneTask;
+import com.tyron.code.ui.project.ImportProjectProgressFragment;
 import com.tyron.code.ui.project.ProjectSheetFragment;
 import com.tyron.code.ui.settings.SettingsActivity;
 import com.tyron.code.ui.wizard.WizardFragment;
 import com.tyron.common.SharedPreferenceKeys;
-import java.io.File;
-import androidx.documentfile.provider.DocumentFile;
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.activity.result.contract.ActivityResultContracts.CreateDocument;
-import android.app.Activity;
-import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.documentfile.provider.DocumentFile;
-import androidx.fragment.app.Fragment;
+import com.tyron.common.util.AndroidUtilities;
 import java.io.File;
 import java.util.Objects;
-import com.tyron.code.ui.project.ImportProjectProgressFragment;
 
 public class HomeFragment extends Fragment {
 
@@ -89,7 +77,11 @@ public class HomeFragment extends Fragment {
                     }
 
                     File project = new File(path, name);
-                    if (project.exists()) {}
+                    if (project.exists()) {
+                      AndroidUtilities.showToast(
+                          getString(R.string.project_already_exists, project.getName()));
+                      return;
+                    }
 
                     ImportProjectProgressFragment importProjectProgressFragment =
                         ImportProjectProgressFragment.Companion.newInstance(uri);
@@ -103,7 +95,7 @@ public class HomeFragment extends Fragment {
                         new ImportProjectProgressFragment.OnButtonClickedListener() {
                           @Override
                           public void onButtonClicked() {
-
+                            openProject(new Project(project));
                             importProjectProgressFragment.dismiss();
                           }
                         });

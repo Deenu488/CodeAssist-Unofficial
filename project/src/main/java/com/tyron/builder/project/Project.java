@@ -45,6 +45,19 @@ public class Project {
     mSettings = new ProjectSettings(new File(codeassist, "settings.json"));
   }
 
+  public Project(File root) {
+    mRoot = root;
+    mName = "app";
+    mModules = new LinkedHashMap<>();
+    mMainModule = new AndroidModuleImpl(new File(mRoot, mName));
+
+    File codeassist = new File(root, ".idea");
+    if (!codeassist.exists()) {
+      if (!codeassist.mkdirs()) {}
+    }
+    mSettings = new ProjectSettings(new File(codeassist, "settings.json"));
+  }
+
   public boolean isCompiling() {
     return mCompiling;
   }
