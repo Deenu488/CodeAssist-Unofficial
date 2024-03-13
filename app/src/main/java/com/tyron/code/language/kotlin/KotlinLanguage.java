@@ -20,6 +20,7 @@ import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.util.MyCharacter;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -63,59 +64,6 @@ public class KotlinLanguage implements Language {
       return;
     }
     String prefix = CompletionHelper.computePrefix(content, position, this::isAutoCompleteChar);
-
-    /*  CompletableFuture<String> future =
-    TaskExecutor.executeAsyncProvideError(
-        () -> {
-          Project currentProject = ProjectManager.getInstance().getCurrentProject();
-          if (currentProject != null) {
-            Module module = currentProject.getModule(mEditor.getCurrentFile());
-            if (module instanceof AndroidModule) {
-              File libraries = new File(module.getBuildDirectory(), "libraries");
-              List<String> jars = listFiles(libraries.toPath(), ".jar");
-              jars.add(BuildModule.getAndroidJar().getAbsolutePath());
-              jars.add(BuildModule.getLambdaStubs().getAbsolutePath());
-
-              jars.forEach(
-                  jar -> {
-                    try {
-                      ZipFile zipFile = new ZipFile(jar);
-                      Enumeration entries = zipFile.entries();
-
-                      while (entries.hasMoreElements()) {
-                        ZipEntry zipEntry = (ZipEntry) entries.nextElement();
-                        String filePath = zipEntry.getName();
-
-                        if (filePath.endsWith(".class")) {
-
-                          File classFile = new File(filePath);
-                          String classFileName = classFile.getName().replace(".class", "");
-
-                          String className = filePath.replace("/", ".");
-
-                          if (classFileName.startsWith(prefix)) {
-
-                            publisher.addItem(
-                                new CompletionItemWrapper(
-                                    CompletionItem.create(
-                                        classFileName,
-                                        className,
-                                        classFileName,
-                                        DrawableKind.Class)));
-                          }
-                        }
-                      }
-                      zipFile.close();
-                    } catch (Exception e) {
-
-                    }
-                  });
-            }
-          }
-
-          return null;
-        },
-        (result, throwable) -> {});*/
 
     KotlinAutoCompleteProvider provider = new KotlinAutoCompleteProvider(mEditor);
     CompletionList list =
@@ -164,7 +112,14 @@ public class KotlinLanguage implements Language {
 
   @Override
   public CharSequence format(CharSequence text) {
-    return text;
+    File currentFile = mEditor.getCurrentFile();
+
+    CharSequence formatted = null;
+
+    if (formatted == null) {
+      formatted = text;
+    }
+    return formatted;
   }
 
   @Override

@@ -1,8 +1,11 @@
 package com.tyron.code.language.java;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import com.google.googlejavaformat.java.Main;
+import com.tyron.code.ApplicationLoader;
 import com.tyron.code.analyzer.BaseTextmateAnalyzer;
 import com.tyron.code.language.CompletionItemWrapper;
 import com.tyron.code.language.EditorFormatter;
@@ -23,6 +26,9 @@ import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.util.MyCharacter;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 public class JavaLanguage implements Language, EditorFormatter {
 
@@ -127,8 +133,30 @@ public class JavaLanguage implements Language, EditorFormatter {
   @NonNull
   @Override
   public CharSequence format(@NonNull CharSequence contents, int start, int end) {
-    CharSequence formatted =
-        com.tyron.eclipse.formatter.Formatter.format(contents.toString(), start, end - start);
+    CharSequence formatted = null;
+
+    SharedPreferences sharedPreferences = ApplicationLoader.getDefaultPreferences();
+    boolean useGoogleJavaFormatter = sharedPreferences.getBoolean("google_java_format", false);
+    File currentFile = mEditor.getCurrentFile();
+
+    if (useGoogleJavaFormatter) {
+      StringWriter out = new StringWriter();
+      StringWriter err = new StringWriter();
+
+      Main main = new Main(new PrintWriter(out, true), new PrintWriter(err, true), System.in);
+      String[] args = new String[] {currentFile.getAbsolutePath()};
+      try {
+        main.format(args);
+        formatted = out.toString();
+      } catch (Exception e) {
+        formatted = contents;
+      }
+
+    } else {
+      formatted =
+          com.tyron.eclipse.formatter.Formatter.format(contents.toString(), start, end - start);
+    }
+
     if (formatted == null) {
       formatted = contents;
     }

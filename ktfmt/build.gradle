@@ -9,7 +9,7 @@ java {
 }
 
 dependencies {
-	api files('libs/ktfmt-0.47.jar')
+	api files('libs/ktfmt-0.30.jar')
 }
 
 spotless {
