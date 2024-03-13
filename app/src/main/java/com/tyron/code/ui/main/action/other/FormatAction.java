@@ -6,9 +6,9 @@ import com.tyron.actions.ActionPlaces;
 import com.tyron.actions.AnAction;
 import com.tyron.actions.AnActionEvent;
 import com.tyron.actions.CommonDataKeys;
-import com.tyron.code.R;
 import com.tyron.code.ui.editor.impl.text.rosemoe.CodeEditorFragment;
 import com.tyron.fileeditor.api.FileEditor;
+import org.codeassist.unofficial.R;
 
 public class FormatAction extends AnAction {
 

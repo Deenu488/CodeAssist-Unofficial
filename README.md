@@ -37,6 +37,10 @@ Forked of Official CodeAssist Version Alpha-0.2.9
 
 - [x] Kotlin 21 (Only Compile)
 
+- [x] Import Zip Project
+
+- [x] Exprot Zip Project
+
 - [x] R8/ProGuard
 
 - [x] Java Code Completions (1.8)

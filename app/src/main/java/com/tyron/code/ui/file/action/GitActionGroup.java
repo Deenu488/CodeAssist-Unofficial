@@ -8,7 +8,6 @@ import com.tyron.actions.AnActionEvent;
 import com.tyron.actions.CommonDataKeys;
 import com.tyron.actions.Presentation;
 import com.tyron.builder.project.Project;
-import com.tyron.code.R;
 import com.tyron.code.ui.file.CommonFileKeys;
 import com.tyron.code.ui.file.action.git.GitAddToStageAction;
 import com.tyron.code.ui.file.action.git.GitCommitAction;
@@ -20,6 +19,7 @@ import com.tyron.code.ui.file.tree.model.TreeFile;
 import com.tyron.ui.treeview.TreeNode;
 import com.tyron.ui.treeview.TreeView;
 import java.io.File;
+import org.codeassist.unofficial.R;
 
 public class GitActionGroup extends ActionGroup {
 

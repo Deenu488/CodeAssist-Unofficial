@@ -36,7 +36,6 @@ import com.tyron.builder.project.api.FileManager;
 import com.tyron.builder.project.api.Module;
 import com.tyron.builder.project.listener.FileListener;
 import com.tyron.code.ApplicationLoader;
-import com.tyron.code.R;
 import com.tyron.code.analyzer.BaseTextmateAnalyzer;
 import com.tyron.code.language.LanguageManager;
 import com.tyron.code.language.java.JavaLanguage;
@@ -81,6 +80,7 @@ import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
+import org.codeassist.unofficial.R;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class CodeEditorFragment extends Fragment

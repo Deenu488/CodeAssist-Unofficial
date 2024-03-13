@@ -15,10 +15,10 @@ import com.deenu143.gradle.utils.GradleUtils;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.tyron.builder.project.Project;
 import com.tyron.code.ApplicationLoader;
-import com.tyron.code.R;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import org.codeassist.unofficial.R;
 
 public class ProjectManagerAdapter extends RecyclerView.Adapter<ProjectManagerAdapter.ViewHolder> {
 

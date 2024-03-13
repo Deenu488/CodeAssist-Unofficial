@@ -16,7 +16,6 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.common.base.Strings;
 import com.tyron.builder.log.LogViewModel;
-import com.tyron.code.R;
 import com.tyron.code.ui.editor.impl.text.rosemoe.CodeEditorFragment;
 import com.tyron.code.ui.editor.log.AppLogFragment;
 import com.tyron.code.ui.editor.shortcuts.ShortcutAction;
@@ -36,6 +35,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.codeassist.unofficial.R;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class BottomEditorFragment extends Fragment {

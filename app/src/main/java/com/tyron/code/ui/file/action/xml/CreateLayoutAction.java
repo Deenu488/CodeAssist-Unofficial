@@ -5,7 +5,6 @@ import androidx.annotation.NonNull;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.tyron.actions.AnActionEvent;
 import com.tyron.actions.CommonDataKeys;
-import com.tyron.code.R;
 import com.tyron.code.template.CodeTemplate;
 import com.tyron.code.template.xml.LayoutTemplate;
 import com.tyron.code.ui.editor.impl.FileEditorManagerImpl;
@@ -23,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import org.codeassist.unofficial.R;
 
 public class CreateLayoutAction extends FileAction {
 

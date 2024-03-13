@@ -7,7 +7,6 @@ import com.tyron.actions.AnActionEvent;
 import com.tyron.actions.CommonDataKeys;
 import com.tyron.builder.project.api.JavaModule;
 import com.tyron.builder.project.api.Module;
-import com.tyron.code.R;
 import com.tyron.code.template.CodeTemplate;
 import com.tyron.code.template.java.AbstractTemplate;
 import com.tyron.code.template.java.InterfaceTemplate;
@@ -27,6 +26,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.codeassist.unofficial.R;
 
 public class CreateClassAction extends FileAction {
 

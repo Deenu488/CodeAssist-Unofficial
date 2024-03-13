@@ -17,13 +17,13 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGParseException;
-import com.tyron.code.R;
 import com.tyron.code.ui.drawable.Icons;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import org.codeassist.unofficial.R;
 
 public class IconManagerAdapter extends RecyclerView.Adapter<IconManagerAdapter.ViewHolder>
     implements Filterable {

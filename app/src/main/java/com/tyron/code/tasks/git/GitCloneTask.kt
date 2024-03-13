@@ -4,9 +4,9 @@ import android.os.Build
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
-import com.tyron.code.R
-import com.tyron.code.databinding.BaseTextinputLayoutBinding
-import com.tyron.code.databinding.LayoutDialogProgressBinding
+import org.codeassist.unofficial.R
+import org.codeassist.unofficial.databinding.BaseTextinputLayoutBinding
+import org.codeassist.unofficial.databinding.LayoutDialogProgressBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.os.Environment
 import java.io.File
@@ -146,4 +146,3 @@ object GitCloneTask {
        builder.show()
        }
        }
-

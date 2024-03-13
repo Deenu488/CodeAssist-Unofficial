@@ -14,7 +14,6 @@ import androidx.fragment.app.DialogFragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.tyron.code.R;
 import com.tyron.code.template.CodeTemplate;
 import com.tyron.code.template.java.JavaClassTemplate;
 import com.tyron.code.ui.file.RegexReason;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.lang.model.SourceVersion;
+import org.codeassist.unofficial.R;
 
 public class CreateClassDialogFragment extends DialogFragment {
 

@@ -11,12 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
-import com.tyron.code.R;
 import com.tyron.code.ui.layoutEditor.model.EditorDragState;
 import com.tyron.code.ui.layoutEditor.model.ViewPalette;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import org.codeassist.unofficial.R;
 
 public class ViewPaletteAdapter extends RecyclerView.Adapter<ViewPaletteAdapter.ViewHolder> {
 

@@ -8,7 +8,6 @@ import com.tyron.actions.CommonDataKeys;
 import com.tyron.builder.project.api.FileManager;
 import com.tyron.builder.project.api.JavaModule;
 import com.tyron.builder.project.api.Module;
-import com.tyron.code.R;
 import com.tyron.code.ui.editor.impl.FileEditorManagerImpl;
 import com.tyron.code.ui.file.CommonFileKeys;
 import com.tyron.code.ui.file.action.FileAction;
@@ -25,6 +24,7 @@ import java.io.IOException;
 import kotlin.io.FileWalkDirection;
 import kotlin.io.FilesKt;
 import org.apache.commons.io.FileUtils;
+import org.codeassist.unofficial.R;
 
 public class DeleteFileAction extends FileAction {
 

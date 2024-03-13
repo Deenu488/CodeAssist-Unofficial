@@ -31,7 +31,6 @@ import com.tyron.builder.log.LogViewModel;
 import com.tyron.builder.model.DiagnosticWrapper;
 import com.tyron.builder.project.Project;
 import com.tyron.code.ApplicationLoader;
-import com.tyron.code.R;
 import com.tyron.code.ui.editor.impl.FileEditorManagerImpl;
 import com.tyron.code.ui.editor.impl.text.rosemoe.CodeEditorFragment;
 import com.tyron.code.ui.editor.impl.text.rosemoe.CodeEditorView;
@@ -50,6 +49,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Handler;
 import javax.tools.Diagnostic;
+import org.codeassist.unofficial.R;
 
 public class AppLogFragment extends Fragment implements ProjectManager.OnProjectOpenListener {
 

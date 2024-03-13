@@ -36,7 +36,6 @@ import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.JavaModule;
 import com.tyron.builder.project.api.Module;
 import com.tyron.code.ApplicationLoader;
-import com.tyron.code.R;
 import com.tyron.code.event.EventManager;
 import com.tyron.code.ui.editor.impl.FileEditorManagerImpl;
 import com.tyron.code.ui.file.CommonFileKeys;
@@ -64,6 +63,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.codeassist.unofficial.R;
 
 public class TreeFileManagerFragment extends Fragment {
 

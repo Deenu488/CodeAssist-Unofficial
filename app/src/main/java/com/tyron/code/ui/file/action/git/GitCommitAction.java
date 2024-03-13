@@ -5,10 +5,10 @@ import androidx.annotation.NonNull;
 import com.tyron.actions.AnActionEvent;
 import com.tyron.actions.CommonDataKeys;
 import com.tyron.builder.project.Project;
-import com.tyron.code.R;
 import com.tyron.code.tasks.git.GitCommitTask;
 import com.tyron.code.ui.file.action.FileAction;
 import java.io.File;
+import org.codeassist.unofficial.R;
 
 public class GitCommitAction extends FileAction {
 

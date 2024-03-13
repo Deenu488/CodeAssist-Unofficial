@@ -12,7 +12,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 import com.tyron.actions.AnActionEvent;
 import com.tyron.actions.CommonDataKeys;
-import com.tyron.code.R;
 import com.tyron.code.ui.file.CommonFileKeys;
 import com.tyron.code.ui.file.action.ActionContext;
 import com.tyron.code.ui.file.action.FileAction;
@@ -25,6 +24,7 @@ import com.tyron.completion.xml.task.InjectResourcesTask;
 import com.tyron.ui.treeview.TreeNode;
 import java.io.File;
 import java.io.IOException;
+import org.codeassist.unofficial.R;
 
 public class CreateFileAction extends FileAction {
 

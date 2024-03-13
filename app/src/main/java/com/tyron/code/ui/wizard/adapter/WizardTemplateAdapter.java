@@ -10,13 +10,13 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.shape.CornerFamily;
-import com.tyron.code.R;
 import com.tyron.code.ui.wizard.WizardTemplate;
 import com.tyron.common.util.AndroidUtilities;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import org.codeassist.unofficial.R;
 
 public class WizardTemplateAdapter extends RecyclerView.Adapter<WizardTemplateAdapter.ViewHolder> {
 

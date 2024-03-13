@@ -41,7 +41,6 @@ import com.google.common.collect.ImmutableMap;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.builder.project.api.Module;
-import com.tyron.code.R;
 import com.tyron.code.ui.layoutEditor.attributeEditor.AttributeEditorDialogFragment;
 import com.tyron.code.ui.layoutEditor.model.EditorDragState;
 import com.tyron.code.ui.layoutEditor.model.ViewPalette;
@@ -59,6 +58,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import kotlin.Pair;
+import org.codeassist.unofficial.R;
 
 public class LayoutEditorFragment extends Fragment implements ProjectManager.OnProjectOpenListener {
 

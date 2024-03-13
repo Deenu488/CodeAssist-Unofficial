@@ -11,7 +11,6 @@ import com.tyron.builder.model.DiagnosticWrapper;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.builder.project.api.Module;
-import com.tyron.code.BuildConfig;
 import com.tyron.code.analyzer.DiagnosticTextmateAnalyzer;
 import com.tyron.code.ui.project.ProjectManager;
 import com.tyron.code.util.ProjectUtils;
@@ -40,6 +39,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 import kotlin.Unit;
 import org.apache.commons.io.FileUtils;
+import org.codeassist.unofficial.BuildConfig;
 
 public class XMLAnalyzer extends DiagnosticTextmateAnalyzer {
 

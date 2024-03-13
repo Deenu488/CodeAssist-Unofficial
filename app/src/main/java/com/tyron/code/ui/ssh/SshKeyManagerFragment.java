@@ -27,7 +27,6 @@ import com.google.android.material.transition.MaterialFade;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.KeyPair;
 import com.tyron.code.ApplicationLoader;
-import com.tyron.code.R;
 import com.tyron.code.ui.ssh.adapter.SshKeyManagerAdapter;
 import com.tyron.code.util.UiUtilsKt;
 import com.tyron.common.SharedPreferenceKeys;
@@ -44,6 +43,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Executors;
 import org.apache.commons.io.FileUtils;
+import org.codeassist.unofficial.R;
 
 public class SshKeyManagerFragment extends Fragment {
 

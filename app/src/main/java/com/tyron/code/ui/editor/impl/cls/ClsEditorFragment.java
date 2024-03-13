@@ -15,7 +15,6 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.tyron.code.ApplicationLoader;
-import com.tyron.code.R;
 import com.tyron.code.ui.editor.impl.text.rosemoe.CodeEditorView;
 import com.tyron.code.ui.editor.scheme.CompiledEditorScheme;
 import com.tyron.code.ui.theme.ThemeRepository;
@@ -27,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
+import org.codeassist.unofficial.R;
 
 public class ClsEditorFragment extends Fragment {
 

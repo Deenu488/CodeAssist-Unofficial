@@ -14,7 +14,7 @@ import com.danielstone.materialaboutlibrary.model.MaterialAboutCard;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutList;
 import com.danielstone.materialaboutlibrary.util.OpenSourceLicense;
 import com.google.android.material.transition.MaterialSharedAxis;
-import com.tyron.code.R;
+import org.codeassist.unofficial.R;
 
 public class AboutUsFragment extends MaterialAboutFragment {
 

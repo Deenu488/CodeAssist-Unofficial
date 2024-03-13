@@ -8,7 +8,6 @@ import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 import com.tyron.actions.AnActionEvent;
 import com.tyron.actions.CommonDataKeys;
-import com.tyron.code.R;
 import com.tyron.code.ui.file.CommonFileKeys;
 import com.tyron.code.ui.file.action.FileAction;
 import com.tyron.code.ui.file.tree.TreeFileManagerFragment;
@@ -21,6 +20,7 @@ import com.tyron.ui.treeview.TreeView;
 import java.io.File;
 import java.io.IOException;
 import org.apache.commons.io.FileUtils;
+import org.codeassist.unofficial.R;
 
 public class ImportFileAction extends FileAction {
   public static final String ID = "fileManagerImportFileAction";

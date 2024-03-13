@@ -6,9 +6,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.tyron.code.R;
 import java.util.ArrayList;
 import java.util.List;
+import org.codeassist.unofficial.R;
 
 public class ShortcutsAdapter extends RecyclerView.Adapter<ShortcutsAdapter.ViewHolder> {
 

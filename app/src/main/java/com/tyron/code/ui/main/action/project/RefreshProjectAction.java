@@ -7,11 +7,11 @@ import com.tyron.actions.AnAction;
 import com.tyron.actions.AnActionEvent;
 import com.tyron.actions.CommonDataKeys;
 import com.tyron.builder.project.Project;
-import com.tyron.code.R;
 import com.tyron.code.ui.main.IndexCallback;
 import com.tyron.code.ui.main.MainFragment;
 import com.tyron.code.ui.main.MainViewModel;
 import com.tyron.code.ui.project.ProjectManager;
+import org.codeassist.unofficial.R;
 
 public class RefreshProjectAction extends AnAction {
 

@@ -27,8 +27,6 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.transition.MaterialSharedAxis;
 import com.tyron.builder.project.Project;
-import com.tyron.code.BuildConfig;
-import com.tyron.code.R;
 import com.tyron.code.tasks.git.GitCloneTask;
 import com.tyron.code.ui.project.ImportProjectProgressFragment;
 import com.tyron.code.ui.project.ProjectSheetFragment;
@@ -38,6 +36,8 @@ import com.tyron.common.SharedPreferenceKeys;
 import com.tyron.common.util.AndroidUtilities;
 import java.io.File;
 import java.util.Objects;
+import org.codeassist.unofficial.BuildConfig;
+import org.codeassist.unofficial.R;
 
 public class HomeFragment extends Fragment {
 

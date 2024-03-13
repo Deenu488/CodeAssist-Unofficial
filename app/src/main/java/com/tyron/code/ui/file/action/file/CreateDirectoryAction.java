@@ -12,7 +12,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 import com.tyron.actions.AnActionEvent;
 import com.tyron.actions.CommonDataKeys;
-import com.tyron.code.R;
 import com.tyron.code.ui.file.CommonFileKeys;
 import com.tyron.code.ui.file.action.FileAction;
 import com.tyron.code.ui.file.tree.TreeFileManagerFragment;
@@ -23,6 +22,7 @@ import com.tyron.completion.progress.ProgressManager;
 import com.tyron.ui.treeview.TreeNode;
 import com.tyron.ui.treeview.TreeView;
 import java.io.File;
+import org.codeassist.unofficial.R;
 
 public class CreateDirectoryAction extends FileAction {
 

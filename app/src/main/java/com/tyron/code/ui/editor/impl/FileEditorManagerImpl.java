@@ -4,7 +4,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.tyron.code.R;
 import com.tyron.code.ui.main.MainViewModel;
 import com.tyron.fileeditor.api.FileEditor;
 import com.tyron.fileeditor.api.FileEditorManager;
@@ -12,6 +11,7 @@ import com.tyron.fileeditor.api.FileEditorProvider;
 import java.io.File;
 import java.util.Arrays;
 import java.util.function.Consumer;
+import org.codeassist.unofficial.R;
 
 public class FileEditorManagerImpl extends FileEditorManager {
 

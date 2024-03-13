@@ -10,12 +10,12 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.tyron.code.R;
 import com.tyron.code.ui.editor.impl.FileEditorManagerImpl;
 import com.tyron.code.ui.file.FileManagerAdapter;
 import com.tyron.code.ui.main.MainFragment;
 import java.io.File;
 import java.util.Objects;
+import org.codeassist.unofficial.R;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class FileManagerFragment extends Fragment {

@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import com.tyron.code.R;
+import org.codeassist.unofficial.R;
 
 public class SettingsActivity extends AppCompatActivity
     implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {

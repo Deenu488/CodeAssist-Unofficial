@@ -9,11 +9,11 @@ import com.tyron.actions.AnAction;
 import com.tyron.actions.AnActionEvent;
 import com.tyron.actions.CommonDataKeys;
 import com.tyron.actions.Presentation;
-import com.tyron.code.R;
 import com.tyron.code.ui.editor.impl.xml.LayoutEditor;
 import com.tyron.code.ui.editor.impl.xml.LayoutTextEditorFragment;
 import com.tyron.common.util.AndroidUtilities;
 import com.tyron.fileeditor.api.FileEditor;
+import org.codeassist.unofficial.R;
 
 public class PreviewLayoutAction extends AnAction {
 

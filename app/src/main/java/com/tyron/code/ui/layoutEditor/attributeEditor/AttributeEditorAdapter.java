@@ -8,10 +8,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
-import com.tyron.code.R;
 import java.util.ArrayList;
 import java.util.List;
 import kotlin.Pair;
+import org.codeassist.unofficial.R;
 
 public class AttributeEditorAdapter
     extends RecyclerView.Adapter<AttributeEditorAdapter.ViewHolder> {

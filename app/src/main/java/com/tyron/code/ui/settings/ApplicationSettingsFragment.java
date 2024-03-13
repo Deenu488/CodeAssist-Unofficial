@@ -7,8 +7,8 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
-import com.tyron.code.R;
 import com.tyron.common.SharedPreferenceKeys;
+import org.codeassist.unofficial.R;
 
 public class ApplicationSettingsFragment extends PreferenceFragmentCompat {
 

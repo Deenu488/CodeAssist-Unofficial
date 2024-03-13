@@ -27,13 +27,13 @@ import com.tyron.builder.model.DiagnosticWrapper;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.builder.project.api.Module;
-import com.tyron.code.BuildConfig;
-import com.tyron.code.R;
 import com.tyron.code.util.ApkInstaller;
 import com.tyron.completion.progress.ProgressIndicator;
 import com.tyron.completion.progress.ProgressManager;
 import java.io.File;
 import java.lang.ref.WeakReference;
+import org.codeassist.unofficial.BuildConfig;
+import org.codeassist.unofficial.R;
 
 public class CompilerService extends Service {
 

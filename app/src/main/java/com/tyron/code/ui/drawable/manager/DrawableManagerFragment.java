@@ -18,7 +18,6 @@ import androidx.transition.TransitionManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.transition.MaterialFade;
-import com.tyron.code.R;
 import com.tyron.code.ui.drawable.Drawables;
 import com.tyron.code.ui.drawable.adapter.DrawableManagerAdapter;
 import com.tyron.code.ui.project.ProjectManager;
@@ -32,6 +31,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Executors;
 import org.apache.commons.io.FileUtils;
+import org.codeassist.unofficial.R;
 
 public class DrawableManagerFragment extends Fragment {
 

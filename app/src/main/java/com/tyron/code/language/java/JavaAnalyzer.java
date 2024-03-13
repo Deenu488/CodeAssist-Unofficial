@@ -20,7 +20,6 @@ import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.JavaModule;
 import com.tyron.builder.project.api.Module;
 import com.tyron.code.ApplicationLoader;
-import com.tyron.code.BuildConfig;
 import com.tyron.code.analyzer.SemanticAnalyzeManager;
 import com.tyron.code.analyzer.semantic.SemanticToken;
 import com.tyron.code.ui.editor.impl.text.rosemoe.CodeEditorView;
@@ -55,6 +54,7 @@ import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import org.codeassist.unofficial.BuildConfig;
 
 public class JavaAnalyzer extends SemanticAnalyzeManager {
 

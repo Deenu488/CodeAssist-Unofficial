@@ -6,7 +6,7 @@ import org.eclipse.jgit.api.Git
 import com.blankj.utilcode.util.ThreadUtils
 import com.tyron.code.util.executeAsyncProvideError
 import android.widget.Toast
-import com.tyron.code.R
+import org.codeassist.unofficial.R
 import com.tyron.code.tasks.git.ErrorOutput
 import org.eclipse.jgit.api.ResetCommand
 import com.google.android.material.dialog.MaterialAlertDialogBuilder

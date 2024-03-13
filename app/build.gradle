@@ -5,7 +5,7 @@ apply plugin: 'com.diffplug.spotless'
 android {
     compileSdkVersion 34
     buildToolsVersion '34.0.0' 
-	namespace "com.tyron.code" 
+	namespace "org.codeassist.unofficial" 
 	
 	spotless {
 		java {
@@ -17,7 +17,7 @@ android {
     defaultConfig {
         targetSdkVersion 34
 		minSdkVersion 26		
-		applicationId "com.tyron.code"
+		applicationId "org.codeassist.unofficial"
 		versionCode 1
 		versionName "1.0.0"
 

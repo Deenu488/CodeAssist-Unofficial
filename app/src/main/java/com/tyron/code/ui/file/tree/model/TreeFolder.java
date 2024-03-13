@@ -3,8 +3,8 @@ package com.tyron.code.ui.file.tree.model;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import androidx.appcompat.content.res.AppCompatResources;
-import com.tyron.code.R;
 import java.io.File;
+import org.codeassist.unofficial.R;
 
 public class TreeFolder extends TreeFile {
 

@@ -3,7 +3,7 @@ package com.tyron.code.ui.file.tree.binder
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import com.tyron.code.R
+import org.codeassist.unofficial.R
 import com.tyron.ui.treeview.TreeNode
 import com.tyron.ui.treeview.base.BaseNodeViewBinder
 import com.tyron.code.ui.file.tree.model.TreeFile

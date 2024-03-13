@@ -7,8 +7,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 import androidx.core.content.FileProvider;
-import com.tyron.code.BuildConfig;
 import java.io.File;
+import org.codeassist.unofficial.BuildConfig;
 
 public class ApkInstaller {
 

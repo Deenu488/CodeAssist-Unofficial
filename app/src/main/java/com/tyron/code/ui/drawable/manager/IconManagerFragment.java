@@ -20,7 +20,6 @@ import androidx.transition.TransitionManager;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.transition.MaterialFade;
-import com.tyron.code.R;
 import com.tyron.code.ui.drawable.EditVectorDialogFragment;
 import com.tyron.code.ui.drawable.Icons;
 import com.tyron.code.ui.drawable.adapter.IconManagerAdapter;
@@ -32,6 +31,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Executors;
+import org.codeassist.unofficial.R;
 
 public class IconManagerFragment extends Fragment {
 

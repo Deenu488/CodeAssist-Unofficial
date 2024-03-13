@@ -27,7 +27,6 @@ import com.tyron.builder.project.api.FileManager;
 import com.tyron.builder.project.api.Module;
 import com.tyron.builder.project.listener.FileListener;
 import com.tyron.code.ApplicationLoader;
-import com.tyron.code.R;
 import com.tyron.code.ui.editor.adapter.PageAdapter;
 import com.tyron.code.ui.editor.impl.FileEditorManagerImpl;
 import com.tyron.code.ui.editor.impl.text.rosemoe.CodeEditorFragment;
@@ -43,6 +42,7 @@ import com.tyron.fileeditor.api.FileEditorManager;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
+import org.codeassist.unofficial.R;
 
 public class EditorContainerFragment extends Fragment
     implements FileListener,

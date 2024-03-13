@@ -20,7 +20,6 @@ import com.google.android.material.transition.MaterialSharedAxis;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.tyron.code.R;
 import com.tyron.common.SharedPreferenceKeys;
 import com.tyron.common.util.SingleTextWatcher;
 import com.tyron.completion.progress.ProgressManager;
@@ -31,6 +30,7 @@ import io.github.rosemoe.sora2.text.EditorUtil;
 import java.io.File;
 import java.util.Objects;
 import org.apache.commons.io.FileUtils;
+import org.codeassist.unofficial.R;
 
 public class EditorSettingsFragment extends PreferenceFragmentCompat {
 

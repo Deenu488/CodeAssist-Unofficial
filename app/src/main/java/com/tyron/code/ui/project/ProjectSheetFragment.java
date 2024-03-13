@@ -27,7 +27,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.transition.MaterialFade;
 import com.tyron.builder.project.Project;
-import com.tyron.code.R;
 import com.tyron.code.ui.main.MainFragment;
 import com.tyron.code.ui.project.adapter.ProjectManagerAdapter;
 import com.tyron.common.SharedPreferenceKeys;
@@ -41,6 +40,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Executors;
 import org.apache.commons.io.FileUtils;
+import org.codeassist.unofficial.R;
 
 public class ProjectSheetFragment extends BottomSheetDialogFragment {
 

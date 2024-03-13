@@ -2,7 +2,7 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.tyron.code">
+    package="org.codeassist.unofficial">
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
     <!-- have full network access -->
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -25,7 +25,7 @@
     <!-- run foreground service -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED"/>
     <application
-        android:name=".ApplicationLoader"
+        android:name="com.tyron.code.ApplicationLoader"
         android:allowBackup="true"
         android:extractNativeLibs="true"
         android:hasFragileUserData="true"
@@ -37,18 +37,18 @@
         android:supportsRtl="true"
         tools:targetApi="q">
         <service
-            android:name=".service.IndexService"
+            android:name="com.tyron.code.service.IndexService"
             android:enabled="true"
             android:foregroundServiceType="systemExempted"
             android:permission="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED"
             android:exported="false"/>
         <activity
-            android:name=".ui.settings.SettingsActivity"
+            android:name="com.tyron.code.ui.settings.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
             android:theme="@style/AppThemeNew"/>
         <activity
-            android:name=".MainActivity"
+            android:name="com.tyron.code.MainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/AppThemeNew">
@@ -58,7 +58,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".service.CompilerService"
+            android:name="com.tyron.code.service.CompilerService"
             android:enabled="true"
             android:foregroundServiceType="systemExempted"
             android:permission="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED"

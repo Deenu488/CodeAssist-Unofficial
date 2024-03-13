@@ -40,7 +40,6 @@ import com.tyron.builder.project.api.AndroidModule;
 import com.tyron.builder.project.api.Module;
 import com.tyron.code.ApplicationLoader;
 import com.tyron.code.MainActivity;
-import com.tyron.code.R;
 import com.tyron.code.service.CompilerService;
 import com.tyron.code.service.CompilerServiceConnection;
 import com.tyron.code.service.IndexService;
@@ -67,6 +66,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.stream.Collectors;
 import javax.tools.Diagnostic;
+import org.codeassist.unofficial.R;
 import org.jetbrains.kotlin.com.intellij.openapi.util.Key;
 
 public class MainFragment extends Fragment implements ProjectManager.OnProjectOpenListener {

@@ -13,7 +13,6 @@ import com.tyron.builder.compiler.BuildType;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.FileManager;
 import com.tyron.builder.project.api.Module;
-import com.tyron.code.R;
 import com.tyron.code.ui.editor.Savable;
 import com.tyron.code.ui.main.CompileCallback;
 import com.tyron.code.ui.main.MainFragment;
@@ -30,6 +29,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
+import org.codeassist.unofficial.R;
 
 public class CompileAabAction extends AnAction {
 
