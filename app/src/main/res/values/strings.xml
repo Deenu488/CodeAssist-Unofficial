@@ -9,6 +9,7 @@
 	<string name="git_clone_repo">Clone git repository</string>
 	<string name="open_existing_project">Open existing project</string>
 	<string name="project_manager">Project manager</string>
+	<string name="import_project">Import project</string>
 	<string name="configure_settings">Configure settings</string>
 	<string name="choose_project">Choose project</string>
 	
@@ -17,6 +18,17 @@
 	<string name="msg_confirm_project_close">Are you sure you want to close this project?</string>
 	
 	<!-- file manager -->	
+    <string name="text_title">Title</string>
+    <string name="text_description">Description</string>
+    <string name="text_button">Button</string>
+    <string name="okay">Okay</string>
+    <string name="importing_project">Importing Project...</string>
+    <string name="preparing_for_import">Preparing for Import...</string>
+    <string name="project_imported_successfully">Project imported successfully</string>
+    <string name="import_success">Import Success</string>
+    <string name="import_failed">Import Failed</string>
+    <string name="project_import_cancelled">Project import cancelled</string>
+    <string name="imported">Imported</string>
 
     <string name="add_new_library">Add new libray</string>
 	<string name="new_library">New libray</string>

@@ -32,12 +32,31 @@ import com.tyron.code.ui.settings.SettingsActivity;
 import com.tyron.code.ui.wizard.WizardFragment;
 import com.tyron.common.SharedPreferenceKeys;
 import java.io.File;
+import androidx.documentfile.provider.DocumentFile;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.activity.result.contract.ActivityResultContracts.CreateDocument;
+import android.app.Activity;
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.documentfile.provider.DocumentFile;
+import androidx.fragment.app.Fragment;
+import java.io.File;
+import java.util.Objects;
+import com.tyron.code.ui.project.ImportProjectProgressFragment;
 
 public class HomeFragment extends Fragment {
 
   public static final String TAG = HomeFragment.class.getSimpleName();
   private MaterialButton create_new_project,
       clone_git_repository,
+      import_project,
       open_project_manager,
       configure_settings;
   private SharedPreferences mPreferences;
@@ -46,6 +65,56 @@ public class HomeFragment extends Fragment {
   private final ActivityResultContracts.RequestMultiplePermissions mPermissionsContract =
       new ActivityResultContracts.RequestMultiplePermissions();
   private TextView app_version;
+
+  private final ActivityResultLauncher<Intent> documentPickerLauncher =
+      registerForActivityResult(
+          new ActivityResultContracts.StartActivityForResult(),
+          result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+              Intent data = result.getData();
+              if (data != null) {
+                Uri uri = data.getData();
+                if (uri != null) {
+                  String name =
+                      Objects.requireNonNull(DocumentFile.fromSingleUri(requireContext(), uri))
+                          .getName();
+                  if (name != null) {
+                    name = name.substring(0, name.lastIndexOf('.'));
+
+                    String path;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                      path = requireContext().getExternalFilesDir("Projects").getAbsolutePath();
+                    } else {
+                      path = Environment.getExternalStorageDirectory() + "/CodeAssistProjects";
+                    }
+
+                    File project = new File(path, name);
+                    if (project.exists()) {}
+
+                    ImportProjectProgressFragment importProjectProgressFragment =
+                        ImportProjectProgressFragment.Companion.newInstance(uri);
+                    importProjectProgressFragment.setOnSuccessListener(
+                        new ImportProjectProgressFragment.OnSuccessListener() {
+                          @Override
+                          public void onSuccess() {}
+                        });
+
+                    importProjectProgressFragment.setOnButtonClickedListener(
+                        new ImportProjectProgressFragment.OnButtonClickedListener() {
+                          @Override
+                          public void onButtonClicked() {
+
+                            importProjectProgressFragment.dismiss();
+                          }
+                        });
+
+                    importProjectProgressFragment.show(
+                        getChildFragmentManager(), ImportProjectProgressFragment.TAG);
+                  }
+                }
+              }
+            }
+          });
 
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,6 +160,7 @@ public class HomeFragment extends Fragment {
     toolbar.setTitleCentered(true);
     create_new_project = view.findViewById(R.id.createNewProject);
     clone_git_repository = view.findViewById(R.id.gitCloneRepo);
+    import_project = view.findViewById(R.id.importProject);
     open_project_manager = view.findViewById(R.id.openProjectManager);
     configure_settings = view.findViewById(R.id.configureSettings);
     app_version = view.findViewById(R.id.app_version);
@@ -110,6 +180,14 @@ public class HomeFragment extends Fragment {
     clone_git_repository.setOnClickListener(
         v -> {
           GitCloneTask.INSTANCE.clone((Context) requireContext());
+        });
+
+    import_project.setOnClickListener(
+        v -> {
+          Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+          intent.addCategory(Intent.CATEGORY_OPENABLE);
+          intent.setType("application/zip");
+          documentPickerLauncher.launch(intent);
         });
 
     open_project_manager.setOnClickListener(

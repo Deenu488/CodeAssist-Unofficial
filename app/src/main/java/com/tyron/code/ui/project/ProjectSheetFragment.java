@@ -312,7 +312,7 @@ public class ProjectSheetFragment extends BottomSheetDialogFragment {
     return root_projects;
   }
 
-  private void openProject(Project project) {
+  public void openProject(Project project) {
     dismiss();
     MainFragment fragment =
         MainFragment.newInstance(project.getRootFile().getAbsolutePath(), "app");
@@ -323,7 +323,7 @@ public class ProjectSheetFragment extends BottomSheetDialogFragment {
         .commit();
   }
 
-  private void openProject(Project project, String name) {
+  public void openProject(Project project, String name) {
     dismiss();
     MainFragment fragment = MainFragment.newInstance(project.getRootFile().getAbsolutePath(), name);
     getParentFragmentManager()
