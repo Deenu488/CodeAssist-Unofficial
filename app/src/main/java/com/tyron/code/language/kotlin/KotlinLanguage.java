@@ -3,6 +3,7 @@ package com.tyron.code.language.kotlin;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+import com.facebook.ktfmt.format.Formatter;
 import com.tyron.code.ApplicationLoader;
 import com.tyron.code.language.CompletionItemWrapper;
 import com.tyron.completion.model.CompletionItem;
@@ -20,7 +21,6 @@ import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.util.MyCharacter;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -112,9 +112,13 @@ public class KotlinLanguage implements Language {
 
   @Override
   public CharSequence format(CharSequence text) {
-    File currentFile = mEditor.getCurrentFile();
 
     CharSequence formatted = null;
+
+    try {
+      formatted = Formatter.format(text.toString());
+    } catch (Exception e) {
+    }
 
     if (formatted == null) {
       formatted = text;

@@ -26,9 +26,11 @@ import io.github.rosemoe.sora.text.ContentReference;
 import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.util.MyCharacter;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
-import java.io.File;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 
 public class JavaLanguage implements Language, EditorFormatter {
 
@@ -133,23 +135,22 @@ public class JavaLanguage implements Language, EditorFormatter {
   @NonNull
   @Override
   public CharSequence format(@NonNull CharSequence contents, int start, int end) {
-    CharSequence formatted = null;
 
     SharedPreferences sharedPreferences = ApplicationLoader.getDefaultPreferences();
     boolean useGoogleJavaFormatter = sharedPreferences.getBoolean("google_java_format", false);
-    File currentFile = mEditor.getCurrentFile();
+
+    CharSequence formatted = null;
 
     if (useGoogleJavaFormatter) {
-      StringWriter out = new StringWriter();
-      StringWriter err = new StringWriter();
-
-      Main main = new Main(new PrintWriter(out, true), new PrintWriter(err, true), System.in);
-      String[] args = new String[] {currentFile.getAbsolutePath()};
       try {
-        main.format(args);
+        InputStream in =
+            new ByteArrayInputStream(contents.toString().getBytes(StandardCharsets.UTF_8));
+        StringWriter out = new StringWriter();
+        StringWriter err = new StringWriter();
+        Main main = new Main(new PrintWriter(out, true), new PrintWriter(err, true), in);
+        main.format("-");
         formatted = out.toString();
       } catch (Exception e) {
-        formatted = contents;
       }
 
     } else {
