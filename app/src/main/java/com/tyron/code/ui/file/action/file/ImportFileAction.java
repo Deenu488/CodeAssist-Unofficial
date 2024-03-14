@@ -92,17 +92,7 @@ public class ImportFileAction extends FileAction {
 
     } else {
 
-      boolean importSuccess = fragment.importFile(currentDir);
-      if (importSuccess) {
-        ProgressManager.getInstance()
-            .runLater(
-                () -> {
-                  if (fragment.isDetached() || fragment.getContext() == null) {
-                    return;
-                  }
-                  refreshTreeView(currentNode, fragment.getTreeView());
-                });
-      }
+      fragment.importFile(currentDir);
     }
   }
 }

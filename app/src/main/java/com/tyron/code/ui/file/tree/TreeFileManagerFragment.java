@@ -92,7 +92,6 @@ public class TreeFileManagerFragment extends Fragment {
 
   private ActivityResultLauncher<Intent> documentPickerLauncher;
   private File currentDir;
-  private boolean importSuccess = false;
 
   private MainViewModel mMainViewModel;
   private FileViewModel mFileViewModel;
@@ -127,7 +126,7 @@ public class TreeFileManagerFragment extends Fragment {
                           requireContext().getContentResolver().openInputStream(uri);
                       File outputFile = new File(currentDir, name);
                       FileUtils.copyInputStreamToFile(inputStream, outputFile);
-                      importSuccess = true;
+
                     } catch (IOException ex) {
                       ProgressManager.getInstance()
                           .runLater(
@@ -135,11 +134,21 @@ public class TreeFileManagerFragment extends Fragment {
                                 if (isDetached() || getContext() == null) {
                                   return;
                                 }
-                                importSuccess = false;
+
                                 AndroidUtilities.showSimpleAlert(
                                     requireContext(), R.string.error, ex.getLocalizedMessage());
                               });
                     }
+
+                    TreeNode<TreeFile> node = TreeNode.root(TreeUtil.getNodes(currentDir));
+                    ProgressManager.getInstance()
+                        .runLater(
+                            () -> {
+                              if (getActivity() == null) {
+                                return;
+                              }
+                              treeView.refreshTreeView(node);
+                            });
                   }
                 }
               }
@@ -713,12 +722,12 @@ public class TreeFileManagerFragment extends Fragment {
     }
   }
 
-  public boolean importFile(File currentDir) {
+  public void importFile(File currentDir) {
     this.currentDir = currentDir;
+
     Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
     intent.addCategory(Intent.CATEGORY_OPENABLE);
     intent.setType("*/*");
     documentPickerLauncher.launch(intent);
-    return importSuccess;
   }
 }
