@@ -1,13 +1,11 @@
 package com.tyron.code.ui.main.action.other;
 
-import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import com.tyron.actions.ActionPlaces;
 import com.tyron.actions.AnAction;
 import com.tyron.actions.AnActionEvent;
 import com.tyron.actions.CommonDataKeys;
-import com.tyron.code.ApplicationLoader;
 import com.tyron.code.ui.editor.impl.text.rosemoe.CodeEditorFragment;
 import com.tyron.fileeditor.api.FileEditor;
 import org.codeassist.unofficial.R;
@@ -25,6 +23,7 @@ public class FormatAction extends AnAction {
 
     FileEditor fileEditor = event.getData(CommonDataKeys.FILE_EDITOR_KEY);
     if (fileEditor == null) {
+      event.getPresentation().setVisible(false); 
       return;
     }
 

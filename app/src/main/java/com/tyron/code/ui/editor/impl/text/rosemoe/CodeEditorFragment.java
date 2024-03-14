@@ -83,6 +83,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -95,7 +96,6 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.codeassist.unofficial.R;
 import org.codeassist.unofficial.databinding.LayoutDialogProgressBinding;
-import java.nio.charset.Charset;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class CodeEditorFragment extends Fragment
@@ -851,44 +851,84 @@ public class CodeEditorFragment extends Fragment
 
                   ByteArrayOutputStream out = new ByteArrayOutputStream();
                   ByteArrayOutputStream err = new ByteArrayOutputStream();
+                  StringWriter er = new StringWriter();
 
                   if (format_all_java) {
-                     if (!javaFiles.isEmpty()) { 
-                    for (Path j : javaFiles) {
-                      if (useGoogleJavaFormatter) {
-                        byte[] bytes = Files.readAllBytes(j);
-                        InputStream in = new ByteArrayInputStream(bytes);
-                        StringWriter ou = new StringWriter();
-                        StringWriter er = new StringWriter();
-                        com.google.googlejavaformat.java.Main main =
-                            new com.google.googlejavaformat.java.Main(
-                                new PrintWriter(ou, true), new PrintWriter(er, true), in);
-                        main.format("-");
-                        String formatted = ou.toString();
-                        if (formatted!=null) {
-                            FileUtils.writeStringToFile(j.toFile(), formatted, Charset.defaultCharset());
-                            }
+                    if (!javaFiles.isEmpty()) {
+                      for (Path j : javaFiles) {
+                        if (useGoogleJavaFormatter) {
+                          byte[] bytes = Files.readAllBytes(j);
+                          InputStream in = new ByteArrayInputStream(bytes);
+                          StringWriter ou = new StringWriter();
+
+                          com.google.googlejavaformat.java.Main main =
+                              new com.google.googlejavaformat.java.Main(
+                                  new PrintWriter(ou, true), new PrintWriter(er, true), in);
+                          main.format("-");
+                          String formatted = ou.toString();
+                          if (formatted != null && !formatted.isEmpty()) {
+                            FileUtils.writeStringToFile(
+                                j.toFile(), formatted, Charset.defaultCharset());
+                          }
+                        }
                       }
-                    }}
+                    }
                   }
 
                   if (format_all_kotlin) {
-                      if (!kotlinFiles.isEmpty()) {
-                    for (Path k : kotlinFiles) {
-                      byte[] bytes = Files.readAllBytes(k);
-                      com.facebook.ktfmt.cli.Main main =
-                          new com.facebook.ktfmt.cli.Main(
-                              new ByteArrayInputStream(bytes),
-                              new PrintStream(out),
-                              new PrintStream(err),
-                              new String[] {"-"});
-                      main.run();
-                      String formatted = out.toString();
-                         if (formatted!=null) {
-                             FileUtils.writeStringToFile(k.toFile(), formatted, Charset.defaultCharset());
-                   
-                            }
-                    }}
+                    if (!kotlinFiles.isEmpty()) {
+                      for (Path k : kotlinFiles) {
+                        byte[] bytes = Files.readAllBytes(k);
+                        com.facebook.ktfmt.cli.Main main =
+                            new com.facebook.ktfmt.cli.Main(
+                                new ByteArrayInputStream(bytes),
+                                new PrintStream(out),
+                                new PrintStream(err),
+                                new String[] {"-"});
+                        main.run();
+                        String formatted = out.toString();
+                        if (formatted != null && !formatted.isEmpty()) {
+                          FileUtils.writeStringToFile(
+                              k.toFile(), formatted, Charset.defaultCharset());
+                        }
+                      }
+                    }
+                  }
+
+                  if (format_all_java) {
+                    String result = er.toString();
+                    if (!result.isEmpty()) {
+                      if (dialog != null) {
+                        dialog.dismiss();
+                      }
+
+                      AndroidUtilities.showSimpleAlert(requireContext(), R.string.error, result);
+                    }
+                  } else if (format_all_kotlin) {
+
+                    String result = err.toString();
+                    if (!result.isEmpty()) {
+                      if (dialog != null) {
+                        dialog.dismiss();
+                      }
+
+                      AndroidUtilities.showSimpleAlert(requireContext(), R.string.error, result);
+                    }
+                  } else if (format_all_java && format_all_kotlin) {
+
+                    String result = er.toString() + "\n" + err.toString();
+                    if (!result.isEmpty()) {
+                      if (dialog != null) {
+                        dialog.dismiss();
+                      }
+
+                      AndroidUtilities.showSimpleAlert(requireContext(), R.string.error, result);
+                    }
+                  } else {
+
+                    if (dialog != null) {
+                      dialog.dismiss();
+                    }
                   }
 
                 } catch (Exception e) {
@@ -896,15 +936,7 @@ public class CodeEditorFragment extends Fragment
                     dialog.dismiss();
                   }
 
-                  ProgressManager.getInstance()
-                      .runLater(
-                          () -> {
-                            if (isDetached() || getContext() == null) {
-                              return;
-                            }
-                            AndroidUtilities.showSimpleAlert(
-                                requireContext(), R.string.error, e.toString());
-                          });
+                  AndroidUtilities.showSimpleAlert(requireContext(), R.string.error, e.toString());
                 }
               });
     }
