@@ -47,7 +47,6 @@ public class ImportFileAction extends FileAction {
     TreeFileManagerFragment fragment = (TreeFileManagerFragment) e.getData(CommonDataKeys.FRAGMENT);
     File currentDir = e.getData(CommonDataKeys.FILE);
     TreeNode<TreeFile> currentNode = e.getData(CommonFileKeys.TREE_NODE);
-
     DialogProperties properties = new DialogProperties();
     properties.selection_mode = DialogConfigs.MULTI_MODE;
     properties.selection_type = DialogConfigs.FILE_SELECT;
@@ -92,6 +91,18 @@ public class ImportFileAction extends FileAction {
       dialog.show();
 
     } else {
+
+      boolean importSuccess = fragment.importFile(currentDir);
+      if (importSuccess) {
+        ProgressManager.getInstance()
+            .runLater(
+                () -> {
+                  if (fragment.isDetached() || fragment.getContext() == null) {
+                    return;
+                  }
+                  refreshTreeView(currentNode, fragment.getTreeView());
+                });
+      }
     }
   }
 }

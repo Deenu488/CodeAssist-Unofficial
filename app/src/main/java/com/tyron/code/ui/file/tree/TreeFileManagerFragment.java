@@ -1,9 +1,12 @@
 package com.tyron.code.ui.file.tree;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -16,11 +19,14 @@ import android.widget.HorizontalScrollView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.view.ViewCompat;
+import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
@@ -47,6 +53,7 @@ import com.tyron.code.ui.file.tree.model.TreeFile;
 import com.tyron.code.ui.main.MainViewModel;
 import com.tyron.code.ui.project.ProjectManager;
 import com.tyron.code.util.UiUtilsKt;
+import com.tyron.common.util.AndroidUtilities;
 import com.tyron.common.util.SingleTextWatcher;
 import com.tyron.completion.progress.ProgressManager;
 import com.tyron.ui.treeview.TreeNode;
@@ -57,12 +64,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import org.apache.commons.io.FileUtils;
 import org.codeassist.unofficial.R;
 
 public class TreeFileManagerFragment extends Fragment {
@@ -80,6 +90,10 @@ public class TreeFileManagerFragment extends Fragment {
     return fragment;
   }
 
+  private ActivityResultLauncher<Intent> documentPickerLauncher;
+  private File currentDir;
+  private boolean importSuccess = false;
+
   private MainViewModel mMainViewModel;
   private FileViewModel mFileViewModel;
   private TreeView<TreeFile> treeView;
@@ -94,6 +108,42 @@ public class TreeFileManagerFragment extends Fragment {
 
     mMainViewModel = new ViewModelProvider(requireActivity()).get(MainViewModel.class);
     mFileViewModel = new ViewModelProvider(requireActivity()).get(FileViewModel.class);
+
+    documentPickerLauncher =
+        registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+              if (result.getResultCode() == Activity.RESULT_OK) {
+                Intent data = result.getData();
+                if (data != null) {
+                  Uri uri = data.getData();
+                  if (uri != null) {
+                    String name =
+                        Objects.requireNonNull(DocumentFile.fromSingleUri(requireContext(), uri))
+                            .getName();
+
+                    try {
+                      InputStream inputStream =
+                          requireContext().getContentResolver().openInputStream(uri);
+                      File outputFile = new File(currentDir, name);
+                      FileUtils.copyInputStreamToFile(inputStream, outputFile);
+                      importSuccess = true;
+                    } catch (IOException ex) {
+                      ProgressManager.getInstance()
+                          .runLater(
+                              () -> {
+                                if (isDetached() || getContext() == null) {
+                                  return;
+                                }
+                                importSuccess = false;
+                                AndroidUtilities.showSimpleAlert(
+                                    requireContext(), R.string.error, ex.getLocalizedMessage());
+                              });
+                    }
+                  }
+                }
+              }
+            });
   }
 
   @SuppressLint("ClickableViewAccessibility")
@@ -661,5 +711,14 @@ public class TreeFileManagerFragment extends Fragment {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  public boolean importFile(File currentDir) {
+    this.currentDir = currentDir;
+    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+    intent.addCategory(Intent.CATEGORY_OPENABLE);
+    intent.setType("*/*");
+    documentPickerLauncher.launch(intent);
+    return importSuccess;
   }
 }
