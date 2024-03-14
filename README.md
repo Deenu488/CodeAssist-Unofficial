@@ -37,6 +37,10 @@ Forked of Official CodeAssist Version Alpha-0.2.9
 
 - [x] Kotlin 21 (Only Compile)
 
+- [x] Google Java Formatter
+
+- [x] Kotlin Formatter
+
 - [x] Import Zip Project
 
 - [x] Exprot Zip Project
