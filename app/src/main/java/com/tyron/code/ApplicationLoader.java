@@ -3,7 +3,6 @@ package com.tyron.code;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -168,9 +167,8 @@ public class ApplicationLoader extends Application {
           // file manager actions
           manager.registerAction(NewFileActionGroup.ID, new NewFileActionGroup());
           manager.registerAction(DeleteFileAction.ID, new DeleteFileAction());
-          if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            manager.registerAction(ImportFileActionGroup.ID, new ImportFileActionGroup());
-          }
+          manager.registerAction(ImportFileActionGroup.ID, new ImportFileActionGroup());
+
           manager.registerAction(GitActionGroup.ID, new GitActionGroup());
 
           // java actions
