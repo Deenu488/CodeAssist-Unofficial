@@ -150,6 +150,10 @@ public class JavaLanguage implements Language, EditorFormatter {
         Main main = new Main(new PrintWriter(out, true), new PrintWriter(err, true), in);
         main.format("-");
         formatted = out.toString();
+
+        if (formatted == null) {
+          formatted = contents;
+        }
       } catch (Exception e) {
       }
 
