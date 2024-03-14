@@ -45,7 +45,7 @@ public class AboutUsFragment extends MaterialAboutFragment {
                     getDrawable(R.drawable.ic_round_email_24),
                     getString(R.string.settings_about_us_title),
                     false,
-                    "contact.tyronscott@gmail.com",
+                    "deenbandhunetam488@gmail.com",
                     ""))
             .addItem(
                 ConvenienceBuilder.createWebsiteActionItem(
@@ -53,7 +53,7 @@ public class AboutUsFragment extends MaterialAboutFragment {
                     getDrawable(R.drawable.ic_baseline_open_in_new_24),
                     getString(R.string.app_source_title),
                     false,
-                    Uri.parse("https://github.com/tyron12233/CodeAssist")))
+                    Uri.parse("https://github.com/Deenu488/CodeAssist-Unofficial")))
             .addItem(
                 ConvenienceBuilder.createRateActionItem(
                     context,
@@ -86,8 +86,8 @@ public class AboutUsFragment extends MaterialAboutFragment {
             context,
             getDrawable(R.drawable.ic_baseline_menu_book_24),
             getString(R.string.app_name),
-            "2022",
-            "Tyron",
+            "2024",
+            "Tyron, Deenu",
             OpenSourceLicense.GNU_GPL_3);
 
     return new MaterialAboutList.Builder()

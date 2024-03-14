@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.ForwardingListener;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
@@ -74,14 +75,27 @@ import io.github.rosemoe.sora.widget.DirectAccessProps;
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 import io.github.rosemoe.sora2.text.EditorUtil;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.codeassist.unofficial.R;
+import org.codeassist.unofficial.databinding.LayoutDialogProgressBinding;
+import java.nio.charset.Charset;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class CodeEditorFragment extends Fragment
@@ -793,19 +807,145 @@ public class CodeEditorFragment extends Fragment
   }
 
   public void format() {
-    if (mEditor != null) {
-      //            if (mEditor.getCursor().isSelected()) {
-      //                if (mLanguage instanceof JavaLanguage) {
-      //                    Cursor cursor = mEditor.getCursor();
-      //                    CharSequence format = mLanguage.format(mEditor.getText(),
-      // cursor.getLeft(),
-      //                            cursor.getRight());
-      //                    mEditor.setText(format);
-      //                    return;
-      //                }
-      //            }
-      mEditor.formatCodeAsync();
+
+    SharedPreferences sharedPreferences = ApplicationLoader.getDefaultPreferences();
+    boolean format_all_java = sharedPreferences.getBoolean("format_all_java", false);
+    boolean format_all_kotlin = sharedPreferences.getBoolean("format_all_kotlin", false);
+    boolean useGoogleJavaFormatter = sharedPreferences.getBoolean("google_java_format", false);
+
+    Project currentProject = ProjectManager.getInstance().getCurrentProject();
+    if (currentProject != null) {
+      File root = currentProject.getRootFile();
+
+      LayoutDialogProgressBinding binding =
+          LayoutDialogProgressBinding.inflate(getActivity().getLayoutInflater(), null, false);
+
+      binding.message.setVisibility(View.VISIBLE);
+      binding.message.setText(R.string.please_wait);
+      binding.progress.setIndeterminate(true);
+
+      MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
+      builder.setTitle(R.string.formatting);
+      builder.setView(binding.getRoot());
+      builder.setCancelable(true);
+
+      Set<Path> javaFiles = new HashSet<>();
+      if (format_all_java) {
+        javaFiles.addAll(getFiles(root, ".java"));
+      }
+
+      Set<Path> kotlinFiles = new HashSet<>();
+      if (format_all_kotlin) {
+        kotlinFiles.addAll(getFiles(root, ".kt"));
+      }
+
+      AlertDialog dialog = builder.create();
+      if (format_all_java || format_all_kotlin) {
+        dialog.show();
+      }
+
+      ProgressManager.getInstance()
+          .runNonCancelableAsync(
+              () -> {
+                try {
+
+                  ByteArrayOutputStream out = new ByteArrayOutputStream();
+                  ByteArrayOutputStream err = new ByteArrayOutputStream();
+
+                  if (format_all_java) {
+                     if (!javaFiles.isEmpty()) { 
+                    for (Path j : javaFiles) {
+                      if (useGoogleJavaFormatter) {
+                        byte[] bytes = Files.readAllBytes(j);
+                        InputStream in = new ByteArrayInputStream(bytes);
+                        StringWriter ou = new StringWriter();
+                        StringWriter er = new StringWriter();
+                        com.google.googlejavaformat.java.Main main =
+                            new com.google.googlejavaformat.java.Main(
+                                new PrintWriter(ou, true), new PrintWriter(er, true), in);
+                        main.format("-");
+                        String formatted = ou.toString();
+                        if (formatted!=null) {
+                            FileUtils.writeStringToFile(j.toFile(), formatted, Charset.defaultCharset());
+                            }
+                      }
+                    }}
+                  }
+
+                  if (format_all_kotlin) {
+                      if (!kotlinFiles.isEmpty()) {
+                    for (Path k : kotlinFiles) {
+                      byte[] bytes = Files.readAllBytes(k);
+                      com.facebook.ktfmt.cli.Main main =
+                          new com.facebook.ktfmt.cli.Main(
+                              new ByteArrayInputStream(bytes),
+                              new PrintStream(out),
+                              new PrintStream(err),
+                              new String[] {"-"});
+                      main.run();
+                      String formatted = out.toString();
+                         if (formatted!=null) {
+                             FileUtils.writeStringToFile(k.toFile(), formatted, Charset.defaultCharset());
+                   
+                            }
+                    }}
+                  }
+
+                } catch (Exception e) {
+                  if (dialog != null) {
+                    dialog.dismiss();
+                  }
+
+                  ProgressManager.getInstance()
+                      .runLater(
+                          () -> {
+                            if (isDetached() || getContext() == null) {
+                              return;
+                            }
+                            AndroidUtilities.showSimpleAlert(
+                                requireContext(), R.string.error, e.toString());
+                          });
+                }
+              });
     }
+
+    if (!format_all_java || !format_all_kotlin) {
+
+      if (mEditor != null) {
+        //            if (mEditor.getCursor().isSelected()) {
+        //                if (mLanguage instanceof JavaLanguage) {
+        //                    Cursor cursor = mEditor.getCursor();
+        //                    CharSequence format = mLanguage.format(mEditor.getText(),
+        // cursor.getLeft(),
+        //                            cursor.getRight());
+        //                    mEditor.setText(format);
+        //                    return;
+        //                }
+        //            }
+        mEditor.formatCodeAsync();
+      }
+    }
+  }
+
+  public Set<Path> getFiles(File dir, String ext) {
+    Set<Path> files = new HashSet<>();
+
+    File[] fileList = dir.listFiles();
+    if (fileList == null) {
+      return Collections.emptySet();
+    }
+
+    for (File file : fileList) {
+      if (file.isDirectory()) {
+        files.addAll(getFiles(file, ext));
+      } else {
+        if (file.getName().endsWith(ext)) {
+          files.add(file.toPath());
+        }
+      }
+    }
+
+    return files;
   }
 
   public void search() {

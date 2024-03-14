@@ -43,6 +43,14 @@
             app:defaultValue="false"
             app:summary="@string/google_java_formatter_desc"
             app:title="@string/use_google_java_formatter"/>
+        <SwitchPreference
+            android:defaultValue="true"
+            android:iconSpaceReserved="false"
+            android:key="format_all_java"
+            app:iconSpaceReserved="false"
+            app:defaultValue="false"
+            app:summary="@string/format_all_java_codes_desc"
+            app:title="@string/formatt_all_java_codes"/>
     </PreferenceCategory>
     <PreferenceCategory
         app:iconSpaceReserved="false"
@@ -58,6 +66,14 @@
             android:key="kotlin_completion"
             app:iconSpaceReserved="false"
             android:title="@string/settings_code_completions"/>
+        <SwitchPreference
+            android:defaultValue="true"
+            android:iconSpaceReserved="false"
+            android:key="format_all_kotlin"
+            app:iconSpaceReserved="false"
+            app:defaultValue="false"
+            app:summary="@string/format_all_kotlin_codes_desc"
+            app:title="@string/formatt_all_kotlin_codes"/>
     </PreferenceCategory>
     <PreferenceCategory
         app:iconSpaceReserved="false"
