@@ -122,6 +122,7 @@ public class KotlinLanguage implements Language {
         formatted = text;
       }
     } catch (Exception e) {
+      formatted = text;
     }
 
     if (formatted == null) {

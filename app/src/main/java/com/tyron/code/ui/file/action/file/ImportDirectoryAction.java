@@ -1,6 +1,7 @@
 package com.tyron.code.ui.file.action.file;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Environment;
 import androidx.annotation.NonNull;
 import com.github.angads25.filepicker.model.DialogConfigs;
@@ -8,6 +9,7 @@ import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 import com.tyron.actions.AnActionEvent;
 import com.tyron.actions.CommonDataKeys;
+import com.tyron.actions.Presentation;
 import com.tyron.code.ui.file.CommonFileKeys;
 import com.tyron.code.ui.file.action.FileAction;
 import com.tyron.code.ui.file.tree.TreeFileManagerFragment;
@@ -34,6 +36,16 @@ public class ImportDirectoryAction extends FileAction {
   @Override
   public boolean isApplicable(File file) {
     return file.isDirectory();
+  }
+
+  @Override
+  public void update(@NonNull AnActionEvent event) {
+    Presentation presentation = event.getPresentation();
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+      presentation.setVisible(true);
+    } else {
+      presentation.setVisible(false);
+    }
   }
 
   private void refreshTreeView(TreeNode<TreeFile> currentNode, TreeView<?> treeView) {

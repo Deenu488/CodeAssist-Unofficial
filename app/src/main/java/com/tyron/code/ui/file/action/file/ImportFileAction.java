@@ -1,6 +1,7 @@
 package com.tyron.code.ui.file.action.file;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Environment;
 import androidx.annotation.NonNull;
 import com.github.angads25.filepicker.model.DialogConfigs;
@@ -53,39 +54,44 @@ public class ImportFileAction extends FileAction {
     properties.root = Environment.getExternalStorageDirectory();
     properties.error_dir = fragment.requireContext().getExternalFilesDir(null);
 
-    FilePickerDialog dialog = new FilePickerDialog(fragment.requireContext(), properties);
-    dialog.setDialogSelectionListener(
-        files -> {
-          ProgressManager.getInstance()
-              .runNonCancelableAsync(
-                  () -> {
-                    for (String file : files) {
-                      try {
-                        FileUtils.copyFileToDirectory(new File(file), currentDir);
-                      } catch (IOException ioException) {
-                        ProgressManager.getInstance()
-                            .runLater(
-                                () -> {
-                                  if (fragment.isDetached() || fragment.getContext() == null) {
-                                    return;
-                                  }
-                                  AndroidUtilities.showSimpleAlert(
-                                      e.getDataContext(),
-                                      R.string.error,
-                                      ioException.getLocalizedMessage());
-                                });
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+
+      FilePickerDialog dialog = new FilePickerDialog(fragment.requireContext(), properties);
+      dialog.setDialogSelectionListener(
+          files -> {
+            ProgressManager.getInstance()
+                .runNonCancelableAsync(
+                    () -> {
+                      for (String file : files) {
+                        try {
+                          FileUtils.copyFileToDirectory(new File(file), currentDir);
+                        } catch (IOException ioException) {
+                          ProgressManager.getInstance()
+                              .runLater(
+                                  () -> {
+                                    if (fragment.isDetached() || fragment.getContext() == null) {
+                                      return;
+                                    }
+                                    AndroidUtilities.showSimpleAlert(
+                                        e.getDataContext(),
+                                        R.string.error,
+                                        ioException.getLocalizedMessage());
+                                  });
+                        }
                       }
-                    }
-                    ProgressManager.getInstance()
-                        .runLater(
-                            () -> {
-                              if (fragment.isDetached() || fragment.getContext() == null) {
-                                return;
-                              }
-                              refreshTreeView(currentNode, fragment.getTreeView());
-                            });
-                  });
-        });
-    dialog.show();
+                      ProgressManager.getInstance()
+                          .runLater(
+                              () -> {
+                                if (fragment.isDetached() || fragment.getContext() == null) {
+                                  return;
+                                }
+                                refreshTreeView(currentNode, fragment.getTreeView());
+                              });
+                    });
+          });
+      dialog.show();
+
+    } else {
+    }
   }
 }

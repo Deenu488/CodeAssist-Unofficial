@@ -134,7 +134,7 @@ public class JavaLanguage implements Language, EditorFormatter {
 
   @NonNull
   @Override
-  public CharSequence format(@NonNull CharSequence contents, int start, int end) {
+  public CharSequence format(@NonNull CharSequence text, int start, int end) {
 
     SharedPreferences sharedPreferences = ApplicationLoader.getDefaultPreferences();
     boolean useGoogleJavaFormatter = sharedPreferences.getBoolean("google_java_format", false);
@@ -143,8 +143,7 @@ public class JavaLanguage implements Language, EditorFormatter {
 
     if (useGoogleJavaFormatter) {
       try {
-        InputStream in =
-            new ByteArrayInputStream(contents.toString().getBytes(StandardCharsets.UTF_8));
+        InputStream in = new ByteArrayInputStream(text.toString().getBytes(StandardCharsets.UTF_8));
         StringWriter out = new StringWriter();
         StringWriter err = new StringWriter();
         Main main = new Main(new PrintWriter(out, true), new PrintWriter(err, true), in);
@@ -152,18 +151,18 @@ public class JavaLanguage implements Language, EditorFormatter {
         formatted = out.toString();
 
         if (formatted == null) {
-          formatted = contents;
+          formatted = text;
         }
       } catch (Exception e) {
+        formatted = text;
       }
 
     } else {
-      formatted =
-          com.tyron.eclipse.formatter.Formatter.format(contents.toString(), start, end - start);
+      formatted = com.tyron.eclipse.formatter.Formatter.format(text.toString(), start, end - start);
     }
 
     if (formatted == null) {
-      formatted = contents;
+      formatted = text;
     }
     return formatted;
   }
