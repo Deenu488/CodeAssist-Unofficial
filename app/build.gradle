@@ -130,6 +130,7 @@ dependencies {
     implementation project(path: ':fileeditor-api')
 
     // formatters
+    implementation project(path: ':eclipse-formatter')	
     implementation project(path: ':google-java-format')
     implementation project(path: ':ktfmt')
 
@@ -159,7 +160,7 @@ dependencies {
 
     implementation 'androidx.preference:preference:1.2.0'
     implementation 'com.github.TutorialsAndroid:crashx:v6.0.19'
-    implementation project(path: ':eclipse-formatter')	
+    
 	//git
 	    implementation 'org.slf4j:slf4j-api:2.0.5'
 	    implementation 'com.blankj:utilcodex:1.31.1'

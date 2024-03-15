@@ -60,6 +60,7 @@ public class ModuleImpl implements Module {
         javaSettings.put("sourceCompatibility", "1.8");
         javaSettings.put("targetCompatibility", "1.8");
         javaSettings.put("applyJavaFormat", "false");
+        javaSettings.put("isGoogleJavaFormat", "false");
 
         JSONObject kotlinSettings = new JSONObject();
         kotlinSettings.put("isCompilerEnabled", "false");
