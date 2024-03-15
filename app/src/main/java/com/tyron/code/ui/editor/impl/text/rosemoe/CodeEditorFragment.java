@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.ForwardingListener;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
@@ -77,11 +78,16 @@ import io.github.rosemoe.sora2.text.EditorUtil;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.codeassist.unofficial.R;
+import org.codeassist.unofficial.databinding.LayoutDialogProgressBinding;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class CodeEditorFragment extends Fragment
@@ -799,9 +805,41 @@ public class CodeEditorFragment extends Fragment
   }
 
   public void format(File root) {
-    if (mEditor != null) {
-      mEditor.formatCodeAsync();
+    LayoutDialogProgressBinding binding =
+        LayoutDialogProgressBinding.inflate(getActivity().getLayoutInflater(), null, false);
+
+    binding.message.setVisibility(View.VISIBLE);
+    binding.message.setText(R.string.please_wait);
+    binding.progress.setIndeterminate(true);
+
+    MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
+    builder.setTitle(R.string.formatting);
+    builder.setView(binding.getRoot());
+    builder.setCancelable(false);
+
+    AlertDialog dialog = builder.create();
+    dialog.show();
+  }
+
+  public static Set<File> getFiles(File dir, String ext) {
+    Set<File> Files = new HashSet<>();
+
+    File[] files = dir.listFiles();
+    if (files == null) {
+      return Collections.emptySet();
     }
+
+    for (File file : files) {
+      if (file.isDirectory()) {
+        Files.addAll(getFiles(file, ext));
+      } else {
+        if (file.getName().endsWith(ext)) {
+          Files.add(file);
+        }
+      }
+    }
+
+    return Files;
   }
 
   public void search() {
