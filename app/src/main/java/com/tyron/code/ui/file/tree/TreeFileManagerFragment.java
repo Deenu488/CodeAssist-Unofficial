@@ -96,6 +96,7 @@ public class TreeFileManagerFragment extends Fragment {
   private MainViewModel mMainViewModel;
   private FileViewModel mFileViewModel;
   private TreeView<TreeFile> treeView;
+  private TreeNode<TreeFile> currentNode;
 
   public TreeFileManagerFragment() {
     super(R.layout.tree_file_manager_fragment);
@@ -140,14 +141,14 @@ public class TreeFileManagerFragment extends Fragment {
                               });
                     }
 
-                    TreeNode<TreeFile> node = TreeNode.root(TreeUtil.getNodes(currentDir));
+                    //TreeNode<TreeFile> node = TreeNode.root(TreeUtil.getNodes(currentDir));
                     ProgressManager.getInstance()
                         .runLater(
                             () -> {
                               if (getActivity() == null) {
                                 return;
                               }
-                              treeView.refreshTreeView(node);
+                              treeView.refreshTreeView(currentNode);
                             });
                   }
                 }
@@ -722,8 +723,9 @@ public class TreeFileManagerFragment extends Fragment {
     }
   }
 
-  public void importFile(File currentDir) {
+  public void importFile(File currentDir, TreeNode<TreeFile> currentNode) {
     this.currentDir = currentDir;
+    this.currentNode = currentNode;
 
     Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
     intent.addCategory(Intent.CATEGORY_OPENABLE);

@@ -92,7 +92,7 @@ public class ImportFileAction extends FileAction {
 
     } else {
 
-      fragment.importFile(currentDir);
+      fragment.importFile(currentDir, currentNode);
     }
   }
 }
