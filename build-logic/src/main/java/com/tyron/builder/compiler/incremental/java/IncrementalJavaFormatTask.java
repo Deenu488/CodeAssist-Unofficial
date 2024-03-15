@@ -1,5 +1,6 @@
 package com.tyron.builder.compiler.incremental.java;
 
+import com.google.common.base.Throwables;
 import com.tyron.builder.compiler.BuildType;
 import com.tyron.builder.compiler.Task;
 import com.tyron.builder.exception.CompilationFailedException;
@@ -104,6 +105,7 @@ public class IncrementalJavaFormatTask extends Task<JavaModule> {
       }
 
     } catch (Exception e) {
+      throw new CompilationFailedException(Throwables.getStackTraceAsString(e));
     }
   }
 
