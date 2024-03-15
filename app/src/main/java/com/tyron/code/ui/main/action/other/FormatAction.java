@@ -23,7 +23,7 @@ public class FormatAction extends AnAction {
 
     FileEditor fileEditor = event.getData(CommonDataKeys.FILE_EDITOR_KEY);
     if (fileEditor == null) {
-      event.getPresentation().setVisible(false); 
+      event.getPresentation().setVisible(false);
       return;
     }
 

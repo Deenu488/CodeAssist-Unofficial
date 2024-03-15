@@ -852,6 +852,8 @@ public class CodeEditorFragment extends Fragment
                   ByteArrayOutputStream out = new ByteArrayOutputStream();
                   ByteArrayOutputStream err = new ByteArrayOutputStream();
                   StringWriter er = new StringWriter();
+                  int jec = 0;
+                  int kec = 0;
 
                   if (format_all_java) {
                     if (!javaFiles.isEmpty()) {
@@ -864,7 +866,8 @@ public class CodeEditorFragment extends Fragment
                           com.google.googlejavaformat.java.Main main =
                               new com.google.googlejavaformat.java.Main(
                                   new PrintWriter(ou, true), new PrintWriter(er, true), in);
-                          main.format("-");
+                          jec = main.format("-");
+
                           String formatted = ou.toString();
                           if (formatted != null && !formatted.isEmpty()) {
                             FileUtils.writeStringToFile(
@@ -885,7 +888,8 @@ public class CodeEditorFragment extends Fragment
                                 new PrintStream(out),
                                 new PrintStream(err),
                                 new String[] {"-"});
-                        main.run();
+                        kec = main.run();
+
                         String formatted = out.toString();
                         if (formatted != null && !formatted.isEmpty()) {
                           FileUtils.writeStringToFile(
@@ -895,48 +899,18 @@ public class CodeEditorFragment extends Fragment
                     }
                   }
 
-                  if (format_all_java) {
-                    String result = er.toString();
-                    if (!result.isEmpty()) {
-                      if (dialog != null) {
-                        dialog.dismiss();
-                      }
-
-                      AndroidUtilities.showSimpleAlert(requireContext(), R.string.error, result);
-                    }
-                  } else if (format_all_kotlin) {
-
-                    String result = err.toString();
-                    if (!result.isEmpty()) {
-                      if (dialog != null) {
-                        dialog.dismiss();
-                      }
-
-                      AndroidUtilities.showSimpleAlert(requireContext(), R.string.error, result);
-                    }
-                  } else if (format_all_java && format_all_kotlin) {
-
-                    String result = er.toString() + "\n" + err.toString();
-                    if (!result.isEmpty()) {
-                      if (dialog != null) {
-                        dialog.dismiss();
-                      }
-
-                      AndroidUtilities.showSimpleAlert(requireContext(), R.string.error, result);
-                    }
-                  } else {
-
-                    if (dialog != null) {
-                      dialog.dismiss();
-                    }
-                  }
-
                 } catch (Exception e) {
-                  if (dialog != null) {
-                    dialog.dismiss();
-                  }
 
-                  AndroidUtilities.showSimpleAlert(requireContext(), R.string.error, e.toString());
+                  ProgressManager.getInstance()
+                      .runLater(
+                          () -> {
+                            if (dialog != null) {
+                              dialog.dismiss();
+                            }
+
+                            AndroidUtilities.showSimpleAlert(
+                                requireContext(), R.string.error, e.toString());
+                          });
                 }
               });
     }
