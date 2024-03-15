@@ -899,6 +899,14 @@ public class CodeEditorFragment extends Fragment
                     }
                   }
 
+                  ProgressManager.getInstance()
+                      .runLater(
+                          () -> {
+                            if (dialog != null) {
+                              dialog.dismiss();
+                            }
+                          });
+
                 } catch (Exception e) {
 
                   ProgressManager.getInstance()
