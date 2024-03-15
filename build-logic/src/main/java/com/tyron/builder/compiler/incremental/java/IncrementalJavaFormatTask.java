@@ -6,9 +6,13 @@ import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.log.ILogger;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.JavaModule;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -63,7 +67,7 @@ public class IncrementalJavaFormatTask extends Task<JavaModule> {
 
         for (File mJava : mJavaFiles) {
 
-          if (   ! Boolean.parseBoolean(  isGoogleJavaFormat)) {
+          if (!Boolean.parseBoolean(isGoogleJavaFormat)) {
 
             String text = new String(Files.readAllBytes(mJava.toPath()));
 
@@ -74,12 +78,32 @@ public class IncrementalJavaFormatTask extends Task<JavaModule> {
             }
 
           } else {
+
+            StringWriter out = new StringWriter();
+            StringWriter err = new StringWriter();
+            String text = new String(Files.readAllBytes(mJava.toPath()));
+
+            com.google.googlejavaformat.java.Main main =
+                new com.google.googlejavaformat.java.Main(
+                    new PrintWriter(out, true),
+                    new PrintWriter(err, true),
+                    new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8)));
+            int exitCode = main.format("-");
+
+            if (exitCode != 0) {
+              getLogger().debug("Error: " + mJava.getAbsolutePath() + " " + err.toString());
+              throw new CompilationFailedException(TAG + " error");
+            }
+
+            String formatted = out.toString();
+            if (formatted != null && !formatted.isEmpty()) {
+              FileUtils.writeStringToFile(mJava, formatted, Charset.defaultCharset());
+            }
           }
         }
       }
 
     } catch (Exception e) {
-      throw new CompilationFailedException(e);
     }
   }
 
