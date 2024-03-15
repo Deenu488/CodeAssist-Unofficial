@@ -38,8 +38,8 @@ public class AndroidAppBundleBuilder extends BuilderImpl<AndroidModule> {
     List<Task<? super AndroidModule>> tasks = new ArrayList<>();
     tasks.add(new CleanTask(getProject(), getModule(), getLogger()));
 
-    tasks.add(new IncrementalKotlinFormatTask(getProject(), module, logger));
-    tasks.add(new IncrementalJavaFormatTask(getProject(), module, logger));
+    tasks.add(new IncrementalKotlinFormatTask(getProject(), getModule(), logger));
+    tasks.add(new IncrementalJavaFormatTask(getProject(), getModule(), logger));
 
     tasks.add(new CheckLibrariesTask(getProject(), getModule(), getLogger()));
     tasks.add(new IncrementalAssembleLibraryTask(getProject(), getModule(), getLogger()));
