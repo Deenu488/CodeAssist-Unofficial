@@ -57,6 +57,18 @@ public class FormatAction extends AnAction {
     boolean format_all_kotlin = sharedPreferences.getBoolean("format_all_kotlin", false);
 
     if (!format_all_java && !format_all_kotlin) {
+
+      if (fragment instanceof CodeEditorFragment) {
+        ((CodeEditorFragment) fragment).format();
+      }
+    }
+
+    Project project = e.getData(CommonDataKeys.PROJECT);
+    if (project == null) {
+      return;
+    }
+
+    if (format_all_java || format_all_kotlin) {
       if (fragment instanceof CodeEditorFragment) {
         ((CodeEditorFragment) fragment).format();
       }
