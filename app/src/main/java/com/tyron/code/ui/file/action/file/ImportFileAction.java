@@ -9,6 +9,7 @@ import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 import com.tyron.actions.AnActionEvent;
 import com.tyron.actions.CommonDataKeys;
+import com.tyron.builder.project.Project;
 import com.tyron.code.ui.file.CommonFileKeys;
 import com.tyron.code.ui.file.action.FileAction;
 import com.tyron.code.ui.file.tree.TreeFileManagerFragment;
@@ -92,7 +93,10 @@ public class ImportFileAction extends FileAction {
 
     } else {
 
-      fragment.importFile(currentDir, currentNode);
+      Project project = e.getData(CommonDataKeys.PROJECT);
+      if (project != null) {
+        fragment.importFile(project.getRootFile(), currentDir);
+      }
     }
   }
 }

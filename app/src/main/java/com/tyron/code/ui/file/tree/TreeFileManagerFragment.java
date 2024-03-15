@@ -91,12 +91,12 @@ public class TreeFileManagerFragment extends Fragment {
   }
 
   private ActivityResultLauncher<Intent> documentPickerLauncher;
-  private File currentDir;
 
+  private File rootDir;
+  private File currentDir;
   private MainViewModel mMainViewModel;
   private FileViewModel mFileViewModel;
   private TreeView<TreeFile> treeView;
-  private TreeNode<TreeFile> currentNode;
 
   public TreeFileManagerFragment() {
     super(R.layout.tree_file_manager_fragment);
@@ -141,14 +141,14 @@ public class TreeFileManagerFragment extends Fragment {
                               });
                     }
 
-                    //TreeNode<TreeFile> node = TreeNode.root(TreeUtil.getNodes(currentDir));
+                    TreeNode<TreeFile> node = TreeNode.root(TreeUtil.getNodes(rootDir));
                     ProgressManager.getInstance()
                         .runLater(
                             () -> {
                               if (getActivity() == null) {
                                 return;
                               }
-                              treeView.refreshTreeView(currentNode);
+                              treeView.refreshTreeView(node);
                             });
                   }
                 }
@@ -723,9 +723,9 @@ public class TreeFileManagerFragment extends Fragment {
     }
   }
 
-  public void importFile(File currentDir, TreeNode<TreeFile> currentNode) {
+  public void importFile(File rootDir, File currentDir) {
+    this.rootDir = rootDir;
     this.currentDir = currentDir;
-    this.currentNode = currentNode;
 
     Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
     intent.addCategory(Intent.CATEGORY_OPENABLE);

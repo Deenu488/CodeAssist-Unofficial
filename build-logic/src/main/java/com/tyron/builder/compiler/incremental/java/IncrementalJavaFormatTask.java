@@ -9,7 +9,7 @@ import com.tyron.builder.project.api.JavaModule;
 import java.io.IOException;
 
 public class IncrementalJavaFormatTask extends Task<JavaModule> {
-    
+
   private static final String TAG = "formatJava";
 
   public IncrementalJavaFormatTask(Project project, JavaModule module, ILogger logger) {
