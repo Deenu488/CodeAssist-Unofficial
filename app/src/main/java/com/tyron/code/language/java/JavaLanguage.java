@@ -4,7 +4,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import androidx.annotation.NonNull;
-import com.google.googlejavaformat.java.Main;
 import com.tyron.code.ApplicationLoader;
 import com.tyron.code.analyzer.BaseTextmateAnalyzer;
 import com.tyron.code.language.CompletionItemWrapper;
@@ -27,7 +26,6 @@ import io.github.rosemoe.sora.text.TextUtils;
 import io.github.rosemoe.sora.util.MyCharacter;
 import io.github.rosemoe.sora.widget.SymbolPairMatch;
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
@@ -142,19 +140,26 @@ public class JavaLanguage implements Language, EditorFormatter {
     CharSequence formatted = null;
 
     if (useGoogleJavaFormatter) {
+
       try {
-        InputStream in = new ByteArrayInputStream(text.toString().getBytes(StandardCharsets.UTF_8));
+
         StringWriter out = new StringWriter();
         StringWriter err = new StringWriter();
-        Main main = new Main(new PrintWriter(out, true), new PrintWriter(err, true), in);
-        main.format("-");
+
+        com.google.googlejavaformat.java.Main main =
+            new com.google.googlejavaformat.java.Main(
+                new PrintWriter(out, true),
+                new PrintWriter(err, true),
+                new ByteArrayInputStream(text.toString().getBytes(StandardCharsets.UTF_8)));
+        int exitCode = main.format("-");
+
         formatted = out.toString();
 
-        if (formatted == null) {
+        if (exitCode != 0) {
           formatted = text;
         }
+
       } catch (Exception e) {
-        formatted = text;
       }
 
     } else {
