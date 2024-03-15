@@ -70,7 +70,7 @@ public class FormatAction extends AnAction {
 
     if (format_all_java || format_all_kotlin) {
       if (fragment instanceof CodeEditorFragment) {
-        ((CodeEditorFragment) fragment).format();
+        ((CodeEditorFragment) fragment).format(project.getRootFile());
       }
     }
   }

@@ -793,7 +793,12 @@ public class CodeEditorFragment extends Fragment
   }
 
   public void format() {
+    if (mEditor != null) {
+      mEditor.formatCodeAsync();
+    }
+  }
 
+  public void format(File root) {
     if (mEditor != null) {
       mEditor.formatCodeAsync();
     }
