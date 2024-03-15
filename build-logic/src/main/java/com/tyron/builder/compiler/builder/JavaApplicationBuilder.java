@@ -7,8 +7,10 @@ import com.tyron.builder.compiler.Task;
 import com.tyron.builder.compiler.apk.PackageTask;
 import com.tyron.builder.compiler.dex.R8Task;
 import com.tyron.builder.compiler.incremental.dex.IncrementalD8Task;
+import com.tyron.builder.compiler.incremental.java.IncrementalJavaFormatTask;
 import com.tyron.builder.compiler.incremental.java.IncrementalJavaTask;
 import com.tyron.builder.compiler.incremental.kotlin.IncrementalKotlinCompiler;
+import com.tyron.builder.compiler.incremental.kotlin.IncrementalKotlinFormatTask;
 import com.tyron.builder.compiler.incremental.resource.IncrementalAssembleLibraryTask;
 import com.tyron.builder.compiler.java.CheckLibrariesTask;
 import com.tyron.builder.compiler.java.RunTask;
@@ -32,6 +34,9 @@ public class JavaApplicationBuilder extends BuilderImpl<AndroidModule> {
 
     List<Task<? super AndroidModule>> tasks = new ArrayList<>();
     tasks.add(new CleanTask(getProject(), module, logger));
+    tasks.add(new IncrementalKotlinFormatTask(getProject(), module, logger));
+    tasks.add(new IncrementalJavaFormatTask(getProject(), module, logger));
+
     tasks.add(new CheckLibrariesTask(getProject(), module, getLogger()));
     tasks.add(new IncrementalAssembleLibraryTask(getProject(), module, getLogger()));
     tasks.add(new IncrementalKotlinCompiler(getProject(), module, logger));

@@ -59,12 +59,14 @@ public class ModuleImpl implements Module {
         javaSettings.put("isCompilerEnabled", "false");
         javaSettings.put("sourceCompatibility", "1.8");
         javaSettings.put("targetCompatibility", "1.8");
+        javaSettings.put("applyJavaFormat", "false");
 
         JSONObject kotlinSettings = new JSONObject();
         kotlinSettings.put("isCompilerEnabled", "false");
         kotlinSettings.put("isCompileRuntime", "false");
         kotlinSettings.put("isKotlinCompletionV2", "false");
         kotlinSettings.put("jvmTarget", "1.8");
+        kotlinSettings.put("applyKotlinFormat", "false");
         // kotlinSettings.put("languageVersion", "2.1");
 
         JSONObject buildSettingsJson = new JSONObject();
