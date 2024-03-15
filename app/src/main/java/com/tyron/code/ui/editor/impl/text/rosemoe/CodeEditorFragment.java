@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.ForwardingListener;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
@@ -75,27 +74,14 @@ import io.github.rosemoe.sora.widget.DirectAccessProps;
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 import io.github.rosemoe.sora2.text.EditorUtil;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.codeassist.unofficial.R;
-import org.codeassist.unofficial.databinding.LayoutDialogProgressBinding;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class CodeEditorFragment extends Fragment
@@ -808,170 +794,9 @@ public class CodeEditorFragment extends Fragment
 
   public void format() {
 
-    SharedPreferences sharedPreferences = ApplicationLoader.getDefaultPreferences();
-    boolean format_all_java = sharedPreferences.getBoolean("format_all_java", false);
-    boolean format_all_kotlin = sharedPreferences.getBoolean("format_all_kotlin", false);
-    boolean useGoogleJavaFormatter = sharedPreferences.getBoolean("google_java_format", false);
-
-    if (!format_all_java) {
-
-      if (mEditor != null) {
-        mEditor.formatCodeAsync();
-      }
-    } else if (!format_all_kotlin) {
-
-      if (mEditor != null) {
-        mEditor.formatCodeAsync();
-      }
-    } else if (!format_all_java && !format_all_kotlin) {
-
-      if (mEditor != null) {
-        mEditor.formatCodeAsync();
-      }
+    if (mEditor != null) {
+      mEditor.formatCodeAsync();
     }
-
-    if (format_all_java || format_all_kotlin) {
-
-      Project currentProject = ProjectManager.getInstance().getCurrentProject();
-      if (currentProject != null) {
-        File root = currentProject.getRootFile();
-
-        LayoutDialogProgressBinding binding =
-            LayoutDialogProgressBinding.inflate(getActivity().getLayoutInflater(), null, false);
-
-        binding.message.setVisibility(View.VISIBLE);
-        binding.message.setText(R.string.please_wait);
-        binding.progress.setIndeterminate(true);
-
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
-        builder.setTitle(R.string.formatting);
-        builder.setView(binding.getRoot());
-        builder.setCancelable(true);
-
-        Set<Path> javaFiles = new HashSet<>();
-        if (format_all_java) {
-          javaFiles.addAll(getFiles(root, ".java"));
-        }
-
-        Set<Path> kotlinFiles = new HashSet<>();
-        if (format_all_kotlin) {
-          kotlinFiles.addAll(getFiles(root, ".kt"));
-        }
-
-        AlertDialog dialog = builder.create();
-        if (format_all_java || format_all_kotlin) {
-          dialog.show();
-        }
-
-        ProgressManager.getInstance()
-            .runNonCancelableAsync(
-                () -> {
-                  try {
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    ByteArrayOutputStream err = new ByteArrayOutputStream();
-                    StringWriter er = new StringWriter();
-                    StringBuffer stringBuffer = new StringBuffer();
-                    final String[] jec = {"0"};
-                    final String[] kec = {"0"};
-
-                    if (format_all_java) {
-                      if (!javaFiles.isEmpty()) {
-                        for (Path j : javaFiles) {
-                          if (useGoogleJavaFormatter) {
-                            byte[] bytes = Files.readAllBytes(j);
-                            InputStream in = new ByteArrayInputStream(bytes);
-                            StringWriter ou = new StringWriter();
-
-                            com.google.googlejavaformat.java.Main main =
-                                new com.google.googlejavaformat.java.Main(
-                                    new PrintWriter(ou, true), new PrintWriter(er, true), in);
-                            jec[0] = String.valueOf(main.format("-"));
-
-                            if (Integer.parseInt(jec[0]) != 0) {
-                              stringBuffer.append(j.toString() + " " + er.toString());
-                            }
-
-                            String formatted = ou.toString();
-                            if (formatted != null && !formatted.isEmpty()) {
-                              FileUtils.writeStringToFile(
-                                  j.toFile(), formatted, Charset.defaultCharset());
-                            }
-                          }
-                        }
-                      }
-                    }
-
-                    if (format_all_kotlin) {
-                      if (!kotlinFiles.isEmpty()) {
-                        for (Path k : kotlinFiles) {
-                          byte[] bytes = Files.readAllBytes(k);
-                          com.facebook.ktfmt.cli.Main main =
-                              new com.facebook.ktfmt.cli.Main(
-                                  new ByteArrayInputStream(bytes),
-                                  new PrintStream(out),
-                                  new PrintStream(err),
-                                  new String[] {"-"});
-                          kec[0] = String.valueOf(main.run());
-                          if (Integer.parseInt(kec[0]) != 0) {
-                            stringBuffer.append(k.toString() + " " + err.toString());
-                          }
-
-                          String formatted = out.toString();
-                          if (formatted != null && !formatted.isEmpty()) {
-                            FileUtils.writeStringToFile(
-                                k.toFile(), formatted, Charset.defaultCharset());
-                          }
-                        }
-                      }
-                    }
-
-                    ProgressManager.getInstance()
-                        .runLater(
-                            () -> {
-                              if (dialog != null) {
-                                dialog.dismiss();
-                              }
-                              if (Integer.parseInt(jec[0]) != 0 || Integer.parseInt(kec[0]) != 0) {
-                                AndroidUtilities.showSimpleAlert(
-                                    requireContext(), R.string.error, stringBuffer.toString());
-                              }
-                            });
-
-                  } catch (Exception e) {
-                    ProgressManager.getInstance()
-                        .runLater(
-                            () -> {
-                              if (dialog != null) {
-                                dialog.dismiss();
-                              }
-                              AndroidUtilities.showSimpleAlert(
-                                  requireContext(), R.string.error, e.toString());
-                            });
-                  }
-                });
-      }
-    }
-  }
-
-  public Set<Path> getFiles(File dir, String ext) {
-    Set<Path> files = new HashSet<>();
-
-    File[] fileList = dir.listFiles();
-    if (fileList == null) {
-      return Collections.emptySet();
-    }
-
-    for (File file : fileList) {
-      if (file.isDirectory()) {
-        files.addAll(getFiles(file, ext));
-      } else {
-        if (file.getName().endsWith(ext)) {
-          files.add(file.toPath());
-        }
-      }
-    }
-
-    return files;
   }
 
   public void search() {
