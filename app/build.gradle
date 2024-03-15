@@ -19,8 +19,7 @@ android {
 		minSdkVersion 26		
 		applicationId "org.codeassist.unofficial"
 		versionCode 1
-		versionName "1.0.0"
-            	
+		versionName "1.0.0"         	
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
