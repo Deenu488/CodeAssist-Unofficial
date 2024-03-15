@@ -31,7 +31,13 @@ Forked of Official CodeAssist Version Alpha-0.2.9
 
 - [x] APK Compilation
 
+- [x] Custom Signing Option
+
+- [x] Search Option
+
 - [x] AAB Support
+
+- [x] Custom AAB Signing Option
 
 - [x] Java 17 (Only Compile)
 
@@ -41,11 +47,15 @@ Forked of Official CodeAssist Version Alpha-0.2.9
 
 - [x] Kotlin Formatter
 
+- [x] Code Formatter Task
+
+- [x] Import File Option A11+
+
 - [x] Import Zip Project
 
-- [x] Exprot Zip Project
+- [x] Export Zip Project
 
-- [x] R8/ProGuard
+- [x] D8/R8/ProGuard
 
 - [x] Java Code Completions (1.8)
 

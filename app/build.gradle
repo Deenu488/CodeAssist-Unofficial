@@ -15,7 +15,7 @@ android {
 		}
 	
     defaultConfig {
-        targetSdkVersion 34
+        targetSdkVersion 33
 		minSdkVersion 26		
 		applicationId "org.codeassist.unofficial"
 		versionCode 1
