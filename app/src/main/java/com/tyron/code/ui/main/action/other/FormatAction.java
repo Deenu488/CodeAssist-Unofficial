@@ -6,7 +6,10 @@ import com.tyron.actions.ActionPlaces;
 import com.tyron.actions.AnAction;
 import com.tyron.actions.AnActionEvent;
 import com.tyron.actions.CommonDataKeys;
+import com.tyron.builder.project.Project;
 import com.tyron.code.ui.editor.impl.text.rosemoe.CodeEditorFragment;
+import com.tyron.code.ui.main.MainFragment;
+import com.tyron.code.ui.main.MainViewModel;
 import com.tyron.fileeditor.api.FileEditor;
 import org.codeassist.unofficial.R;
 
@@ -22,8 +25,19 @@ public class FormatAction extends AnAction {
     }
 
     FileEditor fileEditor = event.getData(CommonDataKeys.FILE_EDITOR_KEY);
+
     if (fileEditor == null) {
       event.getPresentation().setVisible(false);
+      return;
+    }
+
+    Project project = event.getData(CommonDataKeys.PROJECT);
+    if (project == null) {
+      return;
+    }
+
+    MainViewModel mainViewModel = event.getData(MainFragment.MAIN_VIEW_MODEL_KEY);
+    if (mainViewModel == null) {
       return;
     }
 
