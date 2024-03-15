@@ -848,12 +848,12 @@ public class CodeEditorFragment extends Fragment
           .runNonCancelableAsync(
               () -> {
                 try {
-
                   ByteArrayOutputStream out = new ByteArrayOutputStream();
                   ByteArrayOutputStream err = new ByteArrayOutputStream();
                   StringWriter er = new StringWriter();
-                  int jec = 0;
-                  int kec = 0;
+                  StringBuffer stringBuffer = new StringBuffer();
+                  final String[] jec = {"0"};
+                  final String[] kec = {"0"};
 
                   if (format_all_java) {
                     if (!javaFiles.isEmpty()) {
@@ -866,7 +866,11 @@ public class CodeEditorFragment extends Fragment
                           com.google.googlejavaformat.java.Main main =
                               new com.google.googlejavaformat.java.Main(
                                   new PrintWriter(ou, true), new PrintWriter(er, true), in);
-                          jec = main.format("-");
+                          jec[0] = String.valueOf(main.format("-"));
+
+                          if (Integer.parseInt(jec[0]) != 0) {
+                            stringBuffer.append(j.toString() + " " + er.toString());
+                          }
 
                           String formatted = ou.toString();
                           if (formatted != null && !formatted.isEmpty()) {
@@ -888,7 +892,10 @@ public class CodeEditorFragment extends Fragment
                                 new PrintStream(out),
                                 new PrintStream(err),
                                 new String[] {"-"});
-                        kec = main.run();
+                        kec[0] = String.valueOf(main.run());
+                        if (Integer.parseInt(kec[0]) != 0) {
+                          stringBuffer.append(k.toString() + " " + err.toString());
+                        }
 
                         String formatted = out.toString();
                         if (formatted != null && !formatted.isEmpty()) {
@@ -905,17 +912,19 @@ public class CodeEditorFragment extends Fragment
                             if (dialog != null) {
                               dialog.dismiss();
                             }
+                            if (Integer.parseInt(jec[0]) != 0 || Integer.parseInt(kec[0]) != 0) {
+                              AndroidUtilities.showSimpleAlert(
+                                  requireContext(), R.string.error, stringBuffer.toString());
+                            }
                           });
 
                 } catch (Exception e) {
-
                   ProgressManager.getInstance()
                       .runLater(
                           () -> {
                             if (dialog != null) {
                               dialog.dismiss();
                             }
-
                             AndroidUtilities.showSimpleAlert(
                                 requireContext(), R.string.error, e.toString());
                           });
