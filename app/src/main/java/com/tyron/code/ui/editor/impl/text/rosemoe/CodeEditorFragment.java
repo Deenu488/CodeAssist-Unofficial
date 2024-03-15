@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.ForwardingListener;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
@@ -82,6 +83,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.codeassist.unofficial.R;
+import org.codeassist.unofficial.databinding.LayoutSearchDialogBinding;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class CodeEditorFragment extends Fragment
@@ -800,7 +802,17 @@ public class CodeEditorFragment extends Fragment
 
   public void search() {
     if (mEditor != null) {
-      new MaterialAlertDialogBuilder(requireContext()).setTitle("Search").show();
+
+      LayoutSearchDialogBinding binding =
+          LayoutSearchDialogBinding.inflate(getActivity().getLayoutInflater(), null, false);
+
+      MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
+      builder.setTitle("Search");
+      builder.setView(binding.getRoot());
+      builder.setCancelable(true);
+
+      AlertDialog dialog = builder.create();
+      dialog.show();
     }
   }
 
