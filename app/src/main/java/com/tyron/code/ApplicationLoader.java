@@ -49,6 +49,8 @@ import com.tyron.language.xml.XmlFileType;
 import com.tyron.language.xml.XmlLanguage;
 import com.tyron.selection.java.JavaExpandSelectionProvider;
 import com.tyron.selection.xml.XmlExpandSelectionProvider;
+import java.security.Security;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class ApplicationLoader extends Application {
 
@@ -66,6 +68,9 @@ public class ApplicationLoader extends Application {
   @Override
   public void onCreate() {
     super.onCreate();
+
+    addProviders();
+
     Logger.initialize(this);
 
     setupTheme();
@@ -194,5 +199,18 @@ public class ApplicationLoader extends Application {
   @VisibleForTesting
   public static void setApplicationContext(Context context) {
     applicationContext = context;
+  }
+
+  private void addProviders() {
+    try {
+      Security.removeProvider("BC"); // must remove the old bc provider
+    } catch (Exception ignored) {
+    }
+
+    try {
+      // insert the new bc provider at first
+      Security.insertProviderAt(new BouncyCastleProvider(), 1);
+    } catch (Exception ignored) {
+    }
   }
 }

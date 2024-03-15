@@ -6,6 +6,8 @@ import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MotionEvent;
@@ -72,6 +74,7 @@ import io.github.rosemoe.sora.langs.textmate.theme.TextMateColorScheme;
 import io.github.rosemoe.sora.text.Content;
 import io.github.rosemoe.sora.text.Cursor;
 import io.github.rosemoe.sora.widget.DirectAccessProps;
+import io.github.rosemoe.sora.widget.EditorSearcher;
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion;
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 import io.github.rosemoe.sora2.text.EditorUtil;
@@ -81,6 +84,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
+import java.util.regex.PatternSyntaxException;
 import org.apache.commons.io.FileUtils;
 import org.codeassist.unofficial.R;
 import org.codeassist.unofficial.databinding.LayoutSearchDialogBinding;
@@ -803,8 +807,39 @@ public class CodeEditorFragment extends Fragment
   public void search() {
     if (mEditor != null) {
 
+      mEditor.getSearcher().stopSearch();
+      mEditor.beginSearchMode();
+
       LayoutSearchDialogBinding binding =
           LayoutSearchDialogBinding.inflate(getActivity().getLayoutInflater(), null, false);
+
+      binding
+          .searchEditor
+          .getEditText()
+          .addTextChangedListener(
+              new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                  if (editable.length() > 0) {
+                    try {
+                      mEditor
+                          .getSearcher()
+                          .search(
+                              editable.toString(), new EditorSearcher.SearchOptions(true, true));
+                    } catch (PatternSyntaxException e) {
+                      // Regex error
+                    }
+                  } else {
+                    mEditor.getSearcher().stopSearch();
+                  }
+                }
+              });
 
       MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
       builder.setTitle("Search");

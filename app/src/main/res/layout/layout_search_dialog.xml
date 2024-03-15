@@ -9,7 +9,7 @@
     android:paddingStart="24dp"
     android:paddingTop="16dp">
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textinput_layout"
+        android:id="@+id/search_editor"
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textinput_layout"
+        app:layout_constraintTop_toBottomOf="@+id/search_editor"
         android:text="Prev"/>
     <com.google.android.material.button.MaterialButton
         android:id="@+id/next"
@@ -42,6 +42,6 @@
         android:layout_marginEnd="24dp"
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textinput_layout"
+        app:layout_constraintTop_toBottomOf="@+id/search_editor"
         android:text="Next"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
