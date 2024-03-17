@@ -38,6 +38,7 @@ import com.tyron.code.ui.editor.scheme.CompiledEditorScheme;
 import com.tyron.code.ui.main.MainViewModel;
 import com.tyron.code.ui.project.ProjectManager;
 import com.tyron.code.ui.theme.ThemeRepository;
+import com.tyron.code.util.ApkInstaller;
 import com.tyron.common.SharedPreferenceKeys;
 import com.tyron.editor.Caret;
 import com.tyron.fileeditor.api.FileEditorManager;
@@ -65,7 +66,7 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
   }
 
   private CodeEditorView mEditor;
-  private FloatingActionButton copyText, errorsFab;
+  private FloatingActionButton copyText, actionFab;
   private View mRoot;
   private int id;
   private MainViewModel mMainViewModel;
@@ -97,100 +98,142 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
     super.onViewCreated(view, savedInstanceState);
     mEditor = view.findViewById(R.id.output_text);
     copyText = view.findViewById(R.id.copy_text);
-    errorsFab = view.findViewById(R.id.errors_fab);
+    actionFab = view.findViewById(R.id.action_fab);
+    actionFab.setVisibility(View.GONE);
 
-    errorsFab.setOnClickListener(
-        v -> {
-          if (errors != null) {
-            errors.clear();
+    if (diags != null) {
+
+      if (diags.isEmpty()) {
+        actionFab.setVisibility(View.GONE);
+        String content = mEditor.getText().toString().trim();
+
+        if (content != null && !content.isEmpty()) {
+          if (content.contains("INSTALL")) {
+            actionFab.setVisibility(View.VISIBLE);
+            actionFab.setImageResource(R.drawable.apk_install);
+
+            actionFab.setOnClickListener(
+                v -> {
+                  Project project = ProjectManager.getInstance().getCurrentProject();
+                  if (project != null) {
+                    File mApkFile = new File(project.getRootFile(), "app/build/bin/signed.apk");
+                    ApkInstaller.installApplication(requireContext(), mApkFile.getAbsolutePath());
+                  }
+                });
           }
+        } else {
+          actionFab.setVisibility(View.GONE);
+        }
 
-          for (DiagnosticWrapper diagnostic : diags) {
-            if (diagnostic != null) {
+      } else {
+        actionFab.setVisibility(View.VISIBLE);
+        actionFab.setImageResource(R.drawable.ic_error);
 
-              if (diagnostic.getKind() != null && diagnostic.getKind() == Diagnostic.Kind.ERROR) {
-                String error = diagnostic.getMessage(Locale.getDefault());
-                if (diagnostic.getSource() != null) {
-                  String label = diagnostic.getSource().getName();
-                  if (label != null) {
-                    label = label + " : line:" + diagnostic.getLineNumber() + " : " + error;
-                    errors.add(new ErrorItem(label, diagnostic.getSource(), diagnostic));
+        actionFab.setOnClickListener(
+            v -> {
+              if (errors != null) {
+                errors.clear();
+              }
+
+              for (DiagnosticWrapper diagnostic : diags) {
+                if (diagnostic != null) {
+
+                  if (diagnostic.getKind() != null
+                      && diagnostic.getKind() == Diagnostic.Kind.ERROR) {
+                    String error = diagnostic.getMessage(Locale.getDefault());
+                    if (diagnostic.getSource() != null) {
+                      String label = diagnostic.getSource().getName();
+                      if (label != null) {
+                        label = label + " : line:" + diagnostic.getLineNumber() + " : " + error;
+                        errors.add(new ErrorItem(label, diagnostic.getSource(), diagnostic));
+                      }
+                    }
                   }
                 }
               }
-            }
-          }
 
-          if (errors != null && !errors.isEmpty()) {
+              if (errors != null && !errors.isEmpty()) {
 
-            ArrayAdapter<ErrorItem> adapter =
-                new ArrayAdapter<ErrorItem>(
-                    requireContext(),
-                    android.R.layout.select_dialog_item,
-                    android.R.id.text1,
-                    errors) {
-                  @NonNull
-                  @Override
-                  public View getView(
-                      int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-                    View view = super.getView(position, convertView, parent);
+                ArrayAdapter<ErrorItem> adapter =
+                    new ArrayAdapter<ErrorItem>(
+                        requireContext(),
+                        android.R.layout.select_dialog_item,
+                        android.R.id.text1,
+                        errors) {
+                      @NonNull
+                      @Override
+                      public View getView(
+                          int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                        View view = super.getView(position, convertView, parent);
 
-                    TextView textView = view.findViewById(android.R.id.text1);
-                    ErrorItem errorItem = getItem(position);
-                    textView.setPadding(12, 12, 12, 12);
-                    textView.setTextSize(12);
-                    textView.setTextColor(0xffcf6679);
-                    textView.setText(errorItem.getMessage());
-                    textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                        R.drawable.ic_error, 0, 0, 0);
-                    return view;
-                  }
-                };
+                        TextView textView = view.findViewById(android.R.id.text1);
+                        ErrorItem errorItem = getItem(position);
+                        textView.setPadding(12, 12, 12, 12);
+                        textView.setTextSize(12);
+                        textView.setTextColor(0xffcf6679);
+                        textView.setText(errorItem.getMessage());
+                        textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                            R.drawable.ic_error, 0, 0, 0);
+                        return view;
+                      }
+                    };
 
-            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
-            builder.setTitle(getString(R.string.errors_found, String.valueOf(errors.size())));
-            builder.setAdapter(
-                adapter,
-                (dialog, which) -> {
-                  ErrorItem selectedErrorItem = errors.get(which);
+                MaterialAlertDialogBuilder builder =
+                    new MaterialAlertDialogBuilder(requireContext());
+                builder.setTitle(getString(R.string.errors_found, String.valueOf(errors.size())));
+                builder.setAdapter(
+                    adapter,
+                    (dialog, which) -> {
+                      ErrorItem selectedErrorItem = errors.get(which);
 
-                  if (selectedErrorItem.getFile() != null) {
-                    if (getContext() != null) {
-                      FileEditorManager manager = FileEditorManagerImpl.getInstance();
-                      manager.openFile(
-                          requireContext(),
-                          selectedErrorItem.getFile(),
-                          it -> {
-                            if (selectedErrorItem.getDiagnosticWrapper().getLineNumber() > 0
-                                && selectedErrorItem.getDiagnosticWrapper().getColumnNumber() > 0) {
-                              Bundle bundle = new Bundle(it.getFragment().getArguments());
-                              bundle.putInt(
-                                  CodeEditorFragment.KEY_LINE,
-                                  (int) selectedErrorItem.getDiagnosticWrapper().getLineNumber());
-                              bundle.putInt(
-                                  CodeEditorFragment.KEY_COLUMN,
-                                  (int) selectedErrorItem.getDiagnosticWrapper().getColumnNumber());
-                              it.getFragment().setArguments(bundle);
-                              manager.openFileEditor(it);
-                            }
-                          });
-                    }
-                  }
-                });
+                      if (selectedErrorItem.getFile() != null) {
+                        if (getContext() != null) {
+                          FileEditorManager manager = FileEditorManagerImpl.getInstance();
+                          manager.openFile(
+                              requireContext(),
+                              selectedErrorItem.getFile(),
+                              it -> {
+                                if (selectedErrorItem.getDiagnosticWrapper().getLineNumber() > 0
+                                    && selectedErrorItem.getDiagnosticWrapper().getColumnNumber()
+                                        > 0) {
+                                  Bundle bundle = new Bundle(it.getFragment().getArguments());
+                                  bundle.putInt(
+                                      CodeEditorFragment.KEY_LINE,
+                                      (int)
+                                          selectedErrorItem.getDiagnosticWrapper().getLineNumber());
+                                  bundle.putInt(
+                                      CodeEditorFragment.KEY_COLUMN,
+                                      (int)
+                                          selectedErrorItem
+                                              .getDiagnosticWrapper()
+                                              .getColumnNumber());
+                                  it.getFragment().setArguments(bundle);
+                                  manager.openFileEditor(it);
+                                }
+                              });
+                        }
+                      }
+                    });
 
-            builder.show();
-          } else {
-            Toast.makeText(requireContext(), R.string.no_errors_found, Toast.LENGTH_SHORT).show();
-          }
-        });
+                builder.show();
+              }
+            });
+      }
+    }
 
     copyText.setOnClickListener(
         v -> {
           Caret caret = mEditor.getCaret();
           if (!(caret.getStartLine() == caret.getEndLine()
               && caret.getStartColumn() == caret.getEndColumn())) {
-				  CharSequence textToCopy = mEditor.getContent().subSequence(caret.getStart(), caret.getEnd());
-				  copyContent(textToCopy.toString());
+            CharSequence textToCopy =
+                mEditor.getContent().subSequence(caret.getStart(), caret.getEnd());
+
+            String content = textToCopy.toString().trim();
+            if (content != null && !content.isEmpty()) {
+              copyContent(content);
+            }
+
           } else {
 
             String content = mEditor.getText().toString().trim();
@@ -409,4 +452,4 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
       return new File(path);
     }
   }
-}
+					  }
