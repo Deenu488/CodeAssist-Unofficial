@@ -16,3 +16,16 @@
 #   public *;
 #}
 
+-keepattributes InnerClasses
+
+-keep class io.github.rosemoe**
+-keepclassmembers class io.github.rosemoe** { *; }
+
+-keep class com.tyron**
+-keepclassmembers class com.tyron** { *; }
+
+-keep class org.eclipse**
+-keepclassmembers class org.eclipse** { *; }
+
+-keep class java.lang**
+-keepclassmembers class java.lang** { *; }
