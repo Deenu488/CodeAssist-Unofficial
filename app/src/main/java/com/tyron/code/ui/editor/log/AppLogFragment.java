@@ -189,7 +189,8 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
           Caret caret = mEditor.getCaret();
           if (!(caret.getStartLine() == caret.getEndLine()
               && caret.getStartColumn() == caret.getEndColumn())) {
-
+				  CharSequence textToCopy = mEditor.getContent().subSequence(caret.getStart(), caret.getEnd());
+				  copyContent(textToCopy.toString());
           } else {
 
             String content = mEditor.getText().toString().trim();
