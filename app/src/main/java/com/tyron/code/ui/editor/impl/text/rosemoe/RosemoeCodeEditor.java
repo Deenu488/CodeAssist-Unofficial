@@ -23,7 +23,7 @@ public class RosemoeCodeEditor implements TextEditor {
   public RosemoeCodeEditor(File file, RosemoeEditorProvider provider) {
     mFile = file;
     mProvider = provider;
-
+    mFragment = null;
     if (mFile.getName().endsWith(".apk")) {
       ApkInstaller.installApplication(ApplicationLoader.getInstance(), mFile.getAbsolutePath());
     } else {
