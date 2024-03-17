@@ -1,4 +1,0 @@
-{
-  "api_libraries": "[{\"declaration\":\"org.jetbrains.trove4j:trove4j:20160824\",\"sourceFile\":\"/storage/emulated/0/Android/data/com.tyron.code/files/cache/maven/org/jetbrains/trove4j/trove4j/20160824/trove4j-20160824.jar\"}]",
-  "apiFiles_libraries": "[{\"sourceFile\":\"/storage/emulated/0/Android/data/com.tyron.code/files/Projects/CodeAssist-Unofficial/kotlinc/libs/javax.jar\"},{\"sourceFile\":\"/storage/emulated/0/Android/data/com.tyron.code/files/Projects/CodeAssist-Unofficial/kotlinc/libs/kotlin-compiler-embeddable-1.6.0.jar\"}]"
-}

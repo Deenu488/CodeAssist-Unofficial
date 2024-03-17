@@ -1,4 +1,0 @@
-{
-  "api_libraries": "[{\"declaration\":\"com.android.tools.build:apksig:8.4.0-alpha11\",\"sourceFile\":\"/storage/emulated/0/Android/data/com.tyron.code/files/cache/google-maven/com/android/tools/build/apksig/8.4.0-alpha11/apksig-8.4.0-alpha11.jar\"},{\"declaration\":\"org.bouncycastle:bcprov-jdk15on:1.70\",\"sourceFile\":\"/storage/emulated/0/Android/data/com.tyron.code/files/cache/maven/org/bouncycastle/bcprov-jdk15on/1.70/bcprov-jdk15on-1.70.jar\"}]",
-  "apiFiles_libraries": "[]"
-}

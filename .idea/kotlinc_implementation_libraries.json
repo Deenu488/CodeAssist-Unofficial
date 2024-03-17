@@ -1,4 +1,0 @@
-{
-  "implementationFiles_libraries": "[]",
-  "implementation_libraries": "[{\"declaration\":\"androidx.annotation:annotation:1.3.0\",\"sourceFile\":\"/storage/emulated/0/Android/data/com.tyron.code/files/cache/google-maven/androidx/annotation/annotation/1.3.0/annotation-1.3.0.jar\"},{\"declaration\":\"com.github.marschall:zipfilesystem-standalone:1.0.1\",\"sourceFile\":\"/storage/emulated/0/Android/data/com.tyron.code/files/cache/maven/com/github/marschall/zipfilesystem-standalone/1.0.1/zipfilesystem-standalone-1.0.1.jar\"},{\"declaration\":\"org.jetbrains.trove4j:trove4j:20160824\",\"sourceFile\":\"/storage/emulated/0/Android/data/com.tyron.code/files/cache/maven/org/jetbrains/trove4j/trove4j/20160824/trove4j-20160824.jar\"}]"
-}

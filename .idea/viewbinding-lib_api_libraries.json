@@ -1,4 +1,0 @@
-{
-  "api_libraries": "[{\"declaration\":\"javax.xml.bind:jaxb-api:2.3.0\",\"sourceFile\":\"/storage/emulated/0/Android/data/com.tyron.code/files/cache/maven/javax/xml/bind/jaxb-api/2.3.0/jaxb-api-2.3.0.jar\"},{\"declaration\":\"com.github.albfernandez:juniversalchardet:2.4.0\",\"sourceFile\":\"/storage/emulated/0/Android/data/com.tyron.code/files/cache/maven/com/github/albfernandez/juniversalchardet/2.4.0/juniversalchardet-2.4.0.jar\"}]",
-  "apiFiles_libraries": "[{\"sourceFile\":\"/storage/emulated/0/Android/data/com.tyron.code/files/Projects/CodeAssist-Unofficial/viewbinding-lib/libs/viewbinding-lib.jar\"}]"
-}
