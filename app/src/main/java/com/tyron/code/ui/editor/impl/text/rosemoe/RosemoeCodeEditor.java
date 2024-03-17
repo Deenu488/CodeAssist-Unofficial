@@ -18,12 +18,11 @@ public class RosemoeCodeEditor implements TextEditor {
 
   private final File mFile;
   private final RosemoeEditorProvider mProvider;
-  private final CodeEditorFragment mFragment;
+  private CodeEditorFragment mFragment;
 
   public RosemoeCodeEditor(File file, RosemoeEditorProvider provider) {
     mFile = file;
-    mProvider = provider;
-    mFragment = null;
+    mProvider = provider;    
     if (mFile.getName().endsWith(".apk")) {
       ApkInstaller.installApplication(ApplicationLoader.getInstance(), mFile.getAbsolutePath());
     } else {
