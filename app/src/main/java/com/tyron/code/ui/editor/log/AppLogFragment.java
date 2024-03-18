@@ -101,36 +101,24 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
     actionFab = view.findViewById(R.id.action_fab);
     actionFab.setVisibility(View.GONE);
 
-    if (diags != null) {
+    actionFab.setOnClickListener(
+        v -> {
+          String output = mEditor.getText().toString().trim();
 
-      if (diags.isEmpty()) {
-        actionFab.setVisibility(View.GONE);
-        String content = mEditor.getText().toString().trim();
+          if (output != null && !output.isEmpty()) {
+            if (output.contains("INSTALL") || output.contains("Generated APK has been saved")) {
 
-        if (content != null && !content.isEmpty()) {
-          if (content.contains("INSTALL")) {
-            actionFab.setVisibility(View.VISIBLE);
-            actionFab.setImageResource(R.drawable.apk_install);
+              Project project = ProjectManager.getInstance().getCurrentProject();
+              if (project != null) {
+                File mApkFile = new File(project.getRootFile(), "app/build/bin/signed.apk");
+                ApkInstaller.installApplication(requireContext(), mApkFile.getAbsolutePath());
+              }
 
-            actionFab.setOnClickListener(
-                v -> {
-                  Project project = ProjectManager.getInstance().getCurrentProject();
-                  if (project != null) {
-                    File mApkFile = new File(project.getRootFile(), "app/build/bin/signed.apk");
-                    ApkInstaller.installApplication(requireContext(), mApkFile.getAbsolutePath());
-                  }
-                });
-          }
-        } else {
-          actionFab.setVisibility(View.GONE);
-        }
+            } else if (output.contains("ERROR")
+                || output.contains("error")
+                || output.contains("failed")
+                || output.contains("Failed")) {
 
-      } else {
-        actionFab.setVisibility(View.VISIBLE);
-        actionFab.setImageResource(R.drawable.ic_error);
-
-        actionFab.setOnClickListener(
-            v -> {
               if (errors != null) {
                 errors.clear();
               }
@@ -217,9 +205,9 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
 
                 builder.show();
               }
-            });
-      }
-    }
+            }
+          }
+        });
 
     copyText.setOnClickListener(
         v -> {
@@ -328,15 +316,28 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
               for (DiagnosticWrapper diagnostic : diagnostics) {
                 if (diagnostic != null) {
                   if (diagnostic.getKind() != null) {
+                    mEditor.setText(diagnostic.getKind().name());
                     combinedText.append(diagnostic.getKind().name()).append(": ");
                     addDiagnosticSpan(combinedText, diagnostic);
                     combinedText.append(' ');
                   }
 
                   if (diagnostic.getKind() == Diagnostic.Kind.ERROR) {
+                    actionFab.setVisibility(View.VISIBLE);
+                    actionFab.setImageResource(R.drawable.ic_error);
                     combinedText.append(diagnostic.getMessage(Locale.getDefault()));
                   } else {
-                    combinedText.append(diagnostic.getMessage(Locale.getDefault()));
+                    String msg = diagnostic.getMessage(Locale.getDefault());
+
+                    if (msg.contains("Generated APK has been saved")) {
+
+                      actionFab.setVisibility(View.VISIBLE);
+                      actionFab.setImageResource(R.drawable.apk_install);
+                    } else {
+                      actionFab.setVisibility(View.GONE);
+                    }
+
+                    combinedText.append(msg);
                   }
 
                   if (diagnostic.getSource() != null) {
