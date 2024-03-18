@@ -140,7 +140,14 @@ public class HomeFragment extends Fragment {
       registerForActivityResult(
           new ActivityResultContracts.StartActivityForResult(),
           result -> {
-            if (result.getResultCode() == Activity.RESULT_OK) {}
+            if (result.getResultCode() == Activity.RESULT_OK) {
+
+              if (Environment.isExternalStorageManager()) {
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                intent.addCategory(Intent.CATEGORY_DEFAULT);
+                documentPickerLauncher2.launch(intent);
+              }
+            }
           });
 
   @Override
@@ -233,7 +240,14 @@ public class HomeFragment extends Fragment {
         v -> {
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 
-            requestPermission();
+            if (!Environment.isExternalStorageManager()) {
+              requestPermission();
+            } else {
+
+              Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+              intent.addCategory(Intent.CATEGORY_DEFAULT);
+              documentPickerLauncher2.launch(intent);
+            }
 
           } else {
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
