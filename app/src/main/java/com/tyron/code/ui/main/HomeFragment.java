@@ -121,15 +121,15 @@ public class HomeFragment extends Fragment {
                   File file = new File(uri.getPath());
                   final String[] split = file.getPath().split(":");
 
-                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                  } else {
-                    String path =
-                        Environment.getExternalStorageDirectory()
-                            .getAbsolutePath()
-                            .concat("/")
-                            .concat(split[1]);
-                    openProject(new Project(new File(path)));
-                  }
+                  //  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                  //  } else {
+                  String path =
+                      Environment.getExternalStorageDirectory()
+                          .getAbsolutePath()
+                          .concat("/")
+                          .concat(split[1]);
+                  openProject(new Project(new File(path)));
+                  //  }
                 }
               }
             }
@@ -328,8 +328,6 @@ public class HomeFragment extends Fragment {
         .addToBackStack(null)
         .commit();
   }
-
-  private void openProject(Uri projectUri) {}
 
   private boolean permissionsGranted() {
     return ContextCompat.checkSelfPermission(
