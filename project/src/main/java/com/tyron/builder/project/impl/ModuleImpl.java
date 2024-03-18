@@ -132,6 +132,9 @@ public class ModuleImpl implements Module {
   @Override
   public File getGradleFile() {
     File gradleFile = new File(getRootFile(), "build.gradle");
+    if (gradleFile == null) {
+      gradleFile = new File(getProjectDir(), "build.gradle");
+    }
     return gradleFile;
   }
 

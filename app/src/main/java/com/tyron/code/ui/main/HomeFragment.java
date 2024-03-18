@@ -143,9 +143,12 @@ public class HomeFragment extends Fragment {
             if (result.getResultCode() == Activity.RESULT_OK) {
 
               if (Environment.isExternalStorageManager()) {
+                AndroidUtilities.showToast("Permission granted");
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                 intent.addCategory(Intent.CATEGORY_DEFAULT);
                 documentPickerLauncher2.launch(intent);
+              } else {
+                AndroidUtilities.showToast("Permission not granted");
               }
             }
           });
@@ -241,7 +244,18 @@ public class HomeFragment extends Fragment {
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 
             if (!Environment.isExternalStorageManager()) {
-              requestPermission();
+
+              new MaterialAlertDialogBuilder(requireContext())
+                  .setMessage("")
+                  .setPositiveButton(
+                      "",
+                      (d, which) -> {
+                        requestPermission();
+                      })
+                  .setNegativeButton("", (d, which) -> {})
+                  .setTitle("")
+                  .show();
+
             } else {
 
               Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
