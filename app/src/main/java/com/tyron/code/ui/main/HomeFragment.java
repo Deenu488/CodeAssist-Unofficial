@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -135,6 +136,13 @@ public class HomeFragment extends Fragment {
             }
           });
 
+  private final ActivityResultLauncher<Intent> permissionLauncher =
+      registerForActivityResult(
+          new ActivityResultContracts.StartActivityForResult(),
+          result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {}
+          });
+
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -223,9 +231,15 @@ public class HomeFragment extends Fragment {
 
     open_custom_project.setOnClickListener(
         v -> {
-          Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-          intent.addCategory(Intent.CATEGORY_DEFAULT);
-          documentPickerLauncher2.launch(intent);
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+
+            requestPermission();
+
+          } else {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            documentPickerLauncher2.launch(intent);
+          }
         });
 
     open_project_manager.setOnClickListener(
@@ -243,6 +257,19 @@ public class HomeFragment extends Fragment {
           intent.setClass(requireActivity(), SettingsActivity.class);
           startActivity(intent);
         });
+  }
+
+  private void requestPermission() {
+    try {
+      Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+      intent.addCategory(Intent.CATEGORY_DEFAULT);
+      intent.setData(Uri.parse(String.format("package:%s", requireContext().getPackageName())));
+      permissionLauncher.launch(intent);
+    } catch (Exception e) {
+      Intent intent = new Intent();
+      intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+      permissionLauncher.launch(intent);
+    }
   }
 
   private void showProjectManager() {
