@@ -111,6 +111,19 @@
                         android:layout_marginBottom="10dp"
                         android:text="@string/import_project"/>
                     <com.google.android.material.button.MaterialButton
+                        android:id="@+id/openProject"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        app:iconPadding="16dp"
+                        android:visibility="gone"
+                        app:iconGravity="start"
+                        android:textAlignment="textStart"
+                        app:icon="@drawable/ic_open_project"
+                        android:layout_marginLeft="32dp"
+                        android:layout_marginRight="32dp"
+                        android:layout_marginBottom="10dp"
+                        android:text="@string/open_project"/>
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/openProjectManager"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"

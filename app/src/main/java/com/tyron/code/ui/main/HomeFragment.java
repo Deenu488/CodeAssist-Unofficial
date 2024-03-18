@@ -45,6 +45,7 @@ public class HomeFragment extends Fragment {
   private MaterialButton create_new_project,
       clone_git_repository,
       import_project,
+      open_custom_project,
       open_project_manager,
       configure_settings;
   private SharedPreferences mPreferences;
@@ -153,11 +154,23 @@ public class HomeFragment extends Fragment {
     create_new_project = view.findViewById(R.id.createNewProject);
     clone_git_repository = view.findViewById(R.id.gitCloneRepo);
     import_project = view.findViewById(R.id.importProject);
+    open_custom_project = view.findViewById(R.id.openProject);
     open_project_manager = view.findViewById(R.id.openProjectManager);
     configure_settings = view.findViewById(R.id.configureSettings);
     app_version = view.findViewById(R.id.app_version);
     String versionName = String.valueOf(BuildConfig.VERSION_NAME);
     app_version.setText("Version " + versionName);
+
+    boolean isOpenCustomProject = mPreferences.getBoolean("open_custom_project", false);
+
+    if (isOpenCustomProject) {
+      open_project_manager.setVisibility(View.GONE);
+      open_custom_project.setVisibility(View.VISIBLE);
+    } else {
+      open_project_manager.setVisibility(View.VISIBLE);
+      open_custom_project.setVisibility(View.GONE);
+    }
+
     create_new_project.setOnClickListener(
         v -> {
           WizardFragment wizardFragment = new WizardFragment();
@@ -217,6 +230,16 @@ public class HomeFragment extends Fragment {
   public void onResume() {
     super.onResume();
     checkSavePath();
+
+    boolean isOpenCustomProject = mPreferences.getBoolean("open_custom_project", false);
+
+    if (isOpenCustomProject) {
+      open_project_manager.setVisibility(View.GONE);
+      open_custom_project.setVisibility(View.VISIBLE);
+    } else {
+      open_project_manager.setVisibility(View.VISIBLE);
+      open_custom_project.setVisibility(View.GONE);
+    }
   }
 
   private void checkSavePath() {

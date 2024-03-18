@@ -63,8 +63,13 @@
     <item name="replacement" type="string">Replacement</item>
     <item name="cancel" type="string">Cancel</item>
     <item name="text_to_search" type="string">Text to search</item>
-	
     
+ 	<string name="settings_project_title">Project</string>
+	<string name="settings_project_desc">Configure project</string>  
+    <string name="project_title">Custom Project</string>
+    <string name="open_custom_project_title">Open Custom Project</string>
+    <string name="open_custom_project_desc">If enabled you will be able to open project from diffrent locations, By switching this the Project Manager will be hidden</string>
+        
 	<string name="welcome_message">Welcome to CodeAssist</string>
     <item name="more" type="string">More</item>
 	<item name="rename" type="string">Rename</item>

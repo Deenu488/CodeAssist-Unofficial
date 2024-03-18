@@ -13,6 +13,12 @@
         app:title="@string/settings_title_editor" />
 
     <Preference
+        app:fragment="com.tyron.code.ui.settings.ProjectSettingsFragment"
+        app:iconSpaceReserved="false"
+        app:summary="@string/settings_project_desc"
+        app:title="@string/settings_project_title" />
+
+    <Preference
         app:fragment="com.tyron.code.ui.settings.BuildSettingsFragment"
         app:iconSpaceReserved="false"
         app:summary="@string/settings_build_run_desc"

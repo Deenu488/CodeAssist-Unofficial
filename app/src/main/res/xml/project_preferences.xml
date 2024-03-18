@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:iconSpaceReserved="false"
+        android:title="@string/project_title">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:iconSpaceReserved="false"
+            android:key="open_custom_project"
+            app:iconSpaceReserved="false"
+            android:title="@string/open_custom_project_title"
+            android:summary="@string/open_custom_project_desc"/>
+     
+    </PreferenceCategory>
+</PreferenceScreen>
