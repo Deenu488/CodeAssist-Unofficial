@@ -109,6 +109,32 @@ public class HomeFragment extends Fragment {
             }
           });
 
+  private final ActivityResultLauncher<Intent> documentPickerLauncher2 =
+      registerForActivityResult(
+          new ActivityResultContracts.StartActivityForResult(),
+          result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+              Intent data = result.getData();
+              if (data != null) {
+                Uri uri = data.getData();
+                if (uri != null) {
+                  File file = new File(uri.getPath());
+                  final String[] split = file.getPath().split(":");
+
+                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                  } else {
+                    String path =
+                        Environment.getExternalStorageDirectory()
+                            .getAbsolutePath()
+                            .concat("/")
+                            .concat(split[1]);
+                    openProject(new Project(new File(path)));
+                  }
+                }
+              }
+            }
+          });
+
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -193,6 +219,13 @@ public class HomeFragment extends Fragment {
           intent.addCategory(Intent.CATEGORY_OPENABLE);
           intent.setType("application/zip");
           documentPickerLauncher.launch(intent);
+        });
+
+    open_custom_project.setOnClickListener(
+        v -> {
+          Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+          intent.addCategory(Intent.CATEGORY_DEFAULT);
+          documentPickerLauncher2.launch(intent);
         });
 
     open_project_manager.setOnClickListener(
@@ -295,6 +328,8 @@ public class HomeFragment extends Fragment {
         .addToBackStack(null)
         .commit();
   }
+
+  private void openProject(Uri projectUri) {}
 
   private boolean permissionsGranted() {
     return ContextCompat.checkSelfPermission(
