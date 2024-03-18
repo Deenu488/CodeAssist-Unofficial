@@ -10,14 +10,12 @@ dependencies {
     api 'com.android.tools:sdklib:25.3.0'
     implementation project(path: ':common')
 	implementation project(path: ':apksigner')
-    implementation project(path: ':eclipse-standalone')
     implementation 'androidx.test:core:1.4.0'
 
     // required so internal classes would be included 
     api project(path: ':jaxp')
     api project(path: ':kotlinc')
     
-    implementation project(path: ':eclipse-formatter')	
     implementation project(path: ':google-java-format')
     implementation project(path: ':ktfmt')
     

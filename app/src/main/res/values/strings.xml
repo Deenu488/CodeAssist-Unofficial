@@ -201,9 +201,6 @@
         <item>10</item>
         <item>11</item>
     </string-array>
-    <string name="use_google_java_formatter">Use Google Java Formatter</string>
-    <string name="google_java_formatter_desc">Format Java Code with Google Java Formatter, Default is Eclipse Formatter</string>
-
     <string name="completion_settings_kotlin_title">Kotlin</string>
     <string name="completion_settings_java_title">Java</string>
     <string name="completion_java_target_version_title">Target version</string>

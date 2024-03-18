@@ -1,10 +1,8 @@
 package com.tyron.code.language.java;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import androidx.annotation.NonNull;
-import com.tyron.code.ApplicationLoader;
 import com.tyron.code.analyzer.BaseTextmateAnalyzer;
 import com.tyron.code.language.CompletionItemWrapper;
 import com.tyron.code.language.EditorFormatter;
@@ -134,36 +132,27 @@ public class JavaLanguage implements Language, EditorFormatter {
   @Override
   public CharSequence format(@NonNull CharSequence text, int start, int end) {
 
-    SharedPreferences sharedPreferences = ApplicationLoader.getDefaultPreferences();
-    boolean useGoogleJavaFormatter = sharedPreferences.getBoolean("google_java_format", false);
-
     CharSequence formatted = null;
 
-    if (useGoogleJavaFormatter) {
+    try {
 
-      try {
+      StringWriter out = new StringWriter();
+      StringWriter err = new StringWriter();
 
-        StringWriter out = new StringWriter();
-        StringWriter err = new StringWriter();
+      com.google.googlejavaformat.java.Main main =
+          new com.google.googlejavaformat.java.Main(
+              new PrintWriter(out, true),
+              new PrintWriter(err, true),
+              new ByteArrayInputStream(text.toString().getBytes(StandardCharsets.UTF_8)));
+      int exitCode = main.format("-");
 
-        com.google.googlejavaformat.java.Main main =
-            new com.google.googlejavaformat.java.Main(
-                new PrintWriter(out, true),
-                new PrintWriter(err, true),
-                new ByteArrayInputStream(text.toString().getBytes(StandardCharsets.UTF_8)));
-        int exitCode = main.format("-");
+      formatted = out.toString();
 
-        formatted = out.toString();
-
-        if (exitCode != 0) {
-          formatted = text;
-        }
-
-      } catch (Exception e) {
+      if (exitCode != 0) {
+        formatted = text;
       }
 
-    } else {
-      formatted = com.tyron.eclipse.formatter.Formatter.format(text.toString(), start, end - start);
+    } catch (Exception e) {
     }
 
     if (formatted == null) {

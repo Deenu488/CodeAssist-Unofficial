@@ -452,4 +452,4 @@ public class AppLogFragment extends Fragment implements ProjectManager.OnProject
       return new File(path);
     }
   }
-					  }
+}

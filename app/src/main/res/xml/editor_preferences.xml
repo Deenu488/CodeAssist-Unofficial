@@ -35,14 +35,6 @@
             app:defaultValue="false"
             app:summary="@string/settings_case_insensitive_match_desc"
             app:title="@string/settings_case_insensitive_match_title"/>
-        <SwitchPreference
-            android:defaultValue="true"
-            android:iconSpaceReserved="false"
-            android:key="google_java_format"
-            app:iconSpaceReserved="false"
-            app:defaultValue="false"
-            app:summary="@string/google_java_formatter_desc"
-            app:title="@string/use_google_java_formatter"/>
     </PreferenceCategory>
     <PreferenceCategory
         app:iconSpaceReserved="false"

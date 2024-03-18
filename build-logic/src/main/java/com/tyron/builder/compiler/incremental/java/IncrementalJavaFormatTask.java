@@ -61,45 +61,30 @@ public class IncrementalJavaFormatTask extends Task<JavaModule> {
 
       String applyJavaFormat =
           buildSettingsJson.optJSONObject("java").optString("applyJavaFormat", "false");
-      String isGoogleJavaFormat =
-          buildSettingsJson.optJSONObject("java").optString("isGoogleJavaFormat", "false");
 
       if (Boolean.parseBoolean(applyJavaFormat)) {
 
         for (File mJava : mJavaFiles) {
 
-          if (!Boolean.parseBoolean(isGoogleJavaFormat)) {
+          StringWriter out = new StringWriter();
+          StringWriter err = new StringWriter();
+          String text = new String(Files.readAllBytes(mJava.toPath()));
 
-            String text = new String(Files.readAllBytes(mJava.toPath()));
+          com.google.googlejavaformat.java.Main main =
+              new com.google.googlejavaformat.java.Main(
+                  new PrintWriter(out, true),
+                  new PrintWriter(err, true),
+                  new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8)));
+          int exitCode = main.format("-");
 
-            String formatted = com.tyron.eclipse.formatter.Formatter.format(text, 0);
+          if (exitCode != 0) {
+            getLogger().debug("Error: " + mJava.getAbsolutePath() + " " + err.toString());
+            throw new CompilationFailedException(TAG + " error");
+          }
 
-            if (formatted != null && !formatted.isEmpty()) {
-              FileUtils.writeStringToFile(mJava, formatted, Charset.defaultCharset());
-            }
-
-          } else {
-
-            StringWriter out = new StringWriter();
-            StringWriter err = new StringWriter();
-            String text = new String(Files.readAllBytes(mJava.toPath()));
-
-            com.google.googlejavaformat.java.Main main =
-                new com.google.googlejavaformat.java.Main(
-                    new PrintWriter(out, true),
-                    new PrintWriter(err, true),
-                    new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8)));
-            int exitCode = main.format("-");
-
-            if (exitCode != 0) {
-              getLogger().debug("Error: " + mJava.getAbsolutePath() + " " + err.toString());
-              throw new CompilationFailedException(TAG + " error");
-            }
-
-            String formatted = out.toString();
-            if (formatted != null && !formatted.isEmpty()) {
-              FileUtils.writeStringToFile(mJava, formatted, Charset.defaultCharset());
-            }
+          String formatted = out.toString();
+          if (formatted != null && !formatted.isEmpty()) {
+            FileUtils.writeStringToFile(mJava, formatted, Charset.defaultCharset());
           }
         }
       }
