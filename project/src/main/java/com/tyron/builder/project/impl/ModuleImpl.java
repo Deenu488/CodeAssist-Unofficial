@@ -70,10 +70,12 @@ public class ModuleImpl implements Module {
         kotlinSettings.put("applyKotlinFormat", "false");
         kotlinSettings.put("skipKotlinTask", "false");
         // kotlinSettings.put("languageVersion", "2.1");
-
+        JSONObject dexSettings = new JSONObject();
+        dexSettings.put("isDexLibrariesOnPrebuild", "false");
         JSONObject buildSettingsJson = new JSONObject();
         buildSettingsJson.put("java", javaSettings);
         buildSettingsJson.put("kotlin", kotlinSettings);
+        buildSettingsJson.put("dex", dexSettings);
 
         FileWriter fileWriter = new FileWriter(buildSettings, true);
         fileWriter.write(buildSettingsJson.toString(1));

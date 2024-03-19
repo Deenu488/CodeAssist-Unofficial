@@ -11,6 +11,7 @@ import com.tyron.common.util.StringSearch;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -102,7 +104,22 @@ public class JavaModuleImpl extends ModuleImpl implements JavaModule {
 
   @Override
   public List<File> getLibraries() {
-    return ImmutableList.copyOf(mLibraries);
+    Map<Long, File> fileSizeMap = new HashMap<>();
+
+    // Calculate file sizes and store them in a map
+    for (File file : mLibraries) {
+      try {
+        long fileSize = Files.size(file.toPath());
+        fileSizeMap.put(fileSize, file);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    // Remove duplicates based on file size
+    List<File> uniqueLibraryFiles = fileSizeMap.values().stream().collect(Collectors.toList());
+
+    return ImmutableList.copyOf(uniqueLibraryFiles);
   }
 
   @Override
@@ -288,24 +305,27 @@ public class JavaModuleImpl extends ModuleImpl implements JavaModule {
         }
       }
     }
-    File[] api_files =
-        new File(getBuildDirectory(), "libraries/api_files/libs").listFiles(File::isDirectory);
-    if (implementation_files != null) {
-      for (File directory : implementation_files) {
-        File check = new File(directory, "classes.jar");
-        if (check.exists()) {
-          addLibrary(check);
+
+    if (!getRootFile().getName().equals("app")) {
+      File[] api_files =
+          new File(getBuildDirectory(), "libraries/api_files/libs").listFiles(File::isDirectory);
+      if (implementation_files != null) {
+        for (File directory : implementation_files) {
+          File check = new File(directory, "classes.jar");
+          if (check.exists()) {
+            addLibrary(check);
+          }
         }
       }
-    }
 
-    File[] api_libs =
-        new File(getBuildDirectory(), "libraries/api_libs").listFiles(File::isDirectory);
-    if (implementation_libs != null) {
-      for (File directory : implementation_libs) {
-        File check = new File(directory, "classes.jar");
-        if (check.exists()) {
-          addLibrary(check);
+      File[] api_libs =
+          new File(getBuildDirectory(), "libraries/api_libs").listFiles(File::isDirectory);
+      if (implementation_libs != null) {
+        for (File directory : implementation_libs) {
+          File check = new File(directory, "classes.jar");
+          if (check.exists()) {
+            addLibrary(check);
+          }
         }
       }
     }

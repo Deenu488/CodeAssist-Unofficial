@@ -24,8 +24,13 @@ import com.tyron.builder.crashlytics.CrashlyticsTask;
 import com.tyron.builder.log.ILogger;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import org.json.JSONObject;
 
 public class AndroidAppBundleBuilder extends BuilderImpl<AndroidModule> {
 
@@ -42,6 +47,29 @@ public class AndroidAppBundleBuilder extends BuilderImpl<AndroidModule> {
     tasks.add(new IncrementalJavaFormatTask(getProject(), getModule(), getLogger()));
 
     tasks.add(new CheckLibrariesTask(getProject(), getModule(), getLogger()));
+
+    try {
+
+      File buildSettings =
+          new File(
+              getProject().getRootFile(),
+              ".idea/" + getProject().getRootName() + "_compiler_settings.json");
+      String content = new String(Files.readAllBytes(Paths.get(buildSettings.getAbsolutePath())));
+
+      JSONObject buildSettingsJson = new JSONObject(content);
+
+      boolean isDexLibrariesOnPrebuild =
+          Optional.ofNullable(buildSettingsJson.optJSONObject("dex"))
+              .map(json -> json.optString("isDexLibrariesOnPrebuild", "false"))
+              .map(Boolean::parseBoolean)
+              .orElse(false);
+
+      if (isDexLibrariesOnPrebuild) {
+        tasks.add(new IncrementalD8Task(getProject(), getModule(), getLogger()));
+      }
+    } catch (Exception e) {
+    }
+
     tasks.add(new IncrementalAssembleLibraryTask(getProject(), getModule(), getLogger()));
     tasks.add(new ManifestMergeTask(getProject(), getModule(), getLogger()));
     if (type == BuildType.DEBUG) {

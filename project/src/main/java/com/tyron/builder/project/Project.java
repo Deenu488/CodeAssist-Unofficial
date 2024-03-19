@@ -113,6 +113,10 @@ public class Project {
     return mRoot;
   }
 
+  public String getRootName() {
+    return mName;
+  }
+
   public ProjectSettings getSettings() {
     return mSettings;
   }
