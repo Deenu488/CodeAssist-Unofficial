@@ -139,6 +139,9 @@ public class JavaModuleImpl extends ModuleImpl implements JavaModule {
 
   @Override
   public void addLibrary(@NonNull File jar) {
+    if (!hasClassFiles(jarFile)) {
+      return;
+    }
     if (!jar.getName().endsWith(".jar")) {
       return;
     }
@@ -149,6 +152,23 @@ public class JavaModuleImpl extends ModuleImpl implements JavaModule {
       mLibraries.add(jar);
     } catch (IOException e) {
       // ignored, don't put the jar
+    }
+  }
+
+  private boolean hasClassFiles(File file) throws IOException {
+    if (file == null) {
+      return false;
+    }
+    try (JarFile jar = new JarFile(file)) {
+      Enumeration<JarEntry> entries = jar.entries();
+      while (entries.hasMoreElements()) {
+        JarEntry entry = entries.nextElement();
+
+        if (entry.getName().endsWith(".class") && !entry.getName().contains("$")) {
+          return true; // Found at least one .class file
+        }
+      }
+      return false; // No .class files found
     }
   }
 

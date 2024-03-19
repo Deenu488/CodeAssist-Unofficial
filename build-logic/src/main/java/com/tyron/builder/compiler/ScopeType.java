@@ -8,7 +8,8 @@ public enum ScopeType {
   COMPILE_ONLY("compileOnly"),
   COMPILE_ONLY_API("compileOnlyApi"),
   RUNTIME_ONLY("runtimeOnly"),
-  RUNTIME_ONLY_API("runtimeOnlyApi");
+  RUNTIME_ONLY_API("runtimeOnlyApi"),
+  NATIVES("natives");
 
   private final String stringValue;
 

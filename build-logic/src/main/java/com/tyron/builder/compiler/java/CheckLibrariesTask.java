@@ -129,6 +129,10 @@ public class CheckLibrariesTask extends Task<JavaModule> {
     String scopeTypeApi = api.getStringValue();
     checkLibraries(project, root, idea, logger, gradleFile, scopeTypeApi);
 
+    ScopeType natives = ScopeType.NATIVES;
+    String scopeTypeNatives = natives.getStringValue();
+    checkLibraries(project, root, idea, logger, gradleFile, scopeTypeNatives);
+
     ScopeType implementation = ScopeType.IMPLEMENTATION;
     String scopeTypeImplementation = implementation.getStringValue();
     checkLibraries(project, root, idea, logger, gradleFile, scopeTypeImplementation);
@@ -330,7 +334,14 @@ public class CheckLibrariesTask extends Task<JavaModule> {
         FileUtils.copyFileToDirectory(library.getSourceFile(), libraryDir);
 
         File jar = new File(libraryDir, library.getSourceFile().getName());
-        jar.renameTo(new File(libraryDir, "classes.jar"));
+
+        if (scope.equals(ScopeType.NATIVES.getStringValue())) {
+          Decompress.unzip(jar.getAbsolutePath(), libraryDir.getAbsolutePath());
+
+        } else {
+
+          jar.renameTo(new File(libraryDir, "classes.jar"));
+        }
       } else if (library.getSourceFile().getName().endsWith(".aar")) {
         Decompress.unzip(library.getSourceFile().getAbsolutePath(), libraryDir.getAbsolutePath());
       }

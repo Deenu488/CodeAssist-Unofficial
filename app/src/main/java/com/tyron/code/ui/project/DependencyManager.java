@@ -171,6 +171,9 @@ public class DependencyManager {
     List<Dependency> declaredApiDependencies =
         DependencyUtils.parseDependencies(mRepository, gradleFile, logger, ScopeType.API);
 
+    List<Dependency> declaredNativesDependencies =
+        DependencyUtils.parseDependencies(mRepository, gradleFile, logger, ScopeType.NATIVES);
+
     List<Dependency> declaredImplementationDependencies =
         DependencyUtils.parseDependencies(
             mRepository, gradleFile, logger, ScopeType.IMPLEMENTATION);
@@ -179,7 +182,7 @@ public class DependencyManager {
     if (project instanceof AndroidModule) {
       if (androidModule.getViewBindingEnabled() && project.getRootFile().getName().equals(name)) {
         Dependency databindingDependency =
-            new Dependency("androidx.databinding", "viewbinding", "8.1.0-alpha11");
+            new Dependency("androidx.databinding", "viewbinding", "8.4.0-alpha13");
         declaredImplementationDependencies.add(databindingDependency);
       }
     }
@@ -212,6 +215,12 @@ public class DependencyManager {
     if (resolvedApiPoms != null) {
       resolvedApiPoms.clear();
     }
+
+    List<Pom> resolvedNativesPoms = new ArrayList<>();
+    if (resolvedNativesPoms != null) {
+      resolvedNativesPoms.clear();
+    }
+
     List<Pom> resolvedImplementationPoms = new ArrayList<>();
     if (resolvedImplementationPoms != null) {
       resolvedImplementationPoms.clear();
@@ -249,6 +258,20 @@ public class DependencyManager {
     }
 
     checkLibraries(project, root, idea, logger, gradleFile, scopeTypeApi);
+
+    ScopeType natives = ScopeType.NATIVES;
+    String scopeTypeNatives = natives.getStringValue();
+
+    if (!declaredNativesDependencies.isEmpty()) {
+      resolvedNativesPoms = mResolver.resolveDependencies(declaredNativesDependencies);
+      List<Library> nativesLibraries = getFiles(resolvedNativesPoms, logger);
+      checkDependencies(
+          project, root, idea, logger, nativesLibraries, gradleFile, scopeTypeNatives);
+      resolvedNativesPoms.clear();
+      nativesLibraries.clear();
+    }
+
+    checkLibraries(project, root, idea, logger, gradleFile, scopeTypeNatives);
 
     ScopeType implementation = ScopeType.IMPLEMENTATION;
     String scopeTypeImplementation = implementation.getStringValue();
@@ -601,7 +624,14 @@ public class DependencyManager {
         FileUtils.copyFileToDirectory(library.getSourceFile(), libraryDir);
 
         File jar = new File(libraryDir, library.getSourceFile().getName());
-        jar.renameTo(new File(libraryDir, "classes.jar"));
+
+        if (scope.equals(ScopeType.NATIVES.getStringValue())) {
+          Decompress.unzip(jar.getAbsolutePath(), libraryDir.getAbsolutePath());
+
+        } else {
+          jar.renameTo(new File(libraryDir, "classes.jar"));
+        }
+
       } else if (library.getSourceFile().getName().endsWith(".aar")) {
         Decompress.unzip(library.getSourceFile().getAbsolutePath(), libraryDir.getAbsolutePath());
       }
