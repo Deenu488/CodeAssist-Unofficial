@@ -980,6 +980,9 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       boolean isCompilerEnabled =
           Boolean.parseBoolean(
               buildSettingsJson.optJSONObject("kotlin").optString("isCompilerEnabled", "false"));
+      boolean isSkipKotlinTask =
+          Boolean.parseBoolean(
+              buildSettingsJson.optJSONObject("kotlin").optString("skipKotlinTask", "false"));
 
       String jvm_target = buildSettingsJson.optJSONObject("kotlin").optString("jvmTarget", "1.8");
 
@@ -988,6 +991,11 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         BuildModule.getKotlinc().setReadOnly();
+      }
+
+      if (isSkipKotlinTask) {
+        getLogger().debug("> Task :" + name + ":" + "compileKotlin SKIPPED");
+        return;
       }
 
       if (!isCompilerEnabled) {
@@ -1278,6 +1286,10 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
           Boolean.parseBoolean(
               buildSettingsJson.optJSONObject("java").optString("isCompilerEnabled", "false"));
 
+      boolean isSkipJavaTask =
+          Boolean.parseBoolean(
+              buildSettingsJson.optJSONObject("java").optString("skipJavaTask", "false"));
+
       String sourceCompatibility =
           buildSettingsJson.optJSONObject("java").optString("sourceCompatibility", "1.8");
 
@@ -1286,6 +1298,11 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         BuildModule.getJavac().setReadOnly();
+      }
+
+      if (isSkipJavaTask) {
+        getLogger().debug("> Task :" + name + ":" + "compileJava SKIPPED");
+        return;
       }
 
       if (!isCompilerEnabled) {

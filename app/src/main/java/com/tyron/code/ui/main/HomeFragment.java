@@ -35,11 +35,11 @@ import com.tyron.code.ui.settings.SettingsActivity;
 import com.tyron.code.ui.wizard.WizardFragment;
 import com.tyron.common.SharedPreferenceKeys;
 import com.tyron.common.util.AndroidUtilities;
+import com.tyron.completion.progress.ProgressManager;
 import java.io.File;
 import java.util.Objects;
 import org.codeassist.unofficial.BuildConfig;
 import org.codeassist.unofficial.R;
-import com.tyron.completion.progress.ProgressManager;
 
 public class HomeFragment extends Fragment {
 
@@ -140,21 +140,20 @@ public class HomeFragment extends Fragment {
   private final ActivityResultLauncher<Intent> permissionLauncher =
       registerForActivityResult(
           new ActivityResultContracts.StartActivityForResult(),
-          result -> {  
-               ProgressManager.getInstance()
-        .runLater(
-            () -> {
-        
-                   
-              if (Environment.isExternalStorageManager()) {
-                AndroidUtilities.showToast("Permission granted");
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                intent.addCategory(Intent.CATEGORY_DEFAULT);
-                documentPickerLauncher2.launch(intent);
-              } else {
-                AndroidUtilities.showToast("Permission not granted");
-              } 
-          }, 500);           
+          result -> {
+            ProgressManager.getInstance()
+                .runLater(
+                    () -> {
+                      if (Environment.isExternalStorageManager()) {
+                        AndroidUtilities.showToast("Permission granted");
+                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                        intent.addCategory(Intent.CATEGORY_DEFAULT);
+                        documentPickerLauncher2.launch(intent);
+                      } else {
+                        AndroidUtilities.showToast("Permission not granted");
+                      }
+                    },
+                    500);
           });
 
   @Override
@@ -251,7 +250,8 @@ public class HomeFragment extends Fragment {
 
               new MaterialAlertDialogBuilder(requireContext())
                   .setMessage(
-                      "This feature requires access to manage all files. Please grant the necessary permission.")
+                      "This feature requires access to manage all files. Please grant the necessary"
+                          + " permission.")
                   .setPositiveButton(
                       "Grant Permission",
                       (d, which) -> {

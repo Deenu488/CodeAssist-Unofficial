@@ -60,6 +60,7 @@ public class ModuleImpl implements Module {
         javaSettings.put("sourceCompatibility", "1.8");
         javaSettings.put("targetCompatibility", "1.8");
         javaSettings.put("applyJavaFormat", "false");
+        javaSettings.put("skipJavaTask", "false");
 
         JSONObject kotlinSettings = new JSONObject();
         kotlinSettings.put("isCompilerEnabled", "false");
@@ -67,6 +68,7 @@ public class ModuleImpl implements Module {
         kotlinSettings.put("isKotlinCompletionV2", "false");
         kotlinSettings.put("jvmTarget", "1.8");
         kotlinSettings.put("applyKotlinFormat", "false");
+        kotlinSettings.put("skipKotlinTask", "false");
         // kotlinSettings.put("languageVersion", "2.1");
 
         JSONObject buildSettingsJson = new JSONObject();
