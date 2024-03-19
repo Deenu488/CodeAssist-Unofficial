@@ -246,14 +246,15 @@ public class HomeFragment extends Fragment {
             if (!Environment.isExternalStorageManager()) {
 
               new MaterialAlertDialogBuilder(requireContext())
-                  .setMessage("")
+                  .setMessage(
+                      "This feature requires access to manage all files. Please grant the necessary permission.")
                   .setPositiveButton(
-                      "",
+                      "Grant Permission",
                       (d, which) -> {
                         requestPermission();
                       })
-                  .setNegativeButton("", (d, which) -> {})
-                  .setTitle("")
+                  .setNegativeButton("Cancel", (d, which) -> {})
+                  .setTitle("Permission Required")
                   .show();
 
             } else {
