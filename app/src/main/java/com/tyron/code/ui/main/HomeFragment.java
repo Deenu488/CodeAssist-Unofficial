@@ -39,6 +39,7 @@ import java.io.File;
 import java.util.Objects;
 import org.codeassist.unofficial.BuildConfig;
 import org.codeassist.unofficial.R;
+import com.tyron.completion.progress.ProgressManager;
 
 public class HomeFragment extends Fragment {
 
@@ -139,9 +140,12 @@ public class HomeFragment extends Fragment {
   private final ActivityResultLauncher<Intent> permissionLauncher =
       registerForActivityResult(
           new ActivityResultContracts.StartActivityForResult(),
-          result -> {
-            if (result.getResultCode() == Activity.RESULT_OK) {
-
+          result -> {  
+               ProgressManager.getInstance()
+        .runLater(
+            () -> {
+        
+                   
               if (Environment.isExternalStorageManager()) {
                 AndroidUtilities.showToast("Permission granted");
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
@@ -149,8 +153,8 @@ public class HomeFragment extends Fragment {
                 documentPickerLauncher2.launch(intent);
               } else {
                 AndroidUtilities.showToast("Permission not granted");
-              }
-            }
+              } 
+          }, 500);           
           });
 
   @Override
