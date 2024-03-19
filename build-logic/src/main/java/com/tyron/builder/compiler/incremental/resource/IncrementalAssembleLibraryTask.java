@@ -49,6 +49,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
@@ -70,6 +71,7 @@ import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation;
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector;
 import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler;
 import org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunnerKt;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
@@ -101,11 +103,14 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
   public void run() throws IOException, CompilationFailedException {
     List<String> projects = new ArrayList<>();
     projects.addAll(getModule().getAllProjects(getModule().getGradleFile()));
-    initializeProjects(getModule().getProjectDir(), projects);
+    try {
+      initializeProjects(getModule().getProjectDir(), projects);
+    } catch (JSONException e) {
+    }
   }
 
   private void initializeProjects(File directory, List<String> rootProjects)
-      throws IOException, CompilationFailedException {
+      throws IOException, JSONException, CompilationFailedException {
     Map<Integer, List<String>> projectsByInclusion = new HashMap<>();
     int maxInclusion = 0;
     for (String projectName : rootProjects) {
@@ -138,7 +143,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
   }
 
   private void processProjects(File projectDir, List<String> projects)
-      throws IOException, CompilationFailedException {
+      throws IOException, JSONException, CompilationFailedException {
 
     for (String projectName : projects) {
       String name = projectName.replaceFirst("/", "").replaceAll("/", ":");
@@ -152,7 +157,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
   }
 
   private void prepairSubProjects(File projectDir, String name, Set<String> processedSubProjects)
-      throws IOException, CompilationFailedException {
+      throws IOException, JSONException, CompilationFailedException {
 
     File gradleFile = new File(projectDir, name + "/build.gradle");
 
@@ -212,7 +217,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
   private void buildSubProject(
       File projectDir, String subName, List<File> compileClassPath, List<File> runtimeClassPath)
-      throws CompilationFailedException, IOException {
+      throws CompilationFailedException, JSONException, IOException {
     File subGradleFile = new File(projectDir, subName + "/build.gradle");
     List<String> pluginTypes = new ArrayList<>();
     if (builtProjects.contains(subName)) {
@@ -235,7 +240,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
 
   private void buildProject(
       File projectDir, String name, List<File> compileClassPath, List<File> runtimeClassPath)
-      throws CompilationFailedException, IOException {
+      throws CompilationFailedException, JSONException, IOException {
     File gradleFile = new File(projectDir, name + "/build.gradle");
     List<String> pluginTypes = new ArrayList<>();
     if (builtProjects.contains(name)) {
@@ -337,7 +342,7 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
       String projectName,
       List<File> compileClassPath,
       List<File> runtimeClassPath)
-      throws IOException, CompilationFailedException {
+      throws IOException, JSONException, CompilationFailedException {
     File gradleFile = new File(projectDir, projectName + "/build.gradle");
     File jarDir = new File(projectDir, projectName + "/build/outputs/jar");
     File jarFileDir = new File(jarDir, projectName + ".jar");
@@ -368,6 +373,23 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
     Set<File> javaFiles = new HashSet<>();
     Set<File> kotlinFiles = new HashSet<>();
 
+    File buildSettings =
+        new File(getModule().getProjectDir(), ".idea/" + projectName + "_compiler_settings.json");
+    String content = new String(Files.readAllBytes(Paths.get(buildSettings.getAbsolutePath())));
+
+    JSONObject buildSettingsJson = new JSONObject(content);
+
+    boolean isSkipKotlinTask =
+        Optional.ofNullable(buildSettingsJson.optJSONObject("kotlin"))
+            .map(json -> json.optString("skipKotlinTask", "false"))
+            .map(Boolean::parseBoolean)
+            .orElse(false);
+    boolean isSkipJavaTask =
+        Optional.ofNullable(buildSettingsJson.optJSONObject("java"))
+            .map(json -> json.optString("skipJavaTask", "false"))
+            .map(Boolean::parseBoolean)
+            .orElse(false);
+
     if (pluginType.equals("[java-library]")) {
       if (builtProjects.contains(projectName)) {
         // getLogger().debug("Already built project: " + projectName);
@@ -385,12 +407,19 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         compileClassPath.add(javaClassesDir);
         runtimeClassPath.add(javaClassesDir);
         compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
-        BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
-        buildJarTask.assembleJar(javaClassesDir, jarFileDir);
-        getLogger().debug("> Task :" + projectName + ":" + "jar");
-        copyResources(jarFileDir, transformsDir.getAbsolutePath());
-        if (!transformedJarFileDir.renameTo(classesJarFileDir)) {
-          getLogger().warning("Failed to rename " + transformedJarFileDir.getName() + " file");
+
+        if (isSkipJavaTask) {
+          getLogger().debug("> Task :" + projectName + ":" + "jar SKIPPED");
+
+        } else {
+
+          BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
+          buildJarTask.assembleJar(javaClassesDir, jarFileDir);
+          getLogger().debug("> Task :" + projectName + ":" + "jar");
+          copyResources(jarFileDir, transformsDir.getAbsolutePath());
+          if (!transformedJarFileDir.renameTo(classesJarFileDir)) {
+            getLogger().warning("Failed to rename " + transformedJarFileDir.getName() + " file");
+          }
         }
       } else {
         getLogger().debug("> Task :" + projectName + ":" + "jar SKIPPED");
@@ -430,12 +459,19 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         compileClassPath.add(kotlinClassesDir);
         runtimeClassPath.add(kotlinClassesDir);
         compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
-        BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
-        buildJarTask.assembleJar(sourceFolders, jarFileDir);
-        getLogger().debug("> Task :" + projectName + ":" + "jar");
-        copyResources(jarFileDir, transformsDir.getAbsolutePath());
-        if (!transformedJarFileDir.renameTo(classesJarFileDir)) {
-          getLogger().warning("Failed to rename " + transformedJarFileDir.getName() + " file");
+
+        if (isSkipKotlinTask && isSkipJavaTask) {
+          getLogger().debug("> Task :" + projectName + ":" + "jar SKIPPED");
+
+        } else {
+
+          BuildJarTask buildJarTask = new BuildJarTask(getProject(), getModule(), getLogger());
+          buildJarTask.assembleJar(sourceFolders, jarFileDir);
+          getLogger().debug("> Task :" + projectName + ":" + "jar");
+          copyResources(jarFileDir, transformsDir.getAbsolutePath());
+          if (!transformedJarFileDir.renameTo(classesJarFileDir)) {
+            getLogger().warning("Failed to rename " + transformedJarFileDir.getName() + " file");
+          }
         }
       } else {
         getLogger().debug("> Task :" + projectName + ":" + "jar SKIPPED");
@@ -491,9 +527,17 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         compileClassPath.add(javaClassesDir);
         runtimeClassPath.add(javaClassesDir);
         compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
-        getLogger().debug("> Task :" + projectName + ":" + "aar");
-        assembleAar(javaClassesDir, aarDir, buildDir, projectName);
-        Decompress.unzip(aarFileDir.getAbsolutePath(), transformsDir.getAbsolutePath());
+
+        if (isSkipJavaTask) {
+          getLogger().debug("> Task :" + projectName + ":" + "aar SKIPPED");
+
+        } else {
+
+          getLogger().debug("> Task :" + projectName + ":" + "aar");
+          assembleAar(javaClassesDir, aarDir, buildDir, projectName);
+          Decompress.unzip(aarFileDir.getAbsolutePath(), transformsDir.getAbsolutePath());
+        }
+
       } else {
         throw new CompilationFailedException("Manifest file does not exist.");
       }
@@ -559,9 +603,17 @@ public class IncrementalAssembleLibraryTask extends Task<AndroidModule> {
         compileClassPath.add(kotlinClassesDir);
         runtimeClassPath.add(kotlinClassesDir);
         compileJava(javaFiles, javaClassesDir, projectName, compileClassPath, runtimeClassPath);
-        getLogger().debug("> Task :" + projectName + ":" + "aar");
-        assembleAar(sourceFolders, aarDir, buildDir, projectName);
-        Decompress.unzip(aarFileDir.getAbsolutePath(), transformsDir.getAbsolutePath());
+
+        if (isSkipKotlinTask && isSkipJavaTask) {
+          getLogger().debug("> Task :" + projectName + ":" + "aar SKIPPED");
+
+        } else {
+
+          getLogger().debug("> Task :" + projectName + ":" + "aar");
+          assembleAar(sourceFolders, aarDir, buildDir, projectName);
+          Decompress.unzip(aarFileDir.getAbsolutePath(), transformsDir.getAbsolutePath());
+        }
+
       } else {
         throw new CompilationFailedException("Manifest file does not exist.");
       }

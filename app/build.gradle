@@ -162,6 +162,9 @@ dependencies {
 	//git
 	    implementation 'org.slf4j:slf4j-api:2.0.5'
 	    implementation 'com.blankj:utilcodex:1.31.1'
+     
+     //for CodeAssist
+     implementation 'org.jetbrains.kotlin:kotlin-stdlib:2.0.0-Beta4'
 	
     //debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 
