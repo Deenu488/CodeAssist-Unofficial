@@ -99,12 +99,27 @@ public class JavaD8Task extends Task<JavaModule> {
   private void doRelease() throws CompilationFailedException {
     try {
       ensureDexedLibraries();
+
+      List<File> libraries = getModule().getLibraries();
+      Map<Long, File> fileSizeMap = new HashMap<>();
+
+      // Calculate file sizes and store them in a map
+      for (File file : libraries) {
+        try {
+          long fileSize = Files.size(file.toPath());
+          fileSizeMap.put(fileSize, file);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+
+      // Remove duplicates based on file size
+      List<File> uniqueLibraryFiles = fileSizeMap.values().stream().collect(Collectors.toList());
+
       D8Command command =
           D8Command.builder(diagnosticsHandler)
               .addClasspathFiles(
-                  getModule().getLibraries().stream()
-                      .map(File::toPath)
-                      .collect(Collectors.toList()))
+                  uniqueLibraryFiles.stream().map(File::toPath).collect(Collectors.toList()))
               .addProgramFiles(mFilesToCompile)
               .addLibraryFiles(getLibraryFiles())
               .setMinApiLevel(getModule().getMinSdk())
@@ -127,12 +142,26 @@ public class JavaD8Task extends Task<JavaModule> {
     try {
       ensureDexedLibraries();
 
+      List<File> libraries = getModule().getLibraries();
+      Map<Long, File> fileSizeMap = new HashMap<>();
+
+      // Calculate file sizes and store them in a map
+      for (File file : libraries) {
+        try {
+          long fileSize = Files.size(file.toPath());
+          fileSizeMap.put(fileSize, file);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+
+      // Remove duplicates based on file size
+      List<File> uniqueLibraryFiles = fileSizeMap.values().stream().collect(Collectors.toList());
+
       D8Command command =
           D8Command.builder(diagnosticsHandler)
               .addClasspathFiles(
-                  getModule().getLibraries().stream()
-                      .map(File::toPath)
-                      .collect(Collectors.toList()))
+                  uniqueLibraryFiles.stream().map(File::toPath).collect(Collectors.toList()))
               .addProgramFiles(mFilesToCompile)
               .addLibraryFiles(getLibraryFiles())
               .setMinApiLevel(getModule().getMinSdk())
@@ -151,9 +180,7 @@ public class JavaD8Task extends Task<JavaModule> {
               .addProgramFiles(getAllDexFiles(mOutputPath.toFile()))
               .addLibraryFiles(getLibraryFiles())
               .addClasspathFiles(
-                  getModule().getLibraries().stream()
-                      .map(File::toPath)
-                      .collect(Collectors.toList()))
+                  uniqueLibraryFiles.stream().map(File::toPath).collect(Collectors.toList()))
               .setMinApiLevel(getModule().getMinSdk());
 
       File output = new File(getModule().getBuildDirectory(), "bin");
@@ -169,11 +196,27 @@ public class JavaD8Task extends Task<JavaModule> {
   private void mergeRelease() throws com.android.tools.r8.CompilationFailedException {
     getLogger().debug("Merging dex files using R8");
 
+    List<File> libraries = getModule().getLibraries();
+    Map<Long, File> fileSizeMap = new HashMap<>();
+
+    // Calculate file sizes and store them in a map
+    for (File file : libraries) {
+      try {
+        long fileSize = Files.size(file.toPath());
+        fileSizeMap.put(fileSize, file);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    // Remove duplicates based on file size
+    List<File> uniqueLibraryFiles = fileSizeMap.values().stream().collect(Collectors.toList());
+
     File output = new File(getModule().getBuildDirectory(), "bin");
     D8Command command =
         D8Command.builder(diagnosticsHandler)
             .addClasspathFiles(
-                getModule().getLibraries().stream().map(File::toPath).collect(Collectors.toList()))
+                uniqueLibraryFiles.stream().map(File::toPath).collect(Collectors.toList()))
             .addLibraryFiles(getLibraryFiles())
             .addProgramFiles(getAllDexFiles(mOutputPath.toFile()))
             .addProgramFiles(getLibraryDexes())
@@ -223,8 +266,22 @@ public class JavaD8Task extends Task<JavaModule> {
    */
   protected void ensureDexedLibraries() throws com.android.tools.r8.CompilationFailedException {
     List<File> libraries = getModule().getLibraries();
+    Map<Long, File> fileSizeMap = new HashMap<>();
 
-    for (File lib : libraries) {
+    // Calculate file sizes and store them in a map
+    for (File file : libraries) {
+      try {
+        long fileSize = Files.size(file.toPath());
+        fileSizeMap.put(fileSize, file);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    // Remove duplicates based on file size
+    List<File> uniqueLibraryFiles = fileSizeMap.values().stream().collect(Collectors.toList());
+
+    for (File lib : uniqueLibraryFiles) {
       File parentFile = lib.getParentFile();
       if (parentFile == null) {
         continue;
@@ -245,7 +302,7 @@ public class JavaD8Task extends Task<JavaModule> {
               D8Command.builder(diagnosticsHandler)
                   .addLibraryFiles(getLibraryFiles())
                   .addClasspathFiles(
-                      libraries.stream().map(File::toPath).collect(Collectors.toList()))
+                      uniqueLibraryFiles.stream().map(File::toPath).collect(Collectors.toList()))
                   .setMinApiLevel(getModule().getMinSdk())
                   .addProgramFiles(lib.toPath())
                   .setMode(CompilationMode.RELEASE)

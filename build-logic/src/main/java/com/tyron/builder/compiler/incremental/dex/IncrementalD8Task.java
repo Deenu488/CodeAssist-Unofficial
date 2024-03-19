@@ -102,13 +102,29 @@ public class IncrementalD8Task extends Task<AndroidModule> {
 
   private void doRelease() throws CompilationFailedException {
     try {
+
       ensureDexedLibraries();
+
+      List<File> libraries = getModule().getLibraries();
+      Map<Long, File> fileSizeMap = new HashMap<>();
+
+      // Calculate file sizes and store them in a map
+      for (File file : libraries) {
+        try {
+          long fileSize = Files.size(file.toPath());
+          fileSizeMap.put(fileSize, file);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+
+      // Remove duplicates based on file size
+      List<File> uniqueLibraryFiles = fileSizeMap.values().stream().collect(Collectors.toList());
+
       D8Command command =
           D8Command.builder(diagnosticsHandler)
               .addClasspathFiles(
-                  getModule().getLibraries().stream()
-                      .map(File::toPath)
-                      .collect(Collectors.toList()))
+                  uniqueLibraryFiles.stream().map(File::toPath).collect(Collectors.toList()))
               .addProgramFiles(mFilesToCompile)
               .addLibraryFiles(getLibraryFiles())
               .setMinApiLevel(getModule().getMinSdk())
@@ -131,12 +147,26 @@ public class IncrementalD8Task extends Task<AndroidModule> {
     try {
       ensureDexedLibraries();
 
+      List<File> libraries = getModule().getLibraries();
+      Map<Long, File> fileSizeMap = new HashMap<>();
+
+      // Calculate file sizes and store them in a map
+      for (File file : libraries) {
+        try {
+          long fileSize = Files.size(file.toPath());
+          fileSizeMap.put(fileSize, file);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+
+      // Remove duplicates based on file size
+      List<File> uniqueLibraryFiles = fileSizeMap.values().stream().collect(Collectors.toList());
+
       D8Command command =
           D8Command.builder(diagnosticsHandler)
               .addClasspathFiles(
-                  getModule().getLibraries().stream()
-                      .map(File::toPath)
-                      .collect(Collectors.toList()))
+                  uniqueLibraryFiles.stream().map(File::toPath).collect(Collectors.toList()))
               .addProgramFiles(mFilesToCompile)
               .addLibraryFiles(getLibraryFiles())
               .setMinApiLevel(getModule().getMinSdk())
@@ -155,9 +185,7 @@ public class IncrementalD8Task extends Task<AndroidModule> {
               .addProgramFiles(getAllDexFiles(mOutputPath.toFile()))
               .addLibraryFiles(getLibraryFiles())
               .addClasspathFiles(
-                  getModule().getLibraries().stream()
-                      .map(File::toPath)
-                      .collect(Collectors.toList()))
+                  uniqueLibraryFiles.stream().map(File::toPath).collect(Collectors.toList()))
               .setMinApiLevel(getModule().getMinSdk());
 
       File output = new File(getModule().getBuildDirectory(), "bin");
@@ -171,11 +199,28 @@ public class IncrementalD8Task extends Task<AndroidModule> {
   }
 
   private void mergeRelease() throws com.android.tools.r8.CompilationFailedException {
+
+    List<File> libraries = getModule().getLibraries();
+    Map<Long, File> fileSizeMap = new HashMap<>();
+
+    // Calculate file sizes and store them in a map
+    for (File file : libraries) {
+      try {
+        long fileSize = Files.size(file.toPath());
+        fileSizeMap.put(fileSize, file);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    // Remove duplicates based on file size
+    List<File> uniqueLibraryFiles = fileSizeMap.values().stream().collect(Collectors.toList());
+
     File output = new File(getModule().getBuildDirectory(), "bin");
     D8Command command =
         D8Command.builder(diagnosticsHandler)
             .addClasspathFiles(
-                getModule().getLibraries().stream().map(File::toPath).collect(Collectors.toList()))
+                uniqueLibraryFiles.stream().map(File::toPath).collect(Collectors.toList()))
             .addLibraryFiles(getLibraryFiles())
             .addProgramFiles(getAllDexFiles(mOutputPath.toFile()))
             .addProgramFiles(getLibraryDexes())
@@ -220,8 +265,22 @@ public class IncrementalD8Task extends Task<AndroidModule> {
    */
   protected void ensureDexedLibraries() throws com.android.tools.r8.CompilationFailedException {
     List<File> libraries = getModule().getLibraries();
+    Map<Long, File> fileSizeMap = new HashMap<>();
 
-    for (File lib : libraries) {
+    // Calculate file sizes and store them in a map
+    for (File file : libraries) {
+      try {
+        long fileSize = Files.size(file.toPath());
+        fileSizeMap.put(fileSize, file);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    // Remove duplicates based on file size
+    List<File> uniqueLibraryFiles = fileSizeMap.values().stream().collect(Collectors.toList());
+
+    for (File lib : uniqueLibraryFiles) {
       File parentFile = lib.getParentFile();
       if (parentFile == null) {
         continue;
@@ -252,7 +311,7 @@ public class IncrementalD8Task extends Task<AndroidModule> {
               D8Command.builder(diagnosticsHandler)
                   .addLibraryFiles(getLibraryFiles())
                   .addClasspathFiles(
-                      libraries.stream().map(File::toPath).collect(Collectors.toList()))
+                      uniqueLibraryFiles.stream().map(File::toPath).collect(Collectors.toList()))
                   .addProgramFiles(lib.toPath())
                   .setMode(CompilationMode.RELEASE)
                   .setMinApiLevel(getModule().getMinSdk())

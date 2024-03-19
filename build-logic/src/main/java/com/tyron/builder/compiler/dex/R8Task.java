@@ -39,14 +39,30 @@ public class R8Task extends Task<AndroidModule> {
   @Override
   public void run() throws IOException, CompilationFailedException {
     try {
+
       File output = new File(getModule().getBuildDirectory(), "bin");
       File mappingOutput = new File(output, "proguard-mapping.txt");
+
+      List<File> libraries = getModule().getLibraries();
+      Map<Long, File> fileSizeMap = new HashMap<>();
+
+      // Calculate file sizes and store them in a map
+      for (File file : libraries) {
+        try {
+          long fileSize = Files.size(file.toPath());
+          fileSizeMap.put(fileSize, file);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+
+      // Remove duplicates based on file size
+      List<File> uniqueLibraryFiles = fileSizeMap.values().stream().collect(Collectors.toList());
+
       R8Command.Builder command =
           R8Command.builder(new DexDiagnosticHandler(getLogger(), getModule()))
               .addProgramFiles(
-                  getModule().getLibraries().stream()
-                      .map(File::toPath)
-                      .collect(Collectors.toList()))
+                  uniqueLibraryFiles.stream().map(File::toPath).collect(Collectors.toList()))
               .addLibraryFiles(getLibraryFiles())
               .addProgramFiles(
                   D8Task.getClassFiles(
