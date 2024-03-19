@@ -22,6 +22,7 @@ import com.tyron.code.ui.file.action.GitActionGroup;
 import com.tyron.code.ui.file.action.ImportFileActionGroup;
 import com.tyron.code.ui.file.action.NewFileActionGroup;
 import com.tyron.code.ui.file.action.file.DeleteFileAction;
+import com.tyron.code.ui.file.action.file.InstallApkFileAction;
 import com.tyron.code.ui.main.action.compile.CompileActionGroup;
 import com.tyron.code.ui.main.action.other.FormatAction;
 import com.tyron.code.ui.main.action.other.OpenSettingsAction;
@@ -173,6 +174,7 @@ public class ApplicationLoader extends Application {
           manager.registerAction(NewFileActionGroup.ID, new NewFileActionGroup());
           manager.registerAction(DeleteFileAction.ID, new DeleteFileAction());
           manager.registerAction(ImportFileActionGroup.ID, new ImportFileActionGroup());
+          manager.registerAction(InstallApkFileAction.ID, new InstallApkFileAction());
 
           manager.registerAction(GitActionGroup.ID, new GitActionGroup());
 
@@ -199,6 +201,10 @@ public class ApplicationLoader extends Application {
   @VisibleForTesting
   public static void setApplicationContext(Context context) {
     applicationContext = context;
+  }
+
+  public static Context getApp() {
+    return applicationContext;
   }
 
   private void addProviders() {
