@@ -563,7 +563,7 @@ public class WizardFragment extends Fragment {
           replacePlaceholder(child);
         } else if (child.getName().endsWith(".java") || child.getName().endsWith(".kt")) {
           replacePlaceholder(child);
-        } else if (child.getName().endsWith(".xml")) {
+        } else if (child.getName().endsWith(".xml") && !child.getName().equals("AndroidManifest.xml") ) {
           replacePlaceholder(child);
         }
       }
@@ -583,7 +583,7 @@ public class WizardFragment extends Fragment {
     } catch (IOException e) {
       return;
     }
-    String targetSdk = "33";
+    String targetSdk = "34";
     String minSdk =
         mMinSdkText
             .getText()
