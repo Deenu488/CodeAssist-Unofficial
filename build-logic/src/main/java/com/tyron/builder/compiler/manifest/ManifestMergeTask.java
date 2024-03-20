@@ -13,10 +13,22 @@ import com.tyron.builder.project.api.AndroidModule;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 public class ManifestMergeTask extends Task<AndroidModule> {
 
@@ -54,6 +66,30 @@ public class ManifestMergeTask extends Task<AndroidModule> {
     mMainManifest = getModule().getManifestFile();
     if (!mMainManifest.exists()) {
       throw new IOException("Unable to find the main manifest file");
+    }
+
+    File tempManifest = new File(getModule().getBuildDirectory(), "bin/temp/AndroidManifest.xml");
+    if (tempManifest.exists()) {
+      tempManifest.delete();
+    }
+
+    if (!tempManifest.exists()) {
+      if (!tempManifest.createNewFile()) {
+        throw new IOException("Unable to create temp manifest file");
+      }
+    }
+
+    try {
+
+      String content = new String(Files.readAllBytes(Paths.get(mMainManifest.getAbsolutePath())));
+
+      FileUtils.writeStringToFile(tempManifest, content, Charset.defaultCharset());
+
+      addPackageName(tempManifest, mPackageName);
+
+      mMainManifest = tempManifest;
+    } catch (Exception e) {
+      mMainManifest = getModule().getManifestFile();
     }
 
     List<File> manifests = new ArrayList<>();
@@ -127,6 +163,31 @@ public class ManifestMergeTask extends Task<AndroidModule> {
     String namespace = namespace(root.getName(), gradle);
     File outputFile = new File(root, "build/bin/AndroidManifest.xml");
     File mainManifest = new File(root, "src/main/AndroidManifest.xml");
+
+    File tempManifest = new File(root, "build/bin/temp/AndroidManifest.xml");
+    if (tempManifest.exists()) {
+      tempManifest.delete();
+    }
+
+    if (!tempManifest.exists()) {
+      if (!tempManifest.createNewFile()) {
+        throw new IOException("Unable to create temp manifest file");
+      }
+    }
+
+    try {
+
+      String content = new String(Files.readAllBytes(Paths.get(mainManifest.getAbsolutePath())));
+
+      FileUtils.writeStringToFile(tempManifest, content, Charset.defaultCharset());
+
+      addPackageName(tempManifest, namespace);
+
+      mMainManifest = tempManifest;
+    } catch (Exception e) {
+      mMainManifest = new File(root, "src/main/AndroidManifest.xml");
+    }
+
     if (!outputFile.getParentFile().exists()) {
       outputFile.getParentFile().mkdirs();
     }
@@ -249,5 +310,29 @@ public class ManifestMergeTask extends Task<AndroidModule> {
       throw new IOException("Unable to read " + root + "/build.gradle file");
     }
     return packageName;
+  }
+
+  public void addPackageName(File mMainManifest, String packageName)
+      throws ParserConfigurationException, IOException, SAXException, TransformerException {
+    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+    Document doc = dBuilder.parse(mMainManifest);
+    doc.getDocumentElement().normalize();
+    Element root = doc.getDocumentElement();
+    if (!root.hasAttribute("package")) {
+      root.setAttribute("package", packageName);
+      TransformerFactory transformerFactory = TransformerFactory.newInstance();
+      Transformer transformer = transformerFactory.newTransformer();
+      DOMSource source = new DOMSource(doc);
+      StreamResult result = new StreamResult(mMainManifest);
+      transformer.transform(source, result);
+    } else {
+      root.setAttribute("package", packageName);
+      TransformerFactory transformerFactory = TransformerFactory.newInstance();
+      Transformer transformer = transformerFactory.newTransformer();
+      DOMSource source = new DOMSource(doc);
+      StreamResult result = new StreamResult(mMainManifest);
+      transformer.transform(source, result);
+    }
   }
 }

@@ -1,5 +1,3 @@
 package $packagename;
 
-public class Library {
-	
-}
+public class Library {}
