@@ -139,9 +139,14 @@ public class JavaModuleImpl extends ModuleImpl implements JavaModule {
 
   @Override
   public void addLibrary(@NonNull File jar) {
-    if (!hasClassFiles(jarFile)) {
-      return;
+    try {
+      if (!hasClassFiles(jar)) {
+        return;
+      }
+    } catch (IOException e) {
+      // ignored, don't put the jar
     }
+
     if (!jar.getName().endsWith(".jar")) {
       return;
     }
