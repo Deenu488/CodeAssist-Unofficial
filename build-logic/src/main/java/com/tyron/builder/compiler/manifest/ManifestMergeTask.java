@@ -68,7 +68,12 @@ public class ManifestMergeTask extends Task<AndroidModule> {
       throw new IOException("Unable to find the main manifest file");
     }
 
-    File tempManifest = new File(getModule().getBuildDirectory(), "bin/temp/AndroidManifest.xml");
+    File tempDir = new File(getModule().getBuildDirectory(), "bin/temp");
+    if (!tempDir.exists()) {
+      tempDir.mkdirs();
+    }
+
+    File tempManifest = new File(tempDir, "AndroidManifest.xml");
     if (tempManifest.exists()) {
       tempManifest.delete();
     }
@@ -164,7 +169,12 @@ public class ManifestMergeTask extends Task<AndroidModule> {
     File outputFile = new File(root, "build/bin/AndroidManifest.xml");
     File mainManifest = new File(root, "src/main/AndroidManifest.xml");
 
-    File tempManifest = new File(root, "build/bin/temp/AndroidManifest.xml");
+    File tempDir = new File(root, "build/bin/temp");
+    if (!tempDir.exists()) {
+      tempDir.mkdirs();
+    }
+
+    File tempManifest = new File(tempDir, "AndroidManifest.xml");
     if (tempManifest.exists()) {
       tempManifest.delete();
     }
