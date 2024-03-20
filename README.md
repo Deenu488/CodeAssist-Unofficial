@@ -109,4 +109,8 @@ Clone this repository to your local device and then open it on Android Studio.
 
 - Ilyasse Salama
 
+# Contributors
+
+- Updated Templates By @SENPAi_203
+
 # CodeAssist-Unofficial
