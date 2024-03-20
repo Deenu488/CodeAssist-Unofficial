@@ -9,6 +9,9 @@ public class Dependency {
 
   public static Dependency valueOf(String declaration) {
     String[] names = declaration.split(":");
+    if (names.length >= 4) {
+      return new Dependency(names[0], names[1], names[2], names[3]);
+    }
     return new Dependency(names[0], names[1], names[2]);
   }
 
@@ -17,6 +20,8 @@ public class Dependency {
   private String versionName;
   private String scope;
   private String type;
+  private String natives;
+  private boolean isNatives = false;
 
   private final List<Dependency> excludes = new ArrayList<>(1);
 
@@ -27,6 +32,10 @@ public class Dependency {
     this.groupId = copy.groupId;
     this.versionName = copy.versionName;
     this.scope = copy.scope;
+    if (copy.natives != null) {
+      this.natives = copy.natives;
+      this.isNatives = true;
+    }
     this.type = copy.type;
     this.excludes.addAll(copy.getExcludes());
   }
@@ -37,8 +46,22 @@ public class Dependency {
     this.versionName = versionName;
   }
 
+  public Dependency(String groupId, String artifactId, String versionName, String natives) {
+    this.groupId = groupId;
+    this.artifactId = artifactId;
+    this.versionName = versionName;
+    if (natives != null) {
+      this.natives = natives;
+      this.isNatives = true;
+    }
+  }
+
   public String getArtifactId() {
     return artifactId;
+  }
+
+  public boolean isNatives() {
+    return isNatives;
   }
 
   public void setArtifactId(String artifactId) {

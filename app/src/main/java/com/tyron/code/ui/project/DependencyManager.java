@@ -490,21 +490,25 @@ public class DependencyManager {
                 new File(idea, root.getName() + "_" + scope + "_libraries.json"),
                 root.getName()));
 
-    md5Map =
-        new HashMap<>(
-            checkLibraries(
-                md5Map,
-                libraries,
-                fileLibsHashes,
-                new File(root, "build/libraries/" + scope + "_files/libs")));
+    if (!scope.equals(ScopeType.NATIVES.getStringValue())) {
 
-    saveLibraryToProject(
-        project,
-        new File(root, "build/libraries/" + scope + "_files/libs"),
-        new File(idea, root.getName() + "_" + scope + "_libraries.json"),
-        scope + "Files",
-        md5Map,
-        fileLibsHashes);
+      md5Map =
+          new HashMap<>(
+              checkLibraries(
+                  md5Map,
+                  libraries,
+                  fileLibsHashes,
+                  new File(root, "build/libraries/" + scope + "_files/libs")));
+
+      saveLibraryToProject(
+          project,
+          new File(root, "build/libraries/" + scope + "_files/libs"),
+          new File(idea, root.getName() + "_" + scope + "_libraries.json"),
+          scope + "Files",
+          md5Map,
+          fileLibsHashes);
+    }
+
     md5Map.clear();
     fileLibsHashes.clear();
     libraries.clear();

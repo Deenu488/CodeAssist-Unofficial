@@ -137,6 +137,8 @@ public class RepositoryManagerImpl implements RepositoryManager {
       sb.append(".jar");
     }
 
+    System.out.println("pom " + String.valueOf(pom.isNatives()));
+
     for (Repository repository : repositories) {
       File file = repository.getCachedFile(sb.toString());
       if (file != null && file.exists()) {

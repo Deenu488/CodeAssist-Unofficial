@@ -68,6 +68,7 @@ public class RemoteRepository extends DefaultRepository {
 
   private File getFileInternal(String path) throws IOException {
     String downloadUrl = mUrl + path;
+    System.out.println("downloadUrl " + downloadUrl);
     URL url = new URL(downloadUrl);
     try {
       InputStream inputStream = url.openStream();

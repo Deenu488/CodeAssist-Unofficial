@@ -15,6 +15,7 @@ public class Pom {
   private String groupId;
   private String versionName;
   private String packaging;
+  private boolean isNatives = false;
 
   private boolean userDefined;
 
@@ -36,10 +37,21 @@ public class Pom {
     return pom;
   }
 
+  public static Pom valueOf(String groupId, String artifactId, String versionName, String natives) {
+    Pom pom = new Pom();
+    pom.setGroupId(groupId);
+    pom.setArtifactId(artifactId);
+    pom.setVersionName(versionName);
+    if (natives != null) {
+      pom.setNatives(true);
+    }
+    return pom;
+  }
+
   public static Pom valueOf(String declaration) {
     String[] names = declaration.split(":");
-    if (names.length < 3) {
-      throw new IllegalStateException("Unknown format: " + declaration);
+    if (names.length >= 4) {
+      return valueOf(names[0], names[1], names[2], names[3]);
     }
     return valueOf(names[0], names[1], names[2]);
   }
@@ -62,6 +74,14 @@ public class Pom {
 
   public String getArtifactId() {
     return artifactId;
+  }
+
+  public void setNatives(boolean isTrue) {
+    this.isNatives = isTrue;
+  }
+
+  public boolean isNatives() {
+    return isNatives;
   }
 
   public void setArtifactId(String artifactId) {

@@ -43,7 +43,9 @@ public class DependencyResolver {
       if (pom != null) {
         pom.setExcludes(dependency.getExcludes());
         pom.setUserDefined(true);
+        pom.setNatives(dependency.isNatives());
         poms.add(pom);
+
       } else {
         if (mListener != null) {
           mListener.onFailure("Unable to retrieve POM of " + dependency);

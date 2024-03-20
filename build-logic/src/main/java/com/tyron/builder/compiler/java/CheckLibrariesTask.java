@@ -200,22 +200,25 @@ public class CheckLibrariesTask extends Task<JavaModule> {
                 libraries,
                 new File(idea, root.getName() + "_" + scope + "_libraries.json"),
                 root.getName()));
+    if (!scope.equals(ScopeType.NATIVES.getStringValue())) {
 
-    md5Map =
-        new HashMap<>(
-            checkLibraries(
-                md5Map,
-                libraries,
-                fileLibsHashes,
-                new File(root, "build/libraries/" + scope + "_files/libs")));
+      md5Map =
+          new HashMap<>(
+              checkLibraries(
+                  md5Map,
+                  libraries,
+                  fileLibsHashes,
+                  new File(root, "build/libraries/" + scope + "_files/libs")));
 
-    saveLibraryToProject(
-        project,
-        new File(root, "build/libraries/" + scope + "_files/libs"),
-        new File(idea, root.getName() + "_" + scope + "_libraries.json"),
-        scope + "Files",
-        md5Map,
-        fileLibsHashes);
+      saveLibraryToProject(
+          project,
+          new File(root, "build/libraries/" + scope + "_files/libs"),
+          new File(idea, root.getName() + "_" + scope + "_libraries.json"),
+          scope + "Files",
+          md5Map,
+          fileLibsHashes);
+    }
+
     md5Map.clear();
     fileLibsHashes.clear();
     libraries.clear();
