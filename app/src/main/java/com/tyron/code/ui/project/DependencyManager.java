@@ -266,6 +266,7 @@ public class DependencyManager {
 
     if (!declaredNativesDependencies.isEmpty()) {
       resolvedNativesPoms = mResolver.resolveDependencies(declaredNativesDependencies);
+
       List<Library> nativesLibraries = getFiles(resolvedNativesPoms, logger);
       checkDependencies(
           project, root, idea, logger, nativesLibraries, gradleFile, scopeTypeNatives);
@@ -646,7 +647,6 @@ public class DependencyManager {
               if (!archDir.exists()) {
                 archDir.mkdirs();
               }
-
               Decompress.unzip(jar.getAbsolutePath(), archDir.getAbsolutePath());
             }
           }

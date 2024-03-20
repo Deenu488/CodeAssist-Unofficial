@@ -1,6 +1,0 @@
-{
-    "name" : "AndroidX Project",
-    "minSdk" : 21,
-    "supportsKotlin": true,
-    "supportsJava": true
-}

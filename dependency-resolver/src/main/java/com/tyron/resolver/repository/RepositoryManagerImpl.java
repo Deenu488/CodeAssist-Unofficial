@@ -52,6 +52,11 @@ public class RepositoryManagerImpl implements RepositoryManager {
       if (!pomNames[2].equals(pom.getVersionName())) {
         continue;
       }
+      if (pom.isNatives()) {
+        if (!pomNames[3].equals(pom.getNatives())) {
+          continue;
+        }
+      }
       return pom;
     }
     return getPomFromUrls(pomNames);

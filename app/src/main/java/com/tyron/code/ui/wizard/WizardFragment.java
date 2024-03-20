@@ -563,7 +563,8 @@ public class WizardFragment extends Fragment {
           replacePlaceholder(child);
         } else if (child.getName().endsWith(".java") || child.getName().endsWith(".kt")) {
           replacePlaceholder(child);
-        } else if (child.getName().endsWith(".xml") && !child.getName().equals("AndroidManifest.xml") ) {
+        } else if (child.getName().endsWith(".xml")
+            && !child.getName().equals("AndroidManifest.xml")) {
           replacePlaceholder(child);
         }
       }
