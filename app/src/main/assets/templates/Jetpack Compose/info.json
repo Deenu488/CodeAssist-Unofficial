@@ -1,0 +1,6 @@
+{
+    "name" : "Jetpack Compose",
+    "minSdk" : 21,
+    "supportsJava": false,
+    "supportsKotlin": true
+}

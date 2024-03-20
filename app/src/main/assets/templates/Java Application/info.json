@@ -1,0 +1,6 @@
+{
+    "name" : "Java Application",
+    "minSdk" : 21,
+    "supportsKotlin": true,
+    "supportsJava": true
+}
