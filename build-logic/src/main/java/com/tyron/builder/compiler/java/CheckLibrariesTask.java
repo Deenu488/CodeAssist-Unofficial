@@ -31,6 +31,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
@@ -339,8 +341,22 @@ public class CheckLibrariesTask extends Task<JavaModule> {
         File jar = new File(libraryDir, library.getSourceFile().getName());
 
         if (scope.equals(ScopeType.NATIVES.getStringValue())) {
-          Decompress.unzip(jar.getAbsolutePath(), libraryDir.getAbsolutePath());
+          String pattern = "-natives-(.*)\\.jar";
 
+          Pattern r = Pattern.compile(pattern);
+          Matcher m = r.matcher(library.getSourceFile().getName());
+
+          if (m.find()) {
+            String arch = m.group(1);
+            if (arch != null) {
+              File archDir = new File(libraryDir, arch);
+              if (!archDir.exists()) {
+                archDir.mkdirs();
+              }
+
+              Decompress.unzip(jar.getAbsolutePath(), archDir.getAbsolutePath());
+            }
+          }
         } else {
 
           jar.renameTo(new File(libraryDir, "classes.jar"));
