@@ -121,7 +121,16 @@ public class JavaModuleImpl extends ModuleImpl implements JavaModule {
     // Remove duplicates based on file size
     List<File> uniqueLibraryFiles = fileSizeMap.values().stream().collect(Collectors.toList());
 
-    return ImmutableList.copyOf(uniqueLibraryFiles);
+    List<File> filteredLibraryFiles =
+        uniqueLibraryFiles.stream()
+            .filter(
+                file -> {
+                  String name = file.getParentFile().getName();
+                  return !getExcludedClassPaths().contains(name);
+                })
+            .collect(Collectors.toList());
+
+    return ImmutableList.copyOf(filteredLibraryFiles);
   }
 
   @Override

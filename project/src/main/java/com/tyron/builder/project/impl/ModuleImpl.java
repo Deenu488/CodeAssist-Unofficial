@@ -11,6 +11,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +39,7 @@ public class ModuleImpl implements Module {
   private final File mRoot;
   private ModuleSettings myModuleSettings;
   private FileManager mFileManager;
+  private List<String> excludedClassPaths = new ArrayList<>();
 
   public ModuleImpl(File root) {
     mRoot = root;
@@ -72,14 +75,39 @@ public class ModuleImpl implements Module {
         // kotlinSettings.put("languageVersion", "2.1");
         JSONObject dexSettings = new JSONObject();
         dexSettings.put("isDexLibrariesOnPrebuild", "false");
+        dexSettings.put("excludedClassPaths", "9e7ee18a1a5dd5bf070c7e6f706ccc9c");
         JSONObject buildSettingsJson = new JSONObject();
         buildSettingsJson.put("java", javaSettings);
         buildSettingsJson.put("kotlin", kotlinSettings);
         buildSettingsJson.put("dex", dexSettings);
 
+        excludedClassPaths.add("9e7ee18a1a5dd5bf070c7e6f706ccc9c");
+
         FileWriter fileWriter = new FileWriter(buildSettings, true);
         fileWriter.write(buildSettingsJson.toString(1));
         fileWriter.close();
+      } catch (JSONException e) {
+        e.printStackTrace();
+      }
+    } else {
+
+      try {
+        String content = new String(Files.readAllBytes(Paths.get(buildSettings.getAbsolutePath())));
+
+        JSONObject buildSettingsJson = new JSONObject(content);
+
+        String[] excludedClassPath =
+            buildSettingsJson
+                .optJSONObject("dex")
+                .optString("excludedClassPaths", "9e7ee18a1a5dd5bf070c7e6f706ccc9c")
+                .split(",");
+        if (excludedClassPath != null) {
+          List<String> arrayListName = Arrays.asList(excludedClassPath);
+          if (arrayListName != null) {
+            excludedClassPaths.addAll(arrayListName);
+          }
+        }
+
       } catch (JSONException e) {
         e.printStackTrace();
       }
@@ -151,6 +179,11 @@ public class ModuleImpl implements Module {
   @Override
   public List<String> getPlugins() {
     return parsePlugins(getGradleFile());
+  }
+
+  @Override
+  public List<String> getExcludedClassPaths() {
+    return excludedClassPaths;
   }
 
   @Override
