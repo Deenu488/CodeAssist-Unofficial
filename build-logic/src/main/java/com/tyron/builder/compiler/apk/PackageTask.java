@@ -74,7 +74,7 @@ public class PackageTask extends Task<AndroidModule> {
     }
 
     mLibraries.addAll(getModule().getLibraries());
-    mNativeLibraries.addAll(getModule().getNativeLibraries());
+    mNativeLibraries.addAll(getModule().getNativeLibraries());    
     Log.d(getName().toString(), "Packaging APK.");
   }
 
@@ -109,9 +109,9 @@ public class PackageTask extends Task<AndroidModule> {
       }
 
       for (File library : mNativeLibraries) {
-        File parent = library.getParentFile();
+        File parent = library.getParentFile();        
         if (parent != null) {
-          File jniFolder = new File(parent, "jni");
+          File jniFolder = new File(parent, "jni");         
           if (jniFolder.exists() && jniFolder.isDirectory()) {
             builder.addNativeLibraries(jniFolder);
           }

@@ -162,9 +162,6 @@ public class JavaModuleImpl extends ModuleImpl implements JavaModule {
   @Override
   public void addLibrary(@NonNull File jar) {
     try {
-      if (hasNativeFiles(jar)) {
-        mNativeLibraries.add(jar);
-      }
       if (!hasClassFiles(jar)) {
         return;
       }
@@ -199,23 +196,6 @@ public class JavaModuleImpl extends ModuleImpl implements JavaModule {
         }
       }
       return false; // No .class files found
-    }
-  }
-
-  private boolean hasNativeFiles(File file) throws IOException {
-    if (file == null) {
-      return false;
-    }
-    try (JarFile jar = new JarFile(file)) {
-      Enumeration<JarEntry> entries = jar.entries();
-      while (entries.hasMoreElements()) {
-        JarEntry entry = entries.nextElement();
-
-        if (entry.getName().endsWith(".so")) {
-          return true; // Found at least one .so file
-        }
-      }
-      return false; // No .so files found
     }
   }
 
@@ -373,13 +353,13 @@ public class JavaModuleImpl extends ModuleImpl implements JavaModule {
       }
     }
 
-    File[] native_libs =
-        new File(getBuildDirectory(), "libraries/native_libs").listFiles(File::isDirectory);
-    if (native_libs != null) {
-      for (File directory : native_libs) {
+    File[] natives_libs =
+        new File(getBuildDirectory(), "libraries/natives_libs").listFiles(File::isDirectory);
+    if (natives_libs != null) {
+      for (File directory : natives_libs) {
         File check = new File(directory, "classes.jar");
         if (check.exists()) {
-          addLibrary(check);
+          mNativeLibraries.add(check);
         }
       }
     }
