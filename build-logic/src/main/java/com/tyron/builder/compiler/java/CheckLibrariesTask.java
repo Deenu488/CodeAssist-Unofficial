@@ -339,6 +339,8 @@ public class CheckLibrariesTask extends Task<JavaModule> {
         FileUtils.copyFileToDirectory(library.getSourceFile(), libraryDir);
 
         File jar = new File(libraryDir, library.getSourceFile().getName());
+        jar.renameTo(new File(libraryDir, "classes.jar"));
+        jar = new File(libraryDir, "classes.jar");
 
         if (scope.equals(ScopeType.NATIVES.getStringValue())) {
           String pattern = "-natives-(.*)\\.jar";
@@ -349,7 +351,7 @@ public class CheckLibrariesTask extends Task<JavaModule> {
           if (m.find()) {
             String arch = m.group(1);
             if (arch != null) {
-              File archDir = new File(libraryDir, arch);
+              File archDir = new File(libraryDir, "jni/" + arch);
               if (!archDir.exists()) {
                 archDir.mkdirs();
               }
@@ -357,10 +359,8 @@ public class CheckLibrariesTask extends Task<JavaModule> {
               Decompress.unzip(jar.getAbsolutePath(), archDir.getAbsolutePath());
             }
           }
-        } else {
-
-          jar.renameTo(new File(libraryDir, "classes.jar"));
         }
+
       } else if (library.getSourceFile().getName().endsWith(".aar")) {
         Decompress.unzip(library.getSourceFile().getAbsolutePath(), libraryDir.getAbsolutePath());
       }

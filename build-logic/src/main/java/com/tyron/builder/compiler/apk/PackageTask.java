@@ -25,6 +25,8 @@ public class PackageTask extends Task<AndroidModule> {
   /** List of each jar files of libraries */
   private final List<File> mLibraries = new ArrayList<>();
 
+  private final List<File> mNativeLibraries = new ArrayList<>();
+
   /** Main dex file */
   private File mDexFile;
 
@@ -72,7 +74,7 @@ public class PackageTask extends Task<AndroidModule> {
     }
 
     mLibraries.addAll(getModule().getLibraries());
-
+    mNativeLibraries.addAll(getModule().getNativeLibraries());
     Log.d(getName().toString(), "Packaging APK.");
   }
 
@@ -97,6 +99,16 @@ public class PackageTask extends Task<AndroidModule> {
       for (File library : mLibraries) {
         builder.addResourcesFromJar(library);
 
+        File parent = library.getParentFile();
+        if (parent != null) {
+          File jniFolder = new File(parent, "jni");
+          if (jniFolder.exists() && jniFolder.isDirectory()) {
+            builder.addNativeLibraries(jniFolder);
+          }
+        }
+      }
+
+      for (File library : mNativeLibraries) {
         File parent = library.getParentFile();
         if (parent != null) {
           File jniFolder = new File(parent, "jni");

@@ -73,6 +73,11 @@ public class MockJavaModule extends ModuleImpl implements JavaModule {
   }
 
   @Override
+  public List<File> getNativeLibraries() {
+    return Collections.emptyList();
+  }
+
+  @Override
   public List<File> getLibraries(File dir) {
     List<File> libraries = new ArrayList<>();
     File[] libs = dir.listFiles(File::isDirectory);

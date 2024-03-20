@@ -25,6 +25,8 @@ public interface JavaModule extends Module {
 
   List<File> getLibraries();
 
+  List<File> getNativeLibraries();
+
   List<File> getLibraries(File dir);
 
   void addLibrary(@NonNull File jar);

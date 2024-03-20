@@ -35,6 +35,7 @@ public class JavaModuleImpl extends ModuleImpl implements JavaModule {
   private final Map<String, Library> mLibraryHashMap;
   private final Map<String, File> mInjectedClassesMap;
   private final Set<File> mLibraries;
+  private final Set<File> mNativeLibraries;
 
   // the index of all the class files in this module
   private final PackageTrie mClassIndex = new PackageTrie();
@@ -44,6 +45,7 @@ public class JavaModuleImpl extends ModuleImpl implements JavaModule {
     mJavaFiles = new HashMap<>();
     mClassFiles = new HashMap<>();
     mLibraries = new HashSet<>();
+    mNativeLibraries = new HashSet<>();
     mInjectedClassesMap = new HashMap<>();
     mLibraryHashMap = new HashMap<>();
   }
@@ -123,6 +125,26 @@ public class JavaModuleImpl extends ModuleImpl implements JavaModule {
   }
 
   @Override
+  public List<File> getNativeLibraries() {
+    Map<Long, File> fileSizeMap = new HashMap<>();
+
+    // Calculate file sizes and store them in a map
+    for (File file : mNativeLibraries) {
+      try {
+        long fileSize = Files.size(file.toPath());
+        fileSizeMap.put(fileSize, file);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    // Remove duplicates based on file size
+    List<File> uniqueLibraryFiles = fileSizeMap.values().stream().collect(Collectors.toList());
+
+    return ImmutableList.copyOf(uniqueLibraryFiles);
+  }
+
+  @Override
   public List<File> getLibraries(File dir) {
     List<File> libraries = new ArrayList<>();
     File[] libs = dir.listFiles(File::isDirectory);
@@ -140,6 +162,9 @@ public class JavaModuleImpl extends ModuleImpl implements JavaModule {
   @Override
   public void addLibrary(@NonNull File jar) {
     try {
+      if (hasNativeFiles(jar)) {
+        mNativeLibraries.add(jar);
+      }
       if (!hasClassFiles(jar)) {
         return;
       }
@@ -174,6 +199,23 @@ public class JavaModuleImpl extends ModuleImpl implements JavaModule {
         }
       }
       return false; // No .class files found
+    }
+  }
+
+  private boolean hasNativeFiles(File file) throws IOException {
+    if (file == null) {
+      return false;
+    }
+    try (JarFile jar = new JarFile(file)) {
+      Enumeration<JarEntry> entries = jar.entries();
+      while (entries.hasMoreElements()) {
+        JarEntry entry = entries.nextElement();
+
+        if (entry.getName().endsWith(".so")) {
+          return true; // Found at least one .so file
+        }
+      }
+      return false; // No .so files found
     }
   }
 
@@ -331,6 +373,17 @@ public class JavaModuleImpl extends ModuleImpl implements JavaModule {
       }
     }
 
+    File[] native_libs =
+        new File(getBuildDirectory(), "libraries/native_libs").listFiles(File::isDirectory);
+    if (native_libs != null) {
+      for (File directory : native_libs) {
+        File check = new File(directory, "classes.jar");
+        if (check.exists()) {
+          addLibrary(check);
+        }
+      }
+    }
+
     if (!getRootFile().getName().equals("app")) {
       File[] api_files =
           new File(getBuildDirectory(), "libraries/api_files/libs").listFiles(File::isDirectory);
@@ -360,6 +413,7 @@ public class JavaModuleImpl extends ModuleImpl implements JavaModule {
   public void clear() {
     mJavaFiles.clear();
     mLibraries.clear();
+    mNativeLibraries.clear();
     mLibraryHashMap.clear();
   }
 }
