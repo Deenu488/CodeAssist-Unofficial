@@ -50,10 +50,8 @@ public class Dependency {
     this.groupId = groupId;
     this.artifactId = artifactId;
     this.versionName = versionName;
-    if (natives != null) {
-      this.natives = natives;
-      this.isNatives = true;
-    }
+    this.natives = natives;
+    this.isNatives = true;
   }
 
   public String getArtifactId() {
@@ -62,6 +60,14 @@ public class Dependency {
 
   public boolean isNatives() {
     return isNatives;
+  }
+
+  public String getNatives() {
+    return natives;
+  }
+
+  public void setNatives(String natives) {
+    this.natives = natives;
   }
 
   public void setArtifactId(String artifactId) {
@@ -100,6 +106,9 @@ public class Dependency {
   @NonNull
   @Override
   public String toString() {
+    if (isNatives()) {
+      return getGroupId() + ":" + getArtifactId() + ":" + getVersionName() + ":" + getNatives();
+    }
     return getGroupId() + ":" + getArtifactId() + ":" + getVersionName();
   }
 

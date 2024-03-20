@@ -131,13 +131,17 @@ public class RepositoryManagerImpl implements RepositoryManager {
     sb.append(pom.getArtifactId());
     sb.append('-');
     sb.append(pom.getVersionName());
+
+    if (pom.isNatives()) {
+      sb.append('-');
+      sb.append(pom.getNatives());
+    }
+
     if ("aar".equals(pom.getPackaging())) {
       sb.append(".aar");
     } else {
       sb.append(".jar");
     }
-
-    System.out.println("pom " + String.valueOf(pom.isNatives()));
 
     for (Repository repository : repositories) {
       File file = repository.getCachedFile(sb.toString());

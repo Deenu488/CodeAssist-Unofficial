@@ -43,7 +43,10 @@ public class DependencyResolver {
       if (pom != null) {
         pom.setExcludes(dependency.getExcludes());
         pom.setUserDefined(true);
-        pom.setNatives(dependency.isNatives());
+        if (dependency.isNatives()) {
+          pom.setNatives(dependency.isNatives());
+          pom.setNatives(dependency.getNatives());
+        }
         poms.add(pom);
 
       } else {

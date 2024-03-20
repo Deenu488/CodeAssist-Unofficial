@@ -15,6 +15,7 @@ public class Pom {
   private String groupId;
   private String versionName;
   private String packaging;
+  private String natives;
   private boolean isNatives = false;
 
   private boolean userDefined;
@@ -42,9 +43,9 @@ public class Pom {
     pom.setGroupId(groupId);
     pom.setArtifactId(artifactId);
     pom.setVersionName(versionName);
-    if (natives != null) {
-      pom.setNatives(true);
-    }
+    pom.setNatives(natives);
+    pom.setNatives(true);
+
     return pom;
   }
 
@@ -78,6 +79,14 @@ public class Pom {
 
   public void setNatives(boolean isTrue) {
     this.isNatives = isTrue;
+  }
+
+  public String getNatives() {
+    return natives;
+  }
+
+  public void setNatives(String natives) {
+    this.natives = natives;
   }
 
   public boolean isNatives() {
@@ -124,6 +133,9 @@ public class Pom {
   }
 
   public String getDeclarationString() {
+    if (isNatives) {
+      return groupId + ":" + artifactId + ":" + versionName + ":" + natives;
+    }
     return groupId + ":" + artifactId + ":" + versionName;
   }
 
