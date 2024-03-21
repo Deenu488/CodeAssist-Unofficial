@@ -1,5 +1,6 @@
 package com.tyron.builder.compiler.manifest;
 
+import com.tyron.builder.BuildModule;
 import com.tyron.builder.compiler.BuildType;
 import com.tyron.builder.compiler.Task;
 import com.tyron.builder.compiler.manifest.ManifestMerger2.SystemProperty;
@@ -95,6 +96,34 @@ public class ManifestMergeTask extends Task<AndroidModule> {
       mMainManifest = tempManifest;
     } catch (Exception e) {
       mMainManifest = getModule().getManifestFile();
+      tempDir = new File(BuildModule.getContext().getExternalFilesDir(null), "/temp");
+      if (!tempDir.exists()) {
+        tempDir.mkdirs();
+      }
+
+      tempManifest = new File(tempDir, "AndroidManifest.xml");
+      if (tempManifest.exists()) {
+        tempManifest.delete();
+      }
+
+      if (!tempManifest.exists()) {
+        if (!tempManifest.createNewFile()) {
+          throw new IOException("Unable to create temp manifest file");
+        }
+      }
+
+      try {
+
+        String content = new String(Files.readAllBytes(Paths.get(mMainManifest.getAbsolutePath())));
+
+        FileUtils.writeStringToFile(tempManifest, content, Charset.defaultCharset());
+
+        addPackageName(tempManifest, mPackageName);
+
+        mMainManifest = tempManifest;
+      } catch (Exception ex) {
+        mMainManifest = getModule().getManifestFile();
+      }
     }
 
     List<File> manifests = new ArrayList<>();
@@ -196,6 +225,35 @@ public class ManifestMergeTask extends Task<AndroidModule> {
       mMainManifest = tempManifest;
     } catch (Exception e) {
       mMainManifest = new File(root, "src/main/AndroidManifest.xml");
+
+      tempDir = new File(BuildModule.getContext().getExternalFilesDir(null), "/temp");
+      if (!tempDir.exists()) {
+        tempDir.mkdirs();
+      }
+
+      tempManifest = new File(tempDir, "AndroidManifest.xml");
+      if (tempManifest.exists()) {
+        tempManifest.delete();
+      }
+
+      if (!tempManifest.exists()) {
+        if (!tempManifest.createNewFile()) {
+          throw new IOException("Unable to create temp manifest file");
+        }
+      }
+
+      try {
+
+        String content = new String(Files.readAllBytes(Paths.get(mMainManifest.getAbsolutePath())));
+
+        FileUtils.writeStringToFile(tempManifest, content, Charset.defaultCharset());
+
+        addPackageName(tempManifest, mPackageName);
+
+        mMainManifest = tempManifest;
+      } catch (Exception ex) {
+        mMainManifest = getModule().getManifestFile();
+      }
     }
 
     if (!outputFile.getParentFile().exists()) {
