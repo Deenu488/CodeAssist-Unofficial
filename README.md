@@ -37,6 +37,12 @@ Forked of Official CodeAssist Version Alpha-0.2.9
 
 - [x] AAB Support
 
+- [x] New Updated Templates
+
+- [x] Exclude ClassPath/Library Option
+
+- [x] Copy Logs From Build Output
+
 - [x] Custom AAB Signing Option
 
 - [x] Java 17 (Only Compile)
@@ -50,6 +56,8 @@ Forked of Official CodeAssist Version Alpha-0.2.9
 - [x] Code Formatter Task
 
 - [x] Import File Option A11+
+
+- [x] Open Custom Project Option A11+
 
 - [x] Import Zip Project
 
