@@ -79,6 +79,8 @@ Forked of Official CodeAssist Version Alpha-0.2.9
 
 - [x] Debugger
 
+- [x] Fix Duplicate Same Jar File (Sub Projects)
+
 - [x] Git Integration
 
 - [x] Multiple Projects Support (Multi Mudule)
