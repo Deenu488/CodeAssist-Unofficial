@@ -183,7 +183,7 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
                 .map(File::getAbsolutePath)
                 .collect(Collectors.joining(File.pathSeparator)));
         arguments.add("-Xskip-metadata-version-check");
-        arguments.add("-Xjvm-default");
+        arguments.add("-Xjvm-default=all");
 
         File javaDir = new File(getModule().getRootFile() + "/src/main/java");
         File kotlinDir = new File(getModule().getRootFile() + "/src/main/kotlin");
@@ -471,7 +471,7 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         for (File file : fileList) {
           args.add(file.getAbsolutePath());
         }
-        args.add("-Xjvm-default");
+        args.add("-Xjvm-default=all");
         args.add("-d");
         args.add(mClassOutput.getAbsolutePath());
 
