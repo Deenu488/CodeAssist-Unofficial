@@ -471,7 +471,7 @@ public class IncrementalKotlinCompiler extends Task<AndroidModule> {
         for (File file : fileList) {
           args.add(file.getAbsolutePath());
         }
-        arts.add("-Xjvm-default");
+        args.add("-Xjvm-default");
         args.add("-d");
         args.add(mClassOutput.getAbsolutePath());
 
