@@ -39,7 +39,8 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
+import com.tyron.code.ui.drawable.VectorDrawableCreator;
+    
 public class DrawableManagerAdapter
     extends RecyclerView.Adapter<DrawableManagerAdapter.ViewHolder> {
 
@@ -169,7 +170,7 @@ public class DrawableManagerAdapter
       } else if (name.endsWith(".xml")) {
         title.setText(name.replace(".xml", ""));
 
-        File icon_cache = ApplicationLoader.applicationContext.getExternalFilesDir("icon_cache");
+        /*File icon_cache = ApplicationLoader.applicationContext.getExternalFilesDir("icon_cache");
 
         if (icon_cache.exists()) {
 
@@ -199,7 +200,7 @@ public class DrawableManagerAdapter
             }
           } catch (FileNotFoundException e) {
           }
-        }
+        }*/
 
       } else if (name.endsWith(".jpg")) {
         title.setText(name.replace(".jpg", ""));
