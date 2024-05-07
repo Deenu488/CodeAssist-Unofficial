@@ -171,7 +171,7 @@ public class DrawableManagerAdapter
         title.setText(name.replace(".xml", ""));
 
         d = VectorDrawableCreator.getVectorDrawable(context, drawables.getRootFile());
-        drawable.setImageDrawable(d)
+        drawable.setImageDrawable(d);
             
         /*File icon_cache = ApplicationLoader.applicationContext.getExternalFilesDir("icon_cache");
 
