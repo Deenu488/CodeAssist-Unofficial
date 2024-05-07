@@ -388,13 +388,13 @@ public class VectorDrawableCreator {
   }
 
   public static int parseColor(String value) {
-    Integer color = Color.parseColor(value);
-    if (color != null) {
-      return color;
-    } else {
-      color = Color.BLACK;
+    if (value.startsWith("#")) {
+      Integer color = Color.parseColor(value);
+      if (color != null) {
+        return color;
+      }
     }
-    return color;
+    return Color.BLACK;
   }
 
   public static class PathData {
