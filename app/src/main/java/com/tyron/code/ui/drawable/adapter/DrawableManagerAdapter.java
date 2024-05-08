@@ -170,7 +170,7 @@ public class DrawableManagerAdapter
       } else if (name.endsWith(".xml")) {
         title.setText(name.replace(".xml", ""));
 
-        d = VectorDrawableCreator.getVectorDrawable(context, drawables.getRootFile());
+        d = VectorDrawableCreator.getVectorDrawable(ApplicationLoader.applicationContext, drawables.getRootFile());
         drawable.setImageDrawable(d);
             
         /*File icon_cache = ApplicationLoader.applicationContext.getExternalFilesDir("icon_cache");
