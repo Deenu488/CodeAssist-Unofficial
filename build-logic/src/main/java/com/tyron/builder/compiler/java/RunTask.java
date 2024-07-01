@@ -1,26 +1,23 @@
 package com.tyron.builder.compiler.java;
 
 import android.os.Build;
-import com.tyron.builder.BuildModule;
 import com.tyron.builder.compiler.BuildType;
 import com.tyron.builder.compiler.Task;
 import com.tyron.builder.exception.CompilationFailedException;
 import com.tyron.builder.log.ILogger;
 import com.tyron.builder.project.Project;
 import com.tyron.builder.project.api.AndroidModule;
-import com.tyron.common.util.BinaryExecutor;
-import com.tyron.common.util.ExecutionResult;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.lang.reflect.Method;
 
 public class RunTask extends Task<AndroidModule> {
 
   private static final String TAG = "run";
-
   private File mApkFile;
-
   private File zipFile;
 
   public RunTask(Project project, AndroidModule module, ILogger logger) {
@@ -42,6 +39,7 @@ public class RunTask extends Task<AndroidModule> {
     mApkFile.renameTo(zipFile);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
       mApkFile.setReadOnly();
+      zipFile.setReadOnly();
     }
 
     if (!zipFile.exists()) {
@@ -53,26 +51,43 @@ public class RunTask extends Task<AndroidModule> {
   public void run() throws IOException, CompilationFailedException {
     String mainClass = getModule().getMainClass();
     if (mainClass != null) {
-      List<String> args = new ArrayList<>();
-      args.add("dalvikvm");
-      args.add("-Xcompiler-option");
-      args.add("--compiler-filter=speed");
-      args.add("-Xmx256m");
-      args.add("-Djava.io.tmpdir=" + BuildModule.getContext().getCacheDir().getAbsolutePath());
-      args.add("-cp");
-      args.add(zipFile.getAbsolutePath());
-      args.add(mainClass);
+      PrintStream originalOut = System.out;
+      try {
+        // Redirect System.out to the logger
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        PrintStream printStream =
+            new PrintStream(
+                new OutputStream() {
+                  @Override
+                  public void write(int b) {
+                    if (b == '\n') {
+                      getLogger().info(buffer.toString());
+                      buffer.reset();
+                    } else {
+                      buffer.write(b);
+                    }
+                  }
+                });
 
-      BinaryExecutor executor = new BinaryExecutor();
-      executor.setCommands(args);
-      ExecutionResult result = executor.run();
-      if (result != null) {
-        if (result.getExitValue() == 0) {
-          getLogger().debug(result.getOutput());
-        } else {
-          getLogger().error("Execution failed with exit code " + result.getExitValue() + ":");
-          getLogger().error(executor.getLog());
-        }
+        System.setOut(printStream);
+        System.setErr(printStream);
+
+        // Load the dex file using MultipleDexClassLoader
+        MultipleDexClassLoader dexClassLoader = MultipleDexClassLoader.INSTANCE;
+        dexClassLoader.loadDex(zipFile);
+
+        Class<?> clazz = dexClassLoader.getLoader().loadClass(mainClass);
+        Method mainMethod = clazz.getMethod("main", String[].class);
+        String[] args = new String[] {};
+        mainMethod.invoke(null, (Object) args);
+
+      } catch (Exception e) {
+        getLogger().error("Execution failed: " + e.getMessage());
+        throw new CompilationFailedException("Execution failed", e);
+      } finally {
+        // Restore the original System.out
+        System.setOut(originalOut);
+        System.setErr(originalOut);
       }
     } else {
       throw new CompilationFailedException(
