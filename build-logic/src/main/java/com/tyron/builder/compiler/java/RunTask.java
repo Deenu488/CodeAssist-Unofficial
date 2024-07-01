@@ -72,11 +72,17 @@ public class RunTask extends Task<AndroidModule> {
         System.setOut(printStream);
         System.setErr(printStream);
 
-        // Load the dex file using MultipleDexClassLoader
-        MultipleDexClassLoader dexClassLoader = MultipleDexClassLoader.INSTANCE;
+        // Create a new instance of MultipleDexClassLoader
+        MultipleDexClassLoader dexClassLoader =
+            new MultipleDexClassLoader(null, ClassLoader.getSystemClassLoader());
+
+        // Load the dex file
         dexClassLoader.loadDex(zipFile);
 
+        // Load the main class
         Class<?> clazz = dexClassLoader.getLoader().loadClass(mainClass);
+
+        // Invoke the main method
         Method mainMethod = clazz.getMethod("main", String[].class);
         String[] args = new String[] {};
         mainMethod.invoke(null, (Object) args);
