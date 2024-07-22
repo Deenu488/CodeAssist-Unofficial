@@ -232,6 +232,9 @@ public class WizardFragment extends Fragment {
 
   private void initDetailsView() {
     mNameLayout = mWizardDetailsView.findViewById(R.id.til_app_name);
+    mPackageNameLayout = mWizardDetailsView.findViewById(R.id.til_package_name);
+    mSaveLocationLayout = mWizardDetailsView.findViewById(R.id.til_save_location);
+
     mNameLayout
         .getEditText()
         .addTextChangedListener(
@@ -241,7 +244,7 @@ public class WizardFragment extends Fragment {
                 verifyClassName(editable);
               }
             });
-    mPackageNameLayout = mWizardDetailsView.findViewById(R.id.til_package_name);
+
     mPackageNameLayout
         .getEditText()
         .addTextChangedListener(
@@ -252,7 +255,6 @@ public class WizardFragment extends Fragment {
               }
             });
 
-    mSaveLocationLayout = mWizardDetailsView.findViewById(R.id.til_save_location);
     mSaveLocationLayout.setEnabled(false);
     mSaveLocationLayout
         .getEditText()
@@ -435,16 +437,27 @@ public class WizardFragment extends Fragment {
     return mCurrentTemplate != null;
   }
 
+  private String buildPkgName(CharSequence s) {
+    return s.toString()
+      .replaceAll("[^a-zA-Z0-9]+", ".")
+      .replaceAll("([a-z])([A-Z])", "$1.$2")
+      .replaceAll("(?!<[a-zA-Z0-9])\\.[^a-zA-Z]+", ".")
+      .replaceAll("^[^a-zA-Z]*|[^a-zA-Z]*$", "")
+      .toLowerCase();
+    }
+
   private void verifyClassName(Editable editable) {
     String name = editable.toString();
     if (TextUtils.isEmpty(name)) {
-      mNameLayout.setError(getString(R.string.wizard_error_name_empty));
+      mNameLayout.setError(getString(R.string.wizard_package_empty));
+      mPackageNameLayout.getEditText().setText("");
       return;
-    } else if (name.contains(File.pathSeparator) || name.contains(File.separator)) {
-      mNameLayout.setError(getString(R.string.wizard_error_name_illegal));
+    } else if (name.contains("/") || name.contains("\\")) {
+      mNameLayout.setError(getString(R.string.wizard_package_illegal));
       return;
     } else {
       mNameLayout.setErrorEnabled(false);
+      mPackageNameLayout.getEditText().setText(buildPkgName(editable));
     }
 
     File file =
@@ -492,11 +505,9 @@ public class WizardFragment extends Fragment {
       mPackageNameLayout.setError(getString(R.string.wizard_package_empty));
     } else if (packages.length == 1) {
       mPackageNameLayout.setError(getString(R.string.wizard_package_too_short));
-    } else if (packageName.endsWith(".")) {
-      mPackageNameLayout.setError(getString(R.string.wizard_package_illegal));
     } else if (packageName.contains(" ")) {
       mPackageNameLayout.setError(getString(R.string.wizard_package_contains_spaces));
-    } else if (!packageName.matches("^[a-zA-Z0-9.]+$")) {
+    } else if (!packageName.matches("^[a-zA-Z].*[a-zA-Z][0-9]?$")) {
       mPackageNameLayout.setError(getString(R.string.wizard_package_illegal));
     } else {
       mPackageNameLayout.setErrorEnabled(false);
