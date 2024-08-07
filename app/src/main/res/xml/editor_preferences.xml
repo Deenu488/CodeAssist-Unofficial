@@ -5,7 +5,7 @@
     <!--    <PreferenceCategory-->
     <!--        app:iconSpaceReserved="false"-->
     <!--        android:title="@string/code_engine_title">-->
-    <!--        <SwitchPreference-->
+    <!--        <SwitchPreferenceCompat-->
     <!--            android:defaultValue="false"-->
     <!--            android:iconSpaceReserved="false"-->
     <!--            android:key="experimental_kotlin_completions"-->
@@ -16,18 +16,18 @@
     <PreferenceCategory
         app:iconSpaceReserved="false"
         app:title="@string/completion_settings_java_title">
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:defaultValue="true"
             app:iconSpaceReserved="false"
             android:key="code_editor_error_highlight"
             android:title="@string/code_editor_error_highlight"/>
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:defaultValue="true"
             android:iconSpaceReserved="false"
             android:key="code_editor_completion"
             app:iconSpaceReserved="false"
             android:title="@string/settings_code_completions"/>
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:defaultValue="true"
             android:iconSpaceReserved="false"
             android:key="java_case_insensitive_match"
@@ -39,12 +39,12 @@
     <PreferenceCategory
         app:iconSpaceReserved="false"
         app:title="@string/completion_settings_kotlin_title">
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:defaultValue="true"
             app:iconSpaceReserved="false"
             android:key="kotlin_error_highlight"
             android:title="@string/code_editor_error_highlight"/>
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:defaultValue="false"
             android:iconSpaceReserved="false"
             android:key="kotlin_completion"
@@ -66,12 +66,12 @@
             android:dialogMessage="@string/font_size_message"
             android:negativeButtonText="@android:string/cancel"
             android:positiveButtonText="@android:string/ok"/>
-        <SwitchPreference
+        <SwitchPreferenceCompat
             app:iconSpaceReserved="false"
             app:defaultValue="false"
             app:title="@string/editor_settings_wordwrap"
             app:key="editor_wordwrap"/>
-        <SwitchPreference
+        <SwitchPreferenceCompat
             app:iconSpaceReserved="false"
             app:defaultValue="false"
             app:title="@string/editor_delete_whitespaces"
@@ -85,7 +85,7 @@
     <PreferenceCategory
         app:iconSpaceReserved="false"
         android:title="@string/editor_tabs_settings_title">
-        <SwitchPreference
+        <SwitchPreferenceCompat
             app:iconSpaceReserved="false"
             app:defaultValue="true"
             app:title="@string/editor_tab_unique_file_name"

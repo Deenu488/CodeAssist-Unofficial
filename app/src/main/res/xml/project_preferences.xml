@@ -6,7 +6,7 @@
         app:iconSpaceReserved="false"
         android:title="@string/project_title">
 
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:defaultValue="false"
             android:iconSpaceReserved="false"
             android:key="open_custom_project"

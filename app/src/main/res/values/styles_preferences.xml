@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?><!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Preferences -->
+    <style name="Preference.CodeAssist" parent="Preference.Material">
+        <item name="android:layout">@layout/codeassist_preference</item>
+    </style>
+    
+    <style name="Preference.CodeAssist.CheckBoxPreference" parent="Preference.CheckBoxPreference.Material">
+        <item name="android:layout">@layout/codeassist_preference</item>
+    </style>
+
+    <style name="Preference.CodeAssist.DialogPreference" parent="Preference.DialogPreference.Material">
+        <item name="android:layout">@layout/codeassist_preference</item>
+    </style>
+
+    <style name="Preference.CodeAssist.DialogPreference.EditTextPreference" parent="Preference.DialogPreference.EditTextPreference.Material">
+        <item name="android:layout">@layout/codeassist_preference</item>
+    </style>
+
+    <style name="Preference.CodeAssist.PreferenceScreen" parent="Preference.PreferenceScreen.Material">
+        <item name="android:layout">@layout/codeassist_preference</item>
+    </style>
+
+    <style name="Preference.CodeAssist.SwitchPreference" parent="Preference.SwitchPreference.Material">
+        <item name="android:layout">@layout/codeassist_preference_widget_material_switch</item>
+    </style>
+
+    <style name="Preference.CodeAssist.SwitchPreferenceCompat" parent="@style/Preference.SwitchPreferenceCompat.Material" tools:ignore="ResourceCycle">
+        <item name="widgetLayout">@layout/codeassist_preference_widget_material_switch</item>
+        <item name="android:layout">@layout/codeassist_preference</item>
+    </style>
+    
+    <style name="Widget.CodeAssist.CardView" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">15dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardBackgroundColor">@color/md_theme_background</item>
+        <item name="minHeight">?android:attr/listPreferredItemHeightSmall</item>
+        <item name="android:background">@color/md_theme_background</item>
+        <item name="android:focusable">true</item>
+        <item name="android:layout_marginHorizontal" tools:targetApi="o">8dp</item>
+        <item name="android:layout_marginLeft">8dp</item>
+        <item name="android:layout_marginRight">8dp</item>
+    </style>
+    
+</resources>
