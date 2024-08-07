@@ -18,7 +18,7 @@ dependencies {
 
     implementation project(path: ':common')
     implementation 'org.antlr:antlr4-runtime:4.9.2'
-    api 'com.github.albfernandez:juniversalchardet:2.4.0'
+    api 'com.github.albfernandez:juniversalchardet:2.5.0'
     implementation 'com.android.tools:annotations:24.5.0'
     api project(path: ':javapoet')
     implementation project(path: ":javac")
