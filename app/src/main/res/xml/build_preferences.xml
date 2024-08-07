@@ -6,7 +6,7 @@
         app:iconSpaceReserved="false"
         android:title="@string/run_title">
 
-        <SwitchPreference
+        <SwitchPreferenceCompat
             android:defaultValue="true"
             android:iconSpaceReserved="false"
             android:key="install_apk_directly"
