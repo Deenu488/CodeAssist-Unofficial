@@ -152,7 +152,16 @@ dependencies {
     implementation 'androidx.activity:activity:1.9.0-alpha03'
     implementation 'androidx.drawerlayout:drawerlayout:1.2.0'
     implementation 'com.github.angads25:filepicker:1.1.1'
-
+// annotation fix
+    implementation 'androidx.annotation:annotation:1.9.0-alpha01'
+// Commons Codec 
+    implementation 'commons-codec:commons-codec:1.17.0' 
+// CardView
+    implementation 'androidx.cardview:cardview:1.0.0'
+// Biometrics
+    implementation 'androidx.biometric:biometric:1.1.0'
+// Crypto
+    implementation 'androidx.security:security-crypto:1.1.0-alpha06'
     // image loading
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     implementation 'com.caverock:androidsvg-aar:1.4'
