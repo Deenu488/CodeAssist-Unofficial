@@ -2,27 +2,27 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Preferences -->
-    <style name="Preference.CodeAssist" parent="Preference.M3">
+    <style name="Preference.CodeAssist" parent="Preference.Material">
         <item name="android:layout">@layout/codeassist_preference</item>
     </style>
     
-    <style name="Preference.CodeAssist.CheckBoxPreference" parent="Preference.CheckBoxPreference.M3">
+    <style name="Preference.CodeAssist.CheckBoxPreference" parent="Preference.CheckBoxPreference.Material">
         <item name="android:layout">@layout/codeassist_preference</item>
     </style>
 
-    <style name="Preference.CodeAssist.DialogPreference" parent="Preference.DialogPreference.M3">
+    <style name="Preference.CodeAssist.DialogPreference" parent="Preference.DialogPreference.Material">
         <item name="android:layout">@layout/codeassist_preference</item>
     </style>
 
-    <style name="Preference.CodeAssist.DialogPreference.EditTextPreference" parent="Preference.DialogPreference.EditTextPreference.M3">
+    <style name="Preference.CodeAssist.DialogPreference.EditTextPreference" parent="Preference.DialogPreference.EditTextPreference.Material">
         <item name="android:layout">@layout/codeassist_preference</item>
     </style>
 
-    <style name="Preference.CodeAssist.PreferenceScreen" parent="Preference.PreferenceScreen.M3">
+    <style name="Preference.CodeAssist.PreferenceScreen" parent="Preference.PreferenceScreen.Material">
         <item name="android:layout">@layout/codeassist_preference</item>
     </style>
 
-    <style name="Preference.CodeAssist.SwitchPreference" parent="Preference.SwitchPreference.M3">
+    <style name="Preference.CodeAssist.SwitchPreference" parent="Preference.SwitchPreference.Material">
         <item name="android:layout">@layout/codeassist_preference_widget_material_switch</item>
     </style>
 
