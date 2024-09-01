@@ -71,13 +71,13 @@
     <string name="menu_settings">设置</string>
 
     <!-- preferences -->
-    <string name="settings_title_application">应用</string>
-    <string name="settings_desc_application">全局应用设置</string>
+    <string name="settings_title_appearance">外貌</string>
+    <string name="settings_desc_appearance">外貌与语言</string>
     <string name="settings_title_editor">编辑器</string>
     <string name="settings_desc_editor">配置编辑器</string>
     <string name="title_activity_settings">设置</string>
 
-    <!-- Application settings -->
+    <!-- Appearance settings -->
     <string name="settings_theme_title">主题</string>
     <string name="settings_theme_value_default">跟随系统</string>
     <string name="settings_theme_value_light">浅色模式</string>

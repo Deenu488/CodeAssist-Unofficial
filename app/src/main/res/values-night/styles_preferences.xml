@@ -2,31 +2,31 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Preferences -->
-    <style name="Preference.CodeAssist" parent="Preference.Material">
+    <style name="Preference.CodeAssist" parent="Preference.M3">
         <item name="android:layout">@layout/codeassist_preference</item>
     </style>
     
-    <style name="Preference.CodeAssist.CheckBoxPreference" parent="Preference.CheckBoxPreference.Material">
+    <style name="Preference.CodeAssist.CheckBoxPreference" parent="Preference.CheckBoxPreference.M3">
         <item name="android:layout">@layout/codeassist_preference</item>
     </style>
 
-    <style name="Preference.CodeAssist.DialogPreference" parent="Preference.DialogPreference.Material">
+    <style name="Preference.CodeAssist.DialogPreference" parent="Preference.DialogPreference.M3">
         <item name="android:layout">@layout/codeassist_preference</item>
     </style>
 
-    <style name="Preference.CodeAssist.DialogPreference.EditTextPreference" parent="Preference.DialogPreference.EditTextPreference.Material">
+    <style name="Preference.CodeAssist.DialogPreference.EditTextPreference" parent="Preference.DialogPreference.EditTextPreference.M3">
         <item name="android:layout">@layout/codeassist_preference</item>
     </style>
 
-    <style name="Preference.CodeAssist.PreferenceScreen" parent="Preference.PreferenceScreen.Material">
+    <style name="Preference.CodeAssist.PreferenceScreen" parent="Preference.PreferenceScreen.M3">
         <item name="android:layout">@layout/codeassist_preference</item>
     </style>
 
-    <style name="Preference.CodeAssist.SwitchPreference" parent="Preference.SwitchPreference.Material">
+    <style name="Preference.CodeAssist.SwitchPreference" parent="Preference.SwitchPreference.M3">
         <item name="android:layout">@layout/codeassist_preference_widget_material_switch</item>
     </style>
 
-    <style name="Preference.CodeAssist.SwitchPreferenceCompat" parent="@style/Preference.SwitchPreferenceCompat.Material" tools:ignore="ResourceCycle">
+    <style name="Preference.CodeAssist.SwitchPreferenceCompat" parent="@style/Preference.SwitchPreferenceCompat.M3" tools:ignore="ResourceCycle">
         <item name="widgetLayout">@layout/codeassist_preference_widget_material_switch</item>
         <item name="android:layout">@layout/codeassist_preference</item>
     </style>

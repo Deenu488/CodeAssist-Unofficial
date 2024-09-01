@@ -71,14 +71,15 @@
     <string name="menu_settings">Configurações</string>
 
     <!-- preferences -->
-    <string name="settings_title_application">Aplicativo</string>
-    <string name="settings_desc_application">Preferências gerais do aplicativo.</string>
+    <string name="settings_title_appearance">Aparência</string>
+    <string name="settings_desc_appearance">Aparência e Idioma</string>
     <string name="settings_title_editor">Editor</string>
     <string name="settings_desc_editor">Configurar o editor</string>
     <string name="title_activity_settings">Configurações</string>
 
-    <!-- Application settings -->
+    <!-- Appearance settings -->
     <string name="settings_theme_title">Tema</string>
+    <string name="settings_theme_desc">Escolha um tema para a IDE</string>
     <string name="settings_theme_value_default">Padrão do sistema</string>
     <string name="settings_theme_value_light">Claro</string>
     <string name="settings_theme_value_dark">Escuro</string>
@@ -93,6 +94,9 @@
         <item>@string/settings_theme_value_light</item>
         <item>@string/settings_theme_value_dark</item>
     </string-array>
+    
+    <string name="settings_dynamic_title">Material You</string>
+    <string name="settings_dynamic_desc">gera temas de IU personalizados a partir de seus papéis de parede(requer reinicialização)</string>
     
 
     <!-- Editor settings -->

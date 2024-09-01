@@ -31,7 +31,7 @@
      
         <item name="editorColorScheme">@style/EditorColorSchemeLight</item>
 
-        <item name="dividerColor">#555555</item>
+        <item name="dividerColor">?colorOutline</item>
 
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>

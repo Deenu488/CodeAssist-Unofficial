@@ -78,10 +78,10 @@
 
 
     <!-- preferences -->
+    <string name="settings_title_appearance">Появление</string>
     <string name="settings_title_editor">Редактор кода</string>
     <string name="title_activity_settings">Настройки</string>
-        <string name="settings_title_application">Приложение</string>
-    <string name="settings_desc_application">Общие настройки приложения</string>
+    <string name="settings_desc_appearance">Внешний вид и язык</string>
        <string name="settings_desc_editor">Настройки редактора кода</string>
     
 
