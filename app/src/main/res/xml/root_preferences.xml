@@ -1,38 +1,39 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Preference
         app:fragment="com.tyron.code.ui.settings.ApplicationSettingsFragment"
-        app:iconSpaceReserved="false"
-        app:summary="@string/settings_desc_application"
-        app:title="@string/settings_title_application" />
+        android:icon="@drawable/ic_appearance"
+        app:summary="@string/settings_desc_appearance"
+        app:title="@string/settings_title_appearance" />
 
     <Preference
         app:fragment="com.tyron.code.ui.settings.EditorSettingsFragment"
-        app:iconSpaceReserved="false"
+        android:icon="@drawable/ic_code"
         app:summary="@string/settings_desc_editor"
         app:title="@string/settings_title_editor" />
 
     <Preference
         app:fragment="com.tyron.code.ui.settings.ProjectSettingsFragment"
-        app:iconSpaceReserved="false"
+        android:icon="@drawable/ic_open_folder"
         app:summary="@string/settings_project_desc"
         app:title="@string/settings_project_title" />
 
     <Preference
         app:fragment="com.tyron.code.ui.settings.BuildSettingsFragment"
-        app:iconSpaceReserved="false"
+        android:icon="@drawable/ic_build"
         app:summary="@string/settings_build_run_desc"
         app:title="@string/settings_build_run_title" />
 
 	<Preference
         app:fragment="com.tyron.code.ui.settings.GitSettingsFragment"
-        app:iconSpaceReserved="false"
+        android:icon="@drawable/ic_github"
         app:summary="@string/settings_git_desc"
         app:title="@string/settings_git_title" />
 	
     <Preference
         app:fragment="com.tyron.code.ui.settings.AboutUsFragment"
-        app:iconSpaceReserved="false"
+        android:icon="@drawable/ic_info_outline"
         app:title="@string/settings_about_us_title"
         app:summary="@string/settings_about_us_desc"/>
 </PreferenceScreen>

@@ -25,6 +25,12 @@ public class ApplicationSettingsFragment extends PreferenceFragmentCompat {
       String selectedTheme = preferences.getString("theme", "default");
       return getTheme(selectedTheme);
     }
+    
+    public boolean hasDynamicColors() {
+     SharedPrerences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+     boolean isDynamicColors = prefs.getBoolean("dynamic", true);
+     return isDynamicColors;
+    }
 
     public String getDescriptionForTheme(String selectedTheme) {
       switch (selectedTheme) {
@@ -67,5 +73,5 @@ public class ApplicationSettingsFragment extends PreferenceFragmentCompat {
           }
           return false;
         });
+    }
   }
-}

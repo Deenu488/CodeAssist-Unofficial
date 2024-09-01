@@ -29,7 +29,7 @@
         <item name="colorSurfaceInverse">@color/md_theme_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_inversePrimary</item>
         
-        <item name="dividerColor">#555555</item>
+        <item name="dividerColor">?colorOutline</item>
         <item name="editorColorScheme">@style/EditorColorSchemeNight</item>
 
         <item name="android:navigationBarColor">@android:color/transparent</item>

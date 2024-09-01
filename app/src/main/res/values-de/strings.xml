@@ -71,13 +71,13 @@
     <string name="menu_settings">Einstellungen</string>
 
     <!-- preferences -->
-    <string name="settings_title_application">App</string>
-    <string name="settings_desc_application">Allgemeine App-Einstellungen</string>
+    <string name="settings_title_appearance">Aussehen</string>
+    <string name="settings_desc_appearance">Aussehen und Sprache</string>
     <string name="settings_title_editor">Editor</string>
     <string name="settings_desc_editor">Konfiguriere den Editor</string>
     <string name="title_activity_settings">Einstellungen</string>
 
-    <!-- Application settings -->
+    <!-- Appearance settings -->
     <string name="settings_theme_title">Theme</string>
     <string name="settings_theme_value_default">System-Standard</string>
     <string name="settings_theme_value_light">Hell</string>

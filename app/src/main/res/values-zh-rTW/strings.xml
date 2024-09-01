@@ -71,8 +71,8 @@
     <string name="menu_settings">設定</string>
 
     <!-- preferences -->
-    <string name="settings_title_application">應用</string>
-    <string name="settings_desc_application">全域性應用設定</string>
+    <string name="settings_title_appearance">外貌</string>
+    <string name="settings_desc_appearance">外貌與語言</string>
     <string name="settings_title_editor">編輯器</string>
     <string name="settings_desc_editor">配置編輯器</string>
     <string name="title_activity_settings">設定</string>

@@ -1,5 +1,6 @@
 package com.tyron.code;
 
+import com.google.android.material.color.DynamicColors;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -113,6 +114,12 @@ public class ApplicationLoader extends Application {
         new ApplicationSettingsFragment.ThemeProvider(this);
     int theme = provider.getThemeFromPreferences();
     AppCompatDelegate.setDefaultNightMode(theme);
+    boolean isDynamicColor = provider.hasDynamicColors();
+    if(isDynamicColor) {
+    if(DynamicColors.isDynamicColorAvailable()) {
+    DynamicColors.applyToActivitiesIfAvailable(this);
+    }
+   }
   }
 
   private void runStartup() {
