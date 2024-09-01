@@ -14,7 +14,7 @@ dependencies {
     api 'commons-io:commons-io:2.11.0'
     api 'net.lingala.zip4j:zip4j:2.11.5'
     compileOnly project(path: ':android-stubs')
-	implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.7.22'
+	implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.25'
 }
 
 java {
