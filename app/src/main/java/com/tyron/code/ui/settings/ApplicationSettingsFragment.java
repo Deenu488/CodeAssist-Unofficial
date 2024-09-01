@@ -73,15 +73,5 @@ public class ApplicationSettingsFragment extends PreferenceFragmentCompat {
           }
           return false;
         });
-        Preference monet = findPreference(SharedPreferenceKeys.dynamic);
-    assert monet != null;
-    monet.setOnPreferenceChangeListener((preference, newValue) -> {
-     if (newValue instanceof boolean) {
-      ThemeProvider provider = new ThemeProvider(requireContext());
-      boolean hasDynamicColors = provider.hasDynamicColors();
-      return true;
-      }
-      return false;
-     });
     }
   }

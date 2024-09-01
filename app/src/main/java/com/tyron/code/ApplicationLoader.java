@@ -114,7 +114,7 @@ public class ApplicationLoader extends Application {
         new ApplicationSettingsFragment.ThemeProvider(this);
     int theme = provider.getThemeFromPreferences();
     AppCompatDelegate.setDefaultNightMode(theme);
-    boolean isDynamicColor = provider.getDynamicColorFromPreferences();
+    boolean isDynamicColor = provider.hasDynamicColors();
     if(isDynamicColor) {
     if(DynamicColors.isDynamicColorAvailable()) {
     DynamicColors.applyToActivitiesIfAvailable(this);
