@@ -146,7 +146,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-livedata-core:2.8.0-alpha02'
     implementation 'androidx.lifecycle:lifecycle-viewmodel:2.8.0-alpha02'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0-alpha02'
-    implementation 'androidx.lifecycle:lifecycle-livedata:2.8.0-alpha02'
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.8.4'
     implementation 'androidx.fragment:fragment:1.7.0-alpha10'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
     implementation 'androidx.activity:activity:1.9.1'
