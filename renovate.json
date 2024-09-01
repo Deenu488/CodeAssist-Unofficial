@@ -4,5 +4,11 @@
     "config:recommended"
   ],
   "automerge": true,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true,
+    "automergeType": "pr",
+    "platformAutomerge": false
+  },
   "includeForks": true
 }
