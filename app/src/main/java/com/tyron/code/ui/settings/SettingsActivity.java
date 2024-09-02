@@ -9,7 +9,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import org.codeassist.unofficial.R;
-import com.google.android.material.appbar.MaterialToolbar;
 
 public class SettingsActivity extends AppCompatActivity
     implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
@@ -35,13 +34,6 @@ public class SettingsActivity extends AppCompatActivity
                 setTitle(R.string.title_activity_settings);
               }
             });
-
-    setSupportActionBar(findViewById(R.id.toolbar));
-
-    MaterialToolbar actionBar = getSupportActionBar();
-    if (actionBar != null) {
-      actionBar.setDisplayHomeAsUpEnabled(true);
-    }
   }
 
   @Override
