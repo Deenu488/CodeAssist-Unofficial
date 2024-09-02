@@ -3,7 +3,6 @@ package com.tyron.code.ui.settings;
 import android.os.Bundle;
 import android.view.MenuItem;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -20,6 +19,7 @@ public class SettingsActivity extends AppCompatActivity
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.settings_activity);
+    setSupportActionBar(findViewById(R.id.toolbar));
     if (savedInstanceState == null) {
       getSupportFragmentManager()
           .beginTransaction()
@@ -35,13 +35,6 @@ public class SettingsActivity extends AppCompatActivity
                 setTitle(R.string.title_activity_settings);
               }
             });
-
-    setSupportActionBar(findViewById(R.id.toolbar));
-
-    ActionBar actionBar = getSupportActionBar();
-    if (actionBar != null) {
-      actionBar.setDisplayHomeAsUpEnabled(true);
-    }
   }
 
   @Override

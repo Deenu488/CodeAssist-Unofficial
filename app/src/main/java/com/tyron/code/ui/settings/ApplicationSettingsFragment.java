@@ -9,6 +9,8 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import com.tyron.common.SharedPreferenceKeys;
 import org.codeassist.unofficial.R;
+import com.google.android.material.transition.MaterialSharedAxis;
+import androidx.annotation.Nullable;
 
 public class ApplicationSettingsFragment extends PreferenceFragmentCompat {
 
@@ -47,6 +49,16 @@ public class ApplicationSettingsFragment extends PreferenceFragmentCompat {
           return AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
       }
     }
+  }
+  
+  @Override
+  public void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    setEnterTransition(new MaterialSharedAxis(MaterialSharedAxis.X, true));
+    setReturnTransition(new MaterialSharedAxis(MaterialSharedAxis.X, false));
+    setExitTransition(new MaterialSharedAxis(MaterialSharedAxis.X, true));
+    setReenterTransition(new MaterialSharedAxis(MaterialSharedAxis.X, false));
   }
 
   @Override

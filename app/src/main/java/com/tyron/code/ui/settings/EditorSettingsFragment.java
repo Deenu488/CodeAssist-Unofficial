@@ -38,8 +38,10 @@ public class EditorSettingsFragment extends PreferenceFragmentCompat {
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    setEnterTransition(new MaterialSharedAxis(MaterialSharedAxis.X, false));
+    setEnterTransition(new MaterialSharedAxis(MaterialSharedAxis.X, true));
+    setReturnTransition(new MaterialSharedAxis(MaterialSharedAxis.X, false));
     setExitTransition(new MaterialSharedAxis(MaterialSharedAxis.X, true));
+    setReenterTransition(new MaterialSharedAxis(MaterialSharedAxis.X, false));
   }
 
   @Override
