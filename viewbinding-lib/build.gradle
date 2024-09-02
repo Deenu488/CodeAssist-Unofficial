@@ -10,21 +10,21 @@ configurations.implementation {
 
 dependencies {
     // test
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'com.google.truth:truth:1.1.3'
-    testImplementation 'com.google.testing.compile:compile-testing:0.19'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.0'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'com.google.truth:truth:1.4.4'
+    testImplementation 'com.google.testing.compile:compile-testing:0.21.0'
 
     implementation project(path: ':common')
-    implementation 'org.antlr:antlr4-runtime:4.9.2'
+    implementation 'org.antlr:antlr4-runtime:4.13.2'
     api 'com.github.albfernandez:juniversalchardet:2.5.0'
-    implementation 'com.android.tools:annotations:24.5.0'
+    implementation 'com.android.tools:annotations:31.6.0'
     api project(path: ':javapoet')
     implementation project(path: ":javac")
 	api files('libs/viewbinding-lib.jar')
     // jaxb
-    api 'javax.xml.bind:jaxb-api:2.3.0'
+    api 'javax.xml.bind:jaxb-api:2.3.1'
 }
 repositories {
     mavenCentral()

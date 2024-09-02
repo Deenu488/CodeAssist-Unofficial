@@ -6,7 +6,7 @@ apply plugin: 'kotlin'
 apply plugin: 'com.diffplug.spotless'
 
 dependencies {
-    implementation 'androidx.annotation:annotation:1.3.0'
+    implementation 'androidx.annotation:annotation:1.8.2'
     api 'com.android.tools:sdklib:25.3.0'
     implementation project(path: ':common')
 	implementation project(path: ':apksigner')
@@ -19,7 +19,7 @@ dependencies {
     implementation project(path: ':google-java-format')
     implementation project(path: ':ktfmt')
     
-    compileOnly 'com.google.code.gson:gson:2.8.8'
+    compileOnly 'com.google.code.gson:gson:2.11.0'
     implementation project(path: ':logging')
     implementation project(path: ':manifmerger')
     implementation project(path: ':project')
@@ -32,11 +32,11 @@ dependencies {
     api 'com.android.tools.build:bundletool:1.15.6'
     
     testImplementation 'junit:junit:4.13.2'
-    testImplementation "com.google.truth:truth:1.1.3"
-    testImplementation "org.robolectric:robolectric:4.7.3"
+    testImplementation "com.google.truth:truth:1.4.4"
+    testImplementation "org.robolectric:robolectric:4.13"
     testImplementation project(path: ':jaxp')
 
-    api 'com.android.tools:r8:8.3.37'
+    api 'com.android.tools:r8:8.5.35'
 
     compileOnly project(path: ':android-stubs')
 }

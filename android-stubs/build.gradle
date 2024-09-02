@@ -6,7 +6,7 @@ apply plugin: 'com.diffplug.spotless'
 dependencies {
     compileOnlyApi files('libs/android.jar')
 
-    compileOnly 'androidx.annotation:annotation:1.3.0'
+    compileOnly 'androidx.annotation:annotation:1.8.2'
 }
 
 java {

@@ -4,7 +4,7 @@ plugins {
 apply plugin: 'com.diffplug.spotless'
 
 dependencies {
-    implementation 'org.jetbrains:annotations:23.0.0'
+    implementation 'org.jetbrains:annotations:24.1.0'
 
     implementation project(path: ':logging')
     implementation project(path: ':project')
