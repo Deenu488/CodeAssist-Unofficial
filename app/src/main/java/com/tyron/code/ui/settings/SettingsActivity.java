@@ -3,13 +3,13 @@ package com.tyron.code.ui.settings;
 import android.os.Bundle;
 import android.view.MenuItem;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import org.codeassist.unofficial.R;
+import com.google.android.material.appbar.MaterialToolbar;
 
 public class SettingsActivity extends AppCompatActivity
     implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
@@ -38,7 +38,7 @@ public class SettingsActivity extends AppCompatActivity
 
     setSupportActionBar(findViewById(R.id.toolbar));
 
-    ActionBar actionBar = getSupportActionBar();
+    MaterialToolbar actionBar = getSupportActionBar();
     if (actionBar != null) {
       actionBar.setDisplayHomeAsUpEnabled(true);
     }
