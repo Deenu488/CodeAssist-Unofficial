@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     
-    <style name="AppThemeNew" parent="Theme.Material3.Light.NoActionBar">
+    <style name="AppThemeNew" parent="Theme.Material3.DynamicColors.Light">
         <item name="colorPrimary">@color/md_theme_primary</item>
         <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_primaryContainer</item>
@@ -39,6 +39,10 @@
         <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowLightStatusBar">true</item>
+        
+        <!-- to hide action bar -->
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
         
         <!-- preferences -->
         <item name="preferenceScreenStyle">@style/Preference.CodeAssist.PreferenceScreen</item>

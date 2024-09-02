@@ -50,6 +50,7 @@ import com.tyron.language.xml.XmlFileType;
 import com.tyron.language.xml.XmlLanguage;
 import com.tyron.selection.java.JavaExpandSelectionProvider;
 import com.tyron.selection.xml.XmlExpandSelectionProvider;
+import com.google.android.material.color.DynamicColors;
 import java.security.Security;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
@@ -113,6 +114,7 @@ public class ApplicationLoader extends Application {
         new ApplicationSettingsFragment.ThemeProvider(this);
     int theme = provider.getThemeFromPreferences();
     AppCompatDelegate.setDefaultNightMode(theme);
+    DynamicColors.applyToActivitiesIfAvailable(this);
   }
 
   private void runStartup() {
