@@ -3,10 +3,10 @@
   "extends": [
     "config:recommended"
   ],
-  "automerge": true,
+  "automerge": false,
   "lockFileMaintenance": {
     "enabled": true,
-    "automerge": true,
+    "automerge": false,
     "automergeType": "pr",
     "platformAutomerge": false
   },
