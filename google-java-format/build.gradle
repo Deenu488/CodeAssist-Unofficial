@@ -10,7 +10,7 @@ java {
 
 dependencies {
 	api files('libs/google-java-format.jar')
-    api 'com.google.auto.value:auto-value-annotations:1.10.1'
+    api 'com.google.auto.value:auto-value-annotations:1.11.0'
 }
 
 spotless {
