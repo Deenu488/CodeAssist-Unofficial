@@ -1,5 +1,9 @@
+> [!WARNING]
+> 
+> This project is deprecated. Stay tuned for new upcoming IDE.
+ 
 <p align='center'>
-<img width='300px%' height='300px' src='https://github.com/Deenu488/CodeAssist-Unofficial/blob/main/logo-dark.png#gh-dark-mode-only' >
+ <img width='300px%' height='300px' src='https://github.com/Deenu488/CodeAssist-Unofficial/blob/main/logo-dark.png#gh-dark-mode-only' >
 <img width='300px' height='300px' src='https://github.com/Deenu488/CodeAssist-Unofficial/blob/main/logo-light.png#gh-light-mode-only'>
 </p>
 
@@ -9,7 +13,7 @@ Forked of Official CodeAssist Version Alpha-0.2.9
 <p><br>
 
 <div align='center'>
- 
+
 [![stability-alpha](https://img.shields.io/badge/stability-alpha-f4d03f.svg)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#alpha)
 ![Repository Size](https://img.shields.io/github/repo-size/Deenu143/CodeAssist-ALPHA-0.2.9)
 ![CI](https://github.com/Deenu143/CodeAssist-ALPHA-0.2.9/actions/workflows/release-apk.yml/badge.svg)
