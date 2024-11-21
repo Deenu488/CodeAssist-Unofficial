@@ -1,6 +1,7 @@
 > [!WARNING]
 > 
-> This project is deprecated. Stay tuned for new upcoming IDE.
+> This project is deprecated.
+> Join Telegram Channel for more informations :- https://t.me/kodtikide_app
  
 <p align='center'>
  <img width='300px%' height='300px' src='https://github.com/Deenu488/CodeAssist-Unofficial/blob/main/logo-dark.png#gh-dark-mode-only' >
